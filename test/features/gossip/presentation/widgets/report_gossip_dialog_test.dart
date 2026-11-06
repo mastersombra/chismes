@@ -2,35 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:chismes/features/gossip/presentation/widgets/report_gossip_dialog.dart';
 import 'package:chismes/features/gossip/domain/entities/report_reason.dart';
+import '../../../../helpers/widget_test_wrapper.dart';
 
 void main() {
+  Widget makeTestableWidget(Widget child) {
+    return testableWidget(child: child, useScaffold: false);
+  }
+
+
   group('ReportGossipDialog', () {
     testWidgets('debe renderizar título del diálogo', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       expect(find.text('Reportar chisme'), findsOneWidget);
     });
 
     testWidgets('debe renderizar pregunta principal', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       expect(find.text('¿Por qué reportas este chisme?'), findsOneWidget);
     });
 
     testWidgets('debe renderizar todas las razones de reporte', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       // Verificar que están todas las razones
       expect(find.text('Spam'), findsOneWidget);
@@ -43,10 +46,9 @@ void main() {
 
     testWidgets('debe renderizar Radio buttons para cada razón', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       final radioButtons = find.byType(Radio<ReportReason>);
       expect(radioButtons, findsNWidgets(ReportReason.values.length));
@@ -54,10 +56,9 @@ void main() {
 
     testWidgets('debe renderizar campo de detalles opcionales', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       expect(find.text('Detalles adicionales (opcional)'), findsOneWidget);
       expect(find.text('Describe el problema...'), findsOneWidget);
@@ -66,10 +67,9 @@ void main() {
 
     testWidgets('TextField debe tener maxLines 3', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       final textField = tester.widget<TextField>(find.byType(TextField));
       expect(textField.maxLines, 3);
@@ -77,10 +77,9 @@ void main() {
 
     testWidgets('TextField debe tener maxLength 500', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       final textField = tester.widget<TextField>(find.byType(TextField));
       expect(textField.maxLength, 500);
@@ -88,10 +87,9 @@ void main() {
 
     testWidgets('debe renderizar botón Cancelar', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       expect(find.text('Cancelar'), findsOneWidget);
       expect(find.widgetWithText(TextButton, 'Cancelar'), findsOneWidget);
@@ -99,10 +97,9 @@ void main() {
 
     testWidgets('debe renderizar botón Reportar', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       expect(find.text('Reportar'), findsOneWidget);
       expect(find.widgetWithText(FilledButton, 'Reportar'), findsOneWidget);
@@ -110,10 +107,9 @@ void main() {
 
     testWidgets('botón Reportar debe estar deshabilitado inicialmente', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       final reportButton = tester.widget<FilledButton>(
         find.widgetWithText(FilledButton, 'Reportar'),
@@ -123,10 +119,9 @@ void main() {
 
     testWidgets('debe poder seleccionar una razón con Radio', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       // Seleccionar "Spam"
       await tester.tap(find.byType(Radio<ReportReason>).first);
@@ -142,10 +137,9 @@ void main() {
 
     testWidgets('debe poder seleccionar una razón tocando el ListTile', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       // Tap en el ListTile de "Acoso o intimidación"
       await tester.tap(find.text('Acoso o intimidación'));
@@ -161,10 +155,9 @@ void main() {
 
     testWidgets('botón Reportar debe habilitarse al seleccionar razón', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       // Seleccionar una razón
       await tester.tap(find.text('Spam'));
@@ -344,30 +337,27 @@ void main() {
 
     testWidgets('debe tener AlertDialog como contenedor', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       expect(find.byType(AlertDialog), findsOneWidget);
     });
 
     testWidgets('debe tener SingleChildScrollView para contenido', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       expect(find.byType(SingleChildScrollView), findsOneWidget);
     });
 
     testWidgets('debe tener Column con mainAxisSize.min', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       final column = tester.widget<Column>(
         find.descendant(
@@ -381,10 +371,9 @@ void main() {
 
     testWidgets('ListTile debe tener dense true', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       final listTiles = tester.widgetList<ListTile>(find.byType(ListTile));
       for (final listTile in listTiles) {
@@ -394,10 +383,9 @@ void main() {
 
     testWidgets('ListTile debe tener contentPadding zero', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       final listTiles = tester.widgetList<ListTile>(find.byType(ListTile));
       for (final listTile in listTiles) {
@@ -407,10 +395,9 @@ void main() {
 
     testWidgets('debe tener espaciado correcto entre elementos', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       final sizedBoxes = tester.widgetList<SizedBox>(find.byType(SizedBox));
       final spacings = sizedBoxes.where((box) => box.height == 12.0);
@@ -419,10 +406,9 @@ void main() {
 
     testWidgets('TextField debe tener OutlineInputBorder', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       final textField = tester.widget<TextField>(find.byType(TextField));
       final decoration = textField.decoration;
@@ -431,10 +417,9 @@ void main() {
 
     testWidgets('debe poder seleccionar cada una de las razones', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       // Probar seleccionando cada razón
       final reasons = [
@@ -462,10 +447,9 @@ void main() {
 
     testWidgets('pregunta principal debe tener fontWeight w500', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: ReportGossipDialog(),
-        ),
-      );
+        makeTestableWidget(const ReportGossipDialog()),
+        );
+        await tester.pumpAndSettle();
 
       final text = tester.widget<Text>(
         find.text('¿Por qué reportas este chisme?'),
