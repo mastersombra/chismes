@@ -1,5 +1,10 @@
 # Chismes 
 
+[![Flutter CI](https://github.com/mastersombra/chismes/workflows/Flutter%20CI/badge.svg)](https://github.com/mastersombra/chismes/actions)
+[![Coverage](https://img.shields.io/badge/coverage-78.9%25-brightgreen)](https://github.com/mastersombra/chismes)
+[![Flutter](https://img.shields.io/badge/Flutter-3.27.0-blue.svg)](https://flutter.dev/)
+[![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
+
 Aplicación Flutter para compartir y descubrir chismes de celebridades.
 
 ## Características
@@ -52,6 +57,25 @@ flutter run
 - `flutter`: Framework principal
 - `cupertino_icons`: Iconos estilo iOS
 - `equatable`: Para comparación de objetos
+
+## 🤖 CI/CD (Integración Continua)
+
+Este proyecto usa **GitHub Actions** para automatizar pruebas y builds:
+
+### ✅ Cada vez que haces push a `main`:
+1. **Análisis de código** (`flutter analyze`)
+2. **Tests automáticos** (149 tests)
+3. **Generación de coverage** (78.9%)
+4. **Build APK** (Android release)
+
+### 📊 Estado del Build
+Verifica el estado del último build en: [Actions](https://github.com/mastersombra/chismes/actions)
+
+### 🔒 Branch Protection
+La rama `main` está protegida:
+- ❌ No se puede hacer force push
+- ❌ No se puede eliminar
+- ✅ Se requiere historial lineal
 
 ## Estructura de Features
 
