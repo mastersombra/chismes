@@ -1,0 +1,22 @@
+{
+  // Habilitar Deno solo en supabase/functions
+  "deno.enable": true,
+  "deno.enablePaths": [
+    "./supabase/functions"
+  ],
+  "deno.unstable": true,
+  "deno.lint": true,
+
+  // Desactivar TypeScript de VSCode en functions (usa Deno en su lugar)
+  "[typescript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+
+  // Excluir carpetas generadas de búsqueda
+  "search.exclude": {
+    "**/.dart_tool": true,
+    "**/.flutter-plugins": true,
+    "**/.flutter-plugins-dependencies": true,
+    "**/build": true
+  }
+}

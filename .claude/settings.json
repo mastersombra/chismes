@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd tools/knowledge-graph && source venv/bin/activate && python generate_graph.py >/dev/null 2>&1",
+            "statusMessage": "Generando grafo de conocimiento..."
+          }
+        ]
+      }
+    ]
+  }
+}

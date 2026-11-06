@@ -1,0 +1,3892 @@
+{
+  "nodes": [
+    {
+      "id": "main",
+      "file": "main.dart",
+      "type": "other",
+      "layer": "shared",
+      "feature": "shared",
+      "evidence": [
+        "class ChismesApp",
+        "extends StatelessWidget",
+        "method:Function",
+        "method:Function",
+        "method:Function"
+      ],
+      "detail": "ChismesApp"
+    },
+    {
+      "id": "shared.data.gossip_mock_data",
+      "file": "shared/data/gossip_mock_data.dart",
+      "type": "other",
+      "layer": "data",
+      "feature": "shared",
+      "evidence": [],
+      "detail": ""
+    },
+    {
+      "id": "features.profile.presentation.screens.profile_screen",
+      "file": "features/profile/presentation/screens/profile_screen.dart",
+      "type": "screen",
+      "layer": "presentation",
+      "feature": "profile",
+      "evidence": [
+        "class ProfileScreen",
+        "extends StatefulWidget",
+        "method:ProfileScreen",
+        "method:initState",
+        "method:dispose"
+      ],
+      "detail": "ProfileScreen"
+    },
+    {
+      "id": "features.profile.presentation.controllers.profile_controller",
+      "file": "features/profile/presentation/controllers/profile_controller.dart",
+      "type": "controller",
+      "layer": "presentation",
+      "feature": "profile",
+      "evidence": [
+        "class ProfileController",
+        "extends ChangeNotifier",
+        "method:loadProfile",
+        "method:Exception",
+        "method:UserStats",
+        "stateful"
+      ],
+      "detail": "ProfileController"
+    },
+    {
+      "id": "features.profile.presentation.widgets.profile_stats_card",
+      "file": "features/profile/presentation/widgets/profile_stats_card.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "profile",
+      "evidence": [
+        "class ProfileStatsCard",
+        "extends StatelessWidget",
+        "method:ProfileStatsCard",
+        "method:Card",
+        "method:SizedBox"
+      ],
+      "detail": "ProfileStatsCard"
+    },
+    {
+      "id": "features.profile.presentation.widgets.settings_section",
+      "file": "features/profile/presentation/widgets/settings_section.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "profile",
+      "evidence": [
+        "class SettingsSection",
+        "extends StatelessWidget",
+        "method:SettingsSection",
+        "method:Column",
+        "method:SizedBox"
+      ],
+      "detail": "SettingsSection"
+    },
+    {
+      "id": "features.profile.presentation.widgets.profile_header",
+      "file": "features/profile/presentation/widgets/profile_header.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "profile",
+      "evidence": [
+        "class ProfileHeader",
+        "extends StatelessWidget",
+        "method:ProfileHeader",
+        "method:Column",
+        "method:SizedBox"
+      ],
+      "detail": "ProfileHeader"
+    },
+    {
+      "id": "features.profile.domain.repositories.profile_repository",
+      "file": "features/profile/domain/repositories/profile_repository.dart",
+      "type": "repository",
+      "layer": "domain",
+      "feature": "profile",
+      "evidence": [
+        "class ProfileRepository",
+        "returns:Result"
+      ],
+      "detail": "ProfileRepository"
+    },
+    {
+      "id": "features.profile.domain.usecases.get_user_stats",
+      "file": "features/profile/domain/usecases/get_user_stats.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "profile",
+      "evidence": [
+        "class GetUserStats"
+      ],
+      "detail": "GetUserStats"
+    },
+    {
+      "id": "features.profile.domain.usecases.sign_out",
+      "file": "features/profile/domain/usecases/sign_out.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "profile",
+      "evidence": [
+        "class SignOut"
+      ],
+      "detail": "SignOut"
+    },
+    {
+      "id": "features.profile.domain.usecases.get_settings",
+      "file": "features/profile/domain/usecases/get_settings.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "profile",
+      "evidence": [
+        "class GetSettings"
+      ],
+      "detail": "GetSettings"
+    },
+    {
+      "id": "features.profile.domain.usecases.update_settings",
+      "file": "features/profile/domain/usecases/update_settings.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "profile",
+      "evidence": [
+        "class UpdateSettings"
+      ],
+      "detail": "UpdateSettings"
+    },
+    {
+      "id": "features.profile.domain.entities.user_stats",
+      "file": "features/profile/domain/entities/user_stats.dart",
+      "type": "entity",
+      "layer": "domain",
+      "feature": "profile",
+      "evidence": [
+        "class UserStats",
+        "method:UserStats",
+        "method:copyWith",
+        "method:UserStats",
+        "field:gossipsCount",
+        "field:commentsCount",
+        "field:followersCount"
+      ],
+      "detail": "UserStats"
+    },
+    {
+      "id": "features.profile.domain.entities.profile_settings",
+      "file": "features/profile/domain/entities/profile_settings.dart",
+      "type": "entity",
+      "layer": "domain",
+      "feature": "profile",
+      "evidence": [
+        "class ProfileSettings",
+        "method:ProfileSettings",
+        "method:ProfileSettings",
+        "method:copyWith",
+        "field:notificationsEnabled",
+        "field:emailNotifications",
+        "field:pushNotifications"
+      ],
+      "detail": "ProfileSettings"
+    },
+    {
+      "id": "features.profile.data.datasources.profile_remote_datasource",
+      "file": "features/profile/data/datasources/profile_remote_datasource.dart",
+      "type": "datasource",
+      "layer": "data",
+      "feature": "profile",
+      "evidence": [
+        "class ProfileRemoteDataSource",
+        "method:getUserStats",
+        "method:básicas",
+        "method:UserStatsModel"
+      ],
+      "detail": "ProfileRemoteDataSource"
+    },
+    {
+      "id": "features.profile.data.repositories.profile_repository_impl",
+      "file": "features/profile/data/repositories/profile_repository_impl.dart",
+      "type": "repository",
+      "layer": "data",
+      "feature": "profile",
+      "evidence": [
+        "class ProfileRepositoryImpl",
+        "implements ProfileRepository",
+        "returns:Result"
+      ],
+      "detail": "ProfileRepositoryImpl"
+    },
+    {
+      "id": "features.profile.data.models.profile_settings_model",
+      "file": "features/profile/data/models/profile_settings_model.dart",
+      "type": "model",
+      "layer": "data",
+      "feature": "profile",
+      "evidence": [
+        "class ProfileSettingsModel",
+        "method:perfil",
+        "method:ProfileSettingsModel",
+        "method:toEntity"
+      ],
+      "detail": "ProfileSettingsModel"
+    },
+    {
+      "id": "features.profile.data.models.user_stats_model",
+      "file": "features/profile/data/models/user_stats_model.dart",
+      "type": "model",
+      "layer": "data",
+      "feature": "profile",
+      "evidence": [
+        "class UserStatsModel",
+        "method:usuario",
+        "method:UserStatsModel",
+        "method:toEntity"
+      ],
+      "detail": "UserStatsModel"
+    },
+    {
+      "id": "features.search.presentation.screens.search_screen",
+      "file": "features/search/presentation/screens/search_screen.dart",
+      "type": "screen",
+      "layer": "presentation",
+      "feature": "search",
+      "evidence": [
+        "class SearchScreen",
+        "extends StatefulWidget",
+        "method:SearchScreen",
+        "method:container",
+        "method:initState"
+      ],
+      "detail": "SearchScreen"
+    },
+    {
+      "id": "features.gossip.di.gossip_module",
+      "file": "features/gossip/di/gossip_module.dart",
+      "type": "other",
+      "layer": "shared",
+      "feature": "gossip",
+      "evidence": [
+        "class GossipModule",
+        "method:MvpModerationPolicy"
+      ],
+      "detail": "GossipModule"
+    },
+    {
+      "id": "features.gossip.presentation.screens.add_gossip_screen",
+      "file": "features/gossip/presentation/screens/add_gossip_screen.dart",
+      "type": "screen",
+      "layer": "presentation",
+      "feature": "gossip",
+      "evidence": [
+        "class AddGossipScreen",
+        "extends StatefulWidget",
+        "method:AddGossipScreen",
+        "method:rebuilds",
+        "method:initState"
+      ],
+      "detail": "AddGossipScreen"
+    },
+    {
+      "id": "features.gossip.presentation.screens.gossip_detail_screen",
+      "file": "features/gossip/presentation/screens/gossip_detail_screen.dart",
+      "type": "screen",
+      "layer": "presentation",
+      "feature": "gossip",
+      "evidence": [
+        "class GossipDetailScreen",
+        "extends StatelessWidget",
+        "method:GossipDetailScreen",
+        "method:Scaffold",
+        "method:Container"
+      ],
+      "detail": "GossipDetailScreen"
+    },
+    {
+      "id": "features.gossip.presentation.states.add_gossip_state",
+      "file": "features/gossip/presentation/states/add_gossip_state.dart",
+      "type": "other",
+      "layer": "presentation",
+      "feature": "gossip",
+      "evidence": [
+        "class AddGossipState",
+        "extends Equatable",
+        "method:audio",
+        "method:simple",
+        "method:imagen"
+      ],
+      "detail": "AddGossipState"
+    },
+    {
+      "id": "features.gossip.presentation.controllers.add_gossip_controller",
+      "file": "features/gossip/presentation/controllers/add_gossip_controller.dart",
+      "type": "controller",
+      "layer": "presentation",
+      "feature": "gossip",
+      "evidence": [
+        "class LocationState",
+        "extends ChangeNotifier",
+        "method:cases",
+        "method:infraestructura",
+        "method:Uuid",
+        "stateful"
+      ],
+      "detail": "LocationState"
+    },
+    {
+      "id": "features.gossip.presentation.widgets.city_autocomplete_optimized",
+      "file": "features/gossip/presentation/widgets/city_autocomplete_optimized.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "gossip",
+      "evidence": [
+        "class CityAutocompleteOptimized",
+        "extends StatefulWidget",
+        "method:ciudades",
+        "method:remota",
+        "method:300ms"
+      ],
+      "detail": "CityAutocompleteOptimized"
+    },
+    {
+      "id": "features.gossip.presentation.widgets.image_picker_widget",
+      "file": "features/gossip/presentation/widgets/image_picker_widget.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "gossip",
+      "evidence": [
+        "class ImagePickerWidget",
+        "extends StatelessWidget",
+        "method:ImagePickerWidget",
+        "method:if",
+        "method:if"
+      ],
+      "detail": "ImagePickerWidget"
+    },
+    {
+      "id": "features.gossip.presentation.widgets.compact_location_selector",
+      "file": "features/gossip/presentation/widgets/compact_location_selector.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "gossip",
+      "evidence": [
+        "class CompactLocationSelector",
+        "extends StatelessWidget",
+        "method:CompactLocationSelector",
+        "method:Semantics",
+        "method:Semantics"
+      ],
+      "detail": "CompactLocationSelector"
+    },
+    {
+      "id": "features.gossip.presentation.widgets.publish_as_selector",
+      "file": "features/gossip/presentation/widgets/publish_as_selector.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "gossip",
+      "evidence": [
+        "class PublishAsSelector",
+        "extends StatelessWidget",
+        "method:publicar",
+        "method:PublishAsSelector",
+        "method:Card"
+      ],
+      "detail": "PublishAsSelector"
+    },
+    {
+      "id": "features.gossip.presentation.widgets.media_attachment_section",
+      "file": "features/gossip/presentation/widgets/media_attachment_section.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "gossip",
+      "evidence": [
+        "class MediaAttachmentSection",
+        "extends StatelessWidget",
+        "method:media",
+        "method:local",
+        "method:reference"
+      ],
+      "detail": "MediaAttachmentSection"
+    },
+    {
+      "id": "features.gossip.presentation.widgets.gossip_text_fields",
+      "file": "features/gossip/presentation/widgets/gossip_text_fields.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "gossip",
+      "evidence": [
+        "class GossipTextFields",
+        "extends StatelessWidget",
+        "method:gossip",
+        "method:GossipTextFields",
+        "method:Column"
+      ],
+      "detail": "GossipTextFields"
+    },
+    {
+      "id": "features.gossip.presentation.widgets.gossip_card",
+      "file": "features/gossip/presentation/widgets/gossip_card.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "gossip",
+      "evidence": [
+        "class GossipCard",
+        "extends StatelessWidget",
+        "method:GossipCard",
+        "method:Duration",
+        "method:ReportGossipDialog"
+      ],
+      "detail": "GossipCard"
+    },
+    {
+      "id": "features.gossip.presentation.widgets.submit_button",
+      "file": "features/gossip/presentation/widgets/submit_button.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "gossip",
+      "evidence": [
+        "class SubmitButton",
+        "extends StatelessWidget",
+        "method:SubmitButton",
+        "method:SizedBox"
+      ],
+      "detail": "SubmitButton"
+    },
+    {
+      "id": "features.gossip.presentation.widgets.report_gossip_dialog",
+      "file": "features/gossip/presentation/widgets/report_gossip_dialog.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "gossip",
+      "evidence": [
+        "class ReportGossipDialog",
+        "extends StatefulWidget",
+        "method:ReportGossipDialog",
+        "method:dispose",
+        "method:AlertDialog"
+      ],
+      "detail": "ReportGossipDialog"
+    },
+    {
+      "id": "features.gossip.presentation.widgets.city_autocomplete",
+      "file": "features/gossip/presentation/widgets/city_autocomplete.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "gossip",
+      "evidence": [
+        "class CityAutocomplete",
+        "extends StatefulWidget",
+        "method:real",
+        "method:parcial",
+        "method:CityAutocomplete"
+      ],
+      "detail": "CityAutocomplete"
+    },
+    {
+      "id": "features.gossip.presentation.widgets.location_selector",
+      "file": "features/gossip/presentation/widgets/location_selector.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "gossip",
+      "evidence": [
+        "class LocationSelector",
+        "extends StatelessWidget",
+        "method:ubicación",
+        "method:LocationSelector",
+        "method:Column"
+      ],
+      "detail": "LocationSelector"
+    },
+    {
+      "id": "features.gossip.presentation.widgets.location_change_dialog",
+      "file": "features/gossip/presentation/widgets/location_change_dialog.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "gossip",
+      "evidence": [
+        "class LocationChangeDialog",
+        "extends StatefulWidget",
+        "method:actual",
+        "method:comunes",
+        "method:específicos"
+      ],
+      "detail": "LocationChangeDialog"
+    },
+    {
+      "id": "features.gossip.domain.repositories.gossip_repository",
+      "file": "features/gossip/domain/repositories/gossip_repository.dart",
+      "type": "repository",
+      "layer": "domain",
+      "feature": "gossip",
+      "evidence": [
+        "class GossipRepository",
+        "method:getGossips",
+        "method:servidor",
+        "method:imagen",
+        "returns:Result"
+      ],
+      "detail": "GossipRepository"
+    },
+    {
+      "id": "features.gossip.domain.validators.gossip_validator",
+      "file": "features/gossip/domain/validators/gossip_validator.dart",
+      "type": "other",
+      "layer": "domain",
+      "feature": "gossip",
+      "evidence": [
+        "class GossipValidator",
+        "method:local",
+        "method:Flutter",
+        "method:Backend"
+      ],
+      "detail": "GossipValidator"
+    },
+    {
+      "id": "features.gossip.domain.usecases.create_gossip",
+      "file": "features/gossip/domain/usecases/create_gossip.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "gossip",
+      "evidence": [
+        "class CreateGossip",
+        "method:SEGURO",
+        "method:cuarentena",
+        "method:completo"
+      ],
+      "detail": "CreateGossip"
+    },
+    {
+      "id": "features.gossip.domain.usecases.get_gossips",
+      "file": "features/gossip/domain/usecases/get_gossips.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "gossip",
+      "evidence": [
+        "class GetGossips"
+      ],
+      "detail": "GetGossips"
+    },
+    {
+      "id": "features.gossip.domain.usecases.report_gossip",
+      "file": "features/gossip/domain/usecases/report_gossip.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "gossip",
+      "evidence": [
+        "class ReportGossip",
+        "method:vez",
+        "method:error"
+      ],
+      "detail": "ReportGossip"
+    },
+    {
+      "id": "features.gossip.domain.services.gossip_state_machine",
+      "file": "features/gossip/domain/services/gossip_state_machine.dart",
+      "type": "service",
+      "layer": "domain",
+      "feature": "gossip",
+      "evidence": [
+        "class GossipStateMachine",
+        "method:isValidCombination",
+        "method:reportan",
+        "method:isValidTransition"
+      ],
+      "detail": "GossipStateMachine"
+    },
+    {
+      "id": "features.gossip.domain.services.mvp_content_moderator",
+      "file": "features/gossip/domain/services/mvp_content_moderator.dart",
+      "type": "service",
+      "layer": "domain",
+      "feature": "gossip",
+      "evidence": [
+        "class MvpModerationPolicy",
+        "implements ContentModerator",
+        "method:MvpModerationPolicy",
+        "method:evaluate",
+        "method:ModerationDecision"
+      ],
+      "detail": "MvpModerationPolicy"
+    },
+    {
+      "id": "features.gossip.domain.services.content_moderator",
+      "file": "features/gossip/domain/services/content_moderator.dart",
+      "type": "service",
+      "layer": "domain",
+      "feature": "gossip",
+      "evidence": [
+        "class ContentModerator",
+        "method:moderate",
+        "method:moderateText"
+      ],
+      "detail": "ContentModerator"
+    },
+    {
+      "id": "features.gossip.domain.entities.report_reason",
+      "file": "features/gossip/domain/entities/report_reason.dart",
+      "type": "entity",
+      "layer": "domain",
+      "feature": "gossip",
+      "evidence": [
+        "method:spam",
+        "method:harassment",
+        "method:violence",
+        "field:value",
+        "field:displayName"
+      ],
+      "detail": ""
+    },
+    {
+      "id": "features.gossip.domain.entities.create_gossip_input",
+      "file": "features/gossip/domain/entities/create_gossip_input.dart",
+      "type": "entity",
+      "layer": "domain",
+      "feature": "gossip",
+      "evidence": [
+        "class CreateGossipInput",
+        "extends Equatable",
+        "method:CreateGossipInput",
+        "field:countryId",
+        "field:regionId",
+        "field:cityId"
+      ],
+      "detail": "CreateGossipInput"
+    },
+    {
+      "id": "features.gossip.domain.entities.gossip",
+      "file": "features/gossip/domain/entities/gossip.dart",
+      "type": "entity",
+      "layer": "domain",
+      "feature": "gossip",
+      "evidence": [
+        "class Gossip",
+        "extends Equatable",
+        "implements Auditable",
+        "method:PublishAs",
+        "method:GossipStatus",
+        "method:ModerationStatus",
+        "field:value",
+        "field:value"
+      ],
+      "detail": "Gossip"
+    },
+    {
+      "id": "features.gossip.domain.entities.media_reference",
+      "file": "features/gossip/domain/entities/media_reference.dart",
+      "type": "entity",
+      "layer": "domain",
+      "feature": "gossip",
+      "evidence": [
+        "class MediaReference",
+        "method:multimedia",
+        "method:Storage",
+        "method:archivo",
+        "field:storagePath",
+        "field:downloadUrl",
+        "field:mimeType"
+      ],
+      "detail": "MediaReference"
+    },
+    {
+      "id": "features.gossip.domain.entities.gossip_query",
+      "file": "features/gossip/domain/entities/gossip_query.dart",
+      "type": "entity",
+      "layer": "domain",
+      "feature": "gossip",
+      "evidence": [
+        "class GossipQuery",
+        "method:ubicación",
+        "method:pagination",
+        "method:registro",
+        "field:limit",
+        "field:orderBy",
+        "field:descending"
+      ],
+      "detail": "GossipQuery"
+    },
+    {
+      "id": "features.gossip.domain.entities.moderation_decision",
+      "file": "features/gossip/domain/entities/moderation_decision.dart",
+      "type": "entity",
+      "layer": "domain",
+      "feature": "gossip",
+      "evidence": [
+        "class ModerationDecision",
+        "extends Equatable",
+        "method:mostRestrictive",
+        "method:ModerationDecision",
+        "field:verdict"
+      ],
+      "detail": "ModerationDecision"
+    },
+    {
+      "id": "features.gossip.data.datasources.gossip_local_data_source",
+      "file": "features/gossip/data/datasources/gossip_local_data_source.dart",
+      "type": "datasource",
+      "layer": "data",
+      "feature": "gossip",
+      "evidence": [
+        "class GossipLocalDataSource",
+        "method:save",
+        "method:saveAll",
+        "method:clear"
+      ],
+      "detail": "GossipLocalDataSource"
+    },
+    {
+      "id": "features.gossip.data.datasources.supabase_gossip_remote_data_source",
+      "file": "features/gossip/data/datasources/supabase_gossip_remote_data_source.dart",
+      "type": "datasource",
+      "layer": "data",
+      "feature": "gossip",
+      "evidence": [
+        "class SupabaseGossipRemoteDataSource",
+        "implements GossipRemoteDataSource",
+        "method:create_gossip_draft",
+        "method:create",
+        "method:create_gossip_draft"
+      ],
+      "detail": "SupabaseGossipRemoteDataSource"
+    },
+    {
+      "id": "features.gossip.data.datasources.shared_prefs_gossip_local_data_source",
+      "file": "features/gossip/data/datasources/shared_prefs_gossip_local_data_source.dart",
+      "type": "datasource",
+      "layer": "data",
+      "feature": "gossip",
+      "evidence": [
+        "class SharedPrefsGossipLocalDataSource",
+        "implements GossipLocalDataSource",
+        "method:inicial",
+        "method:conexión",
+        "method:vacía"
+      ],
+      "detail": "SharedPrefsGossipLocalDataSource"
+    },
+    {
+      "id": "features.gossip.data.datasources.gossip_remote_data_source",
+      "file": "features/gossip/data/datasources/gossip_remote_data_source.dart",
+      "type": "datasource",
+      "layer": "data",
+      "feature": "gossip",
+      "evidence": [
+        "class GossipRemoteDataSource",
+        "method:producción",
+        "method:imagen",
+        "method:base64"
+      ],
+      "detail": "GossipRemoteDataSource"
+    },
+    {
+      "id": "features.gossip.data.repositories.gossip_repository_impl",
+      "file": "features/gossip/data/repositories/gossip_repository_impl.dart",
+      "type": "repository",
+      "layer": "data",
+      "feature": "gossip",
+      "evidence": [
+        "class GossipRepositoryImpl",
+        "implements GossipRepository",
+        "method:if",
+        "method:if",
+        "method:if",
+        "returns:Result"
+      ],
+      "detail": "GossipRepositoryImpl"
+    },
+    {
+      "id": "features.gossip.data.models.gossip_model",
+      "file": "features/gossip/data/models/gossip_model.dart",
+      "type": "model",
+      "layer": "data",
+      "feature": "gossip",
+      "evidence": [
+        "class GossipModel",
+        "method:JSON",
+        "method:JSON",
+        "method:Entity"
+      ],
+      "detail": "GossipModel"
+    },
+    {
+      "id": "features.location.presentation.managers.location_manager",
+      "file": "features/location/presentation/managers/location_manager.dart",
+      "type": "other",
+      "layer": "presentation",
+      "feature": "location",
+      "evidence": [
+        "class MyController",
+        "extends ChangeNotifier",
+        "method:ubicaciones",
+        "method:init",
+        "method:ubicación"
+      ],
+      "detail": "MyController"
+    },
+    {
+      "id": "features.location.presentation.states.location_state",
+      "file": "features/location/presentation/states/location_state.dart",
+      "type": "other",
+      "layer": "presentation",
+      "feature": "location",
+      "evidence": [
+        "class LocationState",
+        "extends Equatable",
+        "method:disponibles",
+        "method:disponibles",
+        "method:usuario"
+      ],
+      "detail": "LocationState"
+    },
+    {
+      "id": "features.location.domain.repositories.location_repository",
+      "file": "features/location/domain/repositories/location_repository.dart",
+      "type": "repository",
+      "layer": "domain",
+      "feature": "location",
+      "evidence": [
+        "class LocationRepository",
+        "method:ubicación",
+        "method:estable",
+        "method:local",
+        "returns:Result"
+      ],
+      "detail": "LocationRepository"
+    },
+    {
+      "id": "features.location.domain.usecases.search_cities",
+      "file": "features/location/domain/usecases/search_cities.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "location",
+      "evidence": [
+        "class SearchCities",
+        "method:ciudades",
+        "method:ciudades",
+        "method:resultados"
+      ],
+      "detail": "SearchCities"
+    },
+    {
+      "id": "features.location.domain.usecases.get_cities_by_region",
+      "file": "features/location/domain/usecases/get_cities_by_region.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "location",
+      "evidence": [
+        "class GetCitiesByRegion"
+      ],
+      "detail": "GetCitiesByRegion"
+    },
+    {
+      "id": "features.location.domain.usecases.get_countries",
+      "file": "features/location/domain/usecases/get_countries.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "location",
+      "evidence": [
+        "class GetCountries"
+      ],
+      "detail": "GetCountries"
+    },
+    {
+      "id": "features.location.domain.usecases.get_regions_by_country",
+      "file": "features/location/domain/usecases/get_regions_by_country.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "location",
+      "evidence": [
+        "class GetRegionsByCountry"
+      ],
+      "detail": "GetRegionsByCountry"
+    },
+    {
+      "id": "features.location.domain.entities.region",
+      "file": "features/location/domain/entities/region.dart",
+      "type": "entity",
+      "layer": "domain",
+      "feature": "location",
+      "evidence": [
+        "class Region",
+        "method:Region",
+        "method:Region",
+        "field:id",
+        "field:countryId",
+        "field:name"
+      ],
+      "detail": "Region"
+    },
+    {
+      "id": "features.location.domain.entities.country",
+      "file": "features/location/domain/entities/country.dart",
+      "type": "entity",
+      "layer": "domain",
+      "feature": "location",
+      "evidence": [
+        "class Country",
+        "method:Country",
+        "method:Country",
+        "field:id",
+        "field:code",
+        "field:name"
+      ],
+      "detail": "Country"
+    },
+    {
+      "id": "features.location.domain.entities.city",
+      "file": "features/location/domain/entities/city.dart",
+      "type": "entity",
+      "layer": "domain",
+      "feature": "location",
+      "evidence": [
+        "class City",
+        "method:City",
+        "method:City",
+        "field:id",
+        "field:regionId",
+        "field:name"
+      ],
+      "detail": "City"
+    },
+    {
+      "id": "features.location.data.datasources.supabase_location_remote_data_source",
+      "file": "features/location/data/datasources/supabase_location_remote_data_source.dart",
+      "type": "datasource",
+      "layer": "data",
+      "feature": "location",
+      "evidence": [
+        "class SupabaseLocationRemoteDataSource",
+        "method:regiones",
+        "method:población",
+        "method:nombre"
+      ],
+      "detail": "SupabaseLocationRemoteDataSource"
+    },
+    {
+      "id": "features.location.data.repositories.supabase_location_repository",
+      "file": "features/location/data/repositories/supabase_location_repository.dart",
+      "type": "repository",
+      "layer": "data",
+      "feature": "location",
+      "evidence": [
+        "class SupabaseLocationRepository",
+        "implements LocationRepository",
+        "returns:Result"
+      ],
+      "detail": "SupabaseLocationRepository"
+    },
+    {
+      "id": "features.location.data.repositories.mock_location_repository",
+      "file": "features/location/data/repositories/mock_location_repository.dart",
+      "type": "repository",
+      "layer": "data",
+      "feature": "location",
+      "evidence": [
+        "class MockLocationRepository",
+        "implements LocationRepository",
+        "method:Region",
+        "method:Region",
+        "method:Region",
+        "returns:Result"
+      ],
+      "detail": "MockLocationRepository"
+    },
+    {
+      "id": "features.auth.presentation.state.auth_state",
+      "file": "features/auth/presentation/state/auth_state.dart",
+      "type": "other",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class AuthState",
+        "extends AuthState",
+        "method:AuthState",
+        "method:inicial",
+        "method:AuthInitial"
+      ],
+      "detail": "AuthState"
+    },
+    {
+      "id": "features.auth.presentation.screens.otp_verification_screen",
+      "file": "features/auth/presentation/screens/otp_verification_screen.dart",
+      "type": "screen",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class OtpVerificationScreen",
+        "extends StatefulWidget",
+        "method:ProfileSetupScreen",
+        "method:OtpVerificationScreen",
+        "method:initState"
+      ],
+      "detail": "OtpVerificationScreen"
+    },
+    {
+      "id": "features.auth.presentation.screens.signup_screen",
+      "file": "features/auth/presentation/screens/signup_screen.dart",
+      "type": "screen",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class SignupScreen",
+        "extends StatefulWidget",
+        "method:SignupScreen",
+        "method:initState",
+        "method:dispose"
+      ],
+      "detail": "SignupScreen"
+    },
+    {
+      "id": "features.auth.presentation.screens.privacy_settings_screen",
+      "file": "features/auth/presentation/screens/privacy_settings_screen.dart",
+      "type": "screen",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class PrivacySettingsScreen",
+        "extends StatefulWidget",
+        "method:anónimo",
+        "method:datos",
+        "method:PrivacySettingsScreen"
+      ],
+      "detail": "PrivacySettingsScreen"
+    },
+    {
+      "id": "features.auth.presentation.screens.profile_setup_screen",
+      "file": "features/auth/presentation/screens/profile_setup_screen.dart",
+      "type": "screen",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class ProfileSetupScreen",
+        "extends StatefulWidget",
+        "method:name",
+        "method:ProfileSetupScreen",
+        "method:initState"
+      ],
+      "detail": "ProfileSetupScreen"
+    },
+    {
+      "id": "features.auth.presentation.screens.login_screen",
+      "file": "features/auth/presentation/screens/login_screen.dart",
+      "type": "screen",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class LoginScreen",
+        "extends StatefulWidget",
+        "method:LoginScreen",
+        "method:initState",
+        "method:dispose"
+      ],
+      "detail": "LoginScreen"
+    },
+    {
+      "id": "features.auth.presentation.screens.privacy_consent_screen",
+      "file": "features/auth/presentation/screens/privacy_consent_screen.dart",
+      "type": "screen",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class PrivacyConsentScreen",
+        "extends StatefulWidget",
+        "method:registro",
+        "method:PrivacyConsentScreen",
+        "method:Scaffold"
+      ],
+      "detail": "PrivacyConsentScreen"
+    },
+    {
+      "id": "features.auth.presentation.screens.reset_password_screen",
+      "file": "features/auth/presentation/screens/reset_password_screen.dart",
+      "type": "screen",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class ResetPasswordScreen",
+        "extends StatefulWidget",
+        "method:ResetPasswordScreen",
+        "method:initState",
+        "method:dispose"
+      ],
+      "detail": "ResetPasswordScreen"
+    },
+    {
+      "id": "features.auth.presentation.states.otp_verification_state",
+      "file": "features/auth/presentation/states/otp_verification_state.dart",
+      "type": "other",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class OtpVerificationState",
+        "method:OtpVerificationState",
+        "method:copyWith",
+        "method:OtpVerificationState"
+      ],
+      "detail": "OtpVerificationState"
+    },
+    {
+      "id": "features.auth.presentation.controllers.signup_controller",
+      "file": "features/auth/presentation/controllers/signup_controller.dart",
+      "type": "controller",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class SignupController",
+        "extends ChangeNotifier",
+        "method:AuthInitial",
+        "method:signUpWithEmail",
+        "method:AuthLoading",
+        "stateful"
+      ],
+      "detail": "SignupController"
+    },
+    {
+      "id": "features.auth.presentation.controllers.login_controller",
+      "file": "features/auth/presentation/controllers/login_controller.dart",
+      "type": "controller",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class LoginController",
+        "extends ChangeNotifier",
+        "method:AuthInitial",
+        "method:signInWithEmail",
+        "method:AuthLoading",
+        "stateful"
+      ],
+      "detail": "LoginController"
+    },
+    {
+      "id": "features.auth.presentation.controllers.profile_setup_controller",
+      "file": "features/auth/presentation/controllers/profile_setup_controller.dart",
+      "type": "controller",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class ProfileSetupController",
+        "extends ChangeNotifier",
+        "method:usuario",
+        "method:AuthInitial",
+        "method:updateProfile",
+        "stateful"
+      ],
+      "detail": "ProfileSetupController"
+    },
+    {
+      "id": "features.auth.presentation.controllers.reset_password_controller",
+      "file": "features/auth/presentation/controllers/reset_password_controller.dart",
+      "type": "controller",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class ResetPasswordController",
+        "extends ChangeNotifier",
+        "method:AuthInitial",
+        "method:updatePassword",
+        "method:AuthLoading",
+        "stateful"
+      ],
+      "detail": "ResetPasswordController"
+    },
+    {
+      "id": "features.auth.presentation.controllers.otp_verification_controller",
+      "file": "features/auth/presentation/controllers/otp_verification_controller.dart",
+      "type": "controller",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class OtpVerificationController",
+        "extends ChangeNotifier",
+        "method:dispose",
+        "method:verifyOTP",
+        "method:resendOTP",
+        "stateful"
+      ],
+      "detail": "OtpVerificationController"
+    },
+    {
+      "id": "features.auth.presentation.widgets.forgot_password_dialog",
+      "file": "features/auth/presentation/widgets/forgot_password_dialog.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class ForgotPasswordDialog",
+        "extends StatefulWidget",
+        "method:Function",
+        "method:ForgotPasswordDialog",
+        "method:dispose"
+      ],
+      "detail": "ForgotPasswordDialog"
+    },
+    {
+      "id": "features.auth.presentation.widgets.auth_button",
+      "file": "features/auth/presentation/widgets/auth_button.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class AuthButton",
+        "extends StatelessWidget",
+        "method:AuthButton",
+        "method:OutlinedButton",
+        "method:ElevatedButton"
+      ],
+      "detail": "AuthButton"
+    },
+    {
+      "id": "features.auth.presentation.widgets.password_strength_indicator",
+      "file": "features/auth/presentation/widgets/password_strength_indicator.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class PasswordStrengthIndicator",
+        "extends StatelessWidget",
+        "method:PasswordStrengthIndicator",
+        "method:Column",
+        "method:SizedBox"
+      ],
+      "detail": "PasswordStrengthIndicator"
+    },
+    {
+      "id": "features.auth.presentation.widgets.email_field",
+      "file": "features/auth/presentation/widgets/email_field.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class EmailField",
+        "extends StatelessWidget",
+        "method:EmailField",
+        "method:TextFormField",
+        "method:Icon"
+      ],
+      "detail": "EmailField"
+    },
+    {
+      "id": "features.auth.presentation.widgets.password_field",
+      "file": "features/auth/presentation/widgets/password_field.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class PasswordField",
+        "extends StatefulWidget",
+        "method:PasswordField",
+        "method:TextFormField",
+        "method:OutlineInputBorder"
+      ],
+      "detail": "PasswordField"
+    },
+    {
+      "id": "features.auth.presentation.widgets.social_login_buttons",
+      "file": "features/auth/presentation/widgets/social_login_buttons.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class SocialLoginButtons",
+        "extends StatelessWidget",
+        "method:social",
+        "method:SocialLoginButtons",
+        "method:Column"
+      ],
+      "detail": "SocialLoginButtons"
+    },
+    {
+      "id": "features.auth.presentation.widgets.email_verification_banner",
+      "file": "features/auth/presentation/widgets/email_verification_banner.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class EmailVerificationBanner",
+        "extends StatelessWidget",
+        "method:acciones",
+        "method:carga",
+        "method:EmailVerificationBanner"
+      ],
+      "detail": "EmailVerificationBanner"
+    },
+    {
+      "id": "features.auth.presentation.widgets.auth_gate",
+      "file": "features/auth/presentation/widgets/auth_gate.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "auth",
+      "evidence": [
+        "class AuthGate",
+        "extends StatefulWidget",
+        "method:persistida",
+        "method:autenticación",
+        "method:automáticamente"
+      ],
+      "detail": "AuthGate"
+    },
+    {
+      "id": "features.auth.domain.repositories.auth_repository",
+      "file": "features/auth/domain/repositories/auth_repository.dart",
+      "type": "repository",
+      "layer": "domain",
+      "feature": "auth",
+      "evidence": [
+        "class AuthRepository",
+        "method:password",
+        "method:username",
+        "returns:Result"
+      ],
+      "detail": "AuthRepository"
+    },
+    {
+      "id": "features.auth.domain.validators.auth_validator",
+      "file": "features/auth/domain/validators/auth_validator.dart",
+      "type": "other",
+      "layer": "domain",
+      "feature": "auth",
+      "evidence": [
+        "class AuthValidator",
+        "method:dominio",
+        "method:UI",
+        "method:UI"
+      ],
+      "detail": "AuthValidator"
+    },
+    {
+      "id": "features.auth.domain.usecases.update_profile",
+      "file": "features/auth/domain/usecases/update_profile.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "auth",
+      "evidence": [
+        "class UpdateProfileUseCase",
+        "method:username",
+        "method:if"
+      ],
+      "detail": "UpdateProfileUseCase"
+    },
+    {
+      "id": "features.auth.domain.usecases.is_username_available",
+      "file": "features/auth/domain/usecases/is_username_available.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "auth",
+      "evidence": [
+        "class IsUsernameAvailableUseCase"
+      ],
+      "detail": "IsUsernameAvailableUseCase"
+    },
+    {
+      "id": "features.auth.domain.usecases.sign_out",
+      "file": "features/auth/domain/usecases/sign_out.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "auth",
+      "evidence": [
+        "class SignOutUseCase"
+      ],
+      "detail": "SignOutUseCase"
+    },
+    {
+      "id": "features.auth.domain.usecases.sign_in_with_google",
+      "file": "features/auth/domain/usecases/sign_in_with_google.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "auth",
+      "evidence": [
+        "class SignInWithGoogleUseCase"
+      ],
+      "detail": "SignInWithGoogleUseCase"
+    },
+    {
+      "id": "features.auth.domain.usecases.sign_in_with_apple",
+      "file": "features/auth/domain/usecases/sign_in_with_apple.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "auth",
+      "evidence": [
+        "class SignInWithAppleUseCase"
+      ],
+      "detail": "SignInWithAppleUseCase"
+    },
+    {
+      "id": "features.auth.domain.usecases.reset_password",
+      "file": "features/auth/domain/usecases/reset_password.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "auth",
+      "evidence": [
+        "class ResetPasswordUseCase"
+      ],
+      "detail": "ResetPasswordUseCase"
+    },
+    {
+      "id": "features.auth.domain.usecases.get_current_user",
+      "file": "features/auth/domain/usecases/get_current_user.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "auth",
+      "evidence": [
+        "class GetCurrentUserUseCase"
+      ],
+      "detail": "GetCurrentUserUseCase"
+    },
+    {
+      "id": "features.auth.domain.usecases.sign_in_with_email",
+      "file": "features/auth/domain/usecases/sign_in_with_email.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "auth",
+      "evidence": [
+        "class SignInWithEmailUseCase"
+      ],
+      "detail": "SignInWithEmailUseCase"
+    },
+    {
+      "id": "features.auth.domain.usecases.sign_up_with_email",
+      "file": "features/auth/domain/usecases/sign_up_with_email.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "auth",
+      "evidence": [
+        "class SignUpWithEmailUseCase",
+        "method:ResultFailure",
+        "method:verificar",
+        "method:Success"
+      ],
+      "detail": "SignUpWithEmailUseCase"
+    },
+    {
+      "id": "features.auth.domain.usecases.update_password_usecase",
+      "file": "features/auth/domain/usecases/update_password_usecase.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "auth",
+      "evidence": [
+        "class UpdatePasswordUseCase"
+      ],
+      "detail": "UpdatePasswordUseCase"
+    },
+    {
+      "id": "features.auth.domain.entities.user",
+      "file": "features/auth/domain/entities/user.dart",
+      "type": "entity",
+      "layer": "domain",
+      "feature": "auth",
+      "evidence": [
+        "class User",
+        "method:User",
+        "method:if",
+        "method:copyWith",
+        "field:id",
+        "field:email",
+        "field:emailVerified"
+      ],
+      "detail": "User"
+    },
+    {
+      "id": "features.auth.data.datasources.supabase_auth_datasource",
+      "file": "features/auth/data/datasources/supabase_auth_datasource.dart",
+      "type": "datasource",
+      "layer": "data",
+      "feature": "auth",
+      "evidence": [
+        "class SupabaseAuthDataSource",
+        "method:signInWithEmail",
+        "method:signUpWithEmailOTP",
+        "method:password"
+      ],
+      "detail": "SupabaseAuthDataSource"
+    },
+    {
+      "id": "features.auth.data.datasources.supabase_auth_datasource_impl",
+      "file": "features/auth/data/datasources/supabase_auth_datasource_impl.dart",
+      "type": "datasource",
+      "layer": "data",
+      "feature": "auth",
+      "evidence": [
+        "class SupabaseAuthDataSourceImpl",
+        "implements SupabaseAuthDataSource",
+        "method:vacío",
+        "method:getCurrentUser",
+        "method:signInWithEmail"
+      ],
+      "detail": "SupabaseAuthDataSourceImpl"
+    },
+    {
+      "id": "features.auth.data.repositories.auth_repository_impl",
+      "file": "features/auth/data/repositories/auth_repository_impl.dart",
+      "type": "repository",
+      "layer": "data",
+      "feature": "auth",
+      "evidence": [
+        "class AuthRepositoryImpl",
+        "implements AuthRepository",
+        "method:seguridad",
+        "method:AuthFailure",
+        "method:catch",
+        "returns:Result"
+      ],
+      "detail": "AuthRepositoryImpl"
+    },
+    {
+      "id": "features.auth.data.models.user_model",
+      "file": "features/auth/data/models/user_model.dart",
+      "type": "model",
+      "layer": "data",
+      "feature": "auth",
+      "evidence": [
+        "class UserModel",
+        "method:entity",
+        "method:UserModel",
+        "method:UserModel"
+      ],
+      "detail": "UserModel"
+    },
+    {
+      "id": "features.home.presentation.screens.gossip_detail_screen",
+      "file": "features/home/presentation/screens/gossip_detail_screen.dart",
+      "type": "screen",
+      "layer": "presentation",
+      "feature": "home",
+      "evidence": [
+        "class GossipDetailScreen",
+        "extends StatelessWidget",
+        "method:GossipDetailScreen",
+        "method:Scaffold",
+        "method:Container"
+      ],
+      "detail": "GossipDetailScreen"
+    },
+    {
+      "id": "features.home.presentation.screens.main_navigation_screen",
+      "file": "features/home/presentation/screens/main_navigation_screen.dart",
+      "type": "screen",
+      "layer": "presentation",
+      "feature": "home",
+      "evidence": [
+        "class MainNavigationScreen",
+        "extends StatefulWidget",
+        "method:MainNavigationScreen",
+        "method:createState",
+        "method:HomeScreen"
+      ],
+      "detail": "MainNavigationScreen"
+    },
+    {
+      "id": "features.home.presentation.screens.home_screen",
+      "file": "features/home/presentation/screens/home_screen.dart",
+      "type": "screen",
+      "layer": "presentation",
+      "feature": "home",
+      "evidence": [
+        "class HomeScreen",
+        "extends StatefulWidget",
+        "method:container",
+        "method:HomeScreen",
+        "method:HomeScreen"
+      ],
+      "detail": "HomeScreen"
+    },
+    {
+      "id": "features.home.presentation.states.following_tab_state",
+      "file": "features/home/presentation/states/following_tab_state.dart",
+      "type": "other",
+      "layer": "presentation",
+      "feature": "home",
+      "evidence": [
+        "class FollowingTabState",
+        "extends Equatable",
+        "method:inicial",
+        "method:cargado",
+        "method:recomendados"
+      ],
+      "detail": "FollowingTabState"
+    },
+    {
+      "id": "features.home.presentation.states.popular_tab_state",
+      "file": "features/home/presentation/states/popular_tab_state.dart",
+      "type": "other",
+      "layer": "presentation",
+      "feature": "home",
+      "evidence": [
+        "class PopularTabController",
+        "extends ChangeNotifier",
+        "method:inicial",
+        "method:chismes",
+        "method:PopularTabState"
+      ],
+      "detail": "PopularTabController"
+    },
+    {
+      "id": "features.home.presentation.controllers.following_tab_controller",
+      "file": "features/home/presentation/controllers/following_tab_controller.dart",
+      "type": "controller",
+      "layer": "presentation",
+      "feature": "home",
+      "evidence": [
+        "class _FollowingTabState",
+        "extends State",
+        "method:chismes",
+        "method:initState",
+        "method:ListenableBuilder",
+        "stateful"
+      ],
+      "detail": "_FollowingTabState"
+    },
+    {
+      "id": "features.home.presentation.controllers.popular_tab_controller",
+      "file": "features/home/presentation/controllers/popular_tab_controller.dart",
+      "type": "controller",
+      "layer": "presentation",
+      "feature": "home",
+      "evidence": [
+        "class PopularTab",
+        "extends StatefulWidget",
+        "method:feed",
+        "method:chismes",
+        "method:initState",
+        "stateful"
+      ],
+      "detail": "PopularTab"
+    },
+    {
+      "id": "features.home.presentation.widgets.feed_gossip_adapter",
+      "file": "features/home/presentation/widgets/feed_gossip_adapter.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "home",
+      "evidence": [
+        "class FeedGossipAdapter",
+        "method:toGossip",
+        "method:Gossip"
+      ],
+      "detail": "FeedGossipAdapter"
+    },
+    {
+      "id": "features.home.presentation.widgets.following_tab",
+      "file": "features/home/presentation/widgets/following_tab.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "home",
+      "evidence": [
+        "class FollowingTab",
+        "extends StatelessWidget",
+        "method:FollowingTab",
+        "method:ListenableBuilder",
+        "method:if"
+      ],
+      "detail": "FollowingTab"
+    },
+    {
+      "id": "features.home.presentation.widgets.popular_tab",
+      "file": "features/home/presentation/widgets/popular_tab.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "home",
+      "evidence": [
+        "class PopularTab",
+        "extends StatelessWidget",
+        "method:PopularTab",
+        "method:ListenableBuilder",
+        "method:if"
+      ],
+      "detail": "PopularTab"
+    },
+    {
+      "id": "features.home.presentation.widgets.new_gossips_banner",
+      "file": "features/home/presentation/widgets/new_gossips_banner.dart",
+      "type": "widget",
+      "layer": "presentation",
+      "feature": "home",
+      "evidence": [
+        "class NewGossipsBanner",
+        "extends StatelessWidget",
+        "method:NewGossipsBanner",
+        "method:Padding",
+        "method:SizedBox"
+      ],
+      "detail": "NewGossipsBanner"
+    },
+    {
+      "id": "features.home.domain.repositories.home_repository",
+      "file": "features/home/domain/repositories/home_repository.dart",
+      "type": "repository",
+      "layer": "domain",
+      "feature": "home",
+      "evidence": [
+        "class HomeRepository",
+        "method:usuario",
+        "method:usuario",
+        "method:página",
+        "returns:Result"
+      ],
+      "detail": "HomeRepository"
+    },
+    {
+      "id": "features.home.domain.usecases.check_new_gossips",
+      "file": "features/home/domain/usecases/check_new_gossips.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "home",
+      "evidence": [
+        "class PopularTabController",
+        "method:startPolling"
+      ],
+      "detail": "PopularTabController"
+    },
+    {
+      "id": "features.home.domain.usecases.get_following_feed",
+      "file": "features/home/domain/usecases/get_following_feed.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "home",
+      "evidence": [
+        "class FollowingTabController",
+        "method:loadFeed"
+      ],
+      "detail": "FollowingTabController"
+    },
+    {
+      "id": "features.home.domain.usecases.get_recommended_feed",
+      "file": "features/home/domain/usecases/get_recommended_feed.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "home",
+      "evidence": [
+        "class FollowingTabController",
+        "method:recomendado"
+      ],
+      "detail": "FollowingTabController"
+    },
+    {
+      "id": "features.home.domain.usecases.get_popular_feed",
+      "file": "features/home/domain/usecases/get_popular_feed.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "home",
+      "evidence": [
+        "class PopularTabController",
+        "method:negocio",
+        "method:loadFeed"
+      ],
+      "detail": "PopularTabController"
+    },
+    {
+      "id": "features.home.domain.entities.feed_gossip",
+      "file": "features/home/domain/entities/feed_gossip.dart",
+      "type": "entity",
+      "layer": "domain",
+      "feature": "home",
+      "evidence": [
+        "class FeedGossip",
+        "extends Equatable",
+        "method:feed",
+        "method:ranking",
+        "method:trending",
+        "field:id",
+        "field:subject",
+        "field:content"
+      ],
+      "detail": "FeedGossip"
+    },
+    {
+      "id": "features.home.domain.entities.paginated_gossips",
+      "file": "features/home/domain/entities/paginated_gossips.dart",
+      "type": "entity",
+      "layer": "domain",
+      "feature": "home",
+      "evidence": [
+        "class PaginatedGossips",
+        "extends Equatable",
+        "method:getPopularFeed",
+        "method:loadMore",
+        "method:PaginatedGossips",
+        "field:hasMore"
+      ],
+      "detail": "PaginatedGossips"
+    },
+    {
+      "id": "features.home.domain.entities.feed_cursor",
+      "file": "features/home/domain/entities/feed_cursor.dart",
+      "type": "entity",
+      "layer": "domain",
+      "feature": "home",
+      "evidence": [
+        "class FeedCursor",
+        "extends Equatable",
+        "method:pagination",
+        "method:O",
+        "method:página",
+        "field:id"
+      ],
+      "detail": "FeedCursor"
+    },
+    {
+      "id": "features.home.data.datasources.home_remote_datasource",
+      "file": "features/home/data/datasources/home_remote_datasource.dart",
+      "type": "datasource",
+      "layer": "data",
+      "feature": "home",
+      "evidence": [
+        "class HomeRemoteDataSource",
+        "method:Supabase",
+        "method:errores",
+        "method:Entities"
+      ],
+      "detail": "HomeRemoteDataSource"
+    },
+    {
+      "id": "features.home.data.repositories.home_repository_impl",
+      "file": "features/home/data/repositories/home_repository_impl.dart",
+      "type": "repository",
+      "layer": "data",
+      "feature": "home",
+      "evidence": [
+        "class HomeRepositoryImpl",
+        "implements HomeRepository",
+        "method:domain",
+        "method:DataSources",
+        "method:errores",
+        "returns:Result"
+      ],
+      "detail": "HomeRepositoryImpl"
+    },
+    {
+      "id": "features.home.data.models.paginated_gossips_model",
+      "file": "features/home/data/models/paginated_gossips_model.dart",
+      "type": "model",
+      "layer": "data",
+      "feature": "home",
+      "evidence": [
+        "class PaginatedGossipsModel",
+        "method:PaginatedGossipsModel",
+        "method:PaginatedGossipsModel",
+        "method:FormatException"
+      ],
+      "detail": "PaginatedGossipsModel"
+    },
+    {
+      "id": "features.home.data.models.feed_gossip_model",
+      "file": "features/home/data/models/feed_gossip_model.dart",
+      "type": "model",
+      "layer": "data",
+      "feature": "home",
+      "evidence": [
+        "class FeedGossipModel",
+        "method:snake_case",
+        "method:feed",
+        "method:calculada"
+      ],
+      "detail": "FeedGossipModel"
+    },
+    {
+      "id": "core.result.result",
+      "file": "core/result/result.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class para",
+        "extends Result",
+        "method:Class",
+        "method:inválidos",
+        "method:matching"
+      ],
+      "detail": "para"
+    },
+    {
+      "id": "core.di.injection_container.config",
+      "file": "core/di/injection_container.config.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class _",
+        "extends _i1060"
+      ],
+      "detail": "_"
+    },
+    {
+      "id": "core.di.injection_container",
+      "file": "core/di/injection_container.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "method:configureDependencies"
+      ],
+      "detail": ""
+    },
+    {
+      "id": "core.config.supabase_config",
+      "file": "core/config/supabase_config.dart",
+      "type": "config",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class SupabaseConfig",
+        "method:runApp",
+        "method:logs",
+        "method:initialize"
+      ],
+      "detail": "SupabaseConfig"
+    },
+    {
+      "id": "core.auth.user",
+      "file": "core/auth/user.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class User",
+        "method:User",
+        "method:toString"
+      ],
+      "detail": "User"
+    },
+    {
+      "id": "core.auth.auth_repository",
+      "file": "core/auth/auth_repository.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class AuthRepository",
+        "method:signOut"
+      ],
+      "detail": "AuthRepository"
+    },
+    {
+      "id": "core.auth.mock_auth_repository",
+      "file": "core/auth/mock_auth_repository.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class MockAuthRepository",
+        "implements AuthRepository",
+        "method:signOut",
+        "method:sesión",
+        "method:signIn"
+      ],
+      "detail": "MockAuthRepository"
+    },
+    {
+      "id": "core.user.user_service",
+      "file": "core/user/user_service.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class UserService",
+        "method:actual",
+        "method:setCurrentUser",
+        "method:ArgumentError"
+      ],
+      "detail": "UserService"
+    },
+    {
+      "id": "core.audit.auditable",
+      "file": "core/audit/auditable.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class Auditable"
+      ],
+      "detail": "Auditable"
+    },
+    {
+      "id": "core.audit.audit_service",
+      "file": "core/audit/audit_service.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class AuditService",
+        "method:autenticado",
+        "method:timestamp",
+        "method:autenticado"
+      ],
+      "detail": "AuditService"
+    },
+    {
+      "id": "core.theme.app_theme",
+      "file": "core/theme/app_theme.dart",
+      "type": "theme",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class AppTheme",
+        "method:navegación",
+        "method:principal",
+        "method:secundario"
+      ],
+      "detail": "AppTheme"
+    },
+    {
+      "id": "core.theme.app_spacing",
+      "file": "core/theme/app_spacing.dart",
+      "type": "theme",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class AppSpacing",
+        "method:4px",
+        "method:grande"
+      ],
+      "detail": "AppSpacing"
+    },
+    {
+      "id": "core.theme.theme_extensions",
+      "file": "core/theme/theme_extensions.dart",
+      "type": "theme",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "method:específicos"
+      ],
+      "detail": ""
+    },
+    {
+      "id": "core.theme.app_radius",
+      "file": "core/theme/app_radius.dart",
+      "type": "theme",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class AppRadius",
+        "method:completo"
+      ],
+      "detail": "AppRadius"
+    },
+    {
+      "id": "core.id.timestamp_id_generator",
+      "file": "core/id/timestamp_id_generator.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class TimestampIdGenerator",
+        "implements IdGenerator",
+        "method:cercanos",
+        "method:hora",
+        "method:UUID"
+      ],
+      "detail": "TimestampIdGenerator"
+    },
+    {
+      "id": "core.id.id_generator",
+      "file": "core/id/id_generator.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class IdGenerator",
+        "method:generate"
+      ],
+      "detail": "IdGenerator"
+    },
+    {
+      "id": "core.error.failure",
+      "file": "core/error/failure.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class Failure",
+        "extends Equatable",
+        "method:Failure",
+        "method:toString",
+        "method:NetworkFailure"
+      ],
+      "detail": "Failure"
+    },
+    {
+      "id": "core.error.error_handler",
+      "file": "core/error/error_handler.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class ErrorHandler",
+        "method:chisme",
+        "method:handleError",
+        "method:if"
+      ],
+      "detail": "ErrorHandler"
+    },
+    {
+      "id": "core.error.error_codes",
+      "file": "core/error/error_codes.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "method:limit",
+        "method:genérico",
+        "method:excedido"
+      ],
+      "detail": ""
+    },
+    {
+      "id": "core.error.app_exception",
+      "file": "core/error/app_exception.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class AppException",
+        "extends AppException",
+        "implements Exception",
+        "method:AppException",
+        "method:toString",
+        "method:NetworkException"
+      ],
+      "detail": "AppException"
+    },
+    {
+      "id": "core.error.error_messages",
+      "file": "core/error/error_messages.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class ErrorMessages",
+        "method:centralizados",
+        "method:específico",
+        "method:mensaje"
+      ],
+      "detail": "ErrorMessages"
+    },
+    {
+      "id": "core.logging.device_info_provider",
+      "file": "core/logging/device_info_provider.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class DeviceInfoProvider",
+        "method:if",
+        "method:if",
+        "method:if"
+      ],
+      "detail": "DeviceInfoProvider"
+    },
+    {
+      "id": "core.logging.log_level",
+      "file": "core/logging/log_level.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "method:debugging",
+        "method:LogLevel",
+        "method:fromString"
+      ],
+      "detail": ""
+    },
+    {
+      "id": "core.logging.log_entry",
+      "file": "core/logging/log_entry.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class LogEntry",
+        "method:trace",
+        "method:adicional",
+        "method:copyWith"
+      ],
+      "detail": "LogEntry"
+    },
+    {
+      "id": "core.logging.app_logger",
+      "file": "core/logging/app_logger.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class AppLogger",
+        "method:niveles",
+        "method:desarrollo",
+        "method:Supabase"
+      ],
+      "detail": "AppLogger"
+    },
+    {
+      "id": "core.logging.logging",
+      "file": "core/logging/logging.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [],
+      "detail": ""
+    },
+    {
+      "id": "core.logging.remote_logger",
+      "file": "core/logging/remote_logger.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class RemoteLogger",
+        "implements RemoteLogger",
+        "method:log",
+        "method:autenticada",
+        "method:servidor"
+      ],
+      "detail": "RemoteLogger"
+    },
+    {
+      "id": "core.services.location_service",
+      "file": "core/services/location_service.dart",
+      "type": "service",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class LocationService",
+        "method:DEBUG",
+        "method:manualmente",
+        "method:clearDefaultLocation"
+      ],
+      "detail": "LocationService"
+    },
+    {
+      "id": "core.services.deep_link_service",
+      "file": "core/services/deep_link_service.dart",
+      "type": "service",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class DeepLinkService",
+        "method:usuario",
+        "method:filtrado",
+        "method:usuarios"
+      ],
+      "detail": "DeepLinkService"
+    },
+    {
+      "id": "core.services.auth_service",
+      "file": "core/services/auth_service.dart",
+      "type": "service",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class MyService",
+        "method:doSomething",
+        "method:username",
+        "method:isSessionExpired"
+      ],
+      "detail": "MyService"
+    },
+    {
+      "id": "core.widgets.language_selector",
+      "file": "core/widgets/language_selector.dart",
+      "type": "widget",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class LanguageSelector",
+        "extends StatelessWidget",
+        "method:LanguageSelector",
+        "method:TextStyle",
+        "method:Locale"
+      ],
+      "detail": "LanguageSelector"
+    },
+    {
+      "id": "core.validation.form_validators",
+      "file": "core/validation/form_validators.dart",
+      "type": "validator",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class FormValidators",
+        "method:email",
+        "method:minúsculas",
+        "method:normalizeEmail"
+      ],
+      "detail": "FormValidators"
+    },
+    {
+      "id": "core.localization.app_localizations",
+      "file": "core/localization/app_localizations.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class para",
+        "method:otpResendTimer",
+        "method:select",
+        "method:minLength"
+      ],
+      "detail": "para"
+    },
+    {
+      "id": "core.localization.locale_detector",
+      "file": "core/localization/locale_detector.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class LocaleDetector",
+        "method:sistema",
+        "method:getDeviceLocale",
+        "method:isDeviceLocalSupported"
+      ],
+      "detail": "LocaleDetector"
+    },
+    {
+      "id": "core.media.supabase_storage_service",
+      "file": "core/media/supabase_storage_service.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class SupabaseStorageService",
+        "method:huérfanos",
+        "method:lento",
+        "method:gossip"
+      ],
+      "detail": "SupabaseStorageService"
+    },
+    {
+      "id": "core.media.image_compressor",
+      "file": "core/media/image_compressor.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class ImageCompressor",
+        "method:JPEG",
+        "method:compresión",
+        "method:MediaReference"
+      ],
+      "detail": "ImageCompressor"
+    }
+  ],
+  "edges": [
+    {
+      "from": "main",
+      "to": "core.theme.app_theme",
+      "relation": "imports"
+    },
+    {
+      "from": "main",
+      "to": "core.config.supabase_config",
+      "relation": "imports"
+    },
+    {
+      "from": "main",
+      "to": "core.di.injection_container",
+      "relation": "imports"
+    },
+    {
+      "from": "main",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "main",
+      "to": "core.services.deep_link_service",
+      "relation": "imports"
+    },
+    {
+      "from": "main",
+      "to": "features.auth.presentation.widgets.auth_gate",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.presentation.screens.profile_screen",
+      "to": "core.di.injection_container",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.presentation.screens.profile_screen",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.presentation.controllers.profile_controller",
+      "to": "core.error.error_messages",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.presentation.controllers.profile_controller",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.presentation.controllers.profile_controller",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.presentation.controllers.profile_controller",
+      "to": "core.services.auth_service",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.presentation.widgets.profile_stats_card",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.presentation.widgets.settings_section",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.presentation.widgets.profile_header",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.domain.repositories.profile_repository",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.domain.repositories.profile_repository",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.domain.usecases.get_user_stats",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.domain.usecases.get_user_stats",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.domain.usecases.sign_out",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.domain.usecases.sign_out",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.domain.usecases.get_settings",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.domain.usecases.get_settings",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.domain.usecases.update_settings",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.domain.usecases.update_settings",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.data.datasources.profile_remote_datasource",
+      "to": "core.config.supabase_config",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.data.datasources.profile_remote_datasource",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.data.repositories.profile_repository_impl",
+      "to": "core.error.error_handler",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.data.repositories.profile_repository_impl",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.data.repositories.profile_repository_impl",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.data.repositories.profile_repository_impl",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.search.presentation.screens.search_screen",
+      "to": "core.error.error_messages",
+      "relation": "imports"
+    },
+    {
+      "from": "features.search.presentation.screens.search_screen",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.search.presentation.screens.search_screen",
+      "to": "core.theme.app_radius",
+      "relation": "imports"
+    },
+    {
+      "from": "features.search.presentation.screens.search_screen",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.search.presentation.screens.search_screen",
+      "to": "core.di.injection_container",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.screens.add_gossip_screen",
+      "to": "core.error.error_messages",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.screens.add_gossip_screen",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.screens.add_gossip_screen",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.screens.add_gossip_screen",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.screens.add_gossip_screen",
+      "to": "core.theme.app_radius",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.screens.add_gossip_screen",
+      "to": "core.di.injection_container",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.screens.gossip_detail_screen",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.screens.gossip_detail_screen",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.states.add_gossip_state",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.controllers.add_gossip_controller",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.controllers.add_gossip_controller",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.controllers.add_gossip_controller",
+      "to": "core.error.error_codes",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.controllers.add_gossip_controller",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.city_autocomplete_optimized",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.city_autocomplete_optimized",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.city_autocomplete_optimized",
+      "to": "core.theme.app_radius",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.image_picker_widget",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.image_picker_widget",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.image_picker_widget",
+      "to": "core.theme.app_radius",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.compact_location_selector",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.compact_location_selector",
+      "to": "core.theme.app_radius",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.publish_as_selector",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.media_attachment_section",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.media_attachment_section",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.media_attachment_section",
+      "to": "core.theme.app_radius",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.gossip_text_fields",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.gossip_text_fields",
+      "to": "core.theme.app_radius",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.gossip_text_fields",
+      "to": "core.validation.form_validators",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.gossip_card",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.gossip_card",
+      "to": "core.theme.app_radius",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.gossip_card",
+      "to": "core.services.deep_link_service",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.gossip_card",
+      "to": "core.di.injection_container",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.gossip_card",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.gossip_card",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.submit_button",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.submit_button",
+      "to": "core.theme.app_radius",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.report_gossip_dialog",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.report_gossip_dialog",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.city_autocomplete",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.city_autocomplete",
+      "to": "core.theme.app_radius",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.location_selector",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.location_selector",
+      "to": "core.theme.app_radius",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.location_selector",
+      "to": "core.validation.form_validators",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.location_change_dialog",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.location_change_dialog",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.location_change_dialog",
+      "to": "core.theme.app_radius",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.location_change_dialog",
+      "to": "core.validation.form_validators",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.domain.repositories.gossip_repository",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.domain.repositories.gossip_repository",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.domain.validators.gossip_validator",
+      "to": "core.error.error_codes",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.domain.validators.gossip_validator",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.domain.usecases.create_gossip",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.domain.usecases.create_gossip",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.domain.usecases.create_gossip",
+      "to": "core.error.error_codes",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.domain.usecases.create_gossip",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.domain.usecases.get_gossips",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.domain.usecases.get_gossips",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.domain.usecases.report_gossip",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.domain.usecases.report_gossip",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.domain.entities.gossip",
+      "to": "core.audit.auditable",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.data.datasources.supabase_gossip_remote_data_source",
+      "to": "core.error.error_codes",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.data.datasources.supabase_gossip_remote_data_source",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.data.datasources.supabase_gossip_remote_data_source",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.data.datasources.shared_prefs_gossip_local_data_source",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.data.repositories.gossip_repository_impl",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.data.repositories.gossip_repository_impl",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.data.repositories.gossip_repository_impl",
+      "to": "core.error.error_handler",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.data.repositories.gossip_repository_impl",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.presentation.managers.location_manager",
+      "to": "core.logging.app_logger",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.presentation.managers.location_manager",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.presentation.managers.location_manager",
+      "to": "core.services.location_service",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.domain.repositories.location_repository",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.domain.repositories.location_repository",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.domain.usecases.search_cities",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.domain.usecases.search_cities",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.domain.usecases.get_cities_by_region",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.domain.usecases.get_cities_by_region",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.domain.usecases.get_countries",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.domain.usecases.get_countries",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.domain.usecases.get_regions_by_country",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.domain.usecases.get_regions_by_country",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.data.datasources.supabase_location_remote_data_source",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.data.repositories.supabase_location_repository",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.data.repositories.supabase_location_repository",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.data.repositories.supabase_location_repository",
+      "to": "core.error.error_handler",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.data.repositories.mock_location_repository",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.data.repositories.mock_location_repository",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.state.auth_state",
+      "to": "core.error.error_messages",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.state.auth_state",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.otp_verification_screen",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.otp_verification_screen",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.signup_screen",
+      "to": "core.di.injection_container",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.signup_screen",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.signup_screen",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.signup_screen",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.signup_screen",
+      "to": "core.validation.form_validators",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.signup_screen",
+      "to": "core.widgets.language_selector",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.privacy_settings_screen",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.privacy_settings_screen",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.privacy_settings_screen",
+      "to": "core.services.location_service",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.profile_setup_screen",
+      "to": "core.di.injection_container",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.profile_setup_screen",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.profile_setup_screen",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.profile_setup_screen",
+      "to": "core.validation.form_validators",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.login_screen",
+      "to": "core.di.injection_container",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.login_screen",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.login_screen",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.login_screen",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.login_screen",
+      "to": "core.validation.form_validators",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.login_screen",
+      "to": "core.widgets.language_selector",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.privacy_consent_screen",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.privacy_consent_screen",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.reset_password_screen",
+      "to": "core.di.injection_container",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.reset_password_screen",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.reset_password_screen",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.reset_password_screen",
+      "to": "core.validation.form_validators",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.reset_password_screen",
+      "to": "core.widgets.language_selector",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.signup_controller",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.signup_controller",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.signup_controller",
+      "to": "core.error.error_codes",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.login_controller",
+      "to": "core.error.error_codes",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.login_controller",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.login_controller",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.profile_setup_controller",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.profile_setup_controller",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.reset_password_controller",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.reset_password_controller",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.otp_verification_controller",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.otp_verification_controller",
+      "to": "core.error.error_messages",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.otp_verification_controller",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.widgets.forgot_password_dialog",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.widgets.forgot_password_dialog",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.widgets.forgot_password_dialog",
+      "to": "core.validation.form_validators",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.widgets.auth_button",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.widgets.password_strength_indicator",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.widgets.email_field",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.widgets.email_field",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.widgets.email_field",
+      "to": "core.validation.form_validators",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.widgets.password_field",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.widgets.social_login_buttons",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.widgets.social_login_buttons",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.widgets.email_verification_banner",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.widgets.auth_gate",
+      "to": "core.di.injection_container",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.widgets.auth_gate",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.widgets.auth_gate",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.repositories.auth_repository",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.repositories.auth_repository",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.validators.auth_validator",
+      "to": "core.error.error_codes",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.validators.auth_validator",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.validators.auth_validator",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.update_profile",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.update_profile",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.is_username_available",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.is_username_available",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.sign_out",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.sign_out",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.sign_in_with_google",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.sign_in_with_google",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.sign_in_with_apple",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.sign_in_with_apple",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.reset_password",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.reset_password",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.get_current_user",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.get_current_user",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.sign_in_with_email",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.sign_in_with_email",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.sign_up_with_email",
+      "to": "core.error.error_codes",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.sign_up_with_email",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.sign_up_with_email",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.update_password_usecase",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.domain.usecases.update_password_usecase",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.data.datasources.supabase_auth_datasource_impl",
+      "to": "core.config.supabase_config",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.data.datasources.supabase_auth_datasource_impl",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.data.repositories.auth_repository_impl",
+      "to": "core.error.error_codes",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.data.repositories.auth_repository_impl",
+      "to": "core.error.error_handler",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.data.repositories.auth_repository_impl",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.data.repositories.auth_repository_impl",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.data.repositories.auth_repository_impl",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.presentation.screens.gossip_detail_screen",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.presentation.screens.gossip_detail_screen",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.presentation.screens.main_navigation_screen",
+      "to": "core.di.injection_container",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.presentation.screens.main_navigation_screen",
+      "to": "core.theme.app_theme",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.presentation.screens.home_screen",
+      "to": "core.di.injection_container",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.presentation.controllers.following_tab_controller",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.presentation.controllers.following_tab_controller",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.presentation.controllers.popular_tab_controller",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.presentation.controllers.popular_tab_controller",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.presentation.widgets.following_tab",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.presentation.widgets.popular_tab",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.presentation.widgets.new_gossips_banner",
+      "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.domain.repositories.home_repository",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.domain.repositories.home_repository",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.domain.usecases.check_new_gossips",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.domain.usecases.check_new_gossips",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.domain.usecases.get_following_feed",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.domain.usecases.get_following_feed",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.domain.usecases.get_recommended_feed",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.domain.usecases.get_recommended_feed",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.domain.usecases.get_popular_feed",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.domain.usecases.get_popular_feed",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.data.datasources.home_remote_datasource",
+      "to": "core.config.supabase_config",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.data.datasources.home_remote_datasource",
+      "to": "core.error.app_exception",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.data.datasources.home_remote_datasource",
+      "to": "core.error.error_codes",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.data.datasources.home_remote_datasource",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.data.repositories.home_repository_impl",
+      "to": "core.error.error_handler",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.data.repositories.home_repository_impl",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.data.repositories.home_repository_impl",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.data.repositories.home_repository_impl",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.auth.data.datasources.supabase_auth_datasource",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.auth.data.datasources.supabase_auth_datasource_impl",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.auth.data.repositories.auth_repository_impl",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.auth.domain.repositories.auth_repository",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.auth.domain.usecases.get_current_user",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.auth.domain.usecases.is_username_available",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.auth.domain.usecases.reset_password",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.auth.domain.usecases.sign_in_with_apple",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.auth.domain.usecases.sign_in_with_email",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.auth.domain.usecases.sign_in_with_google",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.auth.domain.usecases.sign_out",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.auth.domain.usecases.sign_up_with_email",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.auth.domain.usecases.update_password_usecase",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.auth.domain.usecases.update_profile",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.auth.presentation.controllers.login_controller",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.auth.presentation.controllers.otp_verification_controller",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.auth.presentation.controllers.profile_setup_controller",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.auth.presentation.controllers.reset_password_controller",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.auth.presentation.controllers.signup_controller",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.gossip.data.datasources.gossip_local_data_source",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.gossip.data.datasources.gossip_remote_data_source",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.gossip.data.datasources.shared_prefs_gossip_local_data_source",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.gossip.data.datasources.supabase_gossip_remote_data_source",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.gossip.data.repositories.gossip_repository_impl",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.gossip.di.gossip_module",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.gossip.domain.repositories.gossip_repository",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.gossip.domain.services.mvp_content_moderator",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.gossip.domain.usecases.create_gossip",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.gossip.domain.usecases.get_gossips",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.gossip.domain.usecases.report_gossip",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.gossip.presentation.controllers.add_gossip_controller",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.home.data.datasources.home_remote_datasource",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.home.data.repositories.home_repository_impl",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.home.domain.repositories.home_repository",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.home.domain.usecases.check_new_gossips",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.home.domain.usecases.get_following_feed",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.home.domain.usecases.get_popular_feed",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.home.domain.usecases.get_recommended_feed",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.home.presentation.controllers.following_tab_controller",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.home.presentation.controllers.popular_tab_controller",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.location.data.datasources.supabase_location_remote_data_source",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.location.data.repositories.mock_location_repository",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.location.data.repositories.supabase_location_repository",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.location.domain.repositories.location_repository",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.location.domain.usecases.get_cities_by_region",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.location.domain.usecases.get_countries",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.location.domain.usecases.get_regions_by_country",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.location.domain.usecases.search_cities",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.location.presentation.managers.location_manager",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.profile.data.datasources.profile_remote_datasource",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.profile.data.repositories.profile_repository_impl",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.profile.domain.repositories.profile_repository",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.profile.domain.usecases.get_settings",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.profile.domain.usecases.get_user_stats",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.profile.domain.usecases.sign_out",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.profile.domain.usecases.update_settings",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
+      "to": "features.profile.presentation.controllers.profile_controller",
+      "relation": "imports"
+    },
+    {
+      "from": "core.services.auth_service",
+      "to": "features.auth.domain.entities.user",
+      "relation": "imports"
+    },
+    {
+      "from": "core.services.auth_service",
+      "to": "features.auth.domain.repositories.auth_repository",
+      "relation": "imports"
+    }
+  ],
+  "stats": {
+    "total_nodes": 167,
+    "total_edges": 303,
+    "files_analyzed": 167
+  }
+}

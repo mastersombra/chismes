@@ -1,0 +1,5 @@
+# Configuración de tests
+tags:
+  # Skip integration tests by default (require DB)
+  integration:
+    skip: "Requires Supabase database connection. Run with: flutter test --tags integration"

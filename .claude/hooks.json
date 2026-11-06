@@ -1,0 +1,6 @@
+{
+  "sessionStart": {
+    "command": "cd tools/knowledge-graph && python3 generate_graph.py > /dev/null 2>&1 &",
+    "description": "Generate knowledge graph on session start"
+  }
+}

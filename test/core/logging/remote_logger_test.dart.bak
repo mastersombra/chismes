@@ -1,0 +1,630 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:mockito/annotations.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:postgrest/postgrest.dart';
+import 'package:chismes/core/logging/remote_logger.dart';
+import 'package:chismes/core/logging/log_entry.dart';
+import 'package:chismes/core/logging/log_level.dart';
+
+// Generar mocks para SupabaseClient, SupabaseQueryBuilder y PostgrestFilterBuilder
+@GenerateMocks([
+  SupabaseClient,
+  SupabaseQueryBuilder,
+  PostgrestFilterBuilder,
+])
+import 'remote_logger_test.mocks.dart';
+
+void main() {
+  group('MockRemoteLogger', () {
+    late MockRemoteLogger logger;
+
+    setUp(() {
+      logger = MockRemoteLogger();
+    });
+
+    test('debe implementar RemoteLogger', () {
+      // Assert
+      expect(logger, isA<RemoteLogger>());
+    });
+
+    test('debe inicializar con lista vacía', () {
+      // Assert
+      expect(logger.logs, isEmpty);
+    });
+
+    test('debe agregar log a la lista cuando se llama log()', () async {
+      // Arrange
+      final entry = LogEntry(
+        level: LogLevel.error,
+        message: 'Test error',
+      );
+
+      // Act
+      await logger.log(entry);
+
+      // Assert
+      expect(logger.logs, hasLength(1));
+      expect(logger.logs.first, entry);
+    });
+
+    test('debe agregar múltiples logs', () async {
+      // Arrange
+      final entry1 = LogEntry(level: LogLevel.error, message: 'Error 1');
+      final entry2 = LogEntry(level: LogLevel.fatal, message: 'Error 2');
+      final entry3 = LogEntry(level: LogLevel.info, message: 'Info');
+
+      // Act
+      await logger.log(entry1);
+      await logger.log(entry2);
+      await logger.log(entry3);
+
+      // Assert
+      expect(logger.logs, hasLength(3));
+      expect(logger.logs[0], entry1);
+      expect(logger.logs[1], entry2);
+      expect(logger.logs[2], entry3);
+    });
+
+    test('clear() debe vaciar la lista de logs', () async {
+      // Arrange
+      await logger.log(LogEntry(level: LogLevel.error, message: 'Error'));
+      await logger.log(LogEntry(level: LogLevel.fatal, message: 'Fatal'));
+      expect(logger.logs, hasLength(2));
+
+      // Act
+      logger.clear();
+
+      // Assert
+      expect(logger.logs, isEmpty);
+    });
+
+    test('clear() en lista vacía no debe causar error', () {
+      // Act & Assert
+      expect(() => logger.clear(), returnsNormally);
+      expect(logger.logs, isEmpty);
+    });
+
+    test('debe mantener orden de logs', () async {
+      // Arrange
+      final entries = List.generate(
+        10,
+        (i) => LogEntry(level: LogLevel.error, message: 'Error $i'),
+      );
+
+      // Act
+      for (final entry in entries) {
+        await logger.log(entry);
+      }
+
+      // Assert
+      expect(logger.logs, hasLength(10));
+      for (var i = 0; i < 10; i++) {
+        expect(logger.logs[i].message, 'Error $i');
+      }
+    });
+
+    test('logs debe ser accesible directamente', () async {
+      // Arrange
+      final entry = LogEntry(level: LogLevel.error, message: 'Test');
+      await logger.log(entry);
+
+      // Act & Assert - Acceso directo a la lista
+      expect(logger.logs.length, 1);
+      expect(logger.logs.first.message, 'Test');
+      expect(logger.logs.first.level, LogLevel.error);
+    });
+
+    test('debe ser útil para verificación en tests', () async {
+      // Este test simula cómo se usaría en tests reales
+
+      // Arrange
+      final mockLogger = MockRemoteLogger();
+
+      // Act - Simular uso en código real
+      await mockLogger.log(LogEntry(level: LogLevel.error, message: 'Error 1'));
+      await mockLogger.log(LogEntry(level: LogLevel.info, message: 'Info'));
+
+      // Assert - Verificar que se loguearon
+      expect(mockLogger.logs, hasLength(2));
+      expect(mockLogger.logs[0].level, LogLevel.error);
+      expect(mockLogger.logs[1].level, LogLevel.info);
+
+      // Limpiar para siguiente test
+      mockLogger.clear();
+      expect(mockLogger.logs, isEmpty);
+    });
+  });
+
+  group('SupabaseRemoteLogger', () {
+    test('debe implementar RemoteLogger', () {
+      // Arrange
+      final mockClient = MockSupabaseClient();
+      final logger = SupabaseRemoteLogger(mockClient);
+
+      // Assert
+      expect(logger, isA<RemoteLogger>());
+    });
+
+    test('debe crear instancia con SupabaseClient', () {
+      // Arrange
+      final mockClient = MockSupabaseClient();
+
+      // Act
+      final testLogger = SupabaseRemoteLogger(mockClient);
+
+      // Assert
+      expect(testLogger, isNotNull);
+      expect(testLogger, isA<SupabaseRemoteLogger>());
+    });
+
+    group('Persistencia selectiva', () {
+      test('debe persistir logs de nivel error', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+        final entry = LogEntry(
+          level: LogLevel.error,
+          message: 'Error message',
+        );
+
+        // Act
+        await logger.log(entry);
+
+        // Esperar a que el async complete
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert - Verifica que intenta persistir
+        verify(mockClient.from('error_logs')).called(1);
+      });
+
+      test('debe persistir logs de nivel fatal', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+        final entry = LogEntry(
+          level: LogLevel.fatal,
+          message: 'Fatal error',
+        );
+
+        // Act
+        await logger.log(entry);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert - Verifica que intenta persistir
+        verify(mockClient.from('error_logs')).called(1);
+      });
+
+      test('NO debe persistir logs de nivel debug', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+        final entry = LogEntry(
+          level: LogLevel.debug,
+          message: 'Debug message',
+        );
+
+        // Act
+        await logger.log(entry);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert - NO debe intentar persistir
+        verifyNever(mockClient.from('error_logs'));
+      });
+
+      test('NO debe persistir logs de nivel info', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+        final entry = LogEntry(
+          level: LogLevel.info,
+          message: 'Info message',
+        );
+
+        // Act
+        await logger.log(entry);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert - NO debe intentar persistir
+        verifyNever(mockClient.from('error_logs'));
+      });
+
+      test('NO debe persistir logs de nivel warning', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+        final entry = LogEntry(
+          level: LogLevel.warning,
+          message: 'Warning message',
+        );
+
+        // Act
+        await logger.log(entry);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert - NO debe intentar persistir
+        verifyNever(mockClient.from('error_logs'));
+      });
+    });
+
+    group('Serialización', () {
+      test('debe llamar from con tabla correcta para logs con todos los campos', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+        final entry = LogEntry(
+          level: LogLevel.error,
+          message: 'Test error',
+          userId: 'user123',
+          context: {'operation': 'test'},
+        );
+
+        // Act
+        await logger.log(entry);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert - Verifica que intenta persistir en tabla correcta
+        verify(mockClient.from('error_logs')).called(1);
+      });
+
+      test('debe funcionar con diferentes tipos de LogEntry', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+        final timestamp = DateTime(2026, 10, 20);
+        final entry = LogEntry(
+          level: LogLevel.fatal,
+          message: 'Fatal error',
+          errorType: 'CrashError',
+          timestamp: timestamp,
+        );
+
+        // Act
+        await logger.log(entry);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert - Verifica que intenta persistir
+        verify(mockClient.from('error_logs')).called(1);
+      });
+    });
+
+    group('Fire-and-forget', () {
+      test('log() debe retornar inmediatamente (no esperar)', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+        final entry = LogEntry(level: LogLevel.error, message: 'Error');
+
+        // Act
+        final stopwatch = Stopwatch()..start();
+        await logger.log(entry);
+        stopwatch.stop();
+
+        // Assert - debe retornar rápido (< 100ms)
+        // El método log() usa .ignore() por lo que retorna inmediatamente
+        expect(stopwatch.elapsedMilliseconds, lessThan(100));
+      });
+
+      test('múltiples llamadas a log() no deben bloquearse entre sí', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+        final entries = List.generate(
+          5,
+          (i) => LogEntry(level: LogLevel.error, message: 'Error $i'),
+        );
+
+        // Act
+        final stopwatch = Stopwatch()..start();
+        for (final entry in entries) {
+          await logger.log(entry);
+        }
+        stopwatch.stop();
+
+        // Assert - todas deben retornar rápido
+        expect(stopwatch.elapsedMilliseconds, lessThan(100));
+
+        // Esperar que completen
+        await Future.delayed(Duration(milliseconds: 200));
+
+        // Verificar que todas intentaron persistir
+        verify(mockClient.from('error_logs')).called(5);
+      });
+    });
+
+    group('Manejo de errores', () {
+      test('NO debe propagar error si Supabase falla', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenThrow(
+          Exception('Supabase connection error'),
+        );
+
+        final entry = LogEntry(level: LogLevel.error, message: 'Error');
+
+        // Act & Assert - No debe lanzar excepción (fire-and-forget)
+        expect(() async => await logger.log(entry), returnsNormally);
+
+        await Future.delayed(Duration(milliseconds: 100));
+      });
+
+      test('NO debe propagar error en casos de falla', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenThrow(
+          PostgrestException(message: 'Insert failed', code: '500'),
+        );
+
+        final entry = LogEntry(level: LogLevel.fatal, message: 'Fatal');
+
+        // Act & Assert - Fire-and-forget, no debe propagar
+        await expectLater(logger.log(entry), completes);
+
+        await Future.delayed(Duration(milliseconds: 100));
+      });
+
+      test('debe manejar timeout sin propagar error', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenThrow(
+          TimeoutException('Request timeout'),
+        );
+
+        final entry = LogEntry(level: LogLevel.error, message: 'Error');
+
+        // Act & Assert - No debe lanzar excepción
+        expect(() async => await logger.log(entry), returnsNormally);
+
+        await Future.delayed(Duration(milliseconds: 100));
+      });
+
+      test('debe continuar funcionando después de un error', () async {
+        // Arrange
+        final entry1 = LogEntry(level: LogLevel.error, message: 'Error 1');
+        final entry2 = LogEntry(level: LogLevel.error, message: 'Error 2');
+
+        // Primera llamada falla
+        when(mockClient.from('error_logs')).thenThrow(Exception('First call fails'));
+
+        // Act - Primera llamada
+        await logger.log(entry1);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Segunda llamada con éxito
+        reset(mockClient);
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+
+        await logger.log(entry2);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert - Segunda llamada sí intenta persistir
+        verify(mockClient.from('error_logs')).called(1);
+      });
+    });
+
+    group('Integración con tabla error_logs', () {
+      test('debe usar tabla "error_logs" específicamente', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+        when(mockClient.from('logs')).thenReturn(mockQueryBuilder);
+        when(mockClient.from('errors')).thenReturn(mockQueryBuilder);
+        final entry = LogEntry(level: LogLevel.error, message: 'Error');
+
+        // Act
+        await logger.log(entry);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert - Verifica que usa la tabla correcta
+        verify(mockClient.from('error_logs')).called(1);
+        verifyNever(mockClient.from('logs'));
+        verifyNever(mockClient.from('errors'));
+      });
+
+      test('debe intentar persistir en error_logs para logs fatales', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+        final entry = LogEntry(level: LogLevel.fatal, message: 'Fatal');
+
+        // Act
+        await logger.log(entry);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert
+        verify(mockClient.from('error_logs')).called(1);
+      });
+    });
+
+    group('Casos de uso reales', () {
+      test('debe persistir error típico de app', () async {
+        // Arrange - Simular error real
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+        final entry = LogEntry(
+          level: LogLevel.error,
+          message: 'Failed to fetch gossips',
+          errorType: 'NetworkError',
+          error: Exception('Connection timeout'),
+          userId: 'user123',
+          context: {
+            'operation': 'fetchGossips',
+            'timeout': 30,
+          },
+          deviceInfo: {
+            'os': 'Android',
+            'version': '11',
+          },
+        );
+
+        // Act
+        await logger.log(entry);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert - Verifica que intenta persistir errores reales
+        verify(mockClient.from('error_logs')).called(1);
+      });
+
+      test('debe persistir fatal típico de app', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+        final entry = LogEntry(
+          level: LogLevel.fatal,
+          message: 'App crashed',
+          errorType: 'UnhandledException',
+          error: StateError('Invalid state'),
+          context: {'screen': 'home', 'action': 'load'},
+        );
+
+        // Act
+        await logger.log(entry);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert - Verifica que intenta persistir fatales
+        verify(mockClient.from('error_logs')).called(1);
+      });
+
+      test('NO debe persistir info típico de app', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+        final entry = LogEntry(
+          level: LogLevel.info,
+          message: 'User logged in',
+          userId: 'user123',
+          context: {'method': 'email'},
+        );
+
+        // Act
+        await logger.log(entry);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert - NO debe persistir info
+        verifyNever(mockClient.from('error_logs'));
+      });
+
+      test('debe manejar múltiples errores concurrentes', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+        final entries = [
+          LogEntry(level: LogLevel.error, message: 'Error 1'),
+          LogEntry(level: LogLevel.error, message: 'Error 2'),
+          LogEntry(level: LogLevel.fatal, message: 'Fatal 1'),
+          LogEntry(level: LogLevel.error, message: 'Error 3'),
+        ];
+
+        // Act - Llamar todos sin esperar
+        for (final entry in entries) {
+          logger.log(entry); // Sin await
+        }
+
+        // Esperar que todos completen
+        await Future.delayed(Duration(milliseconds: 200));
+
+        // Assert - Verifica que todos intentaron persistir
+        verify(mockClient.from('error_logs')).called(4);
+      });
+    });
+
+    group('Edge Cases', () {
+      test('debe manejar LogEntry con todos los campos null opcionales', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+        final entry = LogEntry(
+          level: LogLevel.error,
+          message: 'Minimal error',
+        );
+
+        // Act
+        await logger.log(entry);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert - Verifica que funciona con campos mínimos
+        verify(mockClient.from('error_logs')).called(1);
+      });
+
+      test('debe manejar message muy largo', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+        final longMessage = 'A' * 10000;
+        final entry = LogEntry(
+          level: LogLevel.error,
+          message: longMessage,
+        );
+
+        // Act & Assert - No debe fallar con mensajes largos
+        await expectLater(logger.log(entry), completes);
+        await Future.delayed(Duration(milliseconds: 100));
+        verify(mockClient.from('error_logs')).called(1);
+      });
+
+      test('debe manejar context muy grande', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+        final largeContext = Map.fromEntries(
+          List.generate(100, (i) => MapEntry('key$i', 'value$i')),
+        );
+
+        final entry = LogEntry(
+          level: LogLevel.error,
+          message: 'Error',
+          context: largeContext,
+        );
+
+        // Act & Assert - No debe fallar con context grande
+        await expectLater(logger.log(entry), completes);
+        await Future.delayed(Duration(milliseconds: 100));
+        verify(mockClient.from('error_logs')).called(1);
+      });
+
+      test('debe manejar llamadas rápidas sucesivas', () async {
+        // Arrange
+        when(mockClient.from('error_logs')).thenReturn(mockQueryBuilder);
+
+        // Act - Llamar 100 veces rápidamente
+        for (var i = 0; i < 100; i++) {
+          logger.log(LogEntry(level: LogLevel.error, message: 'Error $i'));
+        }
+
+        // Assert - No debe causar problemas
+        await Future.delayed(Duration(milliseconds: 300));
+        verify(mockClient.from('error_logs')).called(100);
+      });
+    });
+  });
+
+  group('Comparación MockRemoteLogger vs SupabaseRemoteLogger', () {
+    test('ambos deben implementar misma interface', () {
+      // Arrange
+      final mockLogger = MockRemoteLogger();
+      final supabaseLogger = SupabaseRemoteLogger(MockSupabaseClient());
+
+      // Assert
+      expect(mockLogger, isA<RemoteLogger>());
+      expect(supabaseLogger, isA<RemoteLogger>());
+    });
+
+    test('MockRemoteLogger es útil para tests unitarios', () async {
+      // Arrange
+      final mockLogger = MockRemoteLogger();
+      final entry = LogEntry(level: LogLevel.error, message: 'Test');
+
+      // Act
+      await mockLogger.log(entry);
+
+      // Assert - Verificación fácil
+      expect(mockLogger.logs, hasLength(1));
+      expect(mockLogger.logs.first.message, 'Test');
+    });
+
+    test('SupabaseRemoteLogger persiste en producción', () async {
+      // Arrange
+      final testMockClient = MockSupabaseClient();
+      final testMockQueryBuilder = MockSupabaseQueryBuilder();
+      final testLogger = SupabaseRemoteLogger(testMockClient);
+
+      when(testMockClient.from('error_logs')).thenReturn(testMockQueryBuilder);
+
+      final entry = LogEntry(level: LogLevel.error, message: 'Production error');
+
+      // Act
+      await testLogger.log(entry);
+      await Future.delayed(Duration(milliseconds: 100));
+
+      // Assert - Intenta persistir en Supabase
+      verify(testMockClient.from('error_logs')).called(1);
+    });
+  });
+}
+
+class TimeoutException implements Exception {
+  final String message;
+  TimeoutException(this.message);
+
+  @override
+  String toString() => 'TimeoutException: $message';
+}

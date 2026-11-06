@@ -1,0 +1,1136 @@
+# CLAUDE.md - Chismes App Configuration
+
+> **Propósito:** Este archivo contiene todas las convenciones, estándares, y patrones del proyecto para que Claude Code pueda trabajar consistentemente entre sesiones.
+
+---
+
+## 👤 ROL Y CONTEXTO
+
+**Actúa siempre como:**
+
+> Senior Flutter Engineer, Software Architect, Supabase Senior, Mobile App Reviewer, especialista en Clean Architecture, Dart, Flutter, testing, seguridad, escalabilidad y preparación para integración con APIs/backend.
+
+**Comportamiento:**
+- Siempre pregunta lo que necesites o si hay opciones que el usuario deba conocer para elegir
+- Revisa los archivos necesarios para tener contexto antes de implementar
+- Propone soluciones pero deja que el usuario decida entre opciones cuando hay trade-offs
+
+---
+
+## 📐 ARQUITECTURA
+
+### Clean Architecture + Feature-First
+
+El proyecto sigue **Clean Architecture** con organización **Feature-First**:
+
+```
+lib/
+├── core/                    # Código compartido transversal
+│   ├── audit/              # Auditoría (Auditable interface)
+│   ├── auth/               # Autenticación base
+│   ├── config/             # Configuración (Supabase, etc.)
+│   ├── constants/          # Constantes globales
+│   ├── di/                 # Dependency Injection (Injectable/GetIt)
+│   ├── error/              # Error handling (Failure, Result, ErrorHandler)
+│   ├── id/                 # ID generators (TimestampIdGenerator)
+│   ├── logging/            # Logging system (AppLogger, RemoteLogger)
+│   ├── media/              # Media services (storage, compression)
+│   ├── result/             # Result<Failure, Success> monadic pattern
+│   ├── services/           # Services globales (LocationService)
+│   ├── theme/              # Temas y estilos
+│   ├── user/               # User models
+│   └── validation/         # Validadores compartidos
+│
+├── features/               # Features (módulos funcionales)
+│   ├── gossip/            # Feature principal: Chismes
+│   │   ├── data/          # Data Layer
+│   │   │   ├── datasources/    # Remote & Local data sources
+│   │   │   ├── models/         # DTOs (GossipModel)
+│   │   │   └── repositories/   # Repository implementations
+│   │   ├── di/            # DI module específico del feature
+│   │   ├── domain/        # Domain Layer
+│   │   │   ├── entities/       # Domain entities (Gossip)
+│   │   │   ├── repositories/   # Repository interfaces
+│   │   │   ├── services/       # Domain services (ContentModerator)
+│   │   │   └── usecases/       # Use cases (CreateGossip)
+│   │   └── presentation/  # Presentation Layer
+│   │       ├── controllers/    # Controllers (AddGossipController)
+│   │       ├── screens/        # Screens (AddGossipScreen)
+│   │       ├── states/         # State models (AddGossipState)
+│   │       └── widgets/        # Widgets específicos del feature
+│   │
+│   ├── location/          # Feature: Ubicaciones
+│   ├── home/              # Feature: Home/Feed
+│   ├── search/            # Feature: Búsqueda
+│   └── auth/              # Feature: Autenticación
+│
+└── shared/                # Código compartido entre features (legacy)
+    ├── data/
+    └── widgets/
+```
+
+### Capas y Flujo de Dependencias
+
+```
+Presentation ──depends on──> Domain ──depends on──> Data
+     ↑                           ↑                      ↑
+  Widgets               Entities/UseCases        Repositories
+Controllers                                     DataSources
+  States                                          Models
+```
+
+**Reglas:**
+1. **Presentation** depende de **Domain** (nunca de Data directamente)
+2. **Domain** define interfaces, **Data** las implementa
+3. **Data** NO depende de Presentation
+4. **Core** puede ser usado por cualquier capa
+5. **Features** NO deben depender entre sí (usar Core para compartir)
+
+---
+
+## 🏗️ PATRONES DE DISEÑO
+
+### 1. Repository Pattern
+```dart
+// Domain: Define la interfaz
+abstract class GossipRepository {
+  Future<Result<Failure, List<Gossip>>> getGossips(GossipQuery query);
+}
+
+// Data: Implementa
+@Singleton(as: GossipRepository)
+class GossipRepositoryImpl implements GossipRepository {
+  final GossipRemoteDataSource remoteDataSource;
+  final GossipLocalDataSource localDataSource;
+  // ...
+}
+```
+
+### 2. Result Pattern (Monadic Error Handling)
+```dart
+// Nunca lanzar excepciones desde repositorios
+Future<Result<Failure, Gossip>> create(CreateGossipInput input) async {
+  try {
+    final gossip = await remoteDataSource.create(input);
+    return Result.success(gossip);
+  } catch (error) {
+    return Result.failure(ErrorHandler.handleError(error));
+  }
+}
+
+// Uso
+final result = await repository.create(input);
+result.fold(
+  onFailure: (failure) => _handleError(failure),
+  onSuccess: (gossip) => _showSuccess(gossip),
+);
+```
+
+### 3. Dependency Injection (Injectable + GetIt)
+```dart
+// Registro automático
+@injectable
+class MyService {
+  final Dependency dependency;
+  MyService(this.dependency);
+}
+
+// Singleton
+@singleton
+class MySingleton {}
+
+// Interfaces
+@Singleton(as: MyInterface)
+class MyImplementation implements MyInterface {}
+
+// Uso
+final service = getIt<MyService>();
+```
+
+### 4. Data Source Pattern
+```dart
+// Interface
+abstract class GossipRemoteDataSource {
+  Future<List<GossipModel>> getGossips(GossipQuery query);
+}
+
+// Implementaciones intercambiables:
+// - SupabaseGossipRemoteDataSource (producción)
+// - MockGossipRemoteDataSource (desarrollo/tests)
+```
+
+### 5. Controller Pattern (Presentation)
+```dart
+@injectable
+class AddGossipController extends ChangeNotifier {
+  AddGossipState _state = AddGossipState.initial();
+  
+  AddGossipState get state => _state;
+  
+  void _setState(AddGossipState newState) {
+    _state = newState;
+    notifyListeners();
+  }
+}
+```
+
+---
+
+## 📝 NAMING CONVENTIONS
+
+### Archivos y Directorios
+```
+snake_case.dart              # Todos los archivos Dart
+add_gossip_controller.dart   # Controllers
+gossip_repository.dart       # Interfaces
+gossip_repository_impl.dart  # Implementations
+gossip_model.dart            # Models (Data layer)
+gossip.dart                  # Entities (Domain layer)
+```
+
+### Clases
+```dart
+PascalCase                   // Todas las clases
+GossipModel                  // Models
+Gossip                       // Entities
+GossipRepository             // Interfaces
+GossipRepositoryImpl         // Implementations
+AddGossipController          // Controllers
+AddGossipScreen              // Screens
+```
+
+### Variables y Métodos
+```dart
+camelCase                    // Variables y métodos
+getUserById()                // Métodos
+_privateMethod()             // Privados con _
+```
+
+### Constantes
+```dart
+const kMaxLength = 200;      // Constantes globales con k
+static const String _key = 'cache_key';  // Constantes de clase
+```
+
+### Enums
+```dart
+enum GossipStatus {          // PascalCase para enum
+  draft('draft'),            // camelCase para values
+  published('published'),
+}
+```
+
+---
+
+## 🗄️ SUPABASE CONVENTIONS
+
+### Nomenclatura de Tablas
+```sql
+-- snake_case, plural
+gossips
+error_logs
+location_countries
+location_regions
+location_cities
+```
+
+### Nomenclatura de Columnas
+```sql
+-- snake_case
+id UUID PRIMARY KEY
+created_at TIMESTAMPTZ
+country_id UUID
+moderation_status TEXT
+```
+
+### Migraciones
+
+**Pattern:** Sequential (001, 002, 003, ...)
+
+```
+supabase/migrations/
+├── 001_create_gossips_table.sql
+├── 002_insert_sample_data.sql
+├── 003_create_location_tables.sql
+└── 004_create_error_logs.sql
+```
+
+**Naming Pattern:**
+```
+{number}_{descriptive_name}.sql
+
+Ejemplos:
+005_add_user_avatar_column.sql
+006_create_comments_table.sql
+007_update_gossips_add_index.sql
+```
+
+**Comandos:**
+```bash
+# Aplicar migraciones (desarrollo)
+supabase db reset --linked
+
+# Ver estado
+supabase db status
+
+# Nueva migración
+supabase migration new descriptive_name
+# Resultado: 005_descriptive_name.sql (número automático)
+```
+
+**Reglas:**
+- ✅ Nombres descriptivos y claros
+- ✅ Usar `CREATE TABLE IF NOT EXISTS`
+- ✅ Incluir RLS policies
+- ✅ Incluir índices necesarios
+- ✅ Documentar con comments SQL
+- ❌ NUNCA editar migraciones ya aplicadas
+- ❌ NUNCA hacer DROP sin IF EXISTS
+
+### RLS (Row Level Security)
+
+**Siempre aplicar RLS:**
+```sql
+ALTER TABLE gossips ENABLE ROW LEVEL SECURITY;
+
+-- Policy para lectura
+CREATE POLICY "Users can read published gossips"
+  ON gossips FOR SELECT
+  USING (status = 'published' AND moderation_status = 'approved');
+
+-- Policy para escritura
+CREATE POLICY "Users can create own gossips"
+  ON gossips FOR INSERT
+  WITH CHECK (auth.uid() = created_by);
+```
+
+### Timestamps
+
+**Siempre usar TIMESTAMPTZ:**
+```sql
+created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+modified_at TIMESTAMPTZ
+```
+
+**En Dart:**
+```dart
+// Supabase serializa automáticamente a ISO8601 String
+final String createdAt;  // En Model
+final DateTime createdAt; // En Entity
+
+// Conversión en Model.toEntity()
+createdAt: DateTime.parse(createdAt),
+```
+
+---
+
+## 🧪 TESTING STANDARDS
+
+### Estructura de Tests
+
+```
+test/
+├── core/
+│   ├── error/
+│   ├── result/
+│   └── logging/
+├── features/
+│   └── gossip/
+│       ├── data/
+│       │   ├── datasources/
+│       │   ├── models/
+│       │   └── repositories/
+│       ├── domain/
+│       │   ├── entities/
+│       │   └── usecases/
+│       └── presentation/
+│           └── controllers/
+└── widget_test.dart
+```
+
+### Testing Patterns
+
+**Unit Tests:**
+```dart
+void main() {
+  group('GossipRepository', () {
+    late GossipRepositoryImpl repository;
+    late MockRemoteDataSource mockRemote;
+    late MockLocalDataSource mockLocal;
+
+    setUp(() {
+      mockRemote = MockRemoteDataSource();
+      mockLocal = MockLocalDataSource();
+      repository = GossipRepositoryImpl(
+        remoteDataSource: mockRemote,
+        localDataSource: mockLocal,
+      );
+    });
+
+    test('debe retornar gossips del remoto', () async {
+      // Arrange
+      when(mockRemote.getGossips(any))
+        .thenAnswer((_) async => [mockModel]);
+
+      // Act
+      final result = await repository.getGossips(query);
+
+      // Assert
+      expect(result.isSuccess, isTrue);
+      expect(result.successValue!.length, 1);
+    });
+  });
+}
+```
+
+**Mocks con Mockito:**
+```dart
+@GenerateMocks([
+  GossipRemoteDataSource,
+  GossipLocalDataSource,
+])
+void main() {
+  // Tests aquí
+}
+
+// Genera: gossip_repository_impl_test.mocks.dart
+```
+
+**Comando:**
+```bash
+flutter pub run build_runner build --delete-conflicting-outputs
+```
+
+### Coverage
+
+**Objetivo:** >80% de coverage en domain y data layers
+
+```bash
+# Ejecutar tests con coverage
+flutter test --coverage
+
+# Ver reporte (requiere lcov)
+genhtml coverage/lcov.info -o coverage/html
+open coverage/html/index.html
+```
+
+---
+
+## 📊 LOGGING STANDARDS
+
+### Uso del Logger
+
+**Inyección:**
+```dart
+@injectable
+class MyService {
+  final AppLogger _logger;
+  
+  MyService(this._logger);
+}
+```
+
+**Niveles:**
+```dart
+_logger.d('Debug info');              // Solo desarrollo
+_logger.i('Operation successful');     // Info general
+_logger.w('Warning message');          // Situación anormal
+_logger.e('Error occurred',            // Error → persiste en Supabase
+  error: e,
+  stackTrace: st,
+  context: {'operation': 'create'},
+);
+_logger.f('Fatal crash');              // Fatal → persiste en Supabase
+```
+
+**Context:**
+```dart
+// Siempre incluir context relevante
+_logger.e('Error creating gossip',
+  error: error,
+  stackTrace: stackTrace,
+  context: {
+    'gossipId': gossip.id,
+    'cityId': gossip.cityId,
+    'operation': 'create',
+    'hasImage': gossip.imageUrl != null,
+  },
+);
+```
+
+**Establecer userId:**
+```dart
+// Después de login
+final logger = getIt<AppLogger>();
+logger.setUserId(user.id);
+```
+
+**Reglas:**
+- ✅ Usar logger en lugar de `print()` o `debugPrint()`
+- ✅ Incluir context en errores
+- ✅ Logs descriptivos pero concisos
+- ❌ NO loguear datos sensibles (passwords, tokens)
+- ❌ NO usar `print()` en producción
+
+---
+
+## ⚠️ ERROR HANDLING
+
+### Result Pattern
+
+**Siempre retornar Result en repositories y use cases:**
+```dart
+Future<Result<Failure, Gossip>> create(CreateGossipInput input) async {
+  try {
+    // Lógica
+    return Result.success(gossip);
+  } catch (error) {
+    return Result.failure(ErrorHandler.handleError(error));
+  }
+}
+```
+
+### Error Types
+
+```dart
+// En core/error/
+abstract class Failure {
+  final String message;
+  final String? technicalMessage;
+  final String? code;
+}
+
+class NetworkFailure extends Failure {}
+class ValidationFailure extends Failure {}
+class ServerFailure extends Failure {}
+class CacheFailure extends Failure {}
+```
+
+### Error Handler
+
+```dart
+// Convierte excepciones a Failures
+final failure = ErrorHandler.handleError(error);
+
+// Tipos de excepciones:
+// - ValidationException
+// - NetworkException
+// - SupabaseException
+// - General exceptions
+```
+
+### Controllers
+
+**Manejar Result en controllers:**
+```dart
+final result = await _createGossip(input);
+
+result.fold(
+  onFailure: (failure) {
+    _setState(state.copyWith(
+      isLoading: false,
+      failure: failure,
+    ));
+    _logger.e('Error creating gossip',
+      context: {'failure': failure.message},
+    );
+  },
+  onSuccess: (gossip) {
+    _setState(state.copyWith(
+      isLoading: false,
+      gossip: gossip,
+    ));
+    _logger.i('Gossip created successfully',
+      context: {'gossipId': gossip.id},
+    );
+  },
+);
+```
+
+---
+
+## 🔐 SECURITY
+
+### Secrets
+
+**Uso de .env:**
+```dart
+// .env (NUNCA commitear)
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_ANON_KEY=eyJxxx...
+SUPABASE_SERVICE_ROLE_KEY=eyJxxx...  # NUNCA en cliente
+
+// Uso
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+await dotenv.load();
+final url = dotenv.env['SUPABASE_URL']!;
+```
+
+**Archivo:**
+```bash
+# .gitignore (YA ESTÁ CONFIGURADO)
+.env
+.env.*
+!.env.example
+```
+
+### Validación
+
+**Siempre validar inputs:**
+```dart
+// En domain/usecases o presentation/controllers
+if (input.subject.isEmpty || input.subject.length > 200) {
+  return Result.failure(ValidationFailure(
+    message: 'El título debe tener entre 1 y 200 caracteres',
+  ));
+}
+```
+
+### SQL Injection
+
+**NUNCA concatenar SQL:**
+```dart
+// ❌ MAL
+await supabase.rpc('search', params: {
+  'query': 'SELECT * FROM gossips WHERE title = "$userInput"'
+});
+
+// ✅ BIEN
+await supabase
+  .from('gossips')
+  .select()
+  .eq('title', userInput);  // Supabase sanitiza automáticamente
+```
+
+---
+
+## 🎨 CODE STYLE
+
+### Flutter/Dart Standards
+
+Seguimos **Effective Dart** y las reglas de `flutter_lints`.
+
+**Formato:**
+```bash
+# Auto-format
+dart format .
+
+# Análisis
+flutter analyze
+```
+
+### Imports
+
+**Orden:**
+```dart
+// 1. Dart/Flutter SDK
+import 'dart:async';
+import 'package:flutter/material.dart';
+
+// 2. Packages externos
+import 'package:injectable/injectable.dart';
+import 'package:equatable/equatable.dart';
+
+// 3. Proyecto (relativos)
+import '../../domain/entities/gossip.dart';
+import '../../../core/result/result.dart';
+```
+
+**Reglas:**
+- ✅ Usar imports relativos dentro del proyecto
+- ✅ Agrupar y ordenar alfabéticamente
+- ❌ NO usar `package:chismes/...` dentro del proyecto
+
+### Comentarios
+
+**Cuándo comentar:**
+```dart
+// ✅ BIEN: Explica el POR QUÉ
+// Usamos cache local como fallback porque el usuario
+// puede estar sin conexión y queremos que vea contenido
+final localData = await _localDataSource.getAll();
+
+// ❌ MAL: Repite lo que hace el código
+// Obtiene datos locales
+final localData = await _localDataSource.getAll();
+```
+
+**Documentación de APIs públicas:**
+```dart
+/// Crea un nuevo gossip con moderación automática.
+///
+/// **Validaciones:**
+/// - Subject: 1-200 caracteres
+/// - Content: 1-1000 caracteres
+/// - Ubicación: debe ser válida
+///
+/// **Returns:**
+/// - `Result.success(gossip)` si se crea correctamente
+/// - `Result.failure(ValidationFailure)` si validación falla
+/// - `Result.failure(NetworkFailure)` si hay error de red
+Future<Result<Failure, Gossip>> create(CreateGossipInput input);
+```
+
+### TODOs
+
+**Formato estándar:**
+```dart
+// TODO: Descripción clara de lo que falta
+// Ver: docs/archivo_relacionado.md sección X.Y
+// Ticket: JIRA-123 (opcional)
+```
+
+---
+
+## 📦 DEPENDENCIES
+
+### Core Dependencies
+
+```yaml
+# State management / DI
+get_it: ^7.6.4              # Service locator
+injectable: ^2.3.2          # Code generation para DI
+
+# Backend
+supabase_flutter: ^2.5.6    # Backend (DB, Auth, Storage)
+
+# Utils
+equatable: ^2.0.5           # Value equality
+collection: ^1.18.0         # Extensiones de colecciones
+uuid: ^4.0.0                # UUID generation
+
+# Location
+geolocator: ^11.0.0         # GPS
+geocoding: ^3.0.0           # Reverse geocoding
+
+# Storage
+shared_preferences: ^2.2.0  # Key-value storage
+
+# Logging
+logger: ^2.8.0              # Structured logging
+device_info_plus: ^12.4.0   # Device info
+package_info_plus: ^9.0.1   # App info
+
+# UI
+google_fonts: ^6.1.0        # Fuentes
+```
+
+### Dev Dependencies
+
+```yaml
+# Testing
+flutter_test:               # Testing framework
+mockito: ^5.4.4            # Mocking
+
+# Code generation
+build_runner: ^2.4.12
+injectable_generator: ^2.4.1
+
+# Linting
+flutter_lints: ^5.0.0
+
+# Media
+flutter_image_compress: ^2.1.0
+```
+
+---
+
+## 🛠️ COMANDOS ÚTILES
+
+### Development
+
+```bash
+# Run app
+flutter run
+
+# Hot reload: r (in terminal)
+# Hot restart: R
+
+# Run with flavor (futuro)
+flutter run --flavor dev --dart-define=ENV=dev
+```
+
+### Testing
+
+```bash
+# Todos los tests
+flutter test
+
+# Test específico
+flutter test test/features/gossip/data/repositories/
+
+# Con coverage
+flutter test --coverage
+
+# Watch mode (requiere package)
+flutter test --watch
+```
+
+### Code Generation
+
+```bash
+# DI (Injectable)
+flutter pub run build_runner build --delete-conflicting-outputs
+
+# Watch mode (auto-regenera)
+flutter pub run build_runner watch --delete-conflicting-outputs
+
+# Limpiar generados
+flutter pub run build_runner clean
+```
+
+### Supabase
+
+```bash
+# Iniciar local
+supabase start
+
+# Aplicar migraciones
+supabase db reset --linked
+
+# Nueva migración
+supabase migration new nombre_descriptivo
+
+# Ver estado
+supabase db status
+
+# Logs
+supabase logs
+```
+
+### Análisis y Formato
+
+```bash
+# Format código
+dart format .
+
+# Análisis estático
+flutter analyze
+
+# Fix automático (algunos)
+dart fix --apply
+```
+
+---
+
+## 📚 DOCUMENTACIÓN
+
+### Docs Importantes
+
+```
+docs/
+├── ARCHITECTURE.md                          # Arquitectura general (legacy)
+├── SUPABASE_ARCHITECTURE.md                 # Arquitectura Supabase
+├── audit_add_gossip_module.md              # Auditoría módulo gossip
+├── implementation_logging_observability.md  # Sistema de logging
+├── implementation_persistent_cache.md       # Cache persistente
+├── LOCATION_FEATURE_IMPLEMENTATION.md       # Feature de ubicación
+├── moderation_mvp.md                       # Sistema de moderación
+└── tests_status.md                         # Estado de tests
+```
+
+### Lectura Recomendada para Nuevos Cambios
+
+1. **Antes de tocar gossips:** `audit_add_gossip_module.md`
+2. **Antes de tocar ubicación:** `LOCATION_FEATURE_IMPLEMENTATION.md`
+3. **Antes de tocar moderación:** `moderation_mvp.md`
+4. **Antes de tocar Supabase:** `SUPABASE_ARCHITECTURE.md`
+
+---
+
+## 🚀 FEATURES STATUS
+
+### Implementados ✅
+- **Gossip:** CRUD completo, moderación híbrida, cache persistente
+- **Location:** Países/Regiones/Ciudades, autocomplete, GPS
+- **Logging:** Sistema estructurado + persistencia Supabase
+- **Error Handling:** Result pattern, error handler robusto
+
+### En Desarrollo 🚧
+- **Auth:** Login básico (pendiente Supabase Auth completo)
+- **Home:** Feed con filtros (básico implementado)
+- **Search:** Búsqueda simple (pendiente full-text search)
+
+### Pendientes 📋
+- **Comments:** Sistema de comentarios
+- **Reactions:** Likes/dislikes
+- **User Profile:** Perfil de usuario completo
+- **Notifications:** Sistema de notificaciones
+- **Media Upload:** Imágenes/audio a Supabase Storage
+
+---
+
+## 🎯 DECISIONES ARQUITECTÓNICAS (ADRs)
+
+### ADR-001: Clean Architecture + Feature-First
+**Decisión:** Combinar Clean Architecture con organización Feature-First
+
+**Contexto:** Necesitamos escalabilidad y mantenibilidad
+
+**Consecuencias:**
+- ✅ Features independientes y testables
+- ✅ Reglas de negocio protegidas en Domain
+- ⚠️ Más boilerplate inicial
+
+### ADR-002: Result Pattern (vs Exceptions)
+**Decisión:** Usar Result<Failure, Success> en lugar de lanzar excepciones
+
+**Contexto:** Errores son flujo normal en apps móviles (red, permisos, etc.)
+
+**Consecuencias:**
+- ✅ Errores explícitos y manejables
+- ✅ Type-safe error handling
+- ⚠️ Más verboso que try-catch
+
+### ADR-003: Injectable/GetIt (vs Provider/Riverpod)
+**Decisión:** Usar Injectable + GetIt para DI
+
+**Contexto:** Necesitamos DI puro sin acoplamiento a widgets
+
+**Consecuencias:**
+- ✅ DI puro, testable
+- ✅ Code generation automática
+- ⚠️ No integrado con widgets (usamos ChangeNotifier separado)
+
+### ADR-004: Supabase (vs Firebase)
+**Decisión:** Usar Supabase como backend
+
+**Contexto:** Open-source, PostgreSQL, RLS nativo
+
+**Consecuencias:**
+- ✅ SQL nativo, más control
+- ✅ Open-source, self-hosteable
+- ⚠️ Menos maduro que Firebase
+
+### ADR-005: Sequential Migrations (vs Timestamp)
+**Decisión:** Usar migraciones secuenciales (001, 002, ...)
+
+**Contexto:** Equipo pequeño (1 persona en desarrollo)
+
+**Consecuencias:**
+- ✅ Más legible
+- ✅ Orden claro
+- ⚠️ Puede haber conflictos en equipos grandes (no aplica)
+
+### ADR-006: Logging a Supabase (vs Sentry)
+**Decisión:** Logger estructurado + persistencia en Supabase
+
+**Contexto:** MVP, control de costos, datos propios
+
+**Consecuencias:**
+- ✅ Sin costos adicionales
+- ✅ Control total de datos
+- ✅ Escalable a Sentry después
+- ⚠️ Sin dashboard visual (inicialmente)
+
+---
+
+## 🔄 FLUJOS COMUNES
+
+### Agregar un Nuevo Feature
+
+1. **Crear estructura:**
+   ```
+   lib/features/my_feature/
+   ├── data/
+   │   ├── datasources/
+   │   ├── models/
+   │   └── repositories/
+   ├── domain/
+   │   ├── entities/
+   │   ├── repositories/
+   │   └── usecases/
+   └── presentation/
+       ├── controllers/
+       ├── screens/
+       └── widgets/
+   ```
+
+2. **Crear tests:**
+   ```
+   test/features/my_feature/
+   ├── data/
+   ├── domain/
+   └── presentation/
+   ```
+
+3. **Registrar DI (si necesario):**
+   ```dart
+   // lib/features/my_feature/di/my_feature_module.dart
+   @module
+   abstract class MyFeatureModule {
+     // Dependencies aquí
+   }
+   ```
+
+4. **Regenerar DI:**
+   ```bash
+   flutter pub run build_runner build --delete-conflicting-outputs
+   ```
+
+### Agregar Migración Supabase
+
+1. **Crear archivo:**
+   ```bash
+   # Opción A: Manual (recomendado)
+   touch supabase/migrations/005_descriptive_name.sql
+   
+   # Opción B: Con CLI (genera número auto)
+   supabase migration new descriptive_name
+   ```
+
+2. **Escribir SQL:**
+   ```sql
+   -- Descripción de lo que hace la migración
+   
+   CREATE TABLE IF NOT EXISTS my_table (...);
+   
+   ALTER TABLE my_table ENABLE ROW LEVEL SECURITY;
+   
+   CREATE POLICY "..." ON my_table ...;
+   ```
+
+3. **Aplicar:**
+   ```bash
+   supabase db reset --linked
+   ```
+
+### Agregar Logging a un Servicio
+
+1. **Inyectar logger:**
+   ```dart
+   @injectable
+   class MyService {
+     final AppLogger _logger;
+     
+     MyService(this._logger);
+   }
+   ```
+
+2. **Usar en código:**
+   ```dart
+   try {
+     _logger.i('Operation started');
+     // Logic
+     _logger.i('Operation completed', context: {'id': result.id});
+   } catch (error, stackTrace) {
+     _logger.e('Operation failed',
+       error: error,
+       stackTrace: stackTrace,
+       context: {'operation': 'myOperation'},
+     );
+   }
+   ```
+
+---
+
+## ❗ IMPORTANTE: LO QUE NO HACER
+
+### ❌ Anti-Patterns
+
+```dart
+// ❌ NO usar print() o debugPrint() - Usar logger
+print('Debug info');
+
+// ❌ NO lanzar excepciones desde repositories
+throw Exception('Error');
+
+// ❌ NO usar imports absolutos dentro del proyecto
+import 'package:chismes/features/gossip/...';
+
+// ❌ NO poner lógica de negocio en controllers/widgets
+if (input.length > 200) { ... }  // Esto va en Domain
+
+// ❌ NO acceder directamente a data sources desde presentation
+final data = await remoteDataSource.getData();  // Usar repository
+
+// ❌ NO hardcodear strings de UI
+Text('Hola Mundo');  // Usar constants o i18n
+
+// ❌ NO commitear secrets
+const apiKey = 'sk-xxx';  // Usar .env
+```
+
+### ✅ Best Practices
+
+```dart
+// ✅ Usar logger con context
+_logger.i('User logged in', context: {'userId': user.id});
+
+// ✅ Retornar Result
+return Result.success(data);
+
+// ✅ Imports relativos
+import '../../domain/entities/gossip.dart';
+
+// ✅ Validaciones en Domain
+final validation = GossipValidator.validateSubject(input.subject);
+if (validation.isInvalid) return Result.failure(validation);
+
+// ✅ Usar repository desde presentation
+final result = await _repository.getGossips(query);
+
+// ✅ Constantes
+const kMaxTitleLength = 200;
+Text(AppStrings.hello);
+
+// ✅ Usar .env
+final apiKey = dotenv.env['API_KEY']!;
+```
+
+---
+
+## 📞 AYUDA Y RECURSOS
+
+### Cuando Necesites Ayuda
+
+1. **Lee la documentación relevante** en `docs/`
+2. **Revisa este CLAUDE.md** para patrones y convenciones
+3. **Busca ejemplos** en features existentes (gossip es el más completo)
+4. **Pregunta al usuario** si hay decisiones técnicas importantes
+
+### Recursos Externos
+
+- **Flutter:** https://flutter.dev/docs
+- **Dart:** https://dart.dev/guides
+- **Supabase:** https://supabase.com/docs
+- **Injectable:** https://pub.dev/packages/injectable
+- **Clean Architecture:** https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
+
+---
+
+## 📊 MÉTRICAS DEL PROYECTO
+
+**Última actualización:** 2026-10-19
+
+```
+Archivos Dart:        80
+Features:             4 (gossip, location, home, search)
+Tests:                >150
+Coverage:             ~75% (objetivo: >80%)
+Líneas de código:     ~8,000
+Migraciones:          4
+```
+
+---
+
+## 🎓 ONBOARDING CHECKLIST
+
+Para nuevas sesiones de Claude o desarrolladores:
+
+- [ ] Leer este CLAUDE.md completo
+- [ ] Revisar estructura de carpetas
+- [ ] Leer `docs/audit_add_gossip_module.md` (feature completo)
+- [ ] Ejecutar `flutter test` para verificar entorno
+- [ ] Revisar un feature completo (gossip recomendado)
+- [ ] Entender Result pattern y error handling
+- [ ] Familiarizarse con logging system
+- [ ] Revisar migraciones Supabase
+- [ ] Configurar .env con credenciales
+
+---
+
+**Última actualización:** 2026-10-19  
+**Versión:** 1.0.0  
+**Mantenedor:** Alejo (con Claude Code)
