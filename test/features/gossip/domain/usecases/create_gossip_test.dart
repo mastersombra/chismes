@@ -71,6 +71,19 @@ void main() {
     mockRepository = MockGossipRepository();
     mockAuthRepository = MockAuthRepository();
     mockLogger = MockAppLogger();
+
+    // Stub para getCurrentUser - retorna usuario autenticado con email verificado
+    final validUser = User(
+      id: 'user-123',
+      email: 'test@example.com',
+      emailVerified: true,
+      profileCompleted: true,
+      createdAt: DateTime.now(),
+    );
+    when(mockAuthRepository.getCurrentUser()).thenAnswer(
+      (_) async => Result.success(validUser),
+    );
+
     useCase = CreateGossip(
       repository: mockRepository,
       authRepository: mockAuthRepository,
