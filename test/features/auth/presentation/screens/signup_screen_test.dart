@@ -14,6 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
+import '../../../../helpers/widget_test_wrapper.dart';
 import 'signup_screen_test.mocks.dart';
 
 @GenerateMocks([SignupController])
@@ -44,7 +45,7 @@ void main() {
   });
 
   Widget makeTestableWidget(Widget child) {
-    return MaterialApp(home: child);
+    return testableWidget(child: child, useScaffold: false);
   }
 
   group('SignupScreen', () {
