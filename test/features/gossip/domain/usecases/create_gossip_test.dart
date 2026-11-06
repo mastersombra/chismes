@@ -10,6 +10,7 @@ import 'package:chismes/core/error/failure.dart';
 import 'package:chismes/core/error/error_codes.dart' as error_codes;
 import 'package:chismes/core/logging/logging.dart';
 import 'package:chismes/features/auth/domain/repositories/auth_repository.dart';
+import 'package:chismes/features/auth/domain/entities/user.dart';
 
 import 'create_gossip_test.mocks.dart';
 
@@ -44,6 +45,18 @@ void main() {
           createdBy: 'dummy',
           modifiedAt: null,
           modifiedBy: null,
+        ),
+      ),
+    );
+
+    provideDummy<Result<Failure, User?>>(
+      Result.success(
+        User(
+          id: 'dummy',
+          email: 'dummy@example.com',
+          emailVerified: true,
+          profileCompleted: true,
+          createdAt: DateTime.now(),
         ),
       ),
     );
