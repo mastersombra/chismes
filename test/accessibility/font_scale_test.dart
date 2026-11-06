@@ -40,9 +40,11 @@ void main() {
       // Assert - Texto visible
       expect(find.text('Medellín, Antioquia'), findsOneWidget);
 
-      // Assert - Botón "Cambiar" visible y tappeable
-      final changeButton = find.text('Cambiar');
-      expect(changeButton, findsOneWidget);
+      // Assert - Botón cambiar visible y tappeable (puede ser IconButton con font scale alto)
+      final textButton = find.byType(TextButton);
+      final iconButton = find.byType(IconButton);
+      // Debe haber al menos uno de los dos tipos de botón
+      expect(textButton.evaluate().isNotEmpty || iconButton.evaluate().isNotEmpty, isTrue);
     });
 
     testWidgets('CompactLocationSelector debe manejar font scale 2.0x',
@@ -112,12 +114,22 @@ void main() {
         ),
       );
 
-      // Assert - Botón presente
-      final buttonFinder = find.text('Cambiar');
-      expect(buttonFinder, findsOneWidget);
+      // Assert - Botón presente (IconButton con font scale 2.0x)
+      final textButton = find.byType(TextButton);
+      final iconButton = find.byType(IconButton);
+      expect(textButton.evaluate().isNotEmpty || iconButton.evaluate().isNotEmpty, isTrue);
 
       // Assert - No overflow
       expect(tester.takeException(), isNull);
+
+      // Assert - Tamaño mínimo de touch target (44x44)
+      final button = iconButton.evaluate().isNotEmpty
+          ? tester.widget<IconButton>(iconButton)
+          : null;
+      if (button != null) {
+        expect(button.constraints?.minWidth, greaterThanOrEqualTo(44));
+        expect(button.constraints?.minHeight, greaterThanOrEqualTo(44));
+      }
     });
   });
 

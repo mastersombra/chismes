@@ -128,6 +128,14 @@ class AppLocalizations {
   static String get passwordNeedsSpecial => 'auth.validation.password_needs_special'.tr();
   static String get passwordsMustMatch => 'auth.validation.passwords_must_match'.tr();
 
+  // =====================================================
+  // AUTH - PASSWORD FIELD
+  // =====================================================
+
+  static String get passwordFieldLabel => 'auth.password_field.label'.tr();
+  static String get passwordFieldShow => 'auth.password_field.show'.tr();
+  static String get passwordFieldHide => 'auth.password_field.hide'.tr();
+
   static String get usernameRequired => 'auth.validation.username_required'.tr();
   static String get usernameTooShort => 'auth.validation.username_too_short'.tr();
   static String get usernameTooLong => 'auth.validation.username_too_long'.tr();
@@ -178,19 +186,109 @@ class AppLocalizations {
   static String get forget => 'common.forget'.tr();
   static String get permanentlyDelete => 'common.permanently_delete'.tr();
   static String get enterPassword => 'common.enter_password'.tr();
+  static String get commonRetry => 'common.retry'.tr();
 
   // =====================================================
   // GOSSIP
   // =====================================================
 
   static String get gossipDetailTitle => 'gossip.detail_screen.title'.tr();
+
+  // GOSSIP - LOCATION
+  static String get locationCityLabel => 'gossip.location.city_label'.tr();
+  static String get locationCityHint => 'gossip.location.city_hint'.tr();
+  static String locationCitySearchHint(int minChars) => 'gossip.location.city_search_hint'.tr(namedArgs: {'minChars': minChars.toString()});
+  static String get locationCountryLabel => 'gossip.location.country_label'.tr();
+  static String get locationCountryRequired => 'gossip.location.country_required'.tr();
+  static String get locationRegionLabel => 'gossip.location.region_label'.tr();
+  static String get locationRegionRequired => 'gossip.location.region_required'.tr();
+  static String get locationCityRequired => 'gossip.location.city_required'.tr();
+  static String get locationSearchError => 'gossip.location.search_error'.tr();
+  static String get locationUnexpectedError => 'gossip.location.unexpected_error'.tr();
+  static String locationMinCharsMessage(int minChars) => 'gossip.location.min_chars_message'.tr(namedArgs: {'minChars': minChars.toString()});
+  static String locationNoResults(String query) => 'gossip.location.no_results'.tr(namedArgs: {'query': query});
+  static String get locationChangeDialogTitle => 'gossip.location.change_dialog_title'.tr();
+  static String get locationUseCurrentLocation => 'gossip.location.use_current_location'.tr();
+  static String get locationGpsDetectSubtitle => 'gossip.location.gps_detect_subtitle'.tr();
+  static String get locationOrSelectManually => 'gossip.location.or_select_manually'.tr();
+
+  // GOSSIP - MEDIA
   static String get gossipMediaCamera => 'gossip.media.camera'.tr();
   static String get gossipMediaGallery => 'gossip.media.gallery'.tr();
   static String get gossipMediaAddImage => 'gossip.media.add_image'.tr();
   static String get gossipMediaAddAudio => 'gossip.media.add_audio'.tr();
   static String get gossipMediaAudioAttached => 'gossip.media.audio_attached'.tr();
+  static String get gossipMediaImageSelected => 'gossip.media.image_selected'.tr();
+  static String get gossipMediaSelectingImage => 'gossip.media.selecting_image'.tr();
+  static String get gossipMediaAddPhotoOptional => 'gossip.media.add_photo_optional'.tr();
+  static String get gossipMediaRemoveImageTooltip => 'gossip.media.remove_image_tooltip'.tr();
+  static String get gossipMediaImageSemanticLabel => 'gossip.media.image_semantic_label'.tr();
+  static String get gossipMediaRemoveImageSemanticLabel => 'gossip.media.remove_image_semantic_label'.tr();
+  static String get gossipMediaRemoveImageSemanticHint => 'gossip.media.remove_image_semantic_hint'.tr();
+  static String get gossipMediaSelectingSemanticLabel => 'gossip.media.selecting_semantic_label'.tr();
+  static String get gossipMediaLoadingSemantic => 'gossip.media.loading_semantic'.tr();
+  static String get gossipMediaCameraSemanticLabel => 'gossip.media.camera_semantic_label'.tr();
+  static String get gossipMediaCameraSemanticHint => 'gossip.media.camera_semantic_hint'.tr();
+  static String get gossipMediaGallerySemanticLabel => 'gossip.media.gallery_semantic_label'.tr();
+  static String get gossipMediaGallerySemanticHint => 'gossip.media.gallery_semantic_hint'.tr();
+
+  // GOSSIP - CARD
+  static String get gossipCardReportError => 'gossip.card.report_error'.tr();
+  static String get gossipCardRateLimitError => 'gossip.card.rate_limit_error'.tr();
+  static String gossipCardSemanticLabel(String subject, String content) => 'gossip.card.semantic_label'.tr(namedArgs: {'subject': subject, 'content': content});
+  static String get gossipCardSemanticHint => 'gossip.card.semantic_hint'.tr();
+  static String get gossipCardShareTooltip => 'gossip.card.share_tooltip'.tr();
+  static String get gossipCardShareSemanticLabel => 'gossip.card.share_semantic_label'.tr();
+  static String get gossipCardShareSemanticHint => 'gossip.card.share_semantic_hint'.tr();
+  static String get gossipCardReportTooltip => 'gossip.card.report_tooltip'.tr();
+  static String get gossipCardReportSemanticLabel => 'gossip.card.report_semantic_label'.tr();
+  static String get gossipCardReportSemanticHint => 'gossip.card.report_semantic_hint'.tr();
+
+  // GOSSIP - REPORT
   static String get gossipReportTitle => 'gossip.report.title'.tr();
   static String get gossipReportButton => 'gossip.report.button'.tr();
+  static String get gossipReportReasonQuestion => 'gossip.report.reason_question'.tr();
+  static String get gossipReportDetailsLabel => 'gossip.report.details_label'.tr();
+  static String get gossipReportDetailsHint => 'gossip.report.details_hint'.tr();
+
+  // GOSSIP - SUBMIT BUTTON
+  static String get gossipSubmitButtonPublishSemantic => 'gossip.submit_button.publish_semantic'.tr();
+
+  // =====================================================
+  // HOME
+  // =====================================================
+
+  static String get homePopularLoadError => 'home.error.load_failed'.tr();
+  static String get homePopularEmpty => 'home.popular.empty'.tr();
+  static String get homePopularNoMore => 'home.popular.no_more'.tr();
+  static String get homeFollowingUnexpectedError => 'home.following.unexpected_error'.tr();
+  static String get homeFollowingRecommendedError => 'home.following.recommended_error'.tr();
+
+  // =====================================================
+  // PROFILE - STATS
+  // =====================================================
+
+  static String get profileStatsTitle => 'profile.stats.title'.tr();
+  static String get profileStatsGossips => 'profile.stats.gossips'.tr();
+  static String get profileStatsComments => 'profile.stats.comments'.tr();
+  static String get profileStatsFollowers => 'profile.stats.followers'.tr();
+  static String get profileStatsFollowing => 'profile.stats.following'.tr();
+
+  // =====================================================
+  // PROFILE - HEADER
+  // =====================================================
+
+  static String get profileHeaderNoName => 'profile.header.no_name'.tr();
+  static String get profileHeaderEmailVerified => 'profile.header.email_verified'.tr();
+  static String get profileHeaderCompleteness => 'profile.header.completeness'.tr();
+
+  // =====================================================
+  // PROFILE - CONTROLLER
+  // =====================================================
+
+  static String get profileControllerLoadError => 'profile.controller.load_error'.tr();
+  static String get profileControllerUpdateError => 'profile.controller.update_error'.tr();
+  static String get profileControllerSignoutError => 'profile.controller.signout_error'.tr();
 
   // =====================================================
   // PROFILE - PRIVACY SETTINGS

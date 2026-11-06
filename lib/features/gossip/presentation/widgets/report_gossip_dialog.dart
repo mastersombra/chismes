@@ -34,9 +34,9 @@ class _ReportGossipDialogState extends State<ReportGossipDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              '¿Por qué reportas este chisme?',
-              style: TextStyle(fontWeight: FontWeight.w500),
+            Text(
+              AppLocalizations.gossipReportReasonQuestion,
+              style: const TextStyle(fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: AppSpacing.md),
 
@@ -70,10 +70,10 @@ class _ReportGossipDialogState extends State<ReportGossipDialog> {
             // Campo de detalles opcionales
             TextField(
               controller: _detailsController,
-              decoration: const InputDecoration(
-                labelText: 'Detalles adicionales (opcional)',
-                hintText: 'Describe el problema...',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: AppLocalizations.gossipReportDetailsLabel,
+                hintText: AppLocalizations.gossipReportDetailsHint,
+                border: const OutlineInputBorder(),
               ),
               maxLines: 3,
               maxLength: 500,

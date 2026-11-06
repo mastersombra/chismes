@@ -11,10 +11,27 @@ import 'package:chismes/core/logging/log_level.dart';
   SupabaseQueryBuilder,
   FunctionsClient,
   FunctionResponse,
+  GoTrueClient,
+  Session,
 ])
 import 'remote_logger_test.mocks.dart';
 
 void main() {
+  /// Helper para configurar mocks de SupabaseClient con auth
+  MockSupabaseClient setupMockSupabaseClient({
+    required MockFunctionsClient functions,
+  }) {
+    final mockClient = MockSupabaseClient();
+    final mockAuth = MockGoTrueClient();
+    final mockSession = MockSession();
+
+    when(mockClient.auth).thenReturn(mockAuth);
+    when(mockAuth.currentSession).thenReturn(mockSession);
+    when(mockClient.functions).thenReturn(functions);
+
+    return mockClient;
+  }
+
   group('MockRemoteLogger', () {
     late MockRemoteLogger logger;
 

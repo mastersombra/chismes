@@ -6,30 +6,57 @@ import 'package:chismes/features/home/presentation/screens/home_screen.dart';
 import 'package:chismes/features/gossip/domain/entities/gossip.dart';
 import 'package:chismes/features/gossip/domain/usecases/get_gossips.dart';
 import 'package:chismes/features/gossip/presentation/widgets/gossip_card.dart';
+import 'package:chismes/features/home/presentation/controllers/popular_tab_controller.dart';
+import 'package:chismes/features/home/presentation/controllers/following_tab_controller.dart';
+import 'package:chismes/features/home/presentation/states/popular_tab_state.dart';
+import 'package:chismes/features/home/presentation/states/following_tab_state.dart';
+import 'package:chismes/features/home/domain/entities/feed_gossip.dart';
 import 'package:chismes/core/result/result.dart';
 import 'package:chismes/core/error/failure.dart';
 import 'package:chismes/core/error/error_codes.dart';
 import 'package:chismes/core/di/injection_container.dart';
 
+import '../../../../helpers/widget_test_wrapper.dart';
 import 'home_screen_test.mocks.dart';
 
-@GenerateMocks([GetGossips])
+@GenerateNiceMocks([
+  MockSpec<GetGossips>(),
+  MockSpec<PopularTabController>(),
+  MockSpec<FollowingTabController>(),
+])
 void main() {
   late MockGetGossips mockGetGossips;
+  late MockPopularTabController mockPopularTabController;
+  late MockFollowingTabController mockFollowingTabController;
 
   setUp(() {
     mockGetGossips = MockGetGossips();
+    mockPopularTabController = MockPopularTabController();
+    mockFollowingTabController = MockFollowingTabController();
 
     // Proporcionar dummy value
     provideDummy<Result<Failure, List<Gossip>>>(
       Result.success(<Gossip>[]),
     );
 
-    // Limpiar y registrar mock en getIt
+    // Setup mocks de controllers con estado inicial vacío (se configura por test)
+    when(mockPopularTabController.state).thenReturn(const PopularTabState());
+    when(mockFollowingTabController.state).thenReturn(const FollowingTabState());
+
+    // Limpiar y registrar mocks en getIt
     if (getIt.isRegistered<GetGossips>()) {
       getIt.unregister<GetGossips>();
     }
+    if (getIt.isRegistered<PopularTabController>()) {
+      getIt.unregister<PopularTabController>();
+    }
+    if (getIt.isRegistered<FollowingTabController>()) {
+      getIt.unregister<FollowingTabController>();
+    }
+
     getIt.registerSingleton<GetGossips>(mockGetGossips);
+    getIt.registerSingleton<PopularTabController>(mockPopularTabController);
+    getIt.registerSingleton<FollowingTabController>(mockFollowingTabController);
   });
 
   tearDown(() {
@@ -37,7 +64,56 @@ void main() {
     if (getIt.isRegistered<GetGossips>()) {
       getIt.unregister<GetGossips>();
     }
+    if (getIt.isRegistered<PopularTabController>()) {
+      getIt.unregister<PopularTabController>();
+    }
+    if (getIt.isRegistered<FollowingTabController>()) {
+      getIt.unregister<FollowingTabController>();
+    }
   });
+
+  // Mock data for tests
+  final mockFeedGossips = [
+    FeedGossip(
+      id: 'test-1',
+      subject: 'Test Subject 1',
+      content: 'Test Content 1',
+      cityId: 'med',
+      createdAt: DateTime.now(),
+      likes: 10,
+      comments: 5,
+      shares: 2,
+      publishedAs: 'anonymous',
+      createdBy: null,
+      imageUrl: 'https://example.com/image1.jpg',
+      score: 85.0,
+      isFromMyCity: true,
+      isTrending: false,
+    ),
+    FeedGossip(
+      id: 'test-2',
+      subject: 'Test Subject 2',
+      content: 'Test Content 2',
+      cityId: 'med',
+      createdAt: DateTime.now(),
+      likes: 20,
+      comments: 10,
+      shares: 5,
+      publishedAs: 'anonymous',
+      createdBy: null,
+      imageUrl: 'https://example.com/image2.jpg',
+      score: 90.0,
+      isFromMyCity: true,
+      isTrending: false,
+    ),
+  ];
+
+  Widget createTestWidget() {
+    return testableWidget(
+      child: const HomeScreen(),
+      useScaffold: false,
+    );
+  }
 
   group('HomeScreen', () {
     final mockGossips = [
@@ -92,13 +168,10 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
-      expect(find.text('Chismes 🔥'), findsOneWidget);
+      expect(find.text('Descubre 👀'), findsOneWidget);
       expect(find.byType(AppBar), findsOneWidget);
     });
 
@@ -107,11 +180,8 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       expect(find.byType(Scaffold), findsOneWidget);
     });
@@ -121,60 +191,45 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       expect(find.byType(RefreshIndicator), findsOneWidget);
     });
 
     testWidgets('debe renderizar GridView', (tester) async {
-      when(mockGetGossips()).thenAnswer(
-        (_) async => Result.success(mockGossips),
-      );
-
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
+      // Configurar estado con gossips
+      when(mockPopularTabController.state).thenReturn(
+        PopularTabState(
+          status: PopularTabStatus.loaded,
+          gossips: mockFeedGossips,
         ),
       );
 
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       expect(find.byType(GridView), findsOneWidget);
     });
 
     testWidgets('debe cargar gossips al iniciar', (tester) async {
-      when(mockGetGossips()).thenAnswer(
-        (_) async => Result.success(mockGossips),
-      );
-
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
-      // Esperar a que cargue
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Debe llamar a GetGossips
-      verify(mockGetGossips()).called(1);
+      // Debe llamar a loadFeed del controller
+      verify(mockPopularTabController.loadFeed()).called(1);
     });
 
     testWidgets('debe mostrar GossipCards cuando hay datos', (tester) async {
-      when(mockGetGossips()).thenAnswer(
-        (_) async => Result.success(mockGossips),
-      );
-
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
+      // Configurar estado con gossips
+      when(mockPopularTabController.state).thenReturn(
+        PopularTabState(
+          status: PopularTabStatus.loaded,
+          gossips: mockFeedGossips,
         ),
       );
 
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       expect(find.byType(GossipCard), findsNWidgets(2));
@@ -185,12 +240,7 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       final gridView = tester.widget<GridView>(find.byType(GridView));
@@ -203,12 +253,7 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       final gridView = tester.widget<GridView>(find.byType(GridView));
@@ -221,12 +266,7 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       final gridView = tester.widget<GridView>(find.byType(GridView));
@@ -239,12 +279,7 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       final gridView = tester.widget<GridView>(find.byType(GridView));
@@ -257,12 +292,7 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       final padding = tester.widget<Padding>(
@@ -279,12 +309,7 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       final gridView = tester.widget<GridView>(find.byType(GridView));
@@ -296,12 +321,7 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       // Verificar que se llamó una vez al cargar
@@ -320,12 +340,7 @@ void main() {
         (_) async => Result.success([]),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       expect(find.byType(GossipCard), findsNothing);
@@ -341,12 +356,7 @@ void main() {
         ),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       // No debe mostrar cards si hay error
@@ -358,11 +368,8 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       expect(find.byType(HomeScreen), findsOneWidget);
       final widget = tester.widget(find.byType(HomeScreen));
@@ -374,12 +381,7 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       final gridView = tester.widget<GridView>(find.byType(GridView));
@@ -391,12 +393,7 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       final gridView = tester.widget<GridView>(find.byType(GridView));
@@ -411,12 +408,7 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       // Debe haber un GossipCard por cada gossip
@@ -428,12 +420,7 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       final refreshIndicator = find.ancestor(
@@ -448,12 +435,7 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       // Verificar jerarquía
@@ -472,12 +454,7 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       final gridView = tester.widget<GridView>(find.byType(GridView));
@@ -490,12 +467,7 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       // Solo debe llamarse una vez al iniciar
@@ -507,12 +479,7 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       // Debe haber gossips
@@ -534,12 +501,7 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       // Primer refresh
@@ -566,12 +528,7 @@ void main() {
         ),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       // No debe haber cards por el error
@@ -596,12 +553,7 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       // Debe haber cards
@@ -635,12 +587,7 @@ void main() {
         ),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       expect(find.byType(GossipCard), findsNothing);
@@ -651,12 +598,7 @@ void main() {
         (_) async => Result.success([mockGossips.first]),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       expect(find.byType(GossipCard), findsOneWidget);
@@ -693,12 +635,7 @@ void main() {
         (_) async => Result.success(manyGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       // El GridView solo renderiza los widgets visibles
@@ -737,12 +674,7 @@ void main() {
         (_) async => Result.success(manyGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       // Hacer scroll hacia abajo
@@ -758,12 +690,7 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       // El onRefresh debe ser async y completar
@@ -785,22 +712,14 @@ void main() {
         (_) async => Result.success(mockGossips),
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
-
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       expect(find.byType(GossipCard), findsNWidgets(2));
 
       // Rebuild sin cambios
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: HomeScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       // Debe seguir mostrando los mismos gossips
       expect(find.byType(GossipCard), findsNWidgets(2));

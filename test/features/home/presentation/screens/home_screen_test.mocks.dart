@@ -3,19 +3,28 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i4;
+import 'dart:async' as _i6;
+import 'dart:ui' as _i13;
 
-import 'package:chismes/core/error/failure.dart' as _i6;
-import 'package:chismes/core/result/result.dart' as _i5;
-import 'package:chismes/features/gossip/domain/entities/gossip.dart' as _i7;
+import 'package:chismes/core/error/failure.dart' as _i8;
+import 'package:chismes/core/result/result.dart' as _i7;
+import 'package:chismes/features/gossip/domain/entities/gossip.dart' as _i9;
 import 'package:chismes/features/gossip/domain/entities/gossip_query.dart'
-    as _i8;
+    as _i10;
 import 'package:chismes/features/gossip/domain/repositories/gossip_repository.dart'
     as _i2;
 import 'package:chismes/features/gossip/domain/usecases/get_gossips.dart'
+    as _i5;
+import 'package:chismes/features/home/presentation/controllers/following_tab_controller.dart'
+    as _i14;
+import 'package:chismes/features/home/presentation/controllers/popular_tab_controller.dart'
+    as _i12;
+import 'package:chismes/features/home/presentation/states/following_tab_state.dart'
+    as _i4;
+import 'package:chismes/features/home/presentation/states/popular_tab_state.dart'
     as _i3;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i9;
+import 'package:mockito/src/dummies.dart' as _i11;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -38,14 +47,22 @@ class _FakeGossipRepository_0 extends _i1.SmartFake
     : super(parent, parentInvocation);
 }
 
+class _FakePopularTabState_1 extends _i1.SmartFake
+    implements _i3.PopularTabState {
+  _FakePopularTabState_1(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeFollowingTabState_2 extends _i1.SmartFake
+    implements _i4.FollowingTabState {
+  _FakeFollowingTabState_2(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
 /// A class which mocks [GetGossips].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockGetGossips extends _i1.Mock implements _i3.GetGossips {
-  MockGetGossips() {
-    _i1.throwOnMissingStub(this);
-  }
-
+class MockGetGossips extends _i1.Mock implements _i5.GetGossips {
   @override
   _i2.GossipRepository get repository =>
       (super.noSuchMethod(
@@ -54,22 +71,204 @@ class MockGetGossips extends _i1.Mock implements _i3.GetGossips {
               this,
               Invocation.getter(#repository),
             ),
+            returnValueForMissingStub: _FakeGossipRepository_0(
+              this,
+              Invocation.getter(#repository),
+            ),
           )
           as _i2.GossipRepository);
 
   @override
-  _i4.Future<_i5.Result<_i6.Failure, List<_i7.Gossip>>> call([
-    _i8.GossipQuery? query,
+  _i6.Future<_i7.Result<_i8.Failure, List<_i9.Gossip>>> call([
+    _i10.GossipQuery? query,
   ]) =>
       (super.noSuchMethod(
             Invocation.method(#call, [query]),
             returnValue:
-                _i4.Future<_i5.Result<_i6.Failure, List<_i7.Gossip>>>.value(
-                  _i9.dummyValue<_i5.Result<_i6.Failure, List<_i7.Gossip>>>(
+                _i6.Future<_i7.Result<_i8.Failure, List<_i9.Gossip>>>.value(
+                  _i11.dummyValue<_i7.Result<_i8.Failure, List<_i9.Gossip>>>(
+                    this,
+                    Invocation.method(#call, [query]),
+                  ),
+                ),
+            returnValueForMissingStub:
+                _i6.Future<_i7.Result<_i8.Failure, List<_i9.Gossip>>>.value(
+                  _i11.dummyValue<_i7.Result<_i8.Failure, List<_i9.Gossip>>>(
                     this,
                     Invocation.method(#call, [query]),
                   ),
                 ),
           )
-          as _i4.Future<_i5.Result<_i6.Failure, List<_i7.Gossip>>>);
+          as _i6.Future<_i7.Result<_i8.Failure, List<_i9.Gossip>>>);
+}
+
+/// A class which mocks [PopularTabController].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockPopularTabController extends _i1.Mock
+    implements _i12.PopularTabController {
+  @override
+  _i3.PopularTabState get state =>
+      (super.noSuchMethod(
+            Invocation.getter(#state),
+            returnValue: _FakePopularTabState_1(
+              this,
+              Invocation.getter(#state),
+            ),
+            returnValueForMissingStub: _FakePopularTabState_1(
+              this,
+              Invocation.getter(#state),
+            ),
+          )
+          as _i3.PopularTabState);
+
+  @override
+  bool get hasListeners =>
+      (super.noSuchMethod(
+            Invocation.getter(#hasListeners),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
+
+  @override
+  _i6.Future<void> loadFeed() =>
+      (super.noSuchMethod(
+            Invocation.method(#loadFeed, []),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> refresh() =>
+      (super.noSuchMethod(
+            Invocation.method(#refresh, []),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> loadMore() =>
+      (super.noSuchMethod(
+            Invocation.method(#loadMore, []),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> loadNewGossips() =>
+      (super.noSuchMethod(
+            Invocation.method(#loadNewGossips, []),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  void dispose() => super.noSuchMethod(
+    Invocation.method(#dispose, []),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void addListener(_i13.VoidCallback? listener) => super.noSuchMethod(
+    Invocation.method(#addListener, [listener]),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void removeListener(_i13.VoidCallback? listener) => super.noSuchMethod(
+    Invocation.method(#removeListener, [listener]),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void notifyListeners() => super.noSuchMethod(
+    Invocation.method(#notifyListeners, []),
+    returnValueForMissingStub: null,
+  );
+}
+
+/// A class which mocks [FollowingTabController].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockFollowingTabController extends _i1.Mock
+    implements _i14.FollowingTabController {
+  @override
+  _i4.FollowingTabState get state =>
+      (super.noSuchMethod(
+            Invocation.getter(#state),
+            returnValue: _FakeFollowingTabState_2(
+              this,
+              Invocation.getter(#state),
+            ),
+            returnValueForMissingStub: _FakeFollowingTabState_2(
+              this,
+              Invocation.getter(#state),
+            ),
+          )
+          as _i4.FollowingTabState);
+
+  @override
+  bool get hasListeners =>
+      (super.noSuchMethod(
+            Invocation.getter(#hasListeners),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
+
+  @override
+  _i6.Future<void> loadFeed() =>
+      (super.noSuchMethod(
+            Invocation.method(#loadFeed, []),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> refresh() =>
+      (super.noSuchMethod(
+            Invocation.method(#refresh, []),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> loadMore() =>
+      (super.noSuchMethod(
+            Invocation.method(#loadMore, []),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  void dispose() => super.noSuchMethod(
+    Invocation.method(#dispose, []),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void addListener(_i13.VoidCallback? listener) => super.noSuchMethod(
+    Invocation.method(#addListener, [listener]),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void removeListener(_i13.VoidCallback? listener) => super.noSuchMethod(
+    Invocation.method(#removeListener, [listener]),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void notifyListeners() => super.noSuchMethod(
+    Invocation.method(#notifyListeners, []),
+    returnValueForMissingStub: null,
+  );
 }

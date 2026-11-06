@@ -113,6 +113,11 @@
       "user_not_found": "User not found",
       "network_error": "Network error",
       "unknown_error": "Unknown error"
+    },
+    "password_field": {
+      "label": "Password",
+      "show": "Show password",
+      "hide": "Hide password"
     }
   },
   "errors": {
@@ -198,7 +203,8 @@
     "back": "Back",
     "close": "Close",
     "forget": "Forget",
-    "permanently_delete": "Permanently delete"
+    "permanently_delete": "Permanently delete",
+    "retry": "Retry"
   },
   "navigation": {
     "home": "Home",
@@ -228,6 +234,24 @@
       "content_hint": "Tell us what you know...",
       "content_validation": "Tell the gossip"
     },
+    "location": {
+      "city_label": "City",
+      "city_hint": "Search city...",
+      "city_search_hint": "Search city... (min. {minChars} characters)",
+      "country_label": "Country",
+      "country_required": "Select a country",
+      "region_label": "Region",
+      "region_required": "Select a region",
+      "city_required": "Select a city",
+      "search_error": "Error searching cities. Please try again.",
+      "unexpected_error": "Unexpected error. Please try again.",
+      "min_chars_message": "Type at least {minChars} characters to search",
+      "no_results": "No cities found with \"{query}\"",
+      "change_dialog_title": "Change location",
+      "use_current_location": "Use my current location",
+      "gps_detect_subtitle": "Detect automatically with GPS",
+      "or_select_manually": "Or select manually"
+    },
     "location_selector": {
       "semantic_label_detecting": "Automatically detecting location",
       "semantic_label_selected": "Current location: {location}",
@@ -247,18 +271,47 @@
     },
     "card": {
       "share_error": "Error sharing",
-      "report_success": "Thanks for your report. We'll review it soon."
+      "report_success": "Thanks for your report. We'll review it soon.",
+      "report_error": "Error reporting",
+      "rate_limit_error": "Rate limit reached",
+      "semantic_label": "Gossip: {subject}. {content}",
+      "semantic_hint": "Tap to view full details",
+      "share_tooltip": "Share gossip",
+      "share_semantic_label": "Share this gossip",
+      "share_semantic_hint": "Opens options to share with others",
+      "report_tooltip": "Report gossip",
+      "report_semantic_label": "Report this gossip",
+      "report_semantic_hint": "Opens options to report inappropriate content"
     },
     "media": {
       "camera": "Camera",
       "gallery": "Gallery",
       "add_image": "Add image",
       "add_audio": "Add audio",
-      "audio_attached": "Audio attached"
+      "audio_attached": "Audio attached",
+      "image_selected": "Image selected",
+      "selecting_image": "Selecting image...",
+      "add_photo_optional": "Add a photo (optional)",
+      "remove_image_tooltip": "Remove image",
+      "image_semantic_label": "Selected gossip image",
+      "remove_image_semantic_label": "Remove image",
+      "remove_image_semantic_hint": "Removes the selected image",
+      "selecting_semantic_label": "Selecting image, please wait",
+      "loading_semantic": "Loading image",
+      "camera_semantic_label": "Take photo with camera",
+      "camera_semantic_hint": "Opens the camera to take a photo",
+      "gallery_semantic_label": "Select photo from gallery",
+      "gallery_semantic_hint": "Opens the photo gallery"
     },
     "report": {
       "title": "Report gossip",
-      "button": "Report"
+      "button": "Report",
+      "reason_question": "Why are you reporting this gossip?",
+      "details_label": "Additional details (optional)",
+      "details_hint": "Describe the problem..."
+    },
+    "submit_button": {
+      "publish_semantic": "Publish gossip"
     }
   },
   "profile": {
@@ -270,6 +323,23 @@
       "signing_out": "Signing out...",
       "sign_out_dialog_title": "Sign out",
       "sign_out_dialog_content": "Are you sure you want to sign out?"
+    },
+    "stats": {
+      "title": "Stats",
+      "gossips": "Gossips",
+      "comments": "Comments",
+      "followers": "Followers",
+      "following": "Following"
+    },
+    "header": {
+      "no_name": "No name",
+      "email_verified": "Email verified",
+      "completeness": "Profile completeness"
+    },
+    "controller": {
+      "load_error": "Error loading profile",
+      "update_error": "Error updating settings",
+      "signout_error": "Error signing out"
     },
     "settings": {
       "title": "Settings",
@@ -395,7 +465,9 @@
       "explore_users_button": "Explore users",
       "view_popular_link": "View Popular",
       "feature_not_implemented": "Feature not implemented yet",
-      "use_popular_tab_hint": "Use the Popular tab above"
+      "use_popular_tab_hint": "Use the Popular tab above",
+      "unexpected_error": "Unexpected error loading feed",
+      "recommended_error": "Error loading recommendations"
     },
     "error": {
       "load_failed": "Error loading feed",

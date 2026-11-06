@@ -48,7 +48,7 @@ class ImagePickerWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Imagen seleccionada',
+          AppLocalizations.gossipMediaImageSelected,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w500,
           ),
@@ -58,7 +58,7 @@ class ImagePickerWidget extends StatelessWidget {
           children: [
             // ✅ Accesibilidad: Semantics para imagen
             Semantics(
-              label: 'Imagen del chisme seleccionada',
+              label: AppLocalizations.gossipMediaImageSemanticLabel,
               image: true,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -77,8 +77,8 @@ class ImagePickerWidget extends StatelessWidget {
                 top: 8,
                 right: 8,
                 child: Semantics(
-                  label: 'Eliminar imagen',
-                  hint: 'Remueve la imagen seleccionada',
+                  label: AppLocalizations.gossipMediaRemoveImageSemanticLabel,
+                  hint: AppLocalizations.gossipMediaRemoveImageSemanticHint,
                   button: true,
                   child: Builder(
                     builder: (context) => IconButton(
@@ -91,7 +91,7 @@ class ImagePickerWidget extends StatelessWidget {
                         backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
                         minimumSize: const Size(48, 48), // ✅ Touch target
                       ),
-                      tooltip: 'Eliminar imagen',
+                      tooltip: AppLocalizations.gossipMediaRemoveImageTooltip,
                     ),
                   ),
                 ),
@@ -116,18 +116,18 @@ class ImagePickerWidget extends StatelessWidget {
         ),
         // ✅ Accesibilidad: Live region para cambios de estado
         child: Semantics(
-          label: 'Seleccionando imagen, por favor espera',
+          label: AppLocalizations.gossipMediaSelectingSemanticLabel,
           liveRegion: true, // Anuncia cambios de estado
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const CircularProgressIndicator(
-                  semanticsLabel: 'Cargando imagen', // ✅ Label para progress
+                CircularProgressIndicator(
+                  semanticsLabel: AppLocalizations.gossipMediaLoadingSemantic,
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Text(
-                  'Seleccionando imagen...',
+                  AppLocalizations.gossipMediaSelectingImage,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -162,7 +162,7 @@ class ImagePickerWidget extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
-              'Agrega una foto (opcional)',
+              AppLocalizations.gossipMediaAddPhotoOptional,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
@@ -175,8 +175,8 @@ class ImagePickerWidget extends StatelessWidget {
             children: [
               // Botón cámara
               Semantics(
-                label: 'Tomar foto con la cámara',
-                hint: 'Abre la cámara para tomar una foto',
+                label: AppLocalizations.gossipMediaCameraSemanticLabel,
+                hint: AppLocalizations.gossipMediaCameraSemanticHint,
                 button: true,
                 child: OutlinedButton.icon(
                   onPressed: onPickFromCamera,
@@ -192,8 +192,8 @@ class ImagePickerWidget extends StatelessWidget {
 
               // Botón galería
               Semantics(
-                label: 'Seleccionar foto de la galería',
-                hint: 'Abre la galería de fotos',
+                label: AppLocalizations.gossipMediaGallerySemanticLabel,
+                hint: AppLocalizations.gossipMediaGallerySemanticHint,
                 button: true,
                 child: OutlinedButton.icon(
                   onPressed: onPickFromGallery,

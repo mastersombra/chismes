@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
 
 /// Campo de contraseña con toggle de visibilidad
@@ -52,7 +53,7 @@ class _PasswordFieldState extends State<PasswordField> {
       textCapitalization: TextCapitalization.none,
       onChanged: widget.onChanged,
       decoration: InputDecoration(
-        labelText: widget.labelText ?? 'Contraseña',
+        labelText: widget.labelText ?? AppLocalizations.passwordFieldLabel,
         hintText: widget.hintText,
         prefixIcon: widget.prefixIcon ?? const Icon(Icons.lock_outlined),
         suffixIcon: IconButton(
@@ -60,7 +61,7 @@ class _PasswordFieldState extends State<PasswordField> {
             _obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined,
           ),
           onPressed: _toggleVisibility,
-          tooltip: _obscureText ? 'Mostrar contraseña' : 'Ocultar contraseña',
+          tooltip: _obscureText ? AppLocalizations.passwordFieldShow : AppLocalizations.passwordFieldHide,
         ),
         border: const OutlineInputBorder(),
         contentPadding: const EdgeInsets.symmetric(

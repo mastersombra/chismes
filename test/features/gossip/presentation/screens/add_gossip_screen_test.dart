@@ -11,18 +11,26 @@ import 'package:chismes/features/location/domain/entities/region.dart';
 import 'package:chismes/features/location/domain/entities/city.dart';
 import 'package:chismes/features/gossip/presentation/widgets/city_autocomplete.dart';
 import 'package:chismes/features/location/domain/usecases/search_cities.dart';
+import 'package:chismes/features/auth/domain/repositories/auth_repository.dart';
+import 'package:chismes/features/auth/domain/entities/user.dart';
 import 'package:chismes/core/di/injection_container.dart';
 import 'package:chismes/core/error/failure.dart';
 import 'package:chismes/core/error/error_codes.dart';
 import 'package:chismes/core/result/result.dart';
 
 import '../../../../helpers/mock_add_gossip_controller_helper.dart';
+import '../../../../helpers/widget_test_wrapper.dart';
 import 'add_gossip_screen_test.mocks.dart';
 
-@GenerateMocks([AddGossipController, SearchCities])
+@GenerateNiceMocks([
+  MockSpec<AddGossipController>(),
+  MockSpec<SearchCities>(),
+  MockSpec<AuthRepository>(),
+])
 void main() {
   late MockAddGossipController mockController;
   late MockSearchCities mockSearchCities;
+  late MockAuthRepository mockAuthRepository;
 
   // Provide dummy for Result<Failure, List<City>>
   provideDummy<Result<Failure, List<City>>>(
@@ -40,9 +48,24 @@ void main() {
       regionId: anyNamed('regionId'),
     )).thenAnswer((_) async => Result.success(const []));
 
+    // Setup mock AuthRepository
+    mockAuthRepository = MockAuthRepository();
+    when(mockAuthRepository.currentUser).thenReturn(User(
+      id: 'test-user-id',
+      email: 'test@example.com',
+      emailVerified: true,
+      profileCompleted: true,
+      createdAt: DateTime.now(),
+    ));
+
     // Register SearchCities in GetIt
     if (!getIt.isRegistered<SearchCities>()) {
       getIt.registerSingleton<SearchCities>(mockSearchCities);
+    }
+
+    // Register AuthRepository in GetIt
+    if (!getIt.isRegistered<AuthRepository>()) {
+      getIt.registerSingleton<AuthRepository>(mockAuthRepository);
     }
   });
 
@@ -50,26 +73,32 @@ void main() {
     if (getIt.isRegistered<SearchCities>()) {
       getIt.unregister<SearchCities>();
     }
+    if (getIt.isRegistered<AuthRepository>()) {
+      getIt.unregister<AuthRepository>();
+    }
   });
 
   Widget createWidget() {
-    return MaterialApp(
-      home: AddGossipScreen(controller: mockController),
+    return testableWidget(
+      child: AddGossipScreen(controller: mockController),
+      useScaffold: false,
     );
   }
 
   group('AddGossipScreen - Construcción', () {
     testWidgets('debe construir el widget correctamente', (tester) async {
       await tester.pumpWidget(createWidget());
+      await tester.pumpAndSettle();
 
       expect(find.byType(AddGossipScreen), findsOneWidget);
-      expect(find.byType(Scaffold), findsOneWidget);
+      expect(find.byType(Scaffold), findsWidgets);
       expect(find.byType(AppBar), findsOneWidget);
       expect(find.text('Nuevo Chisme 📝'), findsOneWidget);
     });
 
     testWidgets('debe inicializar TextEditingControllers', (tester) async {
       await tester.pumpWidget(createWidget());
+      await tester.pumpAndSettle();
 
       // Verificar que los campos de texto están presentes
       expect(find.byType(TextFormField), findsNWidgets(2));
@@ -77,6 +106,7 @@ void main() {
 
     testWidgets('debe usar AnimatedBuilder con el controller', (tester) async {
       await tester.pumpWidget(createWidget());
+      await tester.pumpAndSettle();
 
       expect(find.byType(AnimatedBuilder), findsWidgets); // AnimatedBuilders presentes
       verify(mockController.addListener(any)).called(greaterThanOrEqualTo(1));

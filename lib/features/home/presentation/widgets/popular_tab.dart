@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../gossip/presentation/widgets/gossip_card.dart';
 import '../controllers/popular_tab_controller.dart';
@@ -50,7 +51,7 @@ class PopularTab extends StatelessWidget {
                 const Icon(Icons.error_outline, size: 64, color: Colors.grey),
                 const SizedBox(height: AppSpacing.md),
                 Text(
-                  state.errorMessage ?? 'Error al cargar feed',
+                  state.errorMessage ?? AppLocalizations.homePopularLoadError,
                   style: const TextStyle(color: Colors.grey),
                   textAlign: TextAlign.center,
                 ),
@@ -58,7 +59,7 @@ class PopularTab extends StatelessWidget {
                 ElevatedButton.icon(
                   onPressed: () => controller.loadFeed(),
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Reintentar'),
+                  label: Text(AppLocalizations.commonRetry),
                 ),
               ],
             ),
@@ -73,15 +74,15 @@ class PopularTab extends StatelessWidget {
               physics: const AlwaysScrollableScrollPhysics(),
               child: SizedBox(
                 height: MediaQuery.of(context).size.height * 0.7,
-                child: const Center(
+                child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.mood_bad, size: 64, color: Colors.grey),
-                      SizedBox(height: AppSpacing.md),
+                      const Icon(Icons.mood_bad, size: 64, color: Colors.grey),
+                      const SizedBox(height: AppSpacing.md),
                       Text(
-                        'No hay chismes disponibles',
-                        style: TextStyle(color: Colors.grey),
+                        AppLocalizations.homePopularEmpty,
+                        style: const TextStyle(color: Colors.grey),
                       ),
                     ],
                   ),
@@ -158,13 +159,13 @@ class PopularTab extends StatelessWidget {
 
               // Mensaje "No hay más" al final
               if (!state.hasMore && state.gossips.isNotEmpty)
-                const SliverToBoxAdapter(
+                SliverToBoxAdapter(
                   child: Padding(
-                    padding: EdgeInsets.all(AppSpacing.xl),
+                    padding: const EdgeInsets.all(AppSpacing.xl),
                     child: Center(
                       child: Text(
-                        'No hay más chismes por ahora 🌙',
-                        style: TextStyle(color: Colors.grey),
+                        AppLocalizations.homePopularNoMore,
+                        style: const TextStyle(color: Colors.grey),
                       ),
                     ),
                   ),

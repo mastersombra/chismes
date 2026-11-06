@@ -374,7 +374,7 @@
         "extends StatelessWidget",
         "method:CompactLocationSelector",
         "method:Semantics",
-        "method:Semantics"
+        "method:alto"
       ],
       "detail": "CompactLocationSelector"
     },
@@ -2154,9 +2154,8 @@
       "feature": "core",
       "evidence": [
         "class ErrorMessages",
-        "method:centralizados",
-        "method:específico",
-        "method:mensaje"
+        "method:getMessage",
+        "method:getTitle"
       ],
       "detail": "ErrorMessages"
     },
@@ -2415,6 +2414,11 @@
     },
     {
       "from": "features.profile.presentation.controllers.profile_controller",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.presentation.controllers.profile_controller",
       "to": "core.logging.logging",
       "relation": "imports"
     },
@@ -2430,12 +2434,22 @@
     },
     {
       "from": "features.profile.presentation.widgets.profile_stats_card",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.presentation.widgets.profile_stats_card",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
     {
       "from": "features.profile.presentation.widgets.settings_section",
       "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.presentation.widgets.profile_header",
+      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -2629,6 +2643,11 @@
       "relation": "imports"
     },
     {
+      "from": "features.gossip.presentation.widgets.city_autocomplete_optimized",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
       "from": "features.gossip.presentation.widgets.image_picker_widget",
       "to": "core.localization.app_localizations",
       "relation": "imports"
@@ -2686,6 +2705,11 @@
     {
       "from": "features.gossip.presentation.widgets.gossip_text_fields",
       "to": "core.validation.form_validators",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.presentation.widgets.gossip_card",
+      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -2749,6 +2773,11 @@
       "relation": "imports"
     },
     {
+      "from": "features.gossip.presentation.widgets.city_autocomplete",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
       "from": "features.gossip.presentation.widgets.location_selector",
       "to": "core.theme.app_spacing",
       "relation": "imports"
@@ -2760,7 +2789,7 @@
     },
     {
       "from": "features.gossip.presentation.widgets.location_selector",
-      "to": "core.validation.form_validators",
+      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -2776,11 +2805,6 @@
     {
       "from": "features.gossip.presentation.widgets.location_change_dialog",
       "to": "core.theme.app_radius",
-      "relation": "imports"
-    },
-    {
-      "from": "features.gossip.presentation.widgets.location_change_dialog",
-      "to": "core.validation.form_validators",
       "relation": "imports"
     },
     {
@@ -3240,6 +3264,11 @@
     },
     {
       "from": "features.auth.presentation.widgets.password_field",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.widgets.password_field",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
@@ -3465,6 +3494,11 @@
     },
     {
       "from": "features.home.presentation.controllers.following_tab_controller",
+      "to": "core.localization.app_localizations",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.presentation.controllers.following_tab_controller",
       "to": "core.logging.logging",
       "relation": "imports"
     },
@@ -3486,6 +3520,11 @@
     {
       "from": "features.home.presentation.widgets.following_tab",
       "to": "core.theme.app_spacing",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.presentation.widgets.popular_tab",
+      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -3886,7 +3925,7 @@
   ],
   "stats": {
     "total_nodes": 167,
-    "total_edges": 303,
+    "total_edges": 311,
     "files_analyzed": 167
   }
 }

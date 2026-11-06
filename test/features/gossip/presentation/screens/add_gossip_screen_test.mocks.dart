@@ -8,6 +8,9 @@ import 'dart:ui' as _i10;
 
 import 'package:chismes/core/error/failure.dart' as _i7;
 import 'package:chismes/core/result/result.dart' as _i12;
+import 'package:chismes/features/auth/domain/entities/user.dart' as _i16;
+import 'package:chismes/features/auth/domain/repositories/auth_repository.dart'
+    as _i15;
 import 'package:chismes/features/gossip/domain/entities/gossip.dart' as _i9;
 import 'package:chismes/features/gossip/domain/usecases/create_gossip.dart'
     as _i2;
@@ -67,15 +70,15 @@ class _FakeAddGossipState_3 extends _i1.SmartFake
 /// See the documentation for Mockito's code generation for more information.
 class MockAddGossipController extends _i1.Mock
     implements _i6.AddGossipController {
-  MockAddGossipController() {
-    _i1.throwOnMissingStub(this);
-  }
-
   @override
   _i2.CreateGossip get createGossip =>
       (super.noSuchMethod(
             Invocation.getter(#createGossip),
             returnValue: _FakeCreateGossip_0(
+              this,
+              Invocation.getter(#createGossip),
+            ),
+            returnValueForMissingStub: _FakeCreateGossip_0(
               this,
               Invocation.getter(#createGossip),
             ),
@@ -90,6 +93,10 @@ class MockAddGossipController extends _i1.Mock
               this,
               Invocation.getter(#locationManager),
             ),
+            returnValueForMissingStub: _FakeLocationManager_1(
+              this,
+              Invocation.getter(#locationManager),
+            ),
           )
           as _i3.LocationManager);
 
@@ -98,6 +105,10 @@ class MockAddGossipController extends _i1.Mock
       (super.noSuchMethod(
             Invocation.getter(#imageNotifier),
             returnValue: _FakeValueNotifier_2<String?>(
+              this,
+              Invocation.getter(#imageNotifier),
+            ),
+            returnValueForMissingStub: _FakeValueNotifier_2<String?>(
               this,
               Invocation.getter(#imageNotifier),
             ),
@@ -112,6 +123,10 @@ class MockAddGossipController extends _i1.Mock
               this,
               Invocation.getter(#isUploadingImageNotifier),
             ),
+            returnValueForMissingStub: _FakeValueNotifier_2<bool>(
+              this,
+              Invocation.getter(#isUploadingImageNotifier),
+            ),
           )
           as _i4.ValueNotifier<bool>);
 
@@ -120,6 +135,10 @@ class MockAddGossipController extends _i1.Mock
       (super.noSuchMethod(
             Invocation.getter(#isSubmittingNotifier),
             returnValue: _FakeValueNotifier_2<bool>(
+              this,
+              Invocation.getter(#isSubmittingNotifier),
+            ),
+            returnValueForMissingStub: _FakeValueNotifier_2<bool>(
               this,
               Invocation.getter(#isSubmittingNotifier),
             ),
@@ -134,6 +153,10 @@ class MockAddGossipController extends _i1.Mock
               this,
               Invocation.getter(#failureNotifier),
             ),
+            returnValueForMissingStub: _FakeValueNotifier_2<_i7.Failure?>(
+              this,
+              Invocation.getter(#failureNotifier),
+            ),
           )
           as _i4.ValueNotifier<_i7.Failure?>);
 
@@ -145,6 +168,10 @@ class MockAddGossipController extends _i1.Mock
               this,
               Invocation.getter(#selectedCityIdNotifier),
             ),
+            returnValueForMissingStub: _FakeValueNotifier_2<String?>(
+              this,
+              Invocation.getter(#selectedCityIdNotifier),
+            ),
           )
           as _i4.ValueNotifier<String?>);
 
@@ -153,6 +180,10 @@ class MockAddGossipController extends _i1.Mock
       (super.noSuchMethod(
             Invocation.getter(#state),
             returnValue: _FakeAddGossipState_3(this, Invocation.getter(#state)),
+            returnValueForMissingStub: _FakeAddGossipState_3(
+              this,
+              Invocation.getter(#state),
+            ),
           )
           as _i5.AddGossipState);
 
@@ -161,12 +192,17 @@ class MockAddGossipController extends _i1.Mock
       (super.noSuchMethod(
             Invocation.getter(#hasImageSelected),
             returnValue: false,
+            returnValueForMissingStub: false,
           )
           as bool);
 
   @override
   bool get hasListeners =>
-      (super.noSuchMethod(Invocation.getter(#hasListeners), returnValue: false)
+      (super.noSuchMethod(
+            Invocation.getter(#hasListeners),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
           as bool);
 
   @override
@@ -276,6 +312,7 @@ class MockAddGossipController extends _i1.Mock
       (super.noSuchMethod(
             Invocation.method(#submit, []),
             returnValue: _i8.Future<_i9.Gossip?>.value(),
+            returnValueForMissingStub: _i8.Future<_i9.Gossip?>.value(),
           )
           as _i8.Future<_i9.Gossip?>);
 
@@ -284,6 +321,7 @@ class MockAddGossipController extends _i1.Mock
       (super.noSuchMethod(
             Invocation.method(#validateLocationHierarchy, []),
             returnValue: false,
+            returnValueForMissingStub: false,
           )
           as bool);
 
@@ -322,10 +360,6 @@ class MockAddGossipController extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockSearchCities extends _i1.Mock implements _i11.SearchCities {
-  MockSearchCities() {
-    _i1.throwOnMissingStub(this);
-  }
-
   @override
   _i8.Future<_i12.Result<_i7.Failure, List<_i13.City>>> call({
     required String? query,
@@ -349,6 +383,385 @@ class MockSearchCities extends _i1.Mock implements _i11.SearchCities {
                     }),
                   ),
                 ),
+            returnValueForMissingStub:
+                _i8.Future<_i12.Result<_i7.Failure, List<_i13.City>>>.value(
+                  _i14.dummyValue<_i12.Result<_i7.Failure, List<_i13.City>>>(
+                    this,
+                    Invocation.method(#call, [], {
+                      #query: query,
+                      #regionId: regionId,
+                      #maxResults: maxResults,
+                    }),
+                  ),
+                ),
           )
           as _i8.Future<_i12.Result<_i7.Failure, List<_i13.City>>>);
+}
+
+/// A class which mocks [AuthRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockAuthRepository extends _i1.Mock implements _i15.AuthRepository {
+  @override
+  _i8.Stream<_i16.User?> get authStateChanges =>
+      (super.noSuchMethod(
+            Invocation.getter(#authStateChanges),
+            returnValue: _i8.Stream<_i16.User?>.empty(),
+            returnValueForMissingStub: _i8.Stream<_i16.User?>.empty(),
+          )
+          as _i8.Stream<_i16.User?>);
+
+  @override
+  _i8.Future<_i12.Result<_i7.Failure, _i16.User>> signInWithEmail({
+    required String? email,
+    required String? password,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#signInWithEmail, [], {
+              #email: email,
+              #password: password,
+            }),
+            returnValue: _i8.Future<_i12.Result<_i7.Failure, _i16.User>>.value(
+              _i14.dummyValue<_i12.Result<_i7.Failure, _i16.User>>(
+                this,
+                Invocation.method(#signInWithEmail, [], {
+                  #email: email,
+                  #password: password,
+                }),
+              ),
+            ),
+            returnValueForMissingStub:
+                _i8.Future<_i12.Result<_i7.Failure, _i16.User>>.value(
+                  _i14.dummyValue<_i12.Result<_i7.Failure, _i16.User>>(
+                    this,
+                    Invocation.method(#signInWithEmail, [], {
+                      #email: email,
+                      #password: password,
+                    }),
+                  ),
+                ),
+          )
+          as _i8.Future<_i12.Result<_i7.Failure, _i16.User>>);
+
+  @override
+  _i8.Future<_i12.Result<_i7.Failure, void>> signUpWithEmail({
+    required String? email,
+    required String? password,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#signUpWithEmail, [], {
+              #email: email,
+              #password: password,
+            }),
+            returnValue: _i8.Future<_i12.Result<_i7.Failure, void>>.value(
+              _i14.dummyValue<_i12.Result<_i7.Failure, void>>(
+                this,
+                Invocation.method(#signUpWithEmail, [], {
+                  #email: email,
+                  #password: password,
+                }),
+              ),
+            ),
+            returnValueForMissingStub:
+                _i8.Future<_i12.Result<_i7.Failure, void>>.value(
+                  _i14.dummyValue<_i12.Result<_i7.Failure, void>>(
+                    this,
+                    Invocation.method(#signUpWithEmail, [], {
+                      #email: email,
+                      #password: password,
+                    }),
+                  ),
+                ),
+          )
+          as _i8.Future<_i12.Result<_i7.Failure, void>>);
+
+  @override
+  _i8.Future<_i12.Result<_i7.Failure, _i16.User>> verifyOTP({
+    required String? email,
+    required String? token,
+    bool? isPasswordReset = false,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#verifyOTP, [], {
+              #email: email,
+              #token: token,
+              #isPasswordReset: isPasswordReset,
+            }),
+            returnValue: _i8.Future<_i12.Result<_i7.Failure, _i16.User>>.value(
+              _i14.dummyValue<_i12.Result<_i7.Failure, _i16.User>>(
+                this,
+                Invocation.method(#verifyOTP, [], {
+                  #email: email,
+                  #token: token,
+                  #isPasswordReset: isPasswordReset,
+                }),
+              ),
+            ),
+            returnValueForMissingStub:
+                _i8.Future<_i12.Result<_i7.Failure, _i16.User>>.value(
+                  _i14.dummyValue<_i12.Result<_i7.Failure, _i16.User>>(
+                    this,
+                    Invocation.method(#verifyOTP, [], {
+                      #email: email,
+                      #token: token,
+                      #isPasswordReset: isPasswordReset,
+                    }),
+                  ),
+                ),
+          )
+          as _i8.Future<_i12.Result<_i7.Failure, _i16.User>>);
+
+  @override
+  _i8.Future<_i12.Result<_i7.Failure, void>> resendOTP({
+    required String? email,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#resendOTP, [], {#email: email}),
+            returnValue: _i8.Future<_i12.Result<_i7.Failure, void>>.value(
+              _i14.dummyValue<_i12.Result<_i7.Failure, void>>(
+                this,
+                Invocation.method(#resendOTP, [], {#email: email}),
+              ),
+            ),
+            returnValueForMissingStub:
+                _i8.Future<_i12.Result<_i7.Failure, void>>.value(
+                  _i14.dummyValue<_i12.Result<_i7.Failure, void>>(
+                    this,
+                    Invocation.method(#resendOTP, [], {#email: email}),
+                  ),
+                ),
+          )
+          as _i8.Future<_i12.Result<_i7.Failure, void>>);
+
+  @override
+  _i8.Future<_i12.Result<_i7.Failure, _i16.User>> signInWithGoogle() =>
+      (super.noSuchMethod(
+            Invocation.method(#signInWithGoogle, []),
+            returnValue: _i8.Future<_i12.Result<_i7.Failure, _i16.User>>.value(
+              _i14.dummyValue<_i12.Result<_i7.Failure, _i16.User>>(
+                this,
+                Invocation.method(#signInWithGoogle, []),
+              ),
+            ),
+            returnValueForMissingStub:
+                _i8.Future<_i12.Result<_i7.Failure, _i16.User>>.value(
+                  _i14.dummyValue<_i12.Result<_i7.Failure, _i16.User>>(
+                    this,
+                    Invocation.method(#signInWithGoogle, []),
+                  ),
+                ),
+          )
+          as _i8.Future<_i12.Result<_i7.Failure, _i16.User>>);
+
+  @override
+  _i8.Future<_i12.Result<_i7.Failure, _i16.User>> signInWithApple() =>
+      (super.noSuchMethod(
+            Invocation.method(#signInWithApple, []),
+            returnValue: _i8.Future<_i12.Result<_i7.Failure, _i16.User>>.value(
+              _i14.dummyValue<_i12.Result<_i7.Failure, _i16.User>>(
+                this,
+                Invocation.method(#signInWithApple, []),
+              ),
+            ),
+            returnValueForMissingStub:
+                _i8.Future<_i12.Result<_i7.Failure, _i16.User>>.value(
+                  _i14.dummyValue<_i12.Result<_i7.Failure, _i16.User>>(
+                    this,
+                    Invocation.method(#signInWithApple, []),
+                  ),
+                ),
+          )
+          as _i8.Future<_i12.Result<_i7.Failure, _i16.User>>);
+
+  @override
+  _i8.Future<_i12.Result<_i7.Failure, void>> signOut() =>
+      (super.noSuchMethod(
+            Invocation.method(#signOut, []),
+            returnValue: _i8.Future<_i12.Result<_i7.Failure, void>>.value(
+              _i14.dummyValue<_i12.Result<_i7.Failure, void>>(
+                this,
+                Invocation.method(#signOut, []),
+              ),
+            ),
+            returnValueForMissingStub:
+                _i8.Future<_i12.Result<_i7.Failure, void>>.value(
+                  _i14.dummyValue<_i12.Result<_i7.Failure, void>>(
+                    this,
+                    Invocation.method(#signOut, []),
+                  ),
+                ),
+          )
+          as _i8.Future<_i12.Result<_i7.Failure, void>>);
+
+  @override
+  _i8.Future<_i12.Result<_i7.Failure, _i16.User?>> getCurrentUser() =>
+      (super.noSuchMethod(
+            Invocation.method(#getCurrentUser, []),
+            returnValue: _i8.Future<_i12.Result<_i7.Failure, _i16.User?>>.value(
+              _i14.dummyValue<_i12.Result<_i7.Failure, _i16.User?>>(
+                this,
+                Invocation.method(#getCurrentUser, []),
+              ),
+            ),
+            returnValueForMissingStub:
+                _i8.Future<_i12.Result<_i7.Failure, _i16.User?>>.value(
+                  _i14.dummyValue<_i12.Result<_i7.Failure, _i16.User?>>(
+                    this,
+                    Invocation.method(#getCurrentUser, []),
+                  ),
+                ),
+          )
+          as _i8.Future<_i12.Result<_i7.Failure, _i16.User?>>);
+
+  @override
+  _i8.Future<_i12.Result<_i7.Failure, _i16.User>> updateProfile({
+    String? username,
+    String? displayName,
+    String? avatarUrl,
+    String? bio,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateProfile, [], {
+              #username: username,
+              #displayName: displayName,
+              #avatarUrl: avatarUrl,
+              #bio: bio,
+            }),
+            returnValue: _i8.Future<_i12.Result<_i7.Failure, _i16.User>>.value(
+              _i14.dummyValue<_i12.Result<_i7.Failure, _i16.User>>(
+                this,
+                Invocation.method(#updateProfile, [], {
+                  #username: username,
+                  #displayName: displayName,
+                  #avatarUrl: avatarUrl,
+                  #bio: bio,
+                }),
+              ),
+            ),
+            returnValueForMissingStub:
+                _i8.Future<_i12.Result<_i7.Failure, _i16.User>>.value(
+                  _i14.dummyValue<_i12.Result<_i7.Failure, _i16.User>>(
+                    this,
+                    Invocation.method(#updateProfile, [], {
+                      #username: username,
+                      #displayName: displayName,
+                      #avatarUrl: avatarUrl,
+                      #bio: bio,
+                    }),
+                  ),
+                ),
+          )
+          as _i8.Future<_i12.Result<_i7.Failure, _i16.User>>);
+
+  @override
+  _i8.Future<_i12.Result<_i7.Failure, bool>> isUsernameAvailable(
+    String? username,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#isUsernameAvailable, [username]),
+            returnValue: _i8.Future<_i12.Result<_i7.Failure, bool>>.value(
+              _i14.dummyValue<_i12.Result<_i7.Failure, bool>>(
+                this,
+                Invocation.method(#isUsernameAvailable, [username]),
+              ),
+            ),
+            returnValueForMissingStub:
+                _i8.Future<_i12.Result<_i7.Failure, bool>>.value(
+                  _i14.dummyValue<_i12.Result<_i7.Failure, bool>>(
+                    this,
+                    Invocation.method(#isUsernameAvailable, [username]),
+                  ),
+                ),
+          )
+          as _i8.Future<_i12.Result<_i7.Failure, bool>>);
+
+  @override
+  _i8.Future<_i12.Result<_i7.Failure, void>> resetPassword({
+    required String? email,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#resetPassword, [], {#email: email}),
+            returnValue: _i8.Future<_i12.Result<_i7.Failure, void>>.value(
+              _i14.dummyValue<_i12.Result<_i7.Failure, void>>(
+                this,
+                Invocation.method(#resetPassword, [], {#email: email}),
+              ),
+            ),
+            returnValueForMissingStub:
+                _i8.Future<_i12.Result<_i7.Failure, void>>.value(
+                  _i14.dummyValue<_i12.Result<_i7.Failure, void>>(
+                    this,
+                    Invocation.method(#resetPassword, [], {#email: email}),
+                  ),
+                ),
+          )
+          as _i8.Future<_i12.Result<_i7.Failure, void>>);
+
+  @override
+  _i8.Future<_i12.Result<_i7.Failure, void>> updatePassword({
+    required String? newPassword,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updatePassword, [], {#newPassword: newPassword}),
+            returnValue: _i8.Future<_i12.Result<_i7.Failure, void>>.value(
+              _i14.dummyValue<_i12.Result<_i7.Failure, void>>(
+                this,
+                Invocation.method(#updatePassword, [], {
+                  #newPassword: newPassword,
+                }),
+              ),
+            ),
+            returnValueForMissingStub:
+                _i8.Future<_i12.Result<_i7.Failure, void>>.value(
+                  _i14.dummyValue<_i12.Result<_i7.Failure, void>>(
+                    this,
+                    Invocation.method(#updatePassword, [], {
+                      #newPassword: newPassword,
+                    }),
+                  ),
+                ),
+          )
+          as _i8.Future<_i12.Result<_i7.Failure, void>>);
+
+  @override
+  _i8.Future<_i12.Result<_i7.Failure, void>> resendVerificationEmail() =>
+      (super.noSuchMethod(
+            Invocation.method(#resendVerificationEmail, []),
+            returnValue: _i8.Future<_i12.Result<_i7.Failure, void>>.value(
+              _i14.dummyValue<_i12.Result<_i7.Failure, void>>(
+                this,
+                Invocation.method(#resendVerificationEmail, []),
+              ),
+            ),
+            returnValueForMissingStub:
+                _i8.Future<_i12.Result<_i7.Failure, void>>.value(
+                  _i14.dummyValue<_i12.Result<_i7.Failure, void>>(
+                    this,
+                    Invocation.method(#resendVerificationEmail, []),
+                  ),
+                ),
+          )
+          as _i8.Future<_i12.Result<_i7.Failure, void>>);
+
+  @override
+  _i8.Future<_i12.Result<_i7.Failure, bool>> checkEmailExistsAndConfirmed(
+    String? email,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#checkEmailExistsAndConfirmed, [email]),
+            returnValue: _i8.Future<_i12.Result<_i7.Failure, bool>>.value(
+              _i14.dummyValue<_i12.Result<_i7.Failure, bool>>(
+                this,
+                Invocation.method(#checkEmailExistsAndConfirmed, [email]),
+              ),
+            ),
+            returnValueForMissingStub:
+                _i8.Future<_i12.Result<_i7.Failure, bool>>.value(
+                  _i14.dummyValue<_i12.Result<_i7.Failure, bool>>(
+                    this,
+                    Invocation.method(#checkEmailExistsAndConfirmed, [email]),
+                  ),
+                ),
+          )
+          as _i8.Future<_i12.Result<_i7.Failure, bool>>);
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/logging/logging.dart';
 import '../../../../core/result/result.dart';
 import '../../../location/presentation/managers/location_manager.dart';
@@ -166,7 +167,7 @@ class FollowingTabController extends ChangeNotifier {
       );
       _updateState(_state.copyWith(
         status: FollowingTabStatus.error,
-        errorMessage: 'Error inesperado al cargar feed',
+        errorMessage: AppLocalizations.homeFollowingUnexpectedError,
       ));
     }
   }
@@ -216,7 +217,7 @@ class FollowingTabController extends ChangeNotifier {
       );
       _updateState(_state.copyWith(
         status: FollowingTabStatus.error,
-        errorMessage: 'Error al cargar recomendados',
+        errorMessage: AppLocalizations.homeFollowingRecommendedError,
       ));
     }
   }

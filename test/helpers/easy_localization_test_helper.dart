@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'test_translations_loader.dart';
 
 /// Helper para inicializar EasyLocalization en tests
 ///
@@ -35,10 +36,20 @@ Future<void> initializeEasyLocalizationForTest(
   await tester.pumpWidget(
     EasyLocalization(
       supportedLocales: const [Locale('es'), Locale('en')],
-      path: 'assets/translations',
+      path: 'assets/translations', // No se usa con el loader personalizado
       fallbackLocale: const Locale('es'),
       startLocale: locale,
-      child: const MaterialApp(home: SizedBox.shrink()),
+      assetLoader: const TestTranslationsLoader(),
+      child: Builder(
+        builder: (context) {
+          return MaterialApp(
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: locale,
+            home: const SizedBox.shrink(),
+          );
+        },
+      ),
     ),
   );
   await tester.pumpAndSettle();

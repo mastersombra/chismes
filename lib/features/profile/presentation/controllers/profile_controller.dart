@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../../../core/error/error_messages.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/logging/logging.dart';
 import '../../../../core/result/result.dart';
 import '../../../../core/services/auth_service.dart';
@@ -110,7 +111,7 @@ class ProfileController extends ChangeNotifier {
         error: error,
         stackTrace: stackTrace,
       );
-      _errorMessage = 'Error al cargar el perfil';
+      _errorMessage = AppLocalizations.profileControllerLoadError;
       _state = ProfileState.error;
     }
 
@@ -152,7 +153,7 @@ class ProfileController extends ChangeNotifier {
         error: error,
         stackTrace: stackTrace,
       );
-      _errorMessage = 'Error al actualizar configuración';
+      _errorMessage = AppLocalizations.profileControllerUpdateError;
       notifyListeners();
       return false;
     }
@@ -192,7 +193,7 @@ class ProfileController extends ChangeNotifier {
         error: error,
         stackTrace: stackTrace,
       );
-      _errorMessage = 'Error al cerrar sesión';
+      _errorMessage = AppLocalizations.profileControllerSignoutError;
       _state = ProfileState.loaded;
       notifyListeners();
       return false;
