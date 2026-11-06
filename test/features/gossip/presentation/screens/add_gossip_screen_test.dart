@@ -11,6 +11,8 @@ import 'package:chismes/features/location/domain/entities/region.dart';
 import 'package:chismes/features/location/domain/entities/city.dart';
 import 'package:chismes/features/gossip/presentation/widgets/city_autocomplete.dart';
 import 'package:chismes/features/location/domain/usecases/search_cities.dart';
+import 'package:chismes/features/location/presentation/managers/location_manager.dart';
+import 'package:chismes/features/location/presentation/states/location_state.dart';
 import 'package:chismes/features/auth/domain/repositories/auth_repository.dart';
 import 'package:chismes/features/auth/domain/entities/user.dart';
 import 'package:chismes/core/di/injection_container.dart';
@@ -26,11 +28,13 @@ import 'add_gossip_screen_test.mocks.dart';
   MockSpec<AddGossipController>(),
   MockSpec<SearchCities>(),
   MockSpec<AuthRepository>(),
+  MockSpec<LocationManager>(),
 ])
 void main() {
   late MockAddGossipController mockController;
   late MockSearchCities mockSearchCities;
   late MockAuthRepository mockAuthRepository;
+  late MockLocationManager mockLocationManager;
 
   // Provide dummy for Result<Failure, List<City>>
   provideDummy<Result<Failure, List<City>>>(
@@ -38,18 +42,28 @@ void main() {
   );
 
   setUp(() {
+    // Initialize mocks
     mockController = MockAddGossipController();
+    mockSearchCities = MockSearchCities();
+    mockAuthRepository = MockAuthRepository();
+    mockLocationManager = MockLocationManager();
+
+    // Setup LocationManager mock
+    when(mockLocationManager.state).thenReturn(LocationState.initial());
+    when(mockLocationManager.addListener(any)).thenReturn(null);
+    when(mockLocationManager.removeListener(any)).thenReturn(null);
+
+    // Setup controller with locationManager
+    when(mockController.locationManager).thenReturn(mockLocationManager);
     setupMockAddGossipController(mockController);
 
     // Setup mock SearchCities
-    mockSearchCities = MockSearchCities();
     when(mockSearchCities.call(
       query: anyNamed('query'),
       regionId: anyNamed('regionId'),
     )).thenAnswer((_) async => Result.success(const []));
 
     // Setup mock AuthRepository
-    mockAuthRepository = MockAuthRepository();
     when(mockAuthRepository.currentUser).thenReturn(User(
       id: 'test-user-id',
       email: 'test@example.com',
