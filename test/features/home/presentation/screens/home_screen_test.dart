@@ -43,6 +43,12 @@ void main() {
     when(mockPopularTabController.state).thenReturn(const PopularTabState());
     when(mockFollowingTabController.state).thenReturn(const FollowingTabState());
 
+    // Stub para listener methods
+    when(mockPopularTabController.addListener(any)).thenReturn(null);
+    when(mockPopularTabController.removeListener(any)).thenReturn(null);
+    when(mockFollowingTabController.addListener(any)).thenReturn(null);
+    when(mockFollowingTabController.removeListener(any)).thenReturn(null);
+
     // Limpiar y registrar mocks en getIt
     if (getIt.isRegistered<GetGossips>()) {
       getIt.unregister<GetGossips>();
