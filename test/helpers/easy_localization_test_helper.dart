@@ -75,9 +75,10 @@ Future<Widget> buildTestableWidgetWithLocalization({
 
   return EasyLocalization(
     supportedLocales: const [Locale('es'), Locale('en')],
-    path: 'assets/translations',
+    path: 'assets/translations', // No se usa con el loader personalizado
     fallbackLocale: const Locale('es'),
     startLocale: locale,
+    assetLoader: const TestTranslationsLoader(),
     child: MaterialApp(
       localizationsDelegates: const [],
       supportedLocales: const [Locale('es'), Locale('en')],
