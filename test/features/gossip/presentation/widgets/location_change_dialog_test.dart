@@ -10,6 +10,7 @@ import 'package:chismes/features/location/domain/entities/city.dart';
 import 'package:chismes/features/location/domain/usecases/search_cities.dart';
 import 'package:chismes/core/result/result.dart';
 import 'package:chismes/core/error/failure.dart';
+import '../../../../helpers/widget_test_wrapper.dart';
 
 import 'location_change_dialog_test.mocks.dart';
 
@@ -59,9 +60,8 @@ void main() {
 
     testWidgets('debe construirse sin errores', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: LocationChangeDialog(
+        testableWidget(
+          child: LocationChangeDialog(
               state: testState,
               onUseCurrentLocation: () {},
               onCountryChanged: (_) {},
@@ -70,19 +70,18 @@ void main() {
               onConfirm: () {},
               searchCities: mockSearchCities,
               isLoadingGPS: false,
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byType(LocationChangeDialog), findsOneWidget);
     });
 
     testWidgets('debe mostrar dropdown de países', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: LocationChangeDialog(
+        testableWidget(
+          child: LocationChangeDialog(
               state: testState,
               onUseCurrentLocation: () {},
               onCountryChanged: (_) {},
@@ -91,10 +90,10 @@ void main() {
               onConfirm: () {},
               searchCities: mockSearchCities,
               isLoadingGPS: false,
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       await tester.pumpAndSettle();
 
@@ -112,9 +111,8 @@ void main() {
       bool confirmCalled = false;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: LocationChangeDialog(
+        testableWidget(
+          child: LocationChangeDialog(
               state: testState,
               onUseCurrentLocation: () {
                 useCurrentLocationCalled = true;
@@ -131,10 +129,10 @@ void main() {
               },
               searchCities: mockSearchCities,
               isLoadingGPS: false,
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       await tester.pumpAndSettle();
 

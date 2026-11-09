@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../auth/domain/entities/user.dart';
 
@@ -37,7 +38,7 @@ class ProfileHeader extends StatelessWidget {
 
         // Nombre
         Text(
-          user.displayName ?? user.username ?? 'Sin nombre',
+          user.displayName ?? user.username ?? AppLocalizations.profileHeaderNoName,
           style: Theme.of(context).textTheme.headlineMedium,
           textAlign: TextAlign.center,
         ),
@@ -104,7 +105,7 @@ class ProfileHeader extends StatelessWidget {
                 ),
                 const SizedBox(width: AppSpacing.xs),
                 Text(
-                  'Email verificado',
+                  AppLocalizations.profileHeaderEmailVerified,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.green,
                         fontWeight: FontWeight.w600,
@@ -132,7 +133,7 @@ class ProfileHeader extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Completitud del perfil',
+              AppLocalizations.profileHeaderCompleteness,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Colors.grey,
                   ),

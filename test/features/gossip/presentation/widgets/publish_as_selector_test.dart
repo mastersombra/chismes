@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:chismes/features/gossip/presentation/widgets/publish_as_selector.dart';
 import 'package:chismes/features/gossip/presentation/states/add_gossip_state.dart';
 import 'package:chismes/features/gossip/domain/entities/gossip.dart';
+import '../../../../helpers/widget_test_wrapper.dart';
 
 void main() {
   group('PublishAsSelector', () {
@@ -12,15 +13,14 @@ void main() {
 
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: PublishAsSelector(
+        testableWidget(
+          child: PublishAsSelector(
               state: state,
               onPublishAsChanged: (_) {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert
       expect(find.text('Anónimo'), findsOneWidget);
@@ -33,15 +33,14 @@ void main() {
 
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: PublishAsSelector(
+        testableWidget(
+          child: PublishAsSelector(
               state: state,
               onPublishAsChanged: (_) {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert
       expect(find.text('Con mi perfil'), findsOneWidget);
@@ -54,17 +53,16 @@ void main() {
       PublishAs? selectedValue;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: PublishAsSelector(
+        testableWidget(
+          child: PublishAsSelector(
               state: state,
               onPublishAsChanged: (value) {
                 selectedValue = value;
               },
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Act
       await tester.tap(find.text('Anónimo'));
@@ -80,17 +78,16 @@ void main() {
       PublishAs? selectedValue;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: PublishAsSelector(
+        testableWidget(
+          child: PublishAsSelector(
               state: state,
               onPublishAsChanged: (value) {
                 selectedValue = value;
               },
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Act
       await tester.tap(find.text('Con mi perfil'));
@@ -105,15 +102,14 @@ void main() {
       const state = AddGossipState(idempotencyKey: 'test-key', publishedAs: PublishAs.anonymous);
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: PublishAsSelector(
+        testableWidget(
+          child: PublishAsSelector(
               state: state,
               onPublishAsChanged: (_) {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Act
       await tester.pump();

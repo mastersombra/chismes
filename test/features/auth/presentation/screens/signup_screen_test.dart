@@ -14,6 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
+import '../../../../helpers/widget_test_wrapper.dart';
 import 'signup_screen_test.mocks.dart';
 
 @GenerateMocks([SignupController])
@@ -44,7 +45,7 @@ void main() {
   });
 
   Widget makeTestableWidget(Widget child) {
-    return MaterialApp(home: child);
+    return testableWidget(child: child, useScaffold: false);
   }
 
   group('SignupScreen', () {
@@ -53,7 +54,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byType(SignupScreen), findsOneWidget);
       expect(find.text('Únete a Chismes'), findsOneWidget);
@@ -68,7 +69,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen(key: testKey)),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byKey(testKey), findsOneWidget);
     });
@@ -78,7 +79,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byType(AppBar), findsOneWidget);
       expect(find.text('Crear Cuenta'), findsWidgets); // Aparece en AppBar y botón
@@ -89,7 +90,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byType(EmailField), findsOneWidget);
       expect(find.byType(PasswordField), findsNWidgets(2)); // Contraseña y confirmar
@@ -101,7 +102,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.text('Crear Cuenta'), findsWidgets); // Aparece en AppBar y botón
       expect(find.widgetWithText(AuthButton, 'Crear Cuenta'), findsOneWidget);
@@ -112,7 +113,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(
         find.text('Al crear una cuenta, aceptas nuestros Términos y Condiciones y Política de Privacidad'),
@@ -126,7 +127,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.text('¿Ya tienes cuenta? '), findsOneWidget);
       expect(find.text('Inicia sesión'), findsOneWidget);
@@ -140,7 +141,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       final emailField = tester.widget<EmailField>(find.byType(EmailField));
       expect(emailField.enabled, isTrue);
@@ -154,7 +155,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-      await tester.pump();
+      await tester.pump(); // Use pump() not pumpAndSettle() when loading (CircularProgressIndicator animates forever)
 
       // Assert
       final emailField = tester.widget<EmailField>(find.byType(EmailField));
@@ -166,7 +167,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Ingresar datos válidos
       await tester.enterText(find.byType(EmailField), 'test@example.com');
 
@@ -190,7 +191,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Act
       final passwordFields = find.byType(PasswordField);
       await tester.enterText(passwordFields.at(0), 'weak');
@@ -205,8 +206,8 @@ void main() {
       bool popCalled = false;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Navigator(
+        testableWidget(
+          child: Navigator(
             onDidRemovePage: (page) {
               popCalled = true;
             },
@@ -215,9 +216,10 @@ void main() {
               MaterialPage(child: SignupScreen()),
             ],
           ),
+          useScaffold: false,
         ),
       );
-
+      await tester.pumpAndSettle();
       // Act
       await tester.tap(find.text('Inicia sesión'));
       await tester.pumpAndSettle();
@@ -231,7 +233,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byType(SafeArea), findsWidgets);
     });
@@ -241,7 +243,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byType(Scaffold), findsOneWidget);
     });
@@ -251,7 +253,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byType(Form), findsOneWidget);
     });
@@ -261,7 +263,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byType(SingleChildScrollView), findsOneWidget);
     });
@@ -271,7 +273,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       final rowWithIcon = find.ancestor(
         of: find.byIcon(Icons.info_outline),
@@ -285,7 +287,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // No ingresar datos (campos vacíos)
 
       // Act
@@ -304,7 +306,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       final passwordFields = tester.widgetList<PasswordField>(find.byType(PasswordField));
       final firstPasswordField = passwordFields.first;
@@ -316,7 +318,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       final passwordFields = tester.widgetList<PasswordField>(find.byType(PasswordField));
       final secondPasswordField = passwordFields.last;
@@ -328,7 +330,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       final columnFinder = find.descendant(
         of: find.byType(Form),
@@ -348,7 +350,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-      await tester.pump();
+      await tester.pump(); // Use pump() not pumpAndSettle() when loading (CircularProgressIndicator animates forever)
 
       // Assert
       final textButton = tester.widget<TextButton>(
@@ -362,7 +364,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byType(SizedBox), findsWidgets);
     });
@@ -372,12 +374,12 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Act - remover widget
       await tester.pumpWidget(
         makeTestableWidget(const Scaffold(body: Text('Different screen'))),
       );
-
+      await tester.pumpAndSettle();
       // Assert - verificar que removeListener fue llamado
       verify(mockController.removeListener(any)).called(greaterThan(0));
     });
@@ -393,7 +395,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Cambiar estado a success
       final user = User(
         id: '123',
@@ -423,7 +425,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Cambiar estado a error
       final failure = AuthFailure(
         code: ErrorCode.networkError,
@@ -444,7 +446,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Ingresar datos válidos pero contraseñas diferentes
       await tester.enterText(find.byType(EmailField), 'test@example.com');
 
@@ -468,7 +470,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Ingresar datos válidos pero sin confirmar contraseña
       await tester.enterText(find.byType(EmailField), 'test@example.com');
 
@@ -492,7 +494,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Ingresar solo email
       await tester.enterText(find.byType(EmailField), 'test@example.com');
       // No ingresar contraseña
@@ -513,7 +515,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Ingresar contraseña muy corta
       await tester.enterText(find.byType(EmailField), 'test@example.com');
 
@@ -537,7 +539,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-
+      await tester.pumpAndSettle();
       // Act - escribir en el campo de contraseña
       final passwordFields = find.byType(PasswordField);
       await tester.enterText(passwordFields.at(0), 'TestPassword123');

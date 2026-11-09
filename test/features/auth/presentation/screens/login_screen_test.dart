@@ -18,6 +18,7 @@ import 'package:chismes/core/error/error_codes.dart';
 import 'package:chismes/features/auth/presentation/state/auth_state.dart';
 import 'package:chismes/features/auth/domain/entities/user.dart';
 
+import '../../../../helpers/widget_test_wrapper.dart';
 import 'login_screen_test.mocks.dart';
 
 @GenerateMocks([AddGossipController, GetGossips, LoginController])
@@ -51,14 +52,18 @@ void main() {
     }
   });
 
+  Widget createTestWidget() {
+    return testableWidget(
+      child: const LoginScreen(),
+      useScaffold: false,
+    );
+  }
+
   group('LoginScreen', () {
     testWidgets('debe renderizar AppBar con título "Iniciar Sesión"', (WidgetTester tester) async {
       // Act
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LoginScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       // Assert
       expect(find.byType(AppBar), findsOneWidget);
@@ -71,10 +76,12 @@ void main() {
 
       // Act
       await tester.pumpWidget(
-        const MaterialApp(
-          home: LoginScreen(key: testKey),
+        testableWidget(
+          child: const LoginScreen(key: testKey),
+          useScaffold: false,
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert
       expect(find.byKey(testKey), findsOneWidget);
@@ -82,11 +89,8 @@ void main() {
 
     testWidgets('AppBar debe estar en el Scaffold', (WidgetTester tester) async {
       // Act
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LoginScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       // Assert
       final Scaffold scaffold = tester.widget(find.byType(Scaffold));
@@ -96,11 +100,8 @@ void main() {
 
     testWidgets('debe renderizar todos los elementos principales', (WidgetTester tester) async {
       // Act
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LoginScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       // Assert
       expect(find.text('Chismes'), findsOneWidget);
@@ -114,15 +115,13 @@ void main() {
 
     testWidgets('debe renderizar botones de autenticación', (WidgetTester tester) async {
       // Act
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LoginScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       // Assert
       expect(find.text('Iniciar Sesión'), findsWidgets); // Aparece en AppBar y botón
-      expect(find.text('Enviar link mágico'), findsOneWidget);
+      expect(find.byType(AuthButton), findsOneWidget); // Botón principal de login
+      expect(find.byType(SocialLoginButtons), findsOneWidget); // Botones sociales
       expect(find.text('O continúa con'), findsOneWidget);
     });
 
@@ -131,11 +130,8 @@ void main() {
       when(mockLoginController.state).thenReturn(const AuthInitial());
 
       // Act
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LoginScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       // Assert
       final emailField = tester.widget<EmailField>(find.byType(EmailField));
@@ -146,16 +142,21 @@ void main() {
     });
 
     testWidgets('debe deshabilitar campos cuando está cargando', (WidgetTester tester) async {
-      // Arrange
-      when(mockLoginController.state).thenReturn(const AuthLoading());
+      // Arrange - Configurar estado loading desde el principio
+      final loadingController = MockLoginController();
+      when(loadingController.state).thenReturn(const AuthLoading());
+      when(loadingController.addListener(any)).thenReturn(null);
+      when(loadingController.removeListener(any)).thenReturn(null);
+
+      // Registrar mock con estado loading
+      if (getIt.isRegistered<LoginController>()) {
+        getIt.unregister<LoginController>();
+      }
+      getIt.registerSingleton<LoginController>(loadingController);
 
       // Act
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LoginScreen(),
-        ),
-      );
-      await tester.pump();
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump(); // Usar pump() en lugar de pumpAndSettle() porque loading tiene animaciones infinitas
 
       // Assert
       final emailField = tester.widget<EmailField>(find.byType(EmailField));
@@ -167,11 +168,8 @@ void main() {
 
     testWidgets('debe llamar signInWithEmail cuando se presiona botón de login', (WidgetTester tester) async {
       // Arrange
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LoginScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       // Ingresar datos válidos
       await tester.enterText(find.byType(EmailField), 'test@example.com');
@@ -190,11 +188,8 @@ void main() {
 
     testWidgets('debe llamar signInWithGoogle cuando se presiona botón de Google', (WidgetTester tester) async {
       // Arrange
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LoginScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       // Buscar el SocialLoginButtons y simular tap en Google
       final socialButtons = tester.widget<SocialLoginButtons>(find.byType(SocialLoginButtons));
@@ -208,11 +203,8 @@ void main() {
 
     testWidgets('debe llamar signInWithApple cuando se presiona botón de Apple', (WidgetTester tester) async {
       // Arrange
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LoginScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       // Buscar el SocialLoginButtons y simular tap en Apple
       final socialButtons = tester.widget<SocialLoginButtons>(find.byType(SocialLoginButtons));
@@ -226,11 +218,8 @@ void main() {
 
     testWidgets('debe ejecutar _onSignUpPressed cuando se presiona Regístrate', (WidgetTester tester) async {
       // Arrange
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LoginScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       // Scroll para hacer visible el botón
       await tester.scrollUntilVisible(
@@ -256,11 +245,8 @@ void main() {
       });
       when(mockLoginController.state).thenReturn(const AuthInitial());
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LoginScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       // Cambiar estado a error
       final failure = AuthFailure(
@@ -286,11 +272,8 @@ void main() {
       });
       when(mockLoginController.state).thenReturn(const AuthInitial());
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LoginScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       // Cambiar estado a success
       final user = User(
@@ -313,11 +296,8 @@ void main() {
 
     testWidgets('debe limpiar controllers en dispose', (WidgetTester tester) async {
       // Arrange
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LoginScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       // Act - remover widget
       await tester.pumpWidget(
@@ -332,11 +312,8 @@ void main() {
 
     testWidgets('no debe llamar signInWithEmail si form no es válido', (WidgetTester tester) async {
       // Arrange
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LoginScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       // No ingresar datos (campos vacíos)
 
@@ -358,11 +335,8 @@ void main() {
         technicalMessage: 'Network error',
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LoginScreen(),
-        ),
-      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
       // Desmontar widget
       await tester.pumpWidget(

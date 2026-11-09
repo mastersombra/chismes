@@ -113,6 +113,11 @@
       "user_not_found": "Usuario no encontrado",
       "network_error": "Error de conexión",
       "unknown_error": "Error desconocido"
+    },
+    "password_field": {
+      "label": "Contraseña",
+      "show": "Mostrar contraseña",
+      "hide": "Ocultar contraseña"
     }
   },
   "errors": {
@@ -198,7 +203,8 @@
     "back": "Volver",
     "close": "Cerrar",
     "forget": "Olvidar",
-    "permanently_delete": "Eliminar permanentemente"
+    "permanently_delete": "Eliminar permanentemente",
+    "retry": "Reintentar"
   },
   "navigation": {
     "home": "Inicio",
@@ -228,6 +234,24 @@
       "content_hint": "Cuenta lo que sabes...",
       "content_validation": "Cuenta el chisme"
     },
+    "location": {
+      "city_label": "Ciudad",
+      "city_hint": "Buscar ciudad...",
+      "city_search_hint": "Buscar ciudad... (mín. {minChars} caracteres)",
+      "country_label": "País",
+      "country_required": "Selecciona un país",
+      "region_label": "Región",
+      "region_required": "Selecciona una región",
+      "city_required": "Selecciona una ciudad",
+      "search_error": "Error al buscar ciudades. Intenta de nuevo.",
+      "unexpected_error": "Error inesperado. Intenta de nuevo.",
+      "min_chars_message": "Escribe al menos {minChars} caracteres para buscar",
+      "no_results": "No se encontraron ciudades con \"{query}\"",
+      "change_dialog_title": "Cambiar ubicación",
+      "use_current_location": "Usar mi ubicación actual",
+      "gps_detect_subtitle": "Detectar automáticamente con GPS",
+      "or_select_manually": "O seleccionar manualmente"
+    },
     "location_selector": {
       "semantic_label_detecting": "Detectando ubicación automáticamente",
       "semantic_label_selected": "Ubicación actual: {location}",
@@ -247,18 +271,47 @@
     },
     "card": {
       "share_error": "Error al compartir",
-      "report_success": "Gracias por tu reporte. Lo revisaremos pronto."
+      "report_success": "Gracias por tu reporte. Lo revisaremos pronto.",
+      "report_error": "Error al reportar",
+      "rate_limit_error": "Límite alcanzado",
+      "semantic_label": "Chisme: {subject}. {content}",
+      "semantic_hint": "Toca para ver detalles completos",
+      "share_tooltip": "Compartir chisme",
+      "share_semantic_label": "Compartir este chisme",
+      "share_semantic_hint": "Abre opciones para compartir con otros",
+      "report_tooltip": "Reportar chisme",
+      "report_semantic_label": "Reportar este chisme",
+      "report_semantic_hint": "Abre opciones para reportar contenido inapropiado"
     },
     "media": {
       "camera": "Cámara",
       "gallery": "Galería",
       "add_image": "Agregar imagen",
       "add_audio": "Agregar audio",
-      "audio_attached": "Audio adjuntado"
+      "audio_attached": "Audio adjuntado",
+      "image_selected": "Imagen seleccionada",
+      "selecting_image": "Seleccionando imagen...",
+      "add_photo_optional": "Agrega una foto (opcional)",
+      "remove_image_tooltip": "Eliminar imagen",
+      "image_semantic_label": "Imagen del chisme seleccionada",
+      "remove_image_semantic_label": "Eliminar imagen",
+      "remove_image_semantic_hint": "Remueve la imagen seleccionada",
+      "selecting_semantic_label": "Seleccionando imagen, por favor espera",
+      "loading_semantic": "Cargando imagen",
+      "camera_semantic_label": "Tomar foto con la cámara",
+      "camera_semantic_hint": "Abre la cámara para tomar una foto",
+      "gallery_semantic_label": "Seleccionar foto de la galería",
+      "gallery_semantic_hint": "Abre la galería de fotos"
     },
     "report": {
       "title": "Reportar chisme",
-      "button": "Reportar"
+      "button": "Reportar",
+      "reason_question": "¿Por qué reportas este chisme?",
+      "details_label": "Detalles adicionales (opcional)",
+      "details_hint": "Describe el problema..."
+    },
+    "submit_button": {
+      "publish_semantic": "Publicar chisme"
     }
   },
   "profile": {
@@ -270,6 +323,23 @@
       "signing_out": "Cerrando sesión...",
       "sign_out_dialog_title": "Cerrar sesión",
       "sign_out_dialog_content": "¿Estás seguro que deseas cerrar sesión?"
+    },
+    "stats": {
+      "title": "Estadísticas",
+      "gossips": "Chismes",
+      "comments": "Comentarios",
+      "followers": "Seguidores",
+      "following": "Siguiendo"
+    },
+    "header": {
+      "no_name": "Sin nombre",
+      "email_verified": "Email verificado",
+      "completeness": "Completitud del perfil"
+    },
+    "controller": {
+      "load_error": "Error al cargar el perfil",
+      "update_error": "Error al actualizar configuración",
+      "signout_error": "Error al cerrar sesión"
     },
     "settings": {
       "title": "Configuración",
@@ -395,7 +465,9 @@
       "explore_users_button": "Explorar usuarios",
       "view_popular_link": "Ver Populares",
       "feature_not_implemented": "Feature por implementar",
-      "use_popular_tab_hint": "Usa el tab de Populares arriba"
+      "use_popular_tab_hint": "Usa el tab de Populares arriba",
+      "unexpected_error": "Error inesperado al cargar feed",
+      "recommended_error": "Error al cargar recomendados"
     },
     "error": {
       "load_failed": "Error al cargar feed",

@@ -8,6 +8,7 @@ import 'package:chismes/features/location/domain/usecases/search_cities.dart';
 import 'package:chismes/core/result/result.dart';
 import 'package:chismes/core/error/failure.dart';
 import 'package:chismes/core/error/error_codes.dart';
+import '../../../../helpers/widget_test_wrapper.dart';
 
 import 'city_autocomplete_optimized_test.mocks.dart';
 
@@ -36,21 +37,20 @@ void main() {
       void Function(City?)? onCitySelected,
       String? Function(String?)? validator,
     }) {
-      return MaterialApp(
-        home: Scaffold(
-          body: CityAutocompleteOptimized(
-            regionId: regionId,
-            searchCities: mockSearchCities,
-            selectedCity: selectedCity,
-            onCitySelected: onCitySelected ?? (_) {},
-            validator: validator,
-          ),
+      return testableWidget(
+        child: CityAutocompleteOptimized(
+          regionId: regionId,
+          searchCities: mockSearchCities,
+          selectedCity: selectedCity,
+          onCitySelected: onCitySelected ?? (_) {},
+          validator: validator,
         ),
       );
     }
 
     testWidgets('debe renderizar TextField con label y hint', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       expect(find.text('Ciudad'), findsOneWidget);
       expect(find.textContaining('Buscar ciudad...'), findsOneWidget);
@@ -58,17 +58,18 @@ void main() {
     });
 
     testWidgets('debe mostrar ciudad seleccionada en el TextField', (tester) async {
-      await tester.pumpWidget(
-        buildWidget(
+      await tester.pumpWidget(buildWidget(
           selectedCity: const City(id: '1', name: 'Medellín', regionId: 'co-antioquia'),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Medellín'), findsOneWidget);
     });
 
     testWidgets('debe mostrar mensaje de mínimo de caracteres cuando query < 2', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Hacer focus
       await tester.tap(find.byType(TextFormField));
@@ -90,6 +91,7 @@ void main() {
       )).thenAnswer((_) async => Result.success(testCities));
 
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Hacer focus y escribir
       await tester.tap(find.byType(TextFormField));
@@ -126,6 +128,7 @@ void main() {
       });
 
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(TextFormField));
       await tester.enterText(find.byType(TextFormField), 'Med');
@@ -153,6 +156,7 @@ void main() {
       )).thenAnswer((_) async => Result.success(testCities));
 
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(TextFormField));
       await tester.enterText(find.byType(TextFormField), 'Med');
@@ -176,6 +180,7 @@ void main() {
           ));
 
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(TextFormField));
       await tester.enterText(find.byType(TextFormField), 'Med');
@@ -194,6 +199,7 @@ void main() {
       )).thenAnswer((_) async => Result.success(testCities));
 
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Primera búsqueda
       await tester.tap(find.byType(TextFormField));
@@ -224,6 +230,7 @@ void main() {
       )).thenAnswer((_) async => Result.success(testCities));
 
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Buscar
       await tester.tap(find.byType(TextFormField));
@@ -242,6 +249,7 @@ void main() {
 
     testWidgets('debe mostrar clear button cuando hay texto', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Escribir texto corto (< 2 chars) para que NO inicie búsqueda
       await tester.tap(find.byType(TextFormField));
@@ -255,9 +263,9 @@ void main() {
     testWidgets('debe limpiar texto y llamar onCitySelected(null) al presionar clear', (tester) async {
       City? selectedCity = const City(id: '1', name: 'Medellín', regionId: 'co-antioquia');
 
-      await tester.pumpWidget(
-        buildWidget(onCitySelected: (city) => selectedCity = city),
+      await tester.pumpWidget(buildWidget(onCitySelected: (city) => selectedCity = city),
       );
+      await tester.pump();
 
       // Escribir texto corto para que NO inicie búsqueda
       await tester.tap(find.byType(TextFormField));
@@ -282,9 +290,9 @@ void main() {
 
       City? selectedCity;
 
-      await tester.pumpWidget(
-        buildWidget(onCitySelected: (city) => selectedCity = city),
+      await tester.pumpWidget(buildWidget(onCitySelected: (city) => selectedCity = city),
       );
+      await tester.pump();
 
       // Buscar
       await tester.tap(find.byType(TextFormField));
@@ -294,7 +302,7 @@ void main() {
 
       // Seleccionar Medellín
       await tester.tap(find.text('Medellín'));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       expect(selectedCity?.id, '1');
       expect(selectedCity?.name, 'Medellín');
@@ -311,6 +319,7 @@ void main() {
       )).thenAnswer((_) async => Result.success(testCities));
 
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(TextFormField));
       await tester.enterText(find.byType(TextFormField), 'Med');
@@ -331,11 +340,11 @@ void main() {
         maxResults: anyNamed('maxResults'),
       )).thenAnswer((_) async => Result.success(testCities));
 
-      await tester.pumpWidget(
-        buildWidget(
+      await tester.pumpWidget(buildWidget(
           selectedCity: const City(id: '1', name: 'Medellín', regionId: 'co-antioquia'),
         ),
       );
+      await tester.pump();
 
       await tester.tap(find.byType(TextFormField));
       await tester.enterText(find.byType(TextFormField), 'Med');
@@ -354,6 +363,7 @@ void main() {
       )).thenAnswer((_) async => Result.success([]));
 
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(TextFormField));
       await tester.enterText(find.byType(TextFormField), 'XYZ');
@@ -532,6 +542,7 @@ void main() {
       )).thenAnswer((_) => completer2);
 
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Primera búsqueda (lenta)
       await tester.tap(find.byType(TextFormField));
@@ -554,6 +565,7 @@ void main() {
 
     testWidgets('debe limitar cache a 50 entradas (FIFO)', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Simular 51 búsquedas diferentes
       for (int i = 0; i <= 50; i++) {
@@ -595,6 +607,7 @@ void main() {
       )).thenAnswer((_) async => Result.success(testCities));
 
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(TextFormField));
       await tester.enterText(find.byType(TextFormField), 'Med');
@@ -612,6 +625,7 @@ void main() {
       )).thenAnswer((_) async => Result.success(testCities));
 
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(TextFormField));
       await tester.enterText(find.byType(TextFormField), 'Med');
@@ -630,6 +644,7 @@ void main() {
 
     testWidgets('debe cancelar debounce timer en dispose', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(TextFormField));
       await tester.enterText(find.byType(TextFormField), 'Med');
@@ -657,6 +672,7 @@ void main() {
       )).thenThrow(Exception('Unexpected error'));
 
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(TextFormField));
       await tester.enterText(find.byType(TextFormField), 'Med');

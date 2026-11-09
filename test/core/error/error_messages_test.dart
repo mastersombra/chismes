@@ -2,19 +2,27 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:chismes/core/error/error_messages.dart';
 import 'package:chismes/core/error/error_codes.dart';
 
+import '../../helpers/easy_localization_test_helper.dart';
+
 /// Tests de ErrorMessages
 ///
 /// Estos tests verifican que ErrorMessages retorna mensajes válidos
-/// para todos los códigos de error, sin depender de strings exactos
-/// ya que ahora usa i18n.
-///
-/// TODO: Los tests antiguos fueron movidos a error_messages_test.dart.deprecated
-/// porque esperaban strings hardcodeados en español. Una vez que se configure
-/// correctamente EasyLocalization para tests, restaurar esos tests actualizados.
+/// para todos los códigos de error con i18n correctamente configurado.
 void main() {
   group('ErrorMessages', () {
+    // Inicializar EasyLocalization antes de todos los tests
+    setUpAll(() async {
+      TestWidgetsFlutterBinding.ensureInitialized();
+    });
+
+    testWidgets('debe estar inicializado EasyLocalization', (tester) async {
+      await initializeEasyLocalizationForTest(tester);
+    });
     group('getMessage', () {
-      test('debe retornar mensaje no vacío para todos los ErrorCodes', () {
+      testWidgets('debe retornar mensaje no vacío para todos los ErrorCodes',
+          (tester) async {
+        await initializeEasyLocalizationForTest(tester);
+
         for (final code in ErrorCode.values) {
           final message = ErrorMessages.getMessage(code);
 
@@ -32,7 +40,9 @@ void main() {
         }
       });
 
-      test('debe aceptar parámetros opcionales', () {
+      testWidgets('debe aceptar parámetros opcionales', (tester) async {
+        await initializeEasyLocalizationForTest(tester);
+
         final messageWithoutParams =
             ErrorMessages.getMessage(ErrorCode.tooManyRequests);
         final messageWithParams = ErrorMessages.getMessage(
@@ -44,7 +54,10 @@ void main() {
         expect(messageWithParams, 'Custom message');
       });
 
-      test('rateLimitExceeded debe aceptar parámetros opcionales', () {
+      testWidgets('rateLimitExceeded debe aceptar parámetros opcionales',
+          (tester) async {
+        await initializeEasyLocalizationForTest(tester);
+
         final messageWithoutParams =
             ErrorMessages.getMessage(ErrorCode.rateLimitExceeded);
         final messageWithParams = ErrorMessages.getMessage(
@@ -58,7 +71,10 @@ void main() {
     });
 
     group('getTitle', () {
-      test('debe retornar título no vacío para todos los ErrorCodes', () {
+      testWidgets('debe retornar título no vacío para todos los ErrorCodes',
+          (tester) async {
+        await initializeEasyLocalizationForTest(tester);
+
         for (final code in ErrorCode.values) {
           final title = ErrorMessages.getTitle(code);
 
@@ -76,7 +92,10 @@ void main() {
         }
       });
 
-      test('errores relacionados deben tener títulos consistentes', () {
+      testWidgets('errores relacionados deben tener títulos consistentes',
+          (tester) async {
+        await initializeEasyLocalizationForTest(tester);
+
         // Errores de red deben tener el mismo título
         final networkTitle = ErrorMessages.getTitle(ErrorCode.networkError);
         final timeoutTitle = ErrorMessages.getTitle(ErrorCode.timeoutError);

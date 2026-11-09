@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../screens/gossip_detail_screen.dart';
 import '../../domain/entities/gossip.dart';
 import '../../domain/entities/report_reason.dart';
@@ -98,9 +99,9 @@ $deepLink
         onFailure: (failure) {
           // Obtener mensaje según tipo de Failure
           final message = switch (failure) {
-            ServerFailure(:final message) => message ?? 'Error al reportar',
-            RateLimitFailure(:final message) => message ?? 'Límite alcanzado',
-            _ => failure.technicalMessage ?? 'Error al reportar',
+            ServerFailure(:final message) => message ?? AppLocalizations.gossipCardReportError,
+            RateLimitFailure(:final message) => message ?? AppLocalizations.gossipCardRateLimitError,
+            _ => failure.technicalMessage ?? AppLocalizations.gossipCardReportError,
           };
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -126,8 +127,8 @@ $deepLink
   Widget build(BuildContext context) {
     // ✅ Accesibilidad: Semantics para toda la card
     return Semantics(
-      label: 'Chisme: ${gossip.subject}. ${gossip.content}',
-      hint: 'Toca para ver detalles completos',
+      label: AppLocalizations.gossipCardSemanticLabel(gossip.subject, gossip.content),
+      hint: AppLocalizations.gossipCardSemanticHint,
       button: true,
       excludeSemantics: true, // No leer hijos (evitar duplicación)
       child: InkWell(
@@ -201,8 +202,8 @@ $deepLink
                     children: [
                       // Botón compartir
                       Semantics(
-                        label: 'Compartir este chisme',
-                        hint: 'Abre opciones para compartir con otros',
+                        label: AppLocalizations.gossipCardShareSemanticLabel,
+                        hint: AppLocalizations.gossipCardShareSemanticHint,
                         button: true,
                         child: IconButton(
                           icon: const Icon(Icons.share, size: 20),
@@ -213,14 +214,14 @@ $deepLink
                             minHeight: 48,
                           ),
                           iconSize: 20,
-                          tooltip: 'Compartir chisme',
+                          tooltip: AppLocalizations.gossipCardShareTooltip,
                         ),
                       ),
 
                       // Botón reportar (menú)
                       Semantics(
-                        label: 'Reportar este chisme',
-                        hint: 'Abre opciones para reportar contenido inapropiado',
+                        label: AppLocalizations.gossipCardReportSemanticLabel,
+                        hint: AppLocalizations.gossipCardReportSemanticHint,
                         button: true,
                         child: IconButton(
                           icon: const Icon(Icons.flag_outlined, size: 20),
@@ -230,7 +231,7 @@ $deepLink
                             minHeight: 48,
                           ),
                           iconSize: 20,
-                          tooltip: 'Reportar chisme',
+                          tooltip: AppLocalizations.gossipCardReportTooltip,
                         ),
                       ),
                     ],

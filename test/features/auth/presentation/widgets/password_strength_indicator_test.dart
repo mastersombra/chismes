@@ -4,11 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   Widget makeTestableWidget(Widget child) {
-    return MaterialApp(
-      home: Scaffold(
-        body: child,
-      ),
-    );
+    return MaterialApp(home: Scaffold(body: child));
   }
 
   group('PasswordStrengthIndicator', () {

@@ -9,11 +9,16 @@ import 'package:chismes/core/services/deep_link_service.dart';
 import 'package:chismes/core/logging/app_logger.dart';
 import 'package:chismes/features/auth/presentation/controllers/login_controller.dart';
 import 'package:chismes/features/auth/presentation/state/auth_state.dart';
+import 'package:chismes/features/auth/domain/repositories/auth_repository.dart';
+import 'package:chismes/features/auth/presentation/controllers/otp_verification_controller.dart';
+import 'package:chismes/features/auth/presentation/states/otp_verification_state.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'helpers/mock_app_logger_helper.dart';
+import 'helpers/test_translations_loader.dart';
 
 // Generate mocks
-@GenerateMocks([DeepLinkService, LoginController])
+@GenerateMocks([DeepLinkService, LoginController, AuthRepository, OtpVerificationController])
 import 'main_additional_test.mocks.dart';
 
 /// Tests adicionales para main.dart
@@ -26,15 +31,33 @@ import 'main_additional_test.mocks.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  // Helper para envolver ChismesApp en EasyLocalization
+  Widget wrapWithI18n(Widget child) {
+    return EasyLocalization(
+      supportedLocales: const [Locale('es'), Locale('en')],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('es'),
+      startLocale: const Locale('es'),
+      assetLoader: const TestTranslationsLoader(),
+      useOnlyLangCode: true,
+      child: child,
+    );
+  }
+
   // Guardar callbacks originales
   late Future<void> Function({String fileName}) originalLoadEnv;
   late Future<void> Function() originalInitializeSupabase;
   late Future<void> Function() originalSetupDependencies;
   late MockLoginController mockLoginController;
+  late MockAuthRepository mockAuthRepository;
+  late MockOtpVerificationController mockOtpController;
 
   setUpAll(() {
     // Provide dummy values for complex types
     provideDummy<AuthState>(const AuthInitial());
+    provideDummy<OtpVerificationState>(
+      const OtpVerificationState(email: 'test@example.com'),
+    );
   });
 
   setUp(() {
@@ -44,6 +67,26 @@ void main() {
 
     // Registrar mocks necesarios para tests
     setupMockAppLogger();
+
+    // Configurar mock de AuthRepository
+    mockAuthRepository = MockAuthRepository();
+    when(mockAuthRepository.authStateChanges).thenAnswer(
+      (_) => Stream.value(null),
+    );
+    if (getIt.isRegistered<AuthRepository>()) {
+      getIt.unregister<AuthRepository>();
+    }
+    getIt.registerSingleton<AuthRepository>(mockAuthRepository);
+
+    // Configurar mock de OtpVerificationController
+    mockOtpController = MockOtpVerificationController();
+    when(mockOtpController.state).thenReturn(
+      const OtpVerificationState(email: 'test@example.com'),
+    );
+    if (getIt.isRegistered<OtpVerificationController>()) {
+      getIt.unregister<OtpVerificationController>();
+    }
+    getIt.registerSingleton<OtpVerificationController>(mockOtpController);
 
     // Configurar mock de LoginController
     mockLoginController = MockLoginController();
@@ -65,6 +108,12 @@ void main() {
     if (getIt.isRegistered<AppLogger>()) {
       getIt.unregister<AppLogger>();
     }
+    if (getIt.isRegistered<AuthRepository>()) {
+      getIt.unregister<AuthRepository>();
+    }
+    if (getIt.isRegistered<OtpVerificationController>()) {
+      getIt.unregister<OtpVerificationController>();
+    }
     if (getIt.isRegistered<LoginController>()) {
       getIt.unregister<LoginController>();
     }
@@ -73,7 +122,7 @@ void main() {
   group('NavigatorKey (Deep Links)', () {
     testWidgets('MaterialApp debe tener navigatorKey configurado', (WidgetTester tester) async {
       // Act
-      await tester.pumpWidget(const app.ChismesApp());
+      await tester.pumpWidget(wrapWithI18n(const app.ChismesApp()));
 
       // Assert
       final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
@@ -83,7 +132,7 @@ void main() {
 
     testWidgets('navigatorKey debe ser el mismo GlobalKey exportado', (WidgetTester tester) async {
       // Act
-      await tester.pumpWidget(const app.ChismesApp());
+      await tester.pumpWidget(wrapWithI18n(const app.ChismesApp()));
 
       // Assert
       final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
@@ -99,7 +148,7 @@ void main() {
   group('Temas - Light Theme', () {
     testWidgets('light theme debe tener color primario configurado', (WidgetTester tester) async {
       // Act
-      await tester.pumpWidget(const app.ChismesApp());
+      await tester.pumpWidget(wrapWithI18n(const app.ChismesApp()));
 
       // Assert
       final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
@@ -111,7 +160,7 @@ void main() {
 
     testWidgets('light theme debe tener primaryLight configurado correctamente', (WidgetTester tester) async {
       // Act
-      await tester.pumpWidget(const app.ChismesApp());
+      await tester.pumpWidget(wrapWithI18n(const app.ChismesApp()));
 
       // Assert
       final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
@@ -123,7 +172,7 @@ void main() {
 
     testWidgets('light theme debe tener TextTheme configurado', (WidgetTester tester) async {
       // Act
-      await tester.pumpWidget(const app.ChismesApp());
+      await tester.pumpWidget(wrapWithI18n(const app.ChismesApp()));
 
       // Assert
       final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
@@ -139,7 +188,7 @@ void main() {
   group('Temas - Dark Theme', () {
     testWidgets('dark theme debe tener color primario configurado', (WidgetTester tester) async {
       // Act
-      await tester.pumpWidget(const app.ChismesApp());
+      await tester.pumpWidget(wrapWithI18n(const app.ChismesApp()));
 
       // Assert
       final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
@@ -151,7 +200,7 @@ void main() {
 
     testWidgets('dark theme debe tener primaryDark configurado correctamente', (WidgetTester tester) async {
       // Act
-      await tester.pumpWidget(const app.ChismesApp());
+      await tester.pumpWidget(wrapWithI18n(const app.ChismesApp()));
 
       // Assert
       final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
@@ -163,7 +212,7 @@ void main() {
 
     testWidgets('dark theme debe ser diferente del light theme', (WidgetTester tester) async {
       // Act
-      await tester.pumpWidget(const app.ChismesApp());
+      await tester.pumpWidget(wrapWithI18n(const app.ChismesApp()));
 
       // Assert
       final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
@@ -289,14 +338,14 @@ void main() {
   group('ChismesApp - Configuración Avanzada', () {
     testWidgets('debe construir sin dependencias externas inicializadas', (WidgetTester tester) async {
       // Act & Assert - Widget debe construir sin crash
-      await tester.pumpWidget(const app.ChismesApp());
+      await tester.pumpWidget(wrapWithI18n(const app.ChismesApp()));
       expect(find.byType(MaterialApp), findsOneWidget);
     });
 
     testWidgets('debe ser reconstruible múltiples veces sin state', (WidgetTester tester) async {
       // Act - Construir múltiples veces
       for (int i = 0; i < 5; i++) {
-        await tester.pumpWidget(const app.ChismesApp());
+        await tester.pumpWidget(wrapWithI18n(const app.ChismesApp()));
         await tester.pump();
       }
 
@@ -306,14 +355,14 @@ void main() {
 
     testWidgets('debe mantener configuración al reconstruir', (WidgetTester tester) async {
       // Act
-      await tester.pumpWidget(const app.ChismesApp());
+      await tester.pumpWidget(wrapWithI18n(const app.ChismesApp()));
 
       var materialApp1 = tester.widget<MaterialApp>(find.byType(MaterialApp));
       var title1 = materialApp1.title;
       var themeMode1 = materialApp1.themeMode;
 
       // Reconstruir
-      await tester.pumpWidget(const app.ChismesApp());
+      await tester.pumpWidget(wrapWithI18n(const app.ChismesApp()));
 
       var materialApp2 = tester.widget<MaterialApp>(find.byType(MaterialApp));
       var title2 = materialApp2.title;
@@ -429,7 +478,7 @@ void main() {
 
     testWidgets('debe construir widget sin llamar initializeApp primero', (WidgetTester tester) async {
       // Act & Assert - No debe crash
-      await tester.pumpWidget(const app.ChismesApp());
+      await tester.pumpWidget(wrapWithI18n(const app.ChismesApp()));
       expect(find.byType(MaterialApp), findsOneWidget);
     });
 

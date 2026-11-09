@@ -1,10 +1,11 @@
 import 'package:chismes/features/auth/presentation/widgets/social_login_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../../../../helpers/widget_test_wrapper.dart';
 
 void main() {
   Widget makeTestableWidget(Widget child) {
-    return MaterialApp(home: Scaffold(body: child));
+    return testableWidget(child: child, useScaffold: true);
   }
 
   group('SocialLoginButtons', () {
@@ -18,7 +19,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byType(SocialLoginButtons), findsOneWidget);
       expect(find.text('Continuar con Google'), findsOneWidget);
@@ -39,7 +40,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byKey(testKey), findsOneWidget);
     });
@@ -54,7 +55,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.text('Continuar con Google'), findsOneWidget);
       expect(find.text('Continuar con Apple'), findsOneWidget);
@@ -73,7 +74,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Act
       await tester.tap(find.text('Continuar con Google'));
       await tester.pump();
@@ -94,7 +95,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Act
       await tester.tap(find.text('Continuar con Apple'));
       await tester.pump();
@@ -118,7 +119,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert - los botones no deben responder porque están deshabilitados
       await tester.tap(find.text('Continuar con Google'));
       await tester.tap(find.text('Continuar con Apple'));
@@ -143,7 +144,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert - los botones deben responder porque están habilitados
       await tester.tap(find.text('Continuar con Google'));
       await tester.pump();
@@ -164,7 +165,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byType(Column), findsWidgets);
     });
@@ -179,7 +180,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byType(SizedBox), findsWidgets);
     });
@@ -194,7 +195,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // El errorBuilder debería mostrar el icono de fallback si la imagen no existe
       await tester.pump();
 
@@ -213,7 +214,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byType(GoogleSignInButton), findsOneWidget);
       expect(find.text('Continuar con Google'), findsOneWidget);
@@ -232,7 +233,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byKey(testKey), findsOneWidget);
     });
@@ -248,7 +249,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Act
       await tester.tap(find.text('Continuar con Google'));
       await tester.pump();
@@ -270,7 +271,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert - el botón no debe responder porque está deshabilitado
       await tester.tap(find.text('Continuar con Google'));
       await tester.pump();
@@ -290,7 +291,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert - el botón debe responder porque está habilitado
       await tester.tap(find.text('Continuar con Google'));
       await tester.pump();
@@ -306,7 +307,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byType(GoogleSignInButton), findsOneWidget);
       expect(find.text('Continuar con Google'), findsOneWidget);
@@ -321,7 +322,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       await tester.pump();
 
       // Assert - verificar que el widget se renderizó
@@ -339,7 +340,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byType(AppleSignInButton), findsOneWidget);
       expect(find.text('Continuar con Apple'), findsOneWidget);
@@ -358,7 +359,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byKey(testKey), findsOneWidget);
     });
@@ -372,7 +373,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byIcon(Icons.apple), findsOneWidget);
     });
@@ -388,7 +389,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Act
       await tester.tap(find.text('Continuar con Apple'));
       await tester.pump();
@@ -410,7 +411,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert - el botón no debe responder porque está deshabilitado
       await tester.tap(find.text('Continuar con Apple'));
       await tester.pump();
@@ -430,7 +431,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert - el botón debe responder porque está habilitado
       await tester.tap(find.text('Continuar con Apple'));
       await tester.pump();
@@ -446,7 +447,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byType(AppleSignInButton), findsOneWidget);
       expect(find.text('Continuar con Apple'), findsOneWidget);

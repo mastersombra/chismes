@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:chismes/features/gossip/presentation/widgets/gossip_card.dart';
 import 'package:chismes/features/gossip/domain/entities/gossip.dart';
+import '../../../../helpers/widget_test_wrapper.dart';
 
 void main() {
   group('GossipCard', () {
@@ -35,16 +36,15 @@ void main() {
     testWidgets('debe renderizar subject del gossip', (tester) async {
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert
       expect(find.text('Test Subject'), findsOneWidget);
@@ -53,16 +53,15 @@ void main() {
     testWidgets('debe renderizar content del gossip', (tester) async {
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert
       expect(find.text('Test Content'), findsOneWidget);
@@ -97,16 +96,15 @@ void main() {
 
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: longContentGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: longContentGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert - Busca el Text del content y verifica sus propiedades
       final contentTexts = tester.widgetList<Text>(
@@ -123,16 +121,15 @@ void main() {
     testWidgets('debe renderizar Card con bordes redondeados', (tester) async {
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert
       final card = tester.widget<Card>(find.byType(Card));
@@ -143,16 +140,15 @@ void main() {
     testWidgets('debe tener InkWell para navegación', (tester) async {
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert - El widget puede tener múltiples InkWells (Card + elementos internos)
       expect(find.byType(InkWell), findsWidgets);
@@ -161,16 +157,15 @@ void main() {
     testWidgets('debe navegar a detalle cuando se toca', (tester) async {
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Act - Tocar la card
       await tester.tap(find.byType(GossipCard));
@@ -209,16 +204,15 @@ void main() {
 
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: gossipWithoutImage),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: gossipWithoutImage),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert - Debe intentar cargar imagen de placeholder
       expect(find.byType(Image), findsOneWidget);
@@ -227,16 +221,15 @@ void main() {
     testWidgets('debe tener subject en negrita', (tester) async {
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert
       final subjectText = tester.widget<Text>(find.text('Test Subject'));
@@ -246,16 +239,15 @@ void main() {
     testWidgets('debe tener estructura Column correcta', (tester) async {
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert - Verifica que hay Columns para el layout
       expect(find.byType(Column), findsWidgets);
@@ -264,16 +256,15 @@ void main() {
     testWidgets('debe tener padding en el contenido', (tester) async {
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert - Verifica que hay Padding
       expect(find.byType(Padding), findsWidgets);
@@ -282,16 +273,15 @@ void main() {
     testWidgets('debe tener imagen en Expanded para ocupar espacio', (tester) async {
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert
       expect(find.byType(Expanded), findsOneWidget);
@@ -299,16 +289,15 @@ void main() {
 
     testWidgets('debe renderizar botón de compartir', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.share), findsOneWidget);
       expect(find.byTooltip('Compartir chisme'), findsOneWidget);
@@ -316,16 +305,15 @@ void main() {
 
     testWidgets('debe renderizar botón de reportar', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.flag_outlined), findsOneWidget);
       expect(find.byTooltip('Reportar chisme'), findsOneWidget);
@@ -333,16 +321,15 @@ void main() {
 
     testWidgets('debe tener Row para los botones de acción', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Debe haber Row con los botones
       final rows = tester.widgetList<Row>(find.byType(Row));
@@ -357,16 +344,15 @@ void main() {
 
     testWidgets('botones deben tener constraints mínimos de 48x48', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final shareButton = tester.widget<IconButton>(
         find.ancestor(
@@ -391,16 +377,15 @@ void main() {
 
     testWidgets('botones deben tener iconSize de 20', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final shareButton = tester.widget<IconButton>(
         find.ancestor(
@@ -423,16 +408,15 @@ void main() {
 
     testWidgets('debe tener Semantics para accesibilidad', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Verificar que hay widgets Semantics
       expect(find.byType(Semantics), findsWidgets);
@@ -464,16 +448,15 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: gossipWithThumbnail),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: gossipWithThumbnail),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final image = tester.widget<Image>(find.byType(Image));
       final networkImage = image.image as NetworkImage;
@@ -506,16 +489,15 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: gossipWithoutThumbnail),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: gossipWithoutThumbnail),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final image = tester.widget<Image>(find.byType(Image));
       final networkImage = image.image as NetworkImage;
@@ -548,16 +530,15 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: gossipWithoutImages),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: gossipWithoutImages),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final image = tester.widget<Image>(find.byType(Image));
       final networkImage = image.image as NetworkImage;
@@ -566,16 +547,15 @@ void main() {
 
     testWidgets('imagen debe tener BoxFit.cover', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final image = tester.widget<Image>(find.byType(Image));
       expect(image.fit, BoxFit.cover);
@@ -583,16 +563,15 @@ void main() {
 
     testWidgets('imagen debe ocupar ancho completo', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final image = tester.widget<Image>(find.byType(Image));
       expect(image.width, double.infinity);
@@ -600,16 +579,15 @@ void main() {
 
     testWidgets('debe tener errorBuilder para manejar errores de carga', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final image = tester.widget<Image>(find.byType(Image));
       expect(image.errorBuilder, isNotNull);
@@ -617,16 +595,15 @@ void main() {
 
     testWidgets('debe tener espaciado correcto entre subject y content', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Buscar el SizedBox entre subject y content
       final sizedBoxes = tester.widgetList<SizedBox>(find.byType(SizedBox));
@@ -636,16 +613,15 @@ void main() {
 
     testWidgets('Card debe tener elevation de 6', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final card = tester.widget<Card>(find.byType(Card));
       expect(card.elevation, 6);
@@ -653,16 +629,15 @@ void main() {
 
     testWidgets('Card debe tener clipBehavior antiAlias', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final card = tester.widget<Card>(find.byType(Card));
       expect(card.clipBehavior, Clip.antiAlias);
@@ -670,16 +645,15 @@ void main() {
 
     testWidgets('debe tener Column con crossAxisAlignment.start', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 200,
-              height: 300,
-              child: GossipCard(gossip: testGossip),
-            ),
+        testableWidget(
+          child: SizedBox(
+            width: 200,
+            height: 300,
+            child: GossipCard(gossip: testGossip),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Buscar la Column principal dentro del Card
       final columns = tester.widgetList<Column>(find.descendant(

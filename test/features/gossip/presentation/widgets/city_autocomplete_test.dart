@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:chismes/features/gossip/presentation/widgets/city_autocomplete.dart';
 import 'package:chismes/features/location/domain/entities/city.dart';
+import '../../../../helpers/widget_test_wrapper.dart';
 
 void main() {
   group('CityAutocomplete', () {
@@ -14,15 +15,14 @@ void main() {
 
     testWidgets('debe renderizar TextField con label y hint', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CityAutocomplete(
+        testableWidget(
+          child: CityAutocomplete(
               cities: cities,
               onCitySelected: (_) {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Ciudad'), findsOneWidget);
       expect(find.text('Buscar ciudad...'), findsOneWidget);
@@ -33,31 +33,29 @@ void main() {
       const selectedCity = City(id: '1', name: 'Medellín', regionId: 'ANT');
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CityAutocomplete(
+        testableWidget(
+          child: CityAutocomplete(
               cities: cities,
               selectedCity: selectedCity,
               onCitySelected: (_) {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Medellín'), findsOneWidget);
     });
 
     testWidgets('debe mostrar sugerencias al hacer focus', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CityAutocomplete(
+        testableWidget(
+          child: CityAutocomplete(
               cities: cities,
               onCitySelected: (_) {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Hacer tap en el TextField para focus
       await tester.tap(find.byType(TextFormField));
@@ -72,15 +70,14 @@ void main() {
 
     testWidgets('debe filtrar ciudades por coincidencia parcial', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CityAutocomplete(
+        testableWidget(
+          child: CityAutocomplete(
               cities: cities,
               onCitySelected: (_) {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Hacer focus
       await tester.tap(find.byType(TextFormField));
@@ -99,15 +96,14 @@ void main() {
 
     testWidgets('debe filtrar case-insensitive', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CityAutocomplete(
+        testableWidget(
+          child: CityAutocomplete(
               cities: cities,
               onCitySelected: (_) {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(TextFormField));
       await tester.pump();
@@ -121,15 +117,14 @@ void main() {
 
     testWidgets('debe mostrar mensaje cuando no hay resultados', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CityAutocomplete(
+        testableWidget(
+          child: CityAutocomplete(
               cities: cities,
               onCitySelected: (_) {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(TextFormField));
       await tester.pump();
@@ -145,15 +140,14 @@ void main() {
       City? selectedCity;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CityAutocomplete(
+        testableWidget(
+          child: CityAutocomplete(
               cities: cities,
               onCitySelected: (city) => selectedCity = city,
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(TextFormField));
       await tester.pump();
@@ -168,15 +162,14 @@ void main() {
 
     testWidgets('debe actualizar TextField al seleccionar ciudad', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CityAutocomplete(
+        testableWidget(
+          child: CityAutocomplete(
               cities: cities,
               onCitySelected: (_) {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(TextFormField));
       await tester.pump();
@@ -191,15 +184,14 @@ void main() {
 
     testWidgets('debe ocultar sugerencias al seleccionar ciudad', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CityAutocomplete(
+        testableWidget(
+          child: CityAutocomplete(
               cities: cities,
               onCitySelected: (_) {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(TextFormField));
       await tester.pump();
@@ -217,15 +209,14 @@ void main() {
 
     testWidgets('debe mostrar clear button cuando hay texto', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CityAutocomplete(
+        testableWidget(
+          child: CityAutocomplete(
               cities: cities,
               onCitySelected: (_) {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Al inicio debe mostrar search icon
       expect(find.byIcon(Icons.search), findsOneWidget);
@@ -244,15 +235,14 @@ void main() {
       City? selectedCity = const City(id: '1', name: 'Medellín', regionId: 'ANT');
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CityAutocomplete(
+        testableWidget(
+          child: CityAutocomplete(
               cities: cities,
               onCitySelected: (city) => selectedCity = city,
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       await tester.enterText(find.byType(TextFormField), 'Med');
       await tester.pump();
@@ -270,16 +260,15 @@ void main() {
       const selectedCity = City(id: '1', name: 'Medellín', regionId: 'ANT');
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CityAutocomplete(
+        testableWidget(
+          child: CityAutocomplete(
               cities: cities,
               selectedCity: selectedCity,
               onCitySelected: (_) {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(TextFormField));
       await tester.pump();
@@ -290,15 +279,14 @@ void main() {
 
     testWidgets('debe mostrar todas las ciudades cuando query está vacío', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CityAutocomplete(
+        testableWidget(
+          child: CityAutocomplete(
               cities: cities,
               onCitySelected: (_) {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(TextFormField));
       await tester.pump();
@@ -415,24 +403,23 @@ void main() {
       String? validationError;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: Form(
-              child: CityAutocomplete(
-                cities: cities,
-                onCitySelected: (_) {},
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    validationError = 'Campo requerido';
-                    return 'Campo requerido';
-                  }
-                  return null;
-                },
-              ),
+        testableWidget(
+          child: Form(
+            child: CityAutocomplete(
+              cities: cities,
+              onCitySelected: (_) {},
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  validationError = 'Campo requerido';
+                  return 'Campo requerido';
+                }
+                return null;
+              },
             ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Trigger validation
       final formState = tester.state<FormState>(find.byType(Form));
@@ -445,20 +432,19 @@ void main() {
 
     testWidgets('no debe mostrar sugerencias cuando pierde focus', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: Column(
-              children: [
-                CityAutocomplete(
-                  cities: cities,
-                  onCitySelected: (_) {},
-                ),
-                const TextField(key: Key('other')),
-              ],
-            ),
+        testableWidget(
+          child: Column(
+            children: [
+              CityAutocomplete(
+                cities: cities,
+                onCitySelected: (_) {},
+              ),
+              const TextField(key: Key('other')),
+            ],
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Hacer focus en city autocomplete
       await tester.tap(find.byType(CityAutocomplete));
@@ -476,15 +462,14 @@ void main() {
 
     testWidgets('debe tener constraints en lista de sugerencias', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CityAutocomplete(
+        testableWidget(
+          child: CityAutocomplete(
               cities: cities,
               onCitySelected: (_) {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(TextFormField));
       await tester.pump();
@@ -501,15 +486,14 @@ void main() {
 
     testWidgets('debe mostrar íconos correctos en la lista', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CityAutocomplete(
+        testableWidget(
+          child: CityAutocomplete(
               cities: cities,
               onCitySelected: (_) {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(TextFormField));
       await tester.pump();

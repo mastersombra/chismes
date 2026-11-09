@@ -7,7 +7,6 @@ import '../../../location/domain/usecases/search_cities.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_radius.dart';
-import '../../../../core/validation/form_validators.dart';
 
 /// Dialog para cambiar la ubicación del chisme
 ///
@@ -70,7 +69,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
-                        'Cambiar ubicación',
+                        AppLocalizations.locationChangeDialogTitle,
                         style: textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -139,13 +138,13 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Usar mi ubicación actual',
+                                        AppLocalizations.locationUseCurrentLocation,
                                         style: textTheme.bodyLarge?.copyWith(
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       Text(
-                                        'Detectar automáticamente con GPS',
+                                        AppLocalizations.locationGpsDetectSubtitle,
                                         style: textTheme.bodySmall,
                                       ),
                                     ],
@@ -173,7 +172,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
                       child: Text(
-                        'O seleccionar manualmente',
+                        AppLocalizations.locationOrSelectManually,
                         style: textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.secondary,
                             ),
@@ -199,7 +198,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
                     searchCities: widget.searchCities,
                     selectedCity: widget.state.selectedCity,
                     onCitySelected: widget.onCityChanged,
-                    validator: (value) => FormValidators.required(value, 'una ciudad'),
+                    validator: (value) => value == null || value.isEmpty ? AppLocalizations.locationCityRequired : null,
                   ),
                   const SizedBox(height: AppSpacing.lg),
                 ],
@@ -241,7 +240,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
     return DropdownButtonFormField<String>(
       initialValue: widget.state.selectedCountry?.id,
       decoration: InputDecoration(
-        labelText: 'País',
+        labelText: AppLocalizations.locationCountryLabel,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
         prefixIcon: const Icon(Icons.public),
         suffixIcon: widget.state.isLoadingCountries
@@ -259,7 +258,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
         );
       }).toList(),
       onChanged: widget.state.isLoadingCountries ? null : widget.onCountryChanged,
-      validator: (value) => FormValidators.required(value, 'un país'),
+      validator: (value) => value == null || value.isEmpty ? AppLocalizations.locationCountryRequired : null,
     );
   }
 
@@ -267,7 +266,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
     return DropdownButtonFormField<String>(
       initialValue: widget.state.selectedRegion?.id,
       decoration: InputDecoration(
-        labelText: 'Región',
+        labelText: AppLocalizations.locationRegionLabel,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
         prefixIcon: const Icon(Icons.location_city),
         suffixIcon: widget.state.isLoadingRegions
@@ -285,7 +284,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
         );
       }).toList(),
       onChanged: widget.state.isLoadingRegions ? null : widget.onRegionChanged,
-      validator: (value) => FormValidators.required(value, 'una región'),
+      validator: (value) => value == null || value.isEmpty ? AppLocalizations.locationRegionRequired : null,
     );
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../states/add_gossip_state.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_radius.dart';
-import '../../../../core/validation/form_validators.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 /// Widget para seleccionar ubicación (país, región, ciudad)
 class LocationSelector extends StatelessWidget {
@@ -37,7 +37,7 @@ class LocationSelector extends StatelessWidget {
       key: ValueKey('country_${state.selectedCountryId}'),
       initialValue: state.selectedCountryId,
       decoration: InputDecoration(
-        labelText: 'País',
+        labelText: AppLocalizations.locationCountryLabel,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
         prefixIcon: const Icon(Icons.public),
         suffixIcon: state.isLoadingCountries
@@ -57,7 +57,7 @@ class LocationSelector extends StatelessWidget {
       onChanged: state.isLoadingCountries
           ? null
           : onCountrySelected,
-      validator: (value) => FormValidators.required(value, 'un país'),
+      validator: (value) => value == null || value.isEmpty ? AppLocalizations.locationCountryRequired : null,
     );
   }
 
@@ -70,7 +70,7 @@ class LocationSelector extends StatelessWidget {
       key: ValueKey('region_${state.selectedRegionId}'),
       initialValue: state.selectedRegionId,
       decoration: InputDecoration(
-        labelText: 'Región',
+        labelText: AppLocalizations.locationRegionLabel,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
         prefixIcon: const Icon(Icons.location_city),
         suffixIcon: state.isLoadingRegions
@@ -90,7 +90,7 @@ class LocationSelector extends StatelessWidget {
       onChanged: state.isLoadingRegions
           ? null
           : onRegionSelected,
-      validator: (value) => FormValidators.required(value, 'una región'),
+      validator: (value) => value == null || value.isEmpty ? AppLocalizations.locationRegionRequired : null,
     );
   }
 
@@ -103,7 +103,7 @@ class LocationSelector extends StatelessWidget {
       key: ValueKey('city_${state.selectedCityId}'),
       initialValue: state.selectedCityId,
       decoration: InputDecoration(
-        labelText: 'Ciudad',
+        labelText: AppLocalizations.locationCityLabel,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
         prefixIcon: const Icon(Icons.location_on),
         suffixIcon: state.isLoadingCities
@@ -123,7 +123,7 @@ class LocationSelector extends StatelessWidget {
       onChanged: state.isLoadingCities
           ? null
           : onCitySelected,
-      validator: (value) => FormValidators.required(value, 'una ciudad'),
+      validator: (value) => value == null || value.isEmpty ? AppLocalizations.locationCityRequired : null,
     );
   }
 }

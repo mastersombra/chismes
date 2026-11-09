@@ -381,6 +381,14 @@ class AuthRepositoryImpl implements AuthRepository {
       );
     }
 
+    // Session expired (debe ir ANTES del check genérico de expired)
+    if (message.contains('session') && message.contains('expired')) {
+      return const AuthFailure(
+        code: ErrorCode.sessionExpired,
+        technicalMessage: 'Session expired',
+      );
+    }
+
     // Token/OTP invalid: verificar mensaje
     if (message.contains('token') && message.contains('invalid')) {
       return const AuthFailure(
@@ -392,14 +400,6 @@ class AuthRepositoryImpl implements AuthRepository {
       return const AuthFailure(
         code: ErrorCode.expiredToken,
         technicalMessage: 'Token expired',
-      );
-    }
-
-    // Session expired
-    if (message.contains('session') && message.contains('expired')) {
-      return const AuthFailure(
-        code: ErrorCode.sessionExpired,
-        technicalMessage: 'Session expired',
       );
     }
 

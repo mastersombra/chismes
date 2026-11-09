@@ -1,14 +1,11 @@
 import 'package:chismes/features/auth/presentation/widgets/password_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../../../../helpers/widget_test_wrapper.dart';
 
 void main() {
   Widget makeTestableWidget(Widget child) {
-    return MaterialApp(
-      home: Scaffold(
-        body: child,
-      ),
-    );
+    return testableWidget(child: child, useScaffold: true);
   }
 
   group('PasswordField', () {
@@ -22,7 +19,7 @@ void main() {
           PasswordField(controller: controller),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byType(TextFormField), findsOneWidget);
     });
@@ -37,7 +34,7 @@ void main() {
           PasswordField(controller: controller),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.text('Contraseña'), findsOneWidget);
     });
@@ -55,7 +52,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.text('Nueva Contraseña'), findsOneWidget);
       expect(find.text('Contraseña'), findsNothing);
@@ -74,7 +71,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert - verificar que el campo se renderiza correctamente
       expect(find.byType(TextFormField), findsOneWidget);
     });
@@ -89,7 +86,7 @@ void main() {
           PasswordField(controller: controller),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byIcon(Icons.lock_outlined), findsOneWidget);
     });
@@ -107,7 +104,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byIcon(Icons.vpn_key), findsOneWidget);
       expect(find.byIcon(Icons.lock_outlined), findsNothing);
@@ -123,7 +120,7 @@ void main() {
           PasswordField(controller: controller),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert - verificar que el icono de visibilidad está presente
       expect(find.byIcon(Icons.visibility_outlined), findsOneWidget);
     });
@@ -138,7 +135,7 @@ void main() {
           PasswordField(controller: controller),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byIcon(Icons.visibility_outlined), findsOneWidget);
       expect(find.byIcon(Icons.visibility_off_outlined), findsNothing);
@@ -153,7 +150,7 @@ void main() {
           PasswordField(controller: controller),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Verificar estado inicial
       expect(find.byIcon(Icons.visibility_outlined), findsOneWidget);
 
@@ -184,7 +181,7 @@ void main() {
           PasswordField(controller: controller),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       final iconButton = tester.widget<IconButton>(
         find.widgetWithIcon(IconButton, Icons.visibility_outlined),
@@ -201,7 +198,7 @@ void main() {
           PasswordField(controller: controller),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Act - mostrar contraseña
       await tester.tap(find.byIcon(Icons.visibility_outlined));
       await tester.pump();
@@ -223,7 +220,7 @@ void main() {
           PasswordField(controller: controller),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       final textField = tester.widget<TextFormField>(find.byType(TextFormField));
       expect(textField.enabled, isTrue);
@@ -242,7 +239,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       final textField = tester.widget<TextFormField>(find.byType(TextFormField));
       expect(textField.enabled, isFalse);
@@ -258,7 +255,7 @@ void main() {
           PasswordField(controller: controller),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       final textField = tester.widget<TextFormField>(find.byType(TextFormField));
       expect(textField.controller, controller);
@@ -290,7 +287,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Act
       final formState = tester.state<FormState>(find.byType(Form));
       formState.validate();
@@ -313,7 +310,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Act
       await tester.enterText(find.byType(TextFormField), 'test123');
       await tester.pump();
@@ -332,7 +329,7 @@ void main() {
           PasswordField(controller: controller),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert - verificar que el TextFormField se renderiza correctamente
       expect(find.byType(TextFormField), findsOneWidget);
     });
@@ -351,7 +348,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byKey(testKey), findsOneWidget);
     });
@@ -366,7 +363,7 @@ void main() {
           PasswordField(controller: controller),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       final widget = tester.widget<PasswordField>(find.byType(PasswordField));
       expect(widget, isA<StatefulWidget>());
@@ -381,7 +378,7 @@ void main() {
           PasswordField(controller: controller),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Act - mostrar contraseña
       await tester.tap(find.byIcon(Icons.visibility_outlined));
       await tester.pump();
@@ -394,7 +391,7 @@ void main() {
           PasswordField(controller: controller),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert - estado se mantiene (icono sigue siendo visibility_off)
       expect(find.byIcon(Icons.visibility_off_outlined), findsOneWidget);
     });
@@ -409,7 +406,7 @@ void main() {
           PasswordField(controller: controller),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byType(IconButton), findsOneWidget);
     });
@@ -430,7 +427,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Assert
       expect(find.byType(PasswordField), findsNWidgets(2));
       expect(find.text('Contraseña'), findsOneWidget);
@@ -452,7 +449,7 @@ void main() {
           ),
         ),
       );
-
+      await tester.pumpAndSettle();
       // Verificar estado inicial - ambos con visibility_outlined
       expect(find.byIcon(Icons.visibility_outlined), findsNWidgets(2));
 
