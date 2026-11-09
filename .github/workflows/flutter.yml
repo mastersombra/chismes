@@ -46,11 +46,12 @@ jobs:
     - name: 📈 Upload coverage to Codecov
       uses: codecov/codecov-action@v4
       with:
+        token: ${{ secrets.CODECOV_TOKEN }}
         files: ./coverage/lcov.info
         flags: unittests
         name: codecov-chismes
         fail_ci_if_error: false
-      continue-on-error: true
+        verbose: true
 
   build:
     name: Build APK (Android)
