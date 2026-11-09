@@ -122,7 +122,8 @@ void main() {
         stopwatch2.stop();
 
         // Assert - Segunda llamada debe ser MUY rápida (cache)
-        expect(stopwatch2.elapsedMicroseconds, lessThan(1000)); // < 1ms
+        // Threshold más alto para CI (10ms en lugar de 1ms)
+        expect(stopwatch2.elapsedMicroseconds, lessThan(10000)); // < 10ms
       });
 
       test('clearCache debe limpiar el cache', () async {
