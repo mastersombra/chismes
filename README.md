@@ -1,7 +1,7 @@
 # Chismes 
 
 [![Flutter CI](https://github.com/mastersombra/chismes/workflows/Flutter%20CI/badge.svg)](https://github.com/mastersombra/chismes/actions)
-[![Coverage](https://img.shields.io/badge/coverage-78.9%25-brightgreen)](https://github.com/mastersombra/chismes)
+[![codecov](https://codecov.io/gh/mastersombra/chismes/branch/main/graph/badge.svg)](https://codecov.io/gh/mastersombra/chismes)
 [![Flutter](https://img.shields.io/badge/Flutter-3.35.4-blue.svg)](https://flutter.dev/)
 [![Dart](https://img.shields.io/badge/Dart-3.9.2-blue.svg)](https://dart.dev/)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
