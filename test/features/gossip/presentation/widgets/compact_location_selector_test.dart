@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:chismes/features/gossip/presentation/widgets/compact_location_selector.dart';
+import '../../../../helpers/widget_test_wrapper.dart';
 
 void main() {
   group('CompactLocationSelector', () {
     testWidgets('debe renderizar con ubicación seleccionada', (tester) async {
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CompactLocationSelector(
-              locationText: 'Medellín, Antioquia',
-              onChangePressed: () {},
-            ),
+        testableWidget(
+          child: CompactLocationSelector(
+            locationText: 'Medellín, Antioquia',
+            onChangePressed: () {},
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert
       expect(find.text('Medellín, Antioquia'), findsOneWidget);
@@ -26,15 +26,14 @@ void main() {
     testWidgets('debe mostrar placeholder cuando no hay ubicación', (tester) async {
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CompactLocationSelector(
-              locationText: null,
-              onChangePressed: () {},
-            ),
+        testableWidget(
+          child: CompactLocationSelector(
+            locationText: null,
+            onChangePressed: () {},
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert
       expect(find.text('Seleccionar ubicación'), findsOneWidget);
@@ -44,16 +43,15 @@ void main() {
     testWidgets('debe mostrar loading state', (tester) async {
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CompactLocationSelector(
-              locationText: 'Medellín, Antioquia',
-              onChangePressed: () {},
-              isLoading: true,
-            ),
+        testableWidget(
+          child: CompactLocationSelector(
+            locationText: 'Medellín, Antioquia',
+            onChangePressed: () {},
+            isLoading: true,
           ),
         ),
       );
+      await tester.pump();
 
       // Assert
       expect(find.text('Detectando ubicación...'), findsOneWidget);
@@ -65,17 +63,16 @@ void main() {
       var buttonPressed = false;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CompactLocationSelector(
+        testableWidget(
+          child: CompactLocationSelector(
               locationText: 'Medellín, Antioquia',
               onChangePressed: () {
                 buttonPressed = true;
               },
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Act
       await tester.tap(find.text('Cambiar'));
@@ -90,18 +87,17 @@ void main() {
       var buttonPressed = false;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CompactLocationSelector(
+        testableWidget(
+          child: CompactLocationSelector(
               locationText: 'Medellín, Antioquia',
               onChangePressed: () {
                 buttonPressed = true;
               },
               isLoading: true,
-            ),
           ),
         ),
       );
+      await tester.pump();
 
       // Act - Intentar tocar el botón (debería estar deshabilitado)
       await tester.tap(find.text('Cambiar'));
@@ -114,15 +110,14 @@ void main() {
     testWidgets('debe mostrar ícono de editar ubicación en botón', (tester) async {
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CompactLocationSelector(
+        testableWidget(
+          child: CompactLocationSelector(
               locationText: 'Medellín, Antioquia',
               onChangePressed: () {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert
       expect(find.byIcon(Icons.edit_location_alt), findsOneWidget);
@@ -131,15 +126,14 @@ void main() {
     testWidgets('debe manejar texto largo con ellipsis', (tester) async {
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CompactLocationSelector(
+        testableWidget(
+          child: CompactLocationSelector(
               locationText: 'Nombre de Ciudad Muy Largo, Nombre de Región Muy Largo',
               onChangePressed: () {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert - Verifica que el texto existe
       expect(
@@ -157,15 +151,14 @@ void main() {
     testWidgets('debe tener Container con bordes redondeados', (tester) async {
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CompactLocationSelector(
+        testableWidget(
+          child: CompactLocationSelector(
               locationText: 'Medellín, Antioquia',
               onChangePressed: () {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert
       final container = tester.widget<Container>(find.byType(Container).first);
@@ -176,15 +169,14 @@ void main() {
     testWidgets('debe estar en Row con espaciado correcto', (tester) async {
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CompactLocationSelector(
+        testableWidget(
+          child: CompactLocationSelector(
               locationText: 'Medellín, Antioquia',
               onChangePressed: () {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert - Verifica que hay un Row como layout principal
       expect(find.byType(Row), findsWidgets);
@@ -196,30 +188,28 @@ void main() {
     testWidgets('debe cambiar de placeholder a ubicación cuando se actualiza', (tester) async {
       // Arrange
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CompactLocationSelector(
+        testableWidget(
+          child: CompactLocationSelector(
               locationText: null,
               onChangePressed: () {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert - Estado inicial
       expect(find.text('Seleccionar ubicación'), findsOneWidget);
 
       // Act - Actualizar con ubicación
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CompactLocationSelector(
+        testableWidget(
+          child: CompactLocationSelector(
               locationText: 'Bogotá, Cundinamarca',
               onChangePressed: () {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
       await tester.pump();
 
       // Assert - Estado actualizado
@@ -230,16 +220,15 @@ void main() {
     testWidgets('debe mostrar loading cuando cambia de normal a loading', (tester) async {
       // Arrange
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CompactLocationSelector(
+        testableWidget(
+          child: CompactLocationSelector(
               locationText: 'Medellín, Antioquia',
               onChangePressed: () {},
               isLoading: false,
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert - Estado inicial
       expect(find.text('Medellín, Antioquia'), findsOneWidget);
@@ -247,13 +236,11 @@ void main() {
 
       // Act - Cambiar a loading
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CompactLocationSelector(
+        testableWidget(
+          child: CompactLocationSelector(
               locationText: 'Medellín, Antioquia',
               onChangePressed: () {},
               isLoading: true,
-            ),
           ),
         ),
       );
@@ -268,15 +255,14 @@ void main() {
     testWidgets('debe tener botón Cambiar visible', (tester) async {
       // Act
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CompactLocationSelector(
+        testableWidget(
+          child: CompactLocationSelector(
               locationText: 'Medellín, Antioquia',
               onChangePressed: () {},
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert - El botón Cambiar debe estar visible
       expect(find.text('Cambiar'), findsOneWidget);

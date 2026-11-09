@@ -155,8 +155,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-      await tester.pumpAndSettle();
-      await tester.pump();
+      await tester.pump(); // Use pump() not pumpAndSettle() when loading (CircularProgressIndicator animates forever)
 
       // Assert
       final emailField = tester.widget<EmailField>(find.byType(EmailField));
@@ -207,8 +206,8 @@ void main() {
       bool popCalled = false;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Navigator(
+        testableWidget(
+          child: Navigator(
             onDidRemovePage: (page) {
               popCalled = true;
             },
@@ -217,6 +216,7 @@ void main() {
               MaterialPage(child: SignupScreen()),
             ],
           ),
+          useScaffold: false,
         ),
       );
       await tester.pumpAndSettle();
@@ -350,8 +350,7 @@ void main() {
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
-      await tester.pumpAndSettle();
-      await tester.pump();
+      await tester.pump(); // Use pump() not pumpAndSettle() when loading (CircularProgressIndicator animates forever)
 
       // Assert
       final textButton = tester.widget<TextButton>(

@@ -31,6 +31,7 @@ void setupMockAddGossipController(
   bool? isSubmitting,
   Failure? failure,
   String? selectedCityId,
+  dynamic locationManager,
 }) {
   // ✅ Estado básico
   when(mock.state).thenReturn(state ?? const AddGossipState(idempotencyKey: 'test-key'));
@@ -63,6 +64,11 @@ void setupMockAddGossipController(
   when(mock.selectedCityIdNotifier).thenReturn(
     ValueNotifier<String?>(selectedCityId),
   );
+
+  // ✅ LocationManager (requerido por AddGossipController)
+  if (locationManager != null) {
+    when(mock.locationManager).thenReturn(locationManager);
+  }
 }
 
 /// Configuración del mock para estado de carga.

@@ -1,7 +1,9 @@
 #!/usr/bin/env dart
+// ignore_for_file: avoid_print
 /// Script para generar test_translations_loader.dart desde los archivos JSON
 ///
 /// Uso: dart tool/generate_test_translations.dart
+library;
 
 import 'dart:convert';
 import 'dart:io';

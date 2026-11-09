@@ -18,6 +18,7 @@ import 'remote_logger_test.mocks.dart';
 
 void main() {
   /// Helper para configurar mocks de SupabaseClient con auth
+  // ignore: unused_element
   MockSupabaseClient setupMockSupabaseClient({
     required MockFunctionsClient functions,
   }) {
@@ -232,11 +233,10 @@ void main() {
 
     test('debe invocar Edge Function para logs de error', () async {
       // Arrange
-      final mockClient = MockSupabaseClient();
       final mockFunctions = MockFunctionsClient();
       final mockResponse = MockFunctionResponse();
+      final mockClient = setupMockSupabaseClient(functions: mockFunctions);
 
-      when(mockClient.functions).thenReturn(mockFunctions);
       when(mockFunctions.invoke(any, body: anyNamed('body')))
           .thenAnswer((_) async => mockResponse);
       when(mockResponse.status).thenReturn(200);
@@ -255,11 +255,10 @@ void main() {
 
     test('debe invocar Edge Function para logs fatal', () async {
       // Arrange
-      final mockClient = MockSupabaseClient();
       final mockFunctions = MockFunctionsClient();
       final mockResponse = MockFunctionResponse();
+      final mockClient = setupMockSupabaseClient(functions: mockFunctions);
 
-      when(mockClient.functions).thenReturn(mockFunctions);
       when(mockFunctions.invoke(any, body: anyNamed('body')))
           .thenAnswer((_) async => mockResponse);
       when(mockResponse.status).thenReturn(200);
@@ -278,11 +277,10 @@ void main() {
 
     test('debe manejar respuesta exitosa (status 200)', () async {
       // Arrange
-      final mockClient = MockSupabaseClient();
       final mockFunctions = MockFunctionsClient();
       final mockResponse = MockFunctionResponse();
+      final mockClient = setupMockSupabaseClient(functions: mockFunctions);
 
-      when(mockClient.functions).thenReturn(mockFunctions);
       when(mockFunctions.invoke(any, body: anyNamed('body')))
           .thenAnswer((_) async => mockResponse);
       when(mockResponse.status).thenReturn(200);
@@ -299,11 +297,10 @@ void main() {
 
     test('debe manejar rate limit (status 429)', () async {
       // Arrange
-      final mockClient = MockSupabaseClient();
       final mockFunctions = MockFunctionsClient();
       final mockResponse = MockFunctionResponse();
+      final mockClient = setupMockSupabaseClient(functions: mockFunctions);
 
-      when(mockClient.functions).thenReturn(mockFunctions);
       when(mockFunctions.invoke(any, body: anyNamed('body')))
           .thenAnswer((_) async => mockResponse);
       when(mockResponse.status).thenReturn(429);
@@ -320,11 +317,10 @@ void main() {
 
     test('debe manejar error de Edge Function (status 500)', () async {
       // Arrange
-      final mockClient = MockSupabaseClient();
       final mockFunctions = MockFunctionsClient();
       final mockResponse = MockFunctionResponse();
+      final mockClient = setupMockSupabaseClient(functions: mockFunctions);
 
-      when(mockClient.functions).thenReturn(mockFunctions);
       when(mockFunctions.invoke(any, body: anyNamed('body')))
           .thenAnswer((_) async => mockResponse);
       when(mockResponse.status).thenReturn(500);
@@ -358,11 +354,10 @@ void main() {
 
     test('debe enviar body correcto a Edge Function', () async {
       // Arrange
-      final mockClient = MockSupabaseClient();
       final mockFunctions = MockFunctionsClient();
       final mockResponse = MockFunctionResponse();
+      final mockClient = setupMockSupabaseClient(functions: mockFunctions);
 
-      when(mockClient.functions).thenReturn(mockFunctions);
       when(mockFunctions.invoke(any, body: anyNamed('body')))
           .thenAnswer((_) async => mockResponse);
       when(mockResponse.status).thenReturn(200);

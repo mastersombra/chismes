@@ -6,6 +6,11 @@
 import 'dart:async' as _i5;
 import 'dart:ui' as _i6;
 
+import 'package:chismes/core/error/failure.dart' as _i10;
+import 'package:chismes/core/result/result.dart' as _i9;
+import 'package:chismes/features/auth/domain/entities/user.dart' as _i8;
+import 'package:chismes/features/auth/domain/repositories/auth_repository.dart'
+    as _i7;
 import 'package:chismes/features/auth/presentation/controllers/login_controller.dart'
     as _i2;
 import 'package:chismes/features/auth/presentation/state/auth_state.dart'
@@ -123,4 +128,260 @@ class MockLoginController extends _i1.Mock implements _i2.LoginController {
     Invocation.method(#notifyListeners, []),
     returnValueForMissingStub: null,
   );
+}
+
+/// A class which mocks [AuthRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockAuthRepository extends _i1.Mock implements _i7.AuthRepository {
+  MockAuthRepository() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i5.Stream<_i8.User?> get authStateChanges =>
+      (super.noSuchMethod(
+            Invocation.getter(#authStateChanges),
+            returnValue: _i5.Stream<_i8.User?>.empty(),
+          )
+          as _i5.Stream<_i8.User?>);
+
+  @override
+  _i5.Future<_i9.Result<_i10.Failure, _i8.User>> signInWithEmail({
+    required String? email,
+    required String? password,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#signInWithEmail, [], {
+              #email: email,
+              #password: password,
+            }),
+            returnValue: _i5.Future<_i9.Result<_i10.Failure, _i8.User>>.value(
+              _i4.dummyValue<_i9.Result<_i10.Failure, _i8.User>>(
+                this,
+                Invocation.method(#signInWithEmail, [], {
+                  #email: email,
+                  #password: password,
+                }),
+              ),
+            ),
+          )
+          as _i5.Future<_i9.Result<_i10.Failure, _i8.User>>);
+
+  @override
+  _i5.Future<_i9.Result<_i10.Failure, void>> signUpWithEmail({
+    required String? email,
+    required String? password,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#signUpWithEmail, [], {
+              #email: email,
+              #password: password,
+            }),
+            returnValue: _i5.Future<_i9.Result<_i10.Failure, void>>.value(
+              _i4.dummyValue<_i9.Result<_i10.Failure, void>>(
+                this,
+                Invocation.method(#signUpWithEmail, [], {
+                  #email: email,
+                  #password: password,
+                }),
+              ),
+            ),
+          )
+          as _i5.Future<_i9.Result<_i10.Failure, void>>);
+
+  @override
+  _i5.Future<_i9.Result<_i10.Failure, _i8.User>> verifyOTP({
+    required String? email,
+    required String? token,
+    bool? isPasswordReset = false,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#verifyOTP, [], {
+              #email: email,
+              #token: token,
+              #isPasswordReset: isPasswordReset,
+            }),
+            returnValue: _i5.Future<_i9.Result<_i10.Failure, _i8.User>>.value(
+              _i4.dummyValue<_i9.Result<_i10.Failure, _i8.User>>(
+                this,
+                Invocation.method(#verifyOTP, [], {
+                  #email: email,
+                  #token: token,
+                  #isPasswordReset: isPasswordReset,
+                }),
+              ),
+            ),
+          )
+          as _i5.Future<_i9.Result<_i10.Failure, _i8.User>>);
+
+  @override
+  _i5.Future<_i9.Result<_i10.Failure, void>> resendOTP({
+    required String? email,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#resendOTP, [], {#email: email}),
+            returnValue: _i5.Future<_i9.Result<_i10.Failure, void>>.value(
+              _i4.dummyValue<_i9.Result<_i10.Failure, void>>(
+                this,
+                Invocation.method(#resendOTP, [], {#email: email}),
+              ),
+            ),
+          )
+          as _i5.Future<_i9.Result<_i10.Failure, void>>);
+
+  @override
+  _i5.Future<_i9.Result<_i10.Failure, _i8.User>> signInWithGoogle() =>
+      (super.noSuchMethod(
+            Invocation.method(#signInWithGoogle, []),
+            returnValue: _i5.Future<_i9.Result<_i10.Failure, _i8.User>>.value(
+              _i4.dummyValue<_i9.Result<_i10.Failure, _i8.User>>(
+                this,
+                Invocation.method(#signInWithGoogle, []),
+              ),
+            ),
+          )
+          as _i5.Future<_i9.Result<_i10.Failure, _i8.User>>);
+
+  @override
+  _i5.Future<_i9.Result<_i10.Failure, _i8.User>> signInWithApple() =>
+      (super.noSuchMethod(
+            Invocation.method(#signInWithApple, []),
+            returnValue: _i5.Future<_i9.Result<_i10.Failure, _i8.User>>.value(
+              _i4.dummyValue<_i9.Result<_i10.Failure, _i8.User>>(
+                this,
+                Invocation.method(#signInWithApple, []),
+              ),
+            ),
+          )
+          as _i5.Future<_i9.Result<_i10.Failure, _i8.User>>);
+
+  @override
+  _i5.Future<_i9.Result<_i10.Failure, void>> signOut() =>
+      (super.noSuchMethod(
+            Invocation.method(#signOut, []),
+            returnValue: _i5.Future<_i9.Result<_i10.Failure, void>>.value(
+              _i4.dummyValue<_i9.Result<_i10.Failure, void>>(
+                this,
+                Invocation.method(#signOut, []),
+              ),
+            ),
+          )
+          as _i5.Future<_i9.Result<_i10.Failure, void>>);
+
+  @override
+  _i5.Future<_i9.Result<_i10.Failure, _i8.User?>> getCurrentUser() =>
+      (super.noSuchMethod(
+            Invocation.method(#getCurrentUser, []),
+            returnValue: _i5.Future<_i9.Result<_i10.Failure, _i8.User?>>.value(
+              _i4.dummyValue<_i9.Result<_i10.Failure, _i8.User?>>(
+                this,
+                Invocation.method(#getCurrentUser, []),
+              ),
+            ),
+          )
+          as _i5.Future<_i9.Result<_i10.Failure, _i8.User?>>);
+
+  @override
+  _i5.Future<_i9.Result<_i10.Failure, _i8.User>> updateProfile({
+    String? username,
+    String? displayName,
+    String? avatarUrl,
+    String? bio,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateProfile, [], {
+              #username: username,
+              #displayName: displayName,
+              #avatarUrl: avatarUrl,
+              #bio: bio,
+            }),
+            returnValue: _i5.Future<_i9.Result<_i10.Failure, _i8.User>>.value(
+              _i4.dummyValue<_i9.Result<_i10.Failure, _i8.User>>(
+                this,
+                Invocation.method(#updateProfile, [], {
+                  #username: username,
+                  #displayName: displayName,
+                  #avatarUrl: avatarUrl,
+                  #bio: bio,
+                }),
+              ),
+            ),
+          )
+          as _i5.Future<_i9.Result<_i10.Failure, _i8.User>>);
+
+  @override
+  _i5.Future<_i9.Result<_i10.Failure, bool>> isUsernameAvailable(
+    String? username,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#isUsernameAvailable, [username]),
+            returnValue: _i5.Future<_i9.Result<_i10.Failure, bool>>.value(
+              _i4.dummyValue<_i9.Result<_i10.Failure, bool>>(
+                this,
+                Invocation.method(#isUsernameAvailable, [username]),
+              ),
+            ),
+          )
+          as _i5.Future<_i9.Result<_i10.Failure, bool>>);
+
+  @override
+  _i5.Future<_i9.Result<_i10.Failure, void>> resetPassword({
+    required String? email,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#resetPassword, [], {#email: email}),
+            returnValue: _i5.Future<_i9.Result<_i10.Failure, void>>.value(
+              _i4.dummyValue<_i9.Result<_i10.Failure, void>>(
+                this,
+                Invocation.method(#resetPassword, [], {#email: email}),
+              ),
+            ),
+          )
+          as _i5.Future<_i9.Result<_i10.Failure, void>>);
+
+  @override
+  _i5.Future<_i9.Result<_i10.Failure, void>> updatePassword({
+    required String? newPassword,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updatePassword, [], {#newPassword: newPassword}),
+            returnValue: _i5.Future<_i9.Result<_i10.Failure, void>>.value(
+              _i4.dummyValue<_i9.Result<_i10.Failure, void>>(
+                this,
+                Invocation.method(#updatePassword, [], {
+                  #newPassword: newPassword,
+                }),
+              ),
+            ),
+          )
+          as _i5.Future<_i9.Result<_i10.Failure, void>>);
+
+  @override
+  _i5.Future<_i9.Result<_i10.Failure, void>> resendVerificationEmail() =>
+      (super.noSuchMethod(
+            Invocation.method(#resendVerificationEmail, []),
+            returnValue: _i5.Future<_i9.Result<_i10.Failure, void>>.value(
+              _i4.dummyValue<_i9.Result<_i10.Failure, void>>(
+                this,
+                Invocation.method(#resendVerificationEmail, []),
+              ),
+            ),
+          )
+          as _i5.Future<_i9.Result<_i10.Failure, void>>);
+
+  @override
+  _i5.Future<_i9.Result<_i10.Failure, bool>> checkEmailExistsAndConfirmed(
+    String? email,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#checkEmailExistsAndConfirmed, [email]),
+            returnValue: _i5.Future<_i9.Result<_i10.Failure, bool>>.value(
+              _i4.dummyValue<_i9.Result<_i10.Failure, bool>>(
+                this,
+                Invocation.method(#checkEmailExistsAndConfirmed, [email]),
+              ),
+            ),
+          )
+          as _i5.Future<_i9.Result<_i10.Failure, bool>>);
 }

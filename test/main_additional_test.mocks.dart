@@ -3,16 +3,25 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i3;
-import 'dart:ui' as _i7;
+import 'dart:async' as _i4;
+import 'dart:ui' as _i8;
 
-import 'package:chismes/core/services/deep_link_service.dart' as _i2;
+import 'package:chismes/core/error/failure.dart' as _i12;
+import 'package:chismes/core/result/result.dart' as _i11;
+import 'package:chismes/core/services/deep_link_service.dart' as _i3;
+import 'package:chismes/features/auth/domain/entities/user.dart' as _i10;
+import 'package:chismes/features/auth/domain/repositories/auth_repository.dart'
+    as _i9;
 import 'package:chismes/features/auth/presentation/controllers/login_controller.dart'
-    as _i4;
-import 'package:chismes/features/auth/presentation/state/auth_state.dart'
     as _i5;
+import 'package:chismes/features/auth/presentation/controllers/otp_verification_controller.dart'
+    as _i13;
+import 'package:chismes/features/auth/presentation/state/auth_state.dart'
+    as _i6;
+import 'package:chismes/features/auth/presentation/states/otp_verification_state.dart'
+    as _i2;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i6;
+import 'package:mockito/src/dummies.dart' as _i7;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -29,22 +38,28 @@ import 'package:mockito/src/dummies.dart' as _i6;
 // ignore_for_file: subtype_of_sealed_class
 // ignore_for_file: invalid_use_of_internal_member
 
+class _FakeOtpVerificationState_0 extends _i1.SmartFake
+    implements _i2.OtpVerificationState {
+  _FakeOtpVerificationState_0(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
 /// A class which mocks [DeepLinkService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockDeepLinkService extends _i1.Mock implements _i2.DeepLinkService {
+class MockDeepLinkService extends _i1.Mock implements _i3.DeepLinkService {
   MockDeepLinkService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<void> initialize() =>
+  _i4.Future<void> initialize() =>
       (super.noSuchMethod(
             Invocation.method(#initialize, []),
-            returnValue: _i3.Future<void>.value(),
-            returnValueForMissingStub: _i3.Future<void>.value(),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
           )
-          as _i3.Future<void>);
+          as _i4.Future<void>);
 
   @override
   void dispose() => super.noSuchMethod(
@@ -56,21 +71,21 @@ class MockDeepLinkService extends _i1.Mock implements _i2.DeepLinkService {
 /// A class which mocks [LoginController].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockLoginController extends _i1.Mock implements _i4.LoginController {
+class MockLoginController extends _i1.Mock implements _i5.LoginController {
   MockLoginController() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i5.AuthState get state =>
+  _i6.AuthState get state =>
       (super.noSuchMethod(
             Invocation.getter(#state),
-            returnValue: _i6.dummyValue<_i5.AuthState>(
+            returnValue: _i7.dummyValue<_i6.AuthState>(
               this,
               Invocation.getter(#state),
             ),
           )
-          as _i5.AuthState);
+          as _i6.AuthState);
 
   @override
   bool get hasListeners =>
@@ -78,7 +93,7 @@ class MockLoginController extends _i1.Mock implements _i4.LoginController {
           as bool);
 
   @override
-  _i3.Future<void> signInWithEmail({
+  _i4.Future<void> signInWithEmail({
     required String? email,
     required String? password,
   }) =>
@@ -87,37 +102,37 @@ class MockLoginController extends _i1.Mock implements _i4.LoginController {
               #email: email,
               #password: password,
             }),
-            returnValue: _i3.Future<void>.value(),
-            returnValueForMissingStub: _i3.Future<void>.value(),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
           )
-          as _i3.Future<void>);
+          as _i4.Future<void>);
 
   @override
-  _i3.Future<void> signInWithGoogle() =>
+  _i4.Future<void> signInWithGoogle() =>
       (super.noSuchMethod(
             Invocation.method(#signInWithGoogle, []),
-            returnValue: _i3.Future<void>.value(),
-            returnValueForMissingStub: _i3.Future<void>.value(),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
           )
-          as _i3.Future<void>);
+          as _i4.Future<void>);
 
   @override
-  _i3.Future<void> signInWithApple() =>
+  _i4.Future<void> signInWithApple() =>
       (super.noSuchMethod(
             Invocation.method(#signInWithApple, []),
-            returnValue: _i3.Future<void>.value(),
-            returnValueForMissingStub: _i3.Future<void>.value(),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
           )
-          as _i3.Future<void>);
+          as _i4.Future<void>);
 
   @override
-  _i3.Future<void> resetPassword({required String? email}) =>
+  _i4.Future<void> resetPassword({required String? email}) =>
       (super.noSuchMethod(
             Invocation.method(#resetPassword, [], {#email: email}),
-            returnValue: _i3.Future<void>.value(),
-            returnValueForMissingStub: _i3.Future<void>.value(),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
           )
-          as _i3.Future<void>);
+          as _i4.Future<void>);
 
   @override
   void resetState() => super.noSuchMethod(
@@ -126,13 +141,13 @@ class MockLoginController extends _i1.Mock implements _i4.LoginController {
   );
 
   @override
-  void addListener(_i7.VoidCallback? listener) => super.noSuchMethod(
+  void addListener(_i8.VoidCallback? listener) => super.noSuchMethod(
     Invocation.method(#addListener, [listener]),
     returnValueForMissingStub: null,
   );
 
   @override
-  void removeListener(_i7.VoidCallback? listener) => super.noSuchMethod(
+  void removeListener(_i8.VoidCallback? listener) => super.noSuchMethod(
     Invocation.method(#removeListener, [listener]),
     returnValueForMissingStub: null,
   );
@@ -140,6 +155,336 @@ class MockLoginController extends _i1.Mock implements _i4.LoginController {
   @override
   void dispose() => super.noSuchMethod(
     Invocation.method(#dispose, []),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void notifyListeners() => super.noSuchMethod(
+    Invocation.method(#notifyListeners, []),
+    returnValueForMissingStub: null,
+  );
+}
+
+/// A class which mocks [AuthRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockAuthRepository extends _i1.Mock implements _i9.AuthRepository {
+  MockAuthRepository() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Stream<_i10.User?> get authStateChanges =>
+      (super.noSuchMethod(
+            Invocation.getter(#authStateChanges),
+            returnValue: _i4.Stream<_i10.User?>.empty(),
+          )
+          as _i4.Stream<_i10.User?>);
+
+  @override
+  _i4.Future<_i11.Result<_i12.Failure, _i10.User>> signInWithEmail({
+    required String? email,
+    required String? password,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#signInWithEmail, [], {
+              #email: email,
+              #password: password,
+            }),
+            returnValue: _i4.Future<_i11.Result<_i12.Failure, _i10.User>>.value(
+              _i7.dummyValue<_i11.Result<_i12.Failure, _i10.User>>(
+                this,
+                Invocation.method(#signInWithEmail, [], {
+                  #email: email,
+                  #password: password,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i11.Result<_i12.Failure, _i10.User>>);
+
+  @override
+  _i4.Future<_i11.Result<_i12.Failure, void>> signUpWithEmail({
+    required String? email,
+    required String? password,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#signUpWithEmail, [], {
+              #email: email,
+              #password: password,
+            }),
+            returnValue: _i4.Future<_i11.Result<_i12.Failure, void>>.value(
+              _i7.dummyValue<_i11.Result<_i12.Failure, void>>(
+                this,
+                Invocation.method(#signUpWithEmail, [], {
+                  #email: email,
+                  #password: password,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i11.Result<_i12.Failure, void>>);
+
+  @override
+  _i4.Future<_i11.Result<_i12.Failure, _i10.User>> verifyOTP({
+    required String? email,
+    required String? token,
+    bool? isPasswordReset = false,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#verifyOTP, [], {
+              #email: email,
+              #token: token,
+              #isPasswordReset: isPasswordReset,
+            }),
+            returnValue: _i4.Future<_i11.Result<_i12.Failure, _i10.User>>.value(
+              _i7.dummyValue<_i11.Result<_i12.Failure, _i10.User>>(
+                this,
+                Invocation.method(#verifyOTP, [], {
+                  #email: email,
+                  #token: token,
+                  #isPasswordReset: isPasswordReset,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i11.Result<_i12.Failure, _i10.User>>);
+
+  @override
+  _i4.Future<_i11.Result<_i12.Failure, void>> resendOTP({
+    required String? email,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#resendOTP, [], {#email: email}),
+            returnValue: _i4.Future<_i11.Result<_i12.Failure, void>>.value(
+              _i7.dummyValue<_i11.Result<_i12.Failure, void>>(
+                this,
+                Invocation.method(#resendOTP, [], {#email: email}),
+              ),
+            ),
+          )
+          as _i4.Future<_i11.Result<_i12.Failure, void>>);
+
+  @override
+  _i4.Future<_i11.Result<_i12.Failure, _i10.User>> signInWithGoogle() =>
+      (super.noSuchMethod(
+            Invocation.method(#signInWithGoogle, []),
+            returnValue: _i4.Future<_i11.Result<_i12.Failure, _i10.User>>.value(
+              _i7.dummyValue<_i11.Result<_i12.Failure, _i10.User>>(
+                this,
+                Invocation.method(#signInWithGoogle, []),
+              ),
+            ),
+          )
+          as _i4.Future<_i11.Result<_i12.Failure, _i10.User>>);
+
+  @override
+  _i4.Future<_i11.Result<_i12.Failure, _i10.User>> signInWithApple() =>
+      (super.noSuchMethod(
+            Invocation.method(#signInWithApple, []),
+            returnValue: _i4.Future<_i11.Result<_i12.Failure, _i10.User>>.value(
+              _i7.dummyValue<_i11.Result<_i12.Failure, _i10.User>>(
+                this,
+                Invocation.method(#signInWithApple, []),
+              ),
+            ),
+          )
+          as _i4.Future<_i11.Result<_i12.Failure, _i10.User>>);
+
+  @override
+  _i4.Future<_i11.Result<_i12.Failure, void>> signOut() =>
+      (super.noSuchMethod(
+            Invocation.method(#signOut, []),
+            returnValue: _i4.Future<_i11.Result<_i12.Failure, void>>.value(
+              _i7.dummyValue<_i11.Result<_i12.Failure, void>>(
+                this,
+                Invocation.method(#signOut, []),
+              ),
+            ),
+          )
+          as _i4.Future<_i11.Result<_i12.Failure, void>>);
+
+  @override
+  _i4.Future<_i11.Result<_i12.Failure, _i10.User?>> getCurrentUser() =>
+      (super.noSuchMethod(
+            Invocation.method(#getCurrentUser, []),
+            returnValue:
+                _i4.Future<_i11.Result<_i12.Failure, _i10.User?>>.value(
+                  _i7.dummyValue<_i11.Result<_i12.Failure, _i10.User?>>(
+                    this,
+                    Invocation.method(#getCurrentUser, []),
+                  ),
+                ),
+          )
+          as _i4.Future<_i11.Result<_i12.Failure, _i10.User?>>);
+
+  @override
+  _i4.Future<_i11.Result<_i12.Failure, _i10.User>> updateProfile({
+    String? username,
+    String? displayName,
+    String? avatarUrl,
+    String? bio,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateProfile, [], {
+              #username: username,
+              #displayName: displayName,
+              #avatarUrl: avatarUrl,
+              #bio: bio,
+            }),
+            returnValue: _i4.Future<_i11.Result<_i12.Failure, _i10.User>>.value(
+              _i7.dummyValue<_i11.Result<_i12.Failure, _i10.User>>(
+                this,
+                Invocation.method(#updateProfile, [], {
+                  #username: username,
+                  #displayName: displayName,
+                  #avatarUrl: avatarUrl,
+                  #bio: bio,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i11.Result<_i12.Failure, _i10.User>>);
+
+  @override
+  _i4.Future<_i11.Result<_i12.Failure, bool>> isUsernameAvailable(
+    String? username,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#isUsernameAvailable, [username]),
+            returnValue: _i4.Future<_i11.Result<_i12.Failure, bool>>.value(
+              _i7.dummyValue<_i11.Result<_i12.Failure, bool>>(
+                this,
+                Invocation.method(#isUsernameAvailable, [username]),
+              ),
+            ),
+          )
+          as _i4.Future<_i11.Result<_i12.Failure, bool>>);
+
+  @override
+  _i4.Future<_i11.Result<_i12.Failure, void>> resetPassword({
+    required String? email,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#resetPassword, [], {#email: email}),
+            returnValue: _i4.Future<_i11.Result<_i12.Failure, void>>.value(
+              _i7.dummyValue<_i11.Result<_i12.Failure, void>>(
+                this,
+                Invocation.method(#resetPassword, [], {#email: email}),
+              ),
+            ),
+          )
+          as _i4.Future<_i11.Result<_i12.Failure, void>>);
+
+  @override
+  _i4.Future<_i11.Result<_i12.Failure, void>> updatePassword({
+    required String? newPassword,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updatePassword, [], {#newPassword: newPassword}),
+            returnValue: _i4.Future<_i11.Result<_i12.Failure, void>>.value(
+              _i7.dummyValue<_i11.Result<_i12.Failure, void>>(
+                this,
+                Invocation.method(#updatePassword, [], {
+                  #newPassword: newPassword,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i11.Result<_i12.Failure, void>>);
+
+  @override
+  _i4.Future<_i11.Result<_i12.Failure, void>> resendVerificationEmail() =>
+      (super.noSuchMethod(
+            Invocation.method(#resendVerificationEmail, []),
+            returnValue: _i4.Future<_i11.Result<_i12.Failure, void>>.value(
+              _i7.dummyValue<_i11.Result<_i12.Failure, void>>(
+                this,
+                Invocation.method(#resendVerificationEmail, []),
+              ),
+            ),
+          )
+          as _i4.Future<_i11.Result<_i12.Failure, void>>);
+
+  @override
+  _i4.Future<_i11.Result<_i12.Failure, bool>> checkEmailExistsAndConfirmed(
+    String? email,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#checkEmailExistsAndConfirmed, [email]),
+            returnValue: _i4.Future<_i11.Result<_i12.Failure, bool>>.value(
+              _i7.dummyValue<_i11.Result<_i12.Failure, bool>>(
+                this,
+                Invocation.method(#checkEmailExistsAndConfirmed, [email]),
+              ),
+            ),
+          )
+          as _i4.Future<_i11.Result<_i12.Failure, bool>>);
+}
+
+/// A class which mocks [OtpVerificationController].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockOtpVerificationController extends _i1.Mock
+    implements _i13.OtpVerificationController {
+  MockOtpVerificationController() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.OtpVerificationState get state =>
+      (super.noSuchMethod(
+            Invocation.getter(#state),
+            returnValue: _FakeOtpVerificationState_0(
+              this,
+              Invocation.getter(#state),
+            ),
+          )
+          as _i2.OtpVerificationState);
+
+  @override
+  bool get hasListeners =>
+      (super.noSuchMethod(Invocation.getter(#hasListeners), returnValue: false)
+          as bool);
+
+  @override
+  void dispose() => super.noSuchMethod(
+    Invocation.method(#dispose, []),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  _i4.Future<bool> verifyOTP(String? code) =>
+      (super.noSuchMethod(
+            Invocation.method(#verifyOTP, [code]),
+            returnValue: _i4.Future<bool>.value(false),
+          )
+          as _i4.Future<bool>);
+
+  @override
+  _i4.Future<void> resendOTP() =>
+      (super.noSuchMethod(
+            Invocation.method(#resendOTP, []),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  void clearError() => super.noSuchMethod(
+    Invocation.method(#clearError, []),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void addListener(_i8.VoidCallback? listener) => super.noSuchMethod(
+    Invocation.method(#addListener, [listener]),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void removeListener(_i8.VoidCallback? listener) => super.noSuchMethod(
+    Invocation.method(#removeListener, [listener]),
     returnValueForMissingStub: null,
   );
 

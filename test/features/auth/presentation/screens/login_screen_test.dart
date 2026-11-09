@@ -120,7 +120,8 @@ void main() {
 
       // Assert
       expect(find.text('Iniciar Sesión'), findsWidgets); // Aparece en AppBar y botón
-      expect(find.text('Enviar link mágico'), findsOneWidget);
+      expect(find.byType(AuthButton), findsOneWidget); // Botón principal de login
+      expect(find.byType(SocialLoginButtons), findsOneWidget); // Botones sociales
       expect(find.text('O continúa con'), findsOneWidget);
     });
 
@@ -141,13 +142,21 @@ void main() {
     });
 
     testWidgets('debe deshabilitar campos cuando está cargando', (WidgetTester tester) async {
-      // Arrange
-      when(mockLoginController.state).thenReturn(const AuthLoading());
+      // Arrange - Configurar estado loading desde el principio
+      final loadingController = MockLoginController();
+      when(loadingController.state).thenReturn(const AuthLoading());
+      when(loadingController.addListener(any)).thenReturn(null);
+      when(loadingController.removeListener(any)).thenReturn(null);
+
+      // Registrar mock con estado loading
+      if (getIt.isRegistered<LoginController>()) {
+        getIt.unregister<LoginController>();
+      }
+      getIt.registerSingleton<LoginController>(loadingController);
 
       // Act
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
-      await tester.pump();
+      await tester.pump(); // Usar pump() en lugar de pumpAndSettle() porque loading tiene animaciones infinitas
 
       // Assert
       final emailField = tester.widget<EmailField>(find.byType(EmailField));

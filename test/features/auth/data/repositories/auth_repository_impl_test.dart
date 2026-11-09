@@ -104,6 +104,8 @@ void main() {
     group('signInWithEmail', () {
       test('debe retornar usuario cuando sign in es exitoso', () async {
         // Arrange
+        when(mockDataSource.checkEmailExistsAndConfirmed(tEmail))
+            .thenAnswer((_) async => true);
         when(mockDataSource.signInWithEmail(
           email: tEmail,
           password: tPassword,
@@ -124,6 +126,7 @@ void main() {
             expect(user.email, tEmail);
           },
         );
+        verify(mockDataSource.checkEmailExistsAndConfirmed(tEmail)).called(1);
         verify(mockDataSource.signInWithEmail(
           email: tEmail,
           password: tPassword,
@@ -133,6 +136,8 @@ void main() {
       test('debe retornar AuthFailure cuando credenciales son incorrectas',
           () async {
         // Arrange
+        when(mockDataSource.checkEmailExistsAndConfirmed(tEmail))
+            .thenAnswer((_) async => true);
         when(mockDataSource.signInWithEmail(
           email: tEmail,
           password: tPassword,
@@ -182,6 +187,8 @@ void main() {
 
       test('debe logear warning cuando hay AuthException', () async {
         // Arrange
+        when(mockDataSource.checkEmailExistsAndConfirmed(tEmail))
+            .thenAnswer((_) async => true);
         final exception = supabase.AuthException('Invalid login credentials');
         when(mockDataSource.signInWithEmail(
           email: tEmail,
@@ -712,6 +719,8 @@ void main() {
       test('debe retornar invalidCredentials para "invalid credentials"',
           () async {
         // Arrange
+        when(mockDataSource.checkEmailExistsAndConfirmed(tEmail))
+            .thenAnswer((_) async => true);
         when(mockDataSource.signInWithEmail(
           email: tEmail,
           password: tPassword,
@@ -795,6 +804,8 @@ void main() {
 
       test('debe retornar tooManyRequests para statusCode 429', () async {
         // Arrange
+        when(mockDataSource.checkEmailExistsAndConfirmed(tEmail))
+            .thenAnswer((_) async => true);
         when(mockDataSource.signInWithEmail(
           email: tEmail,
           password: tPassword,
@@ -819,6 +830,8 @@ void main() {
 
       test('debe retornar tooManyRequests para "too many requests"', () async {
         // Arrange
+        when(mockDataSource.checkEmailExistsAndConfirmed(tEmail))
+            .thenAnswer((_) async => true);
         when(mockDataSource.signInWithEmail(
           email: tEmail,
           password: tPassword,
@@ -844,6 +857,8 @@ void main() {
       test('debe retornar emailNotVerified para "email not verified"',
           () async {
         // Arrange
+        when(mockDataSource.checkEmailExistsAndConfirmed(tEmail))
+            .thenAnswer((_) async => true);
         when(mockDataSource.signInWithEmail(
           email: tEmail,
           password: tPassword,
@@ -868,6 +883,8 @@ void main() {
 
       test('debe retornar unknownError para mensajes desconocidos', () async {
         // Arrange
+        when(mockDataSource.checkEmailExistsAndConfirmed(tEmail))
+            .thenAnswer((_) async => true);
         when(mockDataSource.signInWithEmail(
           email: tEmail,
           password: tPassword,

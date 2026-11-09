@@ -255,9 +255,9 @@ void main() {
 
         // Casos que SÍ generan error (demasiado largos)
         final testCases = [
-          '${'<script>alert("xss")</script>' * 3}', // > 50 chars
-          '${'User\'; DROP TABLE users;--' * 3}', // > 50 chars
-          '${'a' * 51}', // Más de 50 caracteres
+          '<script>alert("xss")</script>' * 3, // > 50 chars
+          'User\'; DROP TABLE users;--' * 3, // > 50 chars
+          'a' * 51, // Más de 50 caracteres
         ];
 
         for (final displayName in testCases) {
@@ -355,10 +355,10 @@ void main() {
 
           // DisplayName errors
           AuthValidator.validateDisplayName(null)!,
-          AuthValidator.validateDisplayName('${'a' * 51}')!,
+          AuthValidator.validateDisplayName('a' * 51)!,
 
           // Bio errors
-          AuthValidator.validateBio('${'a' * 161}')!,
+          AuthValidator.validateBio('a' * 161)!,
         ];
 
         for (final result in allResults) {

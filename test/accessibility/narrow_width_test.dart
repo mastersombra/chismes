@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:chismes/features/gossip/presentation/widgets/compact_location_selector.dart';
 import 'package:chismes/core/theme/app_spacing.dart';
+import '../helpers/widget_test_wrapper.dart';
 
 /// Tests de accesibilidad para dispositivos con ancho estrecho
 ///
@@ -27,19 +28,16 @@ void main() {
         (WidgetTester tester) async {
       // Arrange
       await tester.pumpWidget(
-        MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(size: narrowSize),
-            child: Scaffold(
-              body: CompactLocationSelector(
-                locationText: 'Medellín, Antioquia',
-                isLoading: false,
-                onChangePressed: () {},
-              ),
-            ),
+        testableWidget(
+          mediaQuery: const MediaQueryData(size: narrowSize),
+          child: CompactLocationSelector(
+            locationText: 'Medellín, Antioquia',
+            isLoading: false,
+            onChangePressed: () {},
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert - No overflow horizontal
       expect(tester.takeException(), isNull);
@@ -55,19 +53,16 @@ void main() {
       const longLocation = 'San Pedro Garza García de los Lagos, Nuevo León Norte México';
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(size: narrowSize),
-            child: Scaffold(
-              body: CompactLocationSelector(
-                locationText: longLocation,
-                isLoading: false,
-                onChangePressed: () {},
-              ),
-            ),
+        testableWidget(
+          mediaQuery: const MediaQueryData(size: narrowSize),
+          child: CompactLocationSelector(
+            locationText: longLocation,
+            isLoading: false,
+            onChangePressed: () {},
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert - No overflow (texto se trunca)
       expect(tester.takeException(), isNull);
@@ -84,19 +79,16 @@ void main() {
         (WidgetTester tester) async {
       // Arrange
       await tester.pumpWidget(
-        MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(size: narrowSize),
-            child: Scaffold(
-              body: CompactLocationSelector(
+        testableWidget(
+          mediaQuery: const MediaQueryData(size: narrowSize),
+          child: CompactLocationSelector(
                 locationText: null,
                 isLoading: true,
                 onChangePressed: () {},
-              ),
-            ),
           ),
         ),
       );
+      await tester.pump();
 
       // Assert - No overflow
       expect(tester.takeException(), isNull);
@@ -112,21 +104,18 @@ void main() {
       bool wasPressed = false;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(size: narrowSize),
-            child: Scaffold(
-              body: CompactLocationSelector(
+        testableWidget(
+          mediaQuery: const MediaQueryData(size: narrowSize),
+          child: CompactLocationSelector(
                 locationText: 'Medellín',
                 isLoading: false,
                 onChangePressed: () {
                   wasPressed = true;
                 },
-              ),
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Act - Tap en botón
       await tester.tap(find.text('Cambiar'));
@@ -144,35 +133,32 @@ void main() {
         (WidgetTester tester) async {
       // Arrange - Worst case: dispositivo pequeño + font scale alto
       await tester.pumpWidget(
-        MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(
-              size: narrowSize,
-              textScaler: TextScaler.linear(1.5),
-            ),
-            child: Scaffold(
-              body: Padding(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: Column(
-                  children: [
-                    CompactLocationSelector(
-                      locationText: 'Medellín, Antioquia',
-                      isLoading: false,
-                      onChangePressed: () {},
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: 'Título del chisme',
-                      ),
-                    ),
-                  ],
+        testableWidget(
+          mediaQuery: const MediaQueryData(
+            size: narrowSize,
+            textScaler: TextScaler.linear(1.5),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              children: [
+                CompactLocationSelector(
+                  locationText: 'Medellín, Antioquia',
+                  isLoading: false,
+                  onChangePressed: () {},
                 ),
-              ),
+                const SizedBox(height: AppSpacing.lg),
+                TextFormField(
+                  decoration: const InputDecoration(
+                    labelText: 'Título del chisme',
+                  ),
+                ),
+              ],
             ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert - No overflow con condiciones extremas
       expect(tester.takeException(), isNull);
@@ -182,27 +168,24 @@ void main() {
         (WidgetTester tester) async {
       // Arrange - Condiciones extremas
       await tester.pumpWidget(
-        MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(
-              size: narrowSize,
-              textScaler: TextScaler.linear(2.0),
-            ),
-            child: Scaffold(
-              body: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: CompactLocationSelector(
-                    locationText: 'Ciudad de México, Estado de México',
-                    isLoading: false,
-                    onChangePressed: () {},
-                  ),
-                ),
+        testableWidget(
+          mediaQuery: const MediaQueryData(
+            size: narrowSize,
+            textScaler: TextScaler.linear(2.0),
+          ),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: CompactLocationSelector(
+                locationText: 'Ciudad de México, Estado de México',
+                isLoading: false,
+                onChangePressed: () {},
               ),
             ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert - Con scroll, debe manejar el contenido
       expect(tester.takeException(), isNull);
@@ -214,22 +197,19 @@ void main() {
         (WidgetTester tester) async {
       // Arrange - Padding grande en dispositivo pequeño
       await tester.pumpWidget(
-        MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(size: narrowSize),
-            child: Scaffold(
-              body: Padding(
-                padding: const EdgeInsets.all(AppSpacing.xxxl), // 48px padding
-                child: CompactLocationSelector(
-                  locationText: 'Med',
-                  isLoading: false,
-                  onChangePressed: () {},
-                ),
-              ),
+        testableWidget(
+          mediaQuery: const MediaQueryData(size: narrowSize),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.xxxl), // 48px padding
+            child: CompactLocationSelector(
+              locationText: 'Med',
+              isLoading: false,
+              onChangePressed: () {},
             ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert - No overflow incluso con padding grande
       expect(tester.takeException(), isNull);
@@ -239,19 +219,16 @@ void main() {
         (WidgetTester tester) async {
       // Arrange
       await tester.pumpWidget(
-        MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(size: narrowSize),
-            child: Scaffold(
-              body: CompactLocationSelector(
+        testableWidget(
+          mediaQuery: const MediaQueryData(size: narrowSize),
+          child: CompactLocationSelector(
                 locationText: 'Medellín',
                 isLoading: false,
                 onChangePressed: () {},
-              ),
-            ),
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Assert - Icon presente (si existe)
       // CompactLocationSelector puede tener un icon de ubicación

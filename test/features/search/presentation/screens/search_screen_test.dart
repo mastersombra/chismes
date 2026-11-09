@@ -9,6 +9,7 @@ import 'package:chismes/core/di/injection_container.dart';
 import 'package:chismes/features/search/presentation/screens/search_screen.dart';
 import 'package:chismes/features/gossip/domain/usecases/get_gossips.dart';
 import 'package:chismes/features/gossip/domain/entities/gossip.dart';
+import '../../../../helpers/widget_test_wrapper.dart';
 
 import 'search_screen_test.mocks.dart';
 
@@ -38,10 +39,11 @@ void main() {
   group('SearchScreen', () {
     testWidgets('debe renderizar SearchScreen correctamente', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: SearchScreen(),
+        testableWidget(
+          child: const SearchScreen(),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byType(SearchScreen), findsOneWidget);
       expect(find.byType(AppBar), findsOneWidget);
@@ -50,10 +52,11 @@ void main() {
 
     testWidgets('debe mostrar TextField de búsqueda', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: SearchScreen(),
+        testableWidget(
+          child: const SearchScreen(),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byType(TextField), findsOneWidget);
       expect(find.text('Buscar chismes...'), findsOneWidget);
@@ -62,10 +65,11 @@ void main() {
 
     testWidgets('debe mostrar mensaje inicial antes de buscar', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: SearchScreen(),
+        testableWidget(
+          child: const SearchScreen(),
         ),
       );
+      await tester.pumpAndSettle();
 
       await tester.pumpAndSettle();
 
@@ -94,10 +98,11 @@ void main() {
       when(mockGetGossips()).thenAnswer((_) async => Result.success(gossips));
 
       await tester.pumpWidget(
-        const MaterialApp(
-          home: SearchScreen(),
+        testableWidget(
+          child: const SearchScreen(),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Act - escribir en el TextField
       await tester.enterText(find.byType(TextField), 'Test');
@@ -113,10 +118,11 @@ void main() {
       when(mockGetGossips()).thenAnswer((_) async => Result.success([]));
 
       await tester.pumpWidget(
-        const MaterialApp(
-          home: SearchScreen(),
+        testableWidget(
+          child: const SearchScreen(),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Act
       await tester.enterText(find.byType(TextField), 'NonExistent');
@@ -173,10 +179,11 @@ void main() {
       when(mockGetGossips()).thenAnswer((_) async => Result.success(gossips));
 
       await tester.pumpWidget(
-        const MaterialApp(
-          home: SearchScreen(),
+        testableWidget(
+          child: const SearchScreen(),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Act - buscar por subject
       await tester.enterText(find.byType(TextField), 'Flutter');
@@ -223,10 +230,11 @@ void main() {
       when(mockGetGossips()).thenAnswer((_) async => Result.success(gossips));
 
       await tester.pumpWidget(
-        const MaterialApp(
-          home: SearchScreen(),
+        testableWidget(
+          child: const SearchScreen(),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Act - buscar por content
       await tester.enterText(find.byType(TextField), 'Flutter');
@@ -259,10 +267,11 @@ void main() {
       when(mockGetGossips()).thenAnswer((_) async => Result.success(gossips));
 
       await tester.pumpWidget(
-        const MaterialApp(
-          home: SearchScreen(),
+        testableWidget(
+          child: const SearchScreen(),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Act - buscar en minúsculas
       await tester.enterText(find.byType(TextField), 'flutter');
@@ -295,10 +304,11 @@ void main() {
       when(mockGetGossips()).thenAnswer((_) async => Result.success(gossips));
 
       await tester.pumpWidget(
-        const MaterialApp(
-          home: SearchScreen(),
+        testableWidget(
+          child: const SearchScreen(),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Act
       await tester.enterText(find.byType(TextField), 'Test');
@@ -313,10 +323,11 @@ void main() {
 
     testWidgets('debe ser StatefulWidget', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: SearchScreen(),
+        testableWidget(
+          child: const SearchScreen(),
         ),
       );
+      await tester.pumpAndSettle();
 
       final widget = tester.widget(find.byType(SearchScreen));
       expect(widget, isA<StatefulWidget>());
@@ -324,12 +335,14 @@ void main() {
 
     testWidgets('debe tener Scaffold', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: SearchScreen(),
+        testableWidget(
+          child: const SearchScreen(),
         ),
       );
+      await tester.pump();
 
-      expect(find.byType(Scaffold), findsOneWidget);
+      // SearchScreen debe tener su propio Scaffold (puede haber más de uno si el wrapper también tiene)
+      expect(find.byType(Scaffold), findsWidgets);
     });
 
     testWidgets('debe manejar errores al buscar', (tester) async {
@@ -341,10 +354,11 @@ void main() {
       when(mockGetGossips()).thenAnswer((_) async => Result.failure(failure));
 
       await tester.pumpWidget(
-        const MaterialApp(
-          home: SearchScreen(),
+        testableWidget(
+          child: const SearchScreen(),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Act - escribir en el TextField para iniciar búsqueda
       await tester.enterText(find.byType(TextField), 'Test');
