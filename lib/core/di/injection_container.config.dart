@@ -12,6 +12,7 @@
 import 'package:flutter/material.dart' as _i409;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
+import 'package:shared_preferences/shared_preferences.dart' as _i460;
 import 'package:supabase_flutter/supabase_flutter.dart' as _i454;
 
 import '../../features/auth/data/datasources/supabase_auth_datasource.dart'
@@ -61,6 +62,7 @@ import '../../features/gossip/domain/services/mvp_content_moderator.dart'
 import '../../features/gossip/domain/usecases/create_gossip.dart' as _i458;
 import '../../features/gossip/domain/usecases/get_gossips.dart' as _i821;
 import '../../features/gossip/domain/usecases/report_gossip.dart' as _i535;
+import '../../features/gossip/domain/usecases/search_gossips.dart' as _i473;
 import '../../features/gossip/presentation/controllers/add_gossip_controller.dart'
     as _i541;
 import '../../features/home/data/datasources/home_remote_datasource.dart'
@@ -114,6 +116,7 @@ import '../media/supabase_storage_service.dart' as _i710;
 import '../services/auth_service.dart' as _i745;
 import '../services/deep_link_service.dart' as _i391;
 import '../services/location_service.dart' as _i669;
+import '../services/search_history_service.dart' as _i283;
 
 // initializes the registration of main-scope dependencies inside of GetIt
 _i174.GetIt $initGetIt(
@@ -185,6 +188,12 @@ _i174.GetIt $initGetIt(
   gh.singleton<_i302.GossipLocalDataSource>(
     () => _i837.SharedPrefsGossipLocalDataSource(gh<_i482.AppLogger>()),
   );
+  gh.singleton<_i283.SearchHistoryService>(
+    () => _i283.SearchHistoryService(
+      gh<_i460.SharedPreferences>(),
+      gh<_i482.AppLogger>(),
+    ),
+  );
   gh.singleton<_i894.ProfileRepository>(
     () => _i334.ProfileRepositoryImpl(
       gh<_i327.ProfileRemoteDataSource>(),
@@ -252,6 +261,9 @@ _i174.GetIt $initGetIt(
   );
   gh.factory<_i821.GetGossips>(
     () => _i821.GetGossips(repository: gh<_i865.GossipRepository>()),
+  );
+  gh.factory<_i473.SearchGossips>(
+    () => _i473.SearchGossips(repository: gh<_i865.GossipRepository>()),
   );
   gh.factory<_i111.GetCurrentUserUseCase>(
     () => _i111.GetCurrentUserUseCase(gh<_i787.AuthRepository>()),

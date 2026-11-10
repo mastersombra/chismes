@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/di/injection_container.dart';
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/logging/logging.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/validation/form_validators.dart';

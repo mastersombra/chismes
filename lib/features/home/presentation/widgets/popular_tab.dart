@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../gossip/presentation/widgets/gossip_card.dart';
 import '../controllers/popular_tab_controller.dart';
@@ -34,6 +34,9 @@ class PopularTab extends StatelessWidget {
       listenable: controller,
       builder: (context, _) {
         final state = controller.state;
+
+        // ⚠️ DEBUG: Log para verificar estado en UI
+        print('🔍 DEBUG PopularTab UI: status=${state.status}, gossips=${state.gossips.length}, isEmpty=${state.isEmpty}');
 
         // Loading inicial
         if (state.isLoadingInitial) {

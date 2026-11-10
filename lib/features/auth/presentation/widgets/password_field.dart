@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
 
 /// Campo de contraseña con toggle de visibilidad

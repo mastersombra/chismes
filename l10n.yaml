@@ -1,0 +1,29 @@
+# Configuración de Flutter gen-l10n (internacionalización oficial)
+#
+# Documentación: https://docs.flutter.dev/ui/accessibility-and-internationalization/internationalization
+#
+# Este archivo define cómo Flutter genera el código de localización automáticamente
+# desde los archivos ARB (Application Resource Bundle).
+
+# Directorio donde están los archivos .arb
+arb-dir: lib/l10n
+
+# Archivo ARB base (usado como template para extraer keys)
+# Debe contener TODAS las keys - otros idiomas se validan contra este
+template-arb-file: app_es.arb
+
+# Nombre del archivo Dart generado
+output-localization-file: app_localizations.dart
+
+# Nombre de la clase generada
+output-class: AppLocalizations
+
+# Directorio de salida (por defecto: .dart_tool/flutter_gen/gen_l10n/)
+# output-dir: lib/core/l10n
+
+# Usar deferred loading (lazy load de traducciones)
+use-deferred-loading: false
+
+# Generar localizations para cada idioma (AppLocalizations_es, _en)
+# Útil para testing o acceso directo
+# preferred-supported-locales: ['es']

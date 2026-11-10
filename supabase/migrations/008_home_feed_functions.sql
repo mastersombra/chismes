@@ -113,9 +113,10 @@ BEGIN
       g.deleted_at IS NULL AND
       -- Filtro: Chismes de mi ciudad SIEMPRE aparecen
       -- Chismes de otras ciudades solo si son virales
+      -- ⚠️ SEGURIDAD: NO incluir "user_city_id IS NULL OR" porque ciudad es obligatoria
+      --    Si user_city_id es NULL, es un bug y NO debe mostrar todo sin filtro
       (
         g.city_id = user_city_id OR
-        user_city_id IS NULL OR
         COALESCE(g.like_count, 0) > 1000 OR
         COALESCE(g.comment_count, 0) > 200 OR
         COALESCE(g.share_count, 0) > 100 OR
@@ -315,9 +316,9 @@ BEGIN
     g.visibility = 'public' AND
     g.deleted_at IS NULL AND
     g.created_at > since_timestamp AND
+    -- ⚠️ SEGURIDAD: NO incluir "user_city_id IS NULL OR" porque ciudad es obligatoria
     (
       g.city_id = user_city_id OR
-      user_city_id IS NULL OR
       COALESCE(g.like_count, 0) > 1000 OR
       COALESCE(g.comment_count, 0) > 200 OR
       COALESCE(g.share_count, 0) > 100

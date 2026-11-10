@@ -31,6 +31,11 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Internacionalización oficial de Flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
@@ -49,8 +54,8 @@ dependencies:
   # Auth
   google_sign_in: ^6.2.1
 
-  # Internacionalización
-  easy_localization: ^3.0.7
+  # Internacionalización migrada a gen-l10n oficial de Flutter
+  # easy_localization fue removido - ahora usamos flutter_localizations + intl
 
   # Geolocalización y persistencia
   geolocator: ^11.0.0          # GPS y detección de ubicación
@@ -86,6 +91,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  # Habilita generación automática de código (gen-l10n, etc.)
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

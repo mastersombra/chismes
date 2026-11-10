@@ -89,6 +89,24 @@ class MockGossipRemoteDataSource extends _i1.Mock
             returnValueForMissingStub: _i4.Future<void>.value(),
           )
           as _i4.Future<void>);
+
+  @override
+  _i4.Future<List<_i2.GossipModel>> searchGossips({
+    required String? query,
+    String? cityId,
+    int? limit = 20,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#searchGossips, [], {
+              #query: query,
+              #cityId: cityId,
+              #limit: limit,
+            }),
+            returnValue: _i4.Future<List<_i2.GossipModel>>.value(
+              <_i2.GossipModel>[],
+            ),
+          )
+          as _i4.Future<List<_i2.GossipModel>>);
 }
 
 /// A class which mocks [GossipLocalDataSource].

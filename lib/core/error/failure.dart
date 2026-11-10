@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'error_codes.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 /// Failure representa un error en el dominio de negocio
 /// A diferencia de Exception, Failure es un objeto de valor que puede ser

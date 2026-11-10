@@ -1,9 +1,10 @@
-import 'package:easy_localization/easy_localization.dart';
+
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/profile_settings.dart';
 import '../controllers/profile_controller.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 /// Widget para la sección de configuraciones
 class SettingsSection extends StatelessWidget {
@@ -22,7 +23,7 @@ class SettingsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'profile.settings.title'.tr(),
+          context.l10n.profileSettingsTitle,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -32,13 +33,13 @@ class SettingsSection extends StatelessWidget {
         // Notificaciones
         _buildCard(
           context,
-          title: 'profile.settings.section_notifications'.tr(),
+          title: context.l10n.profileSettingsSectionNotifications,
           icon: Icons.notifications_outlined,
           children: [
             _buildSwitchTile(
               context,
-              title: 'profile.settings.general_notifications'.tr(),
-              subtitle: 'profile.settings.general_notifications_subtitle'.tr(),
+              title: context.l10n.profileSettingsGeneralNotifications,
+              subtitle: context.l10n.profileSettingsGeneralNotificationsSubtitle,
               value: settings.notificationsEnabled,
               onChanged: (value) => _updateSettings(
                 context,
@@ -49,8 +50,8 @@ class SettingsSection extends StatelessWidget {
               const Divider(height: 1),
               _buildSwitchTile(
                 context,
-                title: 'profile.settings.push_notifications'.tr(),
-                subtitle: 'profile.settings.push_notifications_subtitle'.tr(),
+                title: context.l10n.profileSettingsPushNotifications,
+                subtitle: context.l10n.profileSettingsPushNotificationsSubtitle,
                 value: settings.pushNotifications,
                 onChanged: (value) => _updateSettings(
                   context,
@@ -60,8 +61,8 @@ class SettingsSection extends StatelessWidget {
               const Divider(height: 1),
               _buildSwitchTile(
                 context,
-                title: 'profile.settings.email_notifications'.tr(),
-                subtitle: 'profile.settings.daily_summary_subtitle'.tr(),
+                title: context.l10n.profileSettingsEmailNotifications,
+                subtitle: context.l10n.profileSettingsDailySummarySubtitle,
                 value: settings.emailNotifications,
                 onChanged: (value) => _updateSettings(
                   context,
@@ -71,8 +72,8 @@ class SettingsSection extends StatelessWidget {
               const Divider(height: 1),
               _buildSwitchTile(
                 context,
-                title: 'profile.settings.comments'.tr(),
-                subtitle: 'profile.settings.comments_subtitle'.tr(),
+                title: context.l10n.profileSettingsComments,
+                subtitle: context.l10n.profileSettingsCommentsSubtitle,
                 value: settings.commentsNotifications,
                 onChanged: (value) => _updateSettings(
                   context,
@@ -82,8 +83,8 @@ class SettingsSection extends StatelessWidget {
               const Divider(height: 1),
               _buildSwitchTile(
                 context,
-                title: 'profile.settings.new_followers'.tr(),
-                subtitle: 'profile.settings.new_followers_subtitle'.tr(),
+                title: context.l10n.profileSettingsNewFollowers,
+                subtitle: context.l10n.profileSettingsNewFollowersSubtitle,
                 value: settings.followNotifications,
                 onChanged: (value) => _updateSettings(
                   context,
@@ -99,12 +100,12 @@ class SettingsSection extends StatelessWidget {
         // Privacidad
         _buildCard(
           context,
-          title: 'profile.settings.section_privacy'.tr(),
+          title: context.l10n.profileSettingsSectionPrivacy,
           icon: Icons.privacy_tip_outlined,
           children: [
             _buildListTile(
               context,
-              title: 'profile.settings.privacy_level'.tr(),
+              title: context.l10n.profileSettingsPrivacyLevel,
               subtitle: _getPrivacyLevelText(settings.privacyLevel),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => _showPrivacyDialog(context),
@@ -112,8 +113,8 @@ class SettingsSection extends StatelessWidget {
             const Divider(height: 1),
             _buildSwitchTile(
               context,
-              title: 'profile.settings.show_email'.tr(),
-              subtitle: 'profile.settings.show_email_subtitle'.tr(),
+              title: context.l10n.profileSettingsShowEmail,
+              subtitle: context.l10n.profileSettingsShowEmailSubtitle,
               value: settings.showEmail,
               onChanged: (value) => _updateSettings(
                 context,
@@ -123,8 +124,8 @@ class SettingsSection extends StatelessWidget {
             const Divider(height: 1),
             _buildSwitchTile(
               context,
-              title: 'profile.settings.show_activity'.tr(),
-              subtitle: 'profile.settings.show_activity_subtitle'.tr(),
+              title: context.l10n.profileSettingsShowActivity,
+              subtitle: context.l10n.profileSettingsShowActivitySubtitle,
               value: settings.showActivity,
               onChanged: (value) => _updateSettings(
                 context,
@@ -139,21 +140,21 @@ class SettingsSection extends StatelessWidget {
         // Idioma y apariencia
         _buildCard(
           context,
-          title: 'profile.settings.section_appearance'.tr(),
+          title: context.l10n.profileSettingsSectionAppearance,
           icon: Icons.palette_outlined,
           children: [
             _buildListTile(
               context,
-              title: 'profile.settings.language'.tr(),
-              subtitle: settings.language == 'es' ? 'profile.settings.language_spanish'.tr() : 'profile.settings.language_english'.tr(),
+              title: context.l10n.profileSettingsLanguage,
+              subtitle: settings.language == 'es' ? context.l10n.profileSettingsLanguageSpanish : context.l10n.profileSettingsLanguageEnglish,
               trailing: const Icon(Icons.chevron_right),
               onTap: () => _showLanguageDialog(context),
             ),
             const Divider(height: 1),
             _buildSwitchTile(
               context,
-              title: 'profile.settings.dark_mode'.tr(),
-              subtitle: 'profile.settings.dark_mode_subtitle'.tr(),
+              title: context.l10n.profileSettingsDarkMode,
+              subtitle: context.l10n.profileSettingsDarkModeSubtitle,
               value: settings.darkMode,
               onChanged: (value) => _updateSettings(
                 context,
@@ -245,13 +246,13 @@ class SettingsSection extends StatelessWidget {
   String _getPrivacyLevelText(String level) {
     switch (level) {
       case 'public':
-        return '${'profile.settings.privacy_public'.tr()} - ${'profile.settings.privacy_public_subtitle'.tr()}';
+        return '${context.l10n.profileSettingsPrivacyPublic} - ${context.l10n.profileSettingsPrivacyPublicSubtitle}';
       case 'friends':
-        return '${'profile.settings.privacy_friends'.tr()} - ${'profile.settings.privacy_friends_subtitle'.tr()}';
+        return '${context.l10n.profileSettingsPrivacyFriends} - ${context.l10n.profileSettingsPrivacyFriendsSubtitle}';
       case 'private':
-        return '${'profile.settings.privacy_private'.tr()} - ${'profile.settings.privacy_private_subtitle'.tr()}';
+        return '${context.l10n.profileSettingsPrivacyPrivate} - ${context.l10n.profileSettingsPrivacyPrivateSubtitle}';
       default:
-        return 'profile.settings.privacy_public'.tr();
+        return context.l10n.profileSettingsPrivacyPublic;
     }
   }
 
@@ -263,7 +264,7 @@ class SettingsSection extends StatelessWidget {
     if (!success && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('profile.settings.update_error'.tr()),
+          content: Text(context.l10n.profileSettingsUpdateError),
           backgroundColor: Colors.red,
         ),
       );
@@ -274,28 +275,28 @@ class SettingsSection extends StatelessWidget {
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('profile.settings.privacy_dialog_title'.tr()),
+        title: Text(context.l10n.profileSettingsPrivacyDialogTitle),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildPrivacyOption(
               context,
-              title: 'profile.settings.privacy_public'.tr(),
-              subtitle: 'profile.settings.privacy_public_subtitle'.tr(),
+              title: context.l10n.profileSettingsPrivacyPublic,
+              subtitle: context.l10n.profileSettingsPrivacyPublicSubtitle,
               value: 'public',
               currentValue: settings.privacyLevel,
             ),
             _buildPrivacyOption(
               context,
-              title: 'profile.settings.privacy_friends'.tr(),
-              subtitle: 'profile.settings.privacy_friends_subtitle'.tr(),
+              title: context.l10n.profileSettingsPrivacyFriends,
+              subtitle: context.l10n.profileSettingsPrivacyFriendsSubtitle,
               value: 'friends',
               currentValue: settings.privacyLevel,
             ),
             _buildPrivacyOption(
               context,
-              title: 'profile.settings.privacy_private'.tr(),
-              subtitle: 'profile.settings.privacy_private_subtitle'.tr(),
+              title: context.l10n.profileSettingsPrivacyPrivate,
+              subtitle: context.l10n.profileSettingsPrivacyPrivateSubtitle,
               value: 'private',
               currentValue: settings.privacyLevel,
             ),
@@ -304,7 +305,7 @@ class SettingsSection extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('common.cancel'.tr()),
+            child: Text(context.l10n.commonCancel),
           ),
         ],
       ),
@@ -325,18 +326,16 @@ class SettingsSection extends StatelessWidget {
     required String value,
     required String currentValue,
   }) {
-    return RadioGroup<String>(
+    return RadioListTile<String>(
+      title: Text(title),
+      subtitle: Text(subtitle),
+      value: value,
       groupValue: currentValue,
       onChanged: (newValue) {
         if (newValue != null) {
           Navigator.pop(context, newValue);
         }
       },
-      child: RadioListTile<String>(
-        title: Text(title),
-        subtitle: Text(subtitle),
-        value: value,
-      ),
     );
   }
 
@@ -344,38 +343,49 @@ class SettingsSection extends StatelessWidget {
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('profile.settings.language'.tr()),
-        content: RadioGroup<String>(
-          groupValue: settings.language,
-          onChanged: (value) {
-            if (value != null) {
-              Navigator.pop(context, value);
-            }
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              RadioListTile<String>(
-                title: Text('profile.settings.language_spanish'.tr()),
-                value: 'es',
-              ),
-              RadioListTile<String>(
-                title: Text('profile.settings.language_english'.tr()),
-                value: 'en',
-              ),
-            ],
-          ),
+        title: Text(context.l10n.profileSettingsLanguage),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<String>(
+              title: Text(context.l10n.profileSettingsLanguageSpanish),
+              value: 'es',
+              groupValue: settings.language,
+              onChanged: (value) {
+                if (value != null) {
+                  Navigator.pop(context, value);
+                }
+              },
+            ),
+            RadioListTile<String>(
+              title: Text(context.l10n.profileSettingsLanguageEnglish),
+              value: 'en',
+              groupValue: settings.language,
+              onChanged: (value) {
+                if (value != null) {
+                  Navigator.pop(context, value);
+                }
+              },
+            ),
+          ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('common.cancel'.tr()),
+            child: Text(context.l10n.commonCancel),
           ),
         ],
       ),
     );
 
-    if (result != null && context.mounted) {
+    if (result != null) {
+      if (!context.mounted) return;
+
+      // Cambiar el idioma en EasyLocalization
+      await context.setLocale(Locale(result));
+
+      // Guardar preferencia en settings
+      if (!context.mounted) return;
       await _updateSettings(
         context,
         settings.copyWith(language: result),

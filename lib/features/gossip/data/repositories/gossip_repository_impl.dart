@@ -111,7 +111,6 @@ class GossipRepositoryImpl implements GossipRepository {
     return filtered;
   }
 
-
   @override
   Future<Result<Failure, Gossip>> createWithImage(
     CreateGossipInput input,
@@ -163,6 +162,29 @@ class GossipRepositoryImpl implements GossipRepository {
       );
 
       return Result.success(null);
+    } catch (error) {
+      return Result.failure(ErrorHandler.handleError(error));
+    }
+  }
+
+  @override
+  Future<Result<Failure, List<Gossip>>> searchGossips({
+    required String query,
+    String? cityId,
+    int limit = 20,
+  }) async {
+    try {
+      // Búsqueda en servidor (RPC)
+      final models = await remoteDataSource.searchGossips(
+        query: query,
+        cityId: cityId,
+        limit: limit,
+      );
+
+      // Convertir modelos a entidades
+      final gossips = models.map((model) => model.toEntity()).toList();
+
+      return Result.success(gossips);
     } catch (error) {
       return Result.failure(ErrorHandler.handleError(error));
     }

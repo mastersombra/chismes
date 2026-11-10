@@ -1,6 +1,7 @@
-import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/widgets.dart';
 
 import 'error_codes.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 /// Mensajes de error centralizados con i18n
 ///
@@ -12,118 +13,131 @@ import 'error_codes.dart';
 class ErrorMessages {
   ErrorMessages._();
 
-  /// Obtiene el mensaje de error para un código específico
+  /// Obtiene el mensaje de error en inglés (para logs y debugging)
+  /// [code] El código de error
+  static String getMessageEnglish(ErrorCode code) {
+    // Versión sin traducción para logs, debugging y lugares sin context
+    return code.toString().replaceAll('ErrorCode.', '');
+  }
+
+  /// Obtiene el mensaje de error traducido
+  /// [context] BuildContext para acceder a localizaciones
   /// [code] El código de error
   /// [params] Parámetros opcionales para el mensaje
-  static String getMessage(ErrorCode code, {Map<String, dynamic>? params}) {
+  static String getMessage(
+    BuildContext context,
+    ErrorCode code, {
+    Map<String, dynamic>? params,
+  }) {
     switch (code) {
       // Errores de red
       case ErrorCode.networkError:
-        return 'errors.network.connection_error'.tr();
+        return context.l10n.errorsNetworkConnectionError;
       case ErrorCode.timeoutError:
-        return 'errors.network.timeout'.tr();
+        return context.l10n.errorsNetworkTimeout;
       case ErrorCode.noInternetConnection:
-        return 'errors.network.no_internet'.tr();
+        return context.l10n.errorsNetworkNoInternet;
 
       // Errores de servidor
       case ErrorCode.serverError:
-        return 'errors.server.error'.tr();
+        return context.l10n.errorsServerError;
       case ErrorCode.serverMaintenance:
-        return 'errors.server.maintenance'.tr();
+        return context.l10n.errorsServerMaintenance;
       case ErrorCode.serviceUnavailable:
-        return 'errors.server.unavailable'.tr();
+        return context.l10n.errorsServerUnavailable;
       case ErrorCode.tooManyRequests:
         return params?['message'] as String? ??
-            'errors.server.too_many_requests'.tr();
+            context.l10n.errorsServerTooManyRequests;
       case ErrorCode.badRequest:
-        return 'errors.server.bad_request'.tr();
+        return context.l10n.errorsServerBadRequest;
 
       // Errores de autenticación
       case ErrorCode.unauthorized:
-        return 'errors.auth.unauthorized'.tr();
+        return context.l10n.errorsAuthUnauthorized;
       case ErrorCode.sessionExpired:
-        return 'errors.auth.session_expired'.tr();
+        return context.l10n.errorsAuthSessionExpired;
       case ErrorCode.invalidCredentials:
-        return 'errors.auth.invalid_credentials'.tr();
+        return context.l10n.errorsAuthInvalidCredentials;
       case ErrorCode.emailAlreadyInUse:
-        return 'errors.auth.email_already_in_use'.tr();
+        return context.l10n.errorsAuthEmailAlreadyInUse;
       case ErrorCode.weakPassword:
-        return 'errors.auth.weak_password'.tr();
+        return context.l10n.errorsAuthWeakPassword;
       case ErrorCode.userNotFound:
-        return 'errors.auth.user_not_found'.tr();
+        return context.l10n.errorsAuthUserNotFound;
       case ErrorCode.userNotAuthenticated:
-        return 'errors.auth.not_authenticated'.tr();
+        return context.l10n.errorsAuthNotAuthenticated;
       case ErrorCode.usernameAlreadyTaken:
-        return 'errors.auth.username_taken'.tr();
+        return context.l10n.errorsAuthUsernameTaken;
       case ErrorCode.invalidToken:
-        return 'errors.auth.invalid_token'.tr();
+        return context.l10n.errorsAuthInvalidToken;
       case ErrorCode.expiredToken:
-        return 'errors.auth.expired_token'.tr();
+        return context.l10n.errorsAuthExpiredToken;
       case ErrorCode.oauthCancelled:
-        return 'errors.auth.oauth_cancelled'.tr();
+        return context.l10n.errorsAuthOauthCancelled;
       case ErrorCode.oauthProviderError:
-        return 'errors.auth.oauth_provider_error'.tr();
+        return context.l10n.errorsAuthOauthProviderError;
       case ErrorCode.emailNotVerified:
-        return 'errors.auth.email_not_verified'.tr();
+        return context.l10n.errorsAuthEmailNotVerified;
       case ErrorCode.tooManyLoginAttempts:
-        return 'errors.auth.too_many_attempts'.tr();
+        return context.l10n.errorsAuthTooManyAttempts;
 
       // Errores de validación
       case ErrorCode.validationError:
-        return 'errors.validation.error'.tr();
+        return context.l10n.errorsValidationError;
       case ErrorCode.invalidInput:
-        return 'errors.validation.invalid_input'.tr();
+        return context.l10n.errorsValidationInvalidInput;
       case ErrorCode.missingRequiredField:
-        return 'errors.validation.missing_field'.tr();
+        return context.l10n.errorsValidationMissingField;
 
       // Errores de datos
       case ErrorCode.notFound:
-        return 'errors.data.not_found'.tr();
+        return context.l10n.errorsDataNotFound;
       case ErrorCode.alreadyExists:
-        return 'errors.data.already_exists'.tr();
+        return context.l10n.errorsDataAlreadyExists;
       case ErrorCode.conflict:
-        return 'errors.data.conflict'.tr();
+        return context.l10n.errorsDataConflict;
 
       // Errores de permisos
       case ErrorCode.forbidden:
-        return 'errors.permissions.forbidden'.tr();
+        return context.l10n.errorsPermissionsForbidden;
       case ErrorCode.insufficientPermissions:
-        return 'errors.permissions.insufficient'.tr();
+        return context.l10n.errorsPermissionsInsufficient;
 
       // Errores de negocio específicos
       case ErrorCode.invalidLocation:
-        return 'errors.business.invalid_location'.tr();
+        return context.l10n.errorsBusinessInvalidLocation;
       case ErrorCode.invalidGossipContent:
-        return 'errors.business.invalid_gossip_content'.tr();
+        return context.l10n.errorsBusinessInvalidGossipContent;
       case ErrorCode.gossipNotFound:
-        return 'errors.business.gossip_not_found'.tr();
+        return context.l10n.errorsBusinessGossipNotFound;
       case ErrorCode.moderationRejected:
-        return 'errors.business.moderation_rejected'.tr();
+        return context.l10n.errorsBusinessModerationRejected;
       case ErrorCode.mediaUploadFailed:
-        return 'errors.business.media_upload_failed'.tr();
+        return context.l10n.errorsBusinessMediaUploadFailed;
       case ErrorCode.rateLimitExceeded:
         return params?['message'] as String? ??
-            'errors.business.rate_limit_exceeded'.tr();
+            context.l10n.errorsBusinessRateLimitExceeded;
 
       // Errores desconocidos
       case ErrorCode.unknownError:
-        return 'errors.unknown'.tr();
+        return context.l10n.errorsUnknown;
     }
   }
 
   /// Obtiene el título del error para mostrar en diálogos
-  static String getTitle(ErrorCode code) {
+  /// [context] BuildContext para acceder a localizaciones
+  static String getTitle(BuildContext context, ErrorCode code) {
     switch (code) {
       case ErrorCode.networkError:
       case ErrorCode.timeoutError:
       case ErrorCode.noInternetConnection:
-        return 'errors.titles.connection'.tr();
+        return context.l10n.errorsTitlesConnection;
       case ErrorCode.serverError:
       case ErrorCode.serverMaintenance:
       case ErrorCode.serviceUnavailable:
       case ErrorCode.tooManyRequests:
       case ErrorCode.badRequest:
-        return 'errors.titles.server'.tr();
+        return context.l10n.errorsTitlesServer;
       case ErrorCode.unauthorized:
       case ErrorCode.sessionExpired:
       case ErrorCode.invalidCredentials:
@@ -138,27 +152,27 @@ class ErrorMessages {
       case ErrorCode.oauthProviderError:
       case ErrorCode.emailNotVerified:
       case ErrorCode.tooManyLoginAttempts:
-        return 'errors.titles.auth'.tr();
+        return context.l10n.errorsTitlesAuth;
       case ErrorCode.validationError:
       case ErrorCode.invalidInput:
       case ErrorCode.missingRequiredField:
-        return 'errors.titles.validation'.tr();
+        return context.l10n.errorsTitlesValidation;
       case ErrorCode.notFound:
       case ErrorCode.alreadyExists:
       case ErrorCode.conflict:
-        return 'errors.titles.data'.tr();
+        return context.l10n.errorsTitlesData;
       case ErrorCode.forbidden:
       case ErrorCode.insufficientPermissions:
-        return 'errors.titles.permissions'.tr();
+        return context.l10n.errorsTitlesPermissions;
       case ErrorCode.invalidLocation:
       case ErrorCode.invalidGossipContent:
       case ErrorCode.gossipNotFound:
       case ErrorCode.moderationRejected:
       case ErrorCode.mediaUploadFailed:
       case ErrorCode.rateLimitExceeded:
-        return 'errors.titles.general'.tr();
+        return context.l10n.errorsTitlesGeneral;
       case ErrorCode.unknownError:
-        return 'errors.titles.unexpected'.tr();
+        return context.l10n.errorsTitlesUnexpected;
     }
   }
 }

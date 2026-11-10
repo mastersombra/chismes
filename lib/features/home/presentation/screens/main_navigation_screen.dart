@@ -1,4 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
+
 import 'package:flutter/material.dart';
 
 import '../../../search/presentation/screens/search_screen.dart';
@@ -8,6 +8,7 @@ import '../../../profile/presentation/screens/profile_screen.dart';
 import 'home_screen.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/theme/app_theme.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -48,7 +49,6 @@ class MainNavigationScreenState extends State<MainNavigationScreen> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,22 +70,22 @@ class MainNavigationScreenState extends State<MainNavigationScreen> {
           BottomNavigationBarItem(
             icon: const Icon(Icons.home_outlined),
             activeIcon: const Icon(Icons.home),
-            label: 'navigation.home'.tr(),
+            label: context.l10n.navigationHome,
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.search_outlined),
             activeIcon: const Icon(Icons.search),
-            label: 'navigation.explore'.tr(),
+            label: context.l10n.navigationExplore,
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.add_circle_outline),
             activeIcon: const Icon(Icons.add_circle),
-            label: 'navigation.create'.tr(),
+            label: context.l10n.navigationCreate,
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.person_outline),
             activeIcon: const Icon(Icons.person),
-            label: 'navigation.profile'.tr(),
+            label: context.l10n.navigationProfile,
           ),
         ],
       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/logging/logging.dart';
 import '../../../../core/result/result.dart';
 import '../../../location/presentation/managers/location_manager.dart';

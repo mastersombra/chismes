@@ -1,6 +1,6 @@
 import '../../../../core/error/error_codes.dart';
 import '../../../../core/error/failure.dart';
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 /// Validador de reglas de negocio para autenticación
 ///

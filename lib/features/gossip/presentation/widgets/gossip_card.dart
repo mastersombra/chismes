@@ -1,8 +1,8 @@
-import 'package:easy_localization/easy_localization.dart';
+
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import '../screens/gossip_detail_screen.dart';
 import '../../domain/entities/gossip.dart';
 import '../../domain/entities/report_reason.dart';
@@ -14,6 +14,7 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/result/result.dart';
 import '../../../../core/error/failure.dart';
 import 'report_gossip_dialog.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 class GossipCard extends StatelessWidget {
   final Gossip gossip;
@@ -49,7 +50,7 @@ $deepLink
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('gossip.card.share_error'.tr()),
+            content: Text(context.l10n.gossipCardShareError),
             duration: const Duration(seconds: 2),
           ),
         );
@@ -114,7 +115,7 @@ $deepLink
         onSuccess: (_) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('gossip.card.report_success'.tr()),
+              content: Text(context.l10n.gossipCardReportSuccess),
               duration: const Duration(seconds: 3),
             ),
           );
@@ -153,8 +154,12 @@ $deepLink
 
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min, // ✅ Evita conflicto con unbounded height
           children: [
-            Expanded(
+            // ✅ Usar AspectRatio en lugar de Expanded para imagen
+            // Evita error "RenderFlex children have non-zero flex but incoming height constraints are unbounded"
+            AspectRatio(
+              aspectRatio: 1.0, // Imagen cuadrada
               child: Image.network(
                 // ✅ P6-4: Usar thumbnail primero (30 KB), fallback a imagen completa (150 KB)
                 gossip.thumbnailUrl ?? gossip.imageUrl ?? 'https://via.placeholder.com/150',

@@ -1,4 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
+
 import 'package:flutter/material.dart';
 
 import '../../../../core/di/injection_container.dart';
@@ -7,6 +7,7 @@ import '../controllers/profile_controller.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/profile_stats_card.dart';
 import '../widgets/settings_section.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 /// Pantalla de perfil del usuario
 class ProfileScreen extends StatefulWidget {
@@ -40,6 +41,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _onControllerChanged() {
     if (!mounted) return;
 
+    // Sincronizar idioma con EasyLocalization cuando se cargan los settings
+    final settings = _controller.settings;
+    if (settings != null && context.locale.languageCode != settings.language) {
+      // Cambiar el idioma de la app si no coincide con los settings
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.setLocale(Locale(settings.language));
+        }
+      });
+    }
+
     // Mostrar errores si hay
     if (_controller.errorMessage != null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -59,12 +71,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('navigation.profile'.tr()),
+        title: Text(context.l10n.navigationProfile),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _handleRefresh,
-            tooltip: 'profile.screen.refresh_tooltip'.tr(),
+            tooltip: context.l10n.profileScreenRefreshTooltip,
           ),
         ],
       ),
@@ -91,13 +103,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   Text(
-                    _controller.errorMessage ?? 'profile.screen.error_loading'.tr(),
+                    _controller.errorMessage ?? context.l10n.profileScreenErrorLoading,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   ElevatedButton(
                     onPressed: _handleRefresh,
-                    child: Text('common.back'.tr()),
+                    child: Text(context.l10n.commonBack),
                   ),
                 ],
               ),
@@ -107,7 +119,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           final user = _controller.currentUser;
           if (user == null) {
             return Center(
-              child: Text('profile.screen.no_user'.tr()),
+              child: Text(context.l10n.profileScreenNoUser),
             );
           }
 
@@ -168,7 +180,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             )
           : const Icon(Icons.logout),
-      label: Text(isSigningOut ? 'profile.screen.signing_out'.tr() : 'profile.screen.sign_out_button'.tr()),
+      label: Text(isSigningOut ? context.l10n.profileScreenSigningOut : context.l10n.profileScreenSignOutButton),
     );
   }
 
@@ -176,12 +188,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('profile.screen.sign_out_dialog_title'.tr()),
-        content: Text('profile.screen.sign_out_dialog_content'.tr()),
+        title: Text(context.l10n.profileScreenSignOutDialogTitle),
+        content: Text(context.l10n.profileScreenSignOutDialogContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('common.cancel'.tr()),
+            child: Text(context.l10n.commonCancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -189,7 +201,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               backgroundColor: Theme.of(context).colorScheme.error,
               foregroundColor: Colors.white,
             ),
-            child: Text('profile.screen.sign_out_button'.tr()),
+            child: Text(context.l10n.profileScreenSignOutButton),
           ),
         ],
       ),

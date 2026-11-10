@@ -440,7 +440,10 @@ class LocationManager extends ChangeNotifier {
           );
 
       if (country == null) {
-        _logger.w('⚠️ País guardado no encontrado en BD');
+        _logger.w('⚠️ País guardado no encontrado en BD - limpiando datos inválidos');
+        // Limpiar ubicación inválida guardada
+        await _locationService.clearDefaultLocation();
+        clearLocation();
         return;
       }
 
@@ -454,7 +457,10 @@ class LocationManager extends ChangeNotifier {
           );
 
       if (region == null) {
-        _logger.w('⚠️ Región guardada no encontrada en BD');
+        _logger.w('⚠️ Región guardada no encontrada en BD - limpiando datos inválidos');
+        // Limpiar ubicación inválida guardada
+        await _locationService.clearDefaultLocation();
+        clearLocation();
         return;
       }
 
@@ -468,7 +474,10 @@ class LocationManager extends ChangeNotifier {
           );
 
       if (city == null) {
-        _logger.w('⚠️ Ciudad guardada no encontrada en BD');
+        _logger.w('⚠️ Ciudad guardada no encontrada en BD - limpiando datos inválidos');
+        // Limpiar ubicación inválida guardada
+        await _locationService.clearDefaultLocation();
+        clearLocation();
         return;
       }
 

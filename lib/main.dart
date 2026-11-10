@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'core/theme/app_theme.dart';
@@ -7,6 +6,7 @@ import 'core/di/injection_container.dart';
 import 'core/logging/logging.dart';
 import 'core/services/deep_link_service.dart' as core_services;
 import 'features/auth/presentation/widgets/auth_gate.dart';
+import 'core/l10n/l10n.dart';
 
 /// Callback para cargar variables de entorno.
 /// Puede ser sobrescrita en tests.
@@ -55,28 +55,9 @@ Future<void> initializeApp() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inicializar internacionalización
-  await EasyLocalization.ensureInitialized();
-
   await initializeApp();
 
-  runApp(
-    EasyLocalization(
-      supportedLocales: const [
-        Locale('es'), // Español
-        Locale('en'), // Inglés
-      ],
-      path: 'assets/translations',
-      fallbackLocale: const Locale('es'), // Idioma por defecto si no se detecta
-      // ✅ NO usar startLocale para respetar preferencia guardada del usuario
-      // Si hay idioma guardado en SharedPreferences, lo usa
-      // Si no hay idioma guardado, detecta el idioma del sistema
-      // Si el idioma del sistema no está soportado, usa fallbackLocale (español)
-      saveLocale: true, // Guarda el idioma seleccionado automáticamente
-      useOnlyLangCode: true, // Usa solo 'es' en lugar de 'es_MX'
-      child: const ChismesApp(),
-    ),
-  );
+  runApp(const ChismesApp());
 }
 
 class ChismesApp extends StatelessWidget {
@@ -92,10 +73,11 @@ class ChismesApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       navigatorKey: navigatorKey, // ← Para deep links
 
-      // Configuración de internacionalización
-      localizationsDelegates: context.localizationDelegates,
-      supportedLocales: context.supportedLocales,
-      locale: context.locale,
+      // Configuración de internacionalización (gen-l10n)
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      // locale: null → usa idioma del sistema
+      // Para soportar cambio de idioma en runtime, usar un Provider/ValueNotifier
 
       // ✅ AuthGate decide automáticamente entre Home/Login (sin delays artificiales)
       home: const AuthGate(),

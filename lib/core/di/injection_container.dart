@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'injection_container.config.dart';
 
 final getIt = GetIt.instance;
@@ -19,6 +20,10 @@ Future<void> configureDependencies() async {
     navigatorKey,
     instanceName: 'navigatorKey',
   );
+
+  // Registrar SharedPreferences
+  final sharedPreferences = await SharedPreferences.getInstance();
+  getIt.registerSingleton<SharedPreferences>(sharedPreferences);
 
   $initGetIt(getIt);
 }

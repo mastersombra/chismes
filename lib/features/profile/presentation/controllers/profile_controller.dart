@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../../../core/error/error_messages.dart';
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/logging/logging.dart';
 import '../../../../core/result/result.dart';
 import '../../../../core/services/auth_service.dart';
@@ -79,7 +79,7 @@ class ProfileController extends ChangeNotifier {
       // Manejar resultado de estadísticas
       statsResult.when(
         onFailure: (failure) {
-          _logger.w('Failed to load stats: ${ErrorMessages.getMessage(failure.code)}');
+          _logger.w('Failed to load stats: ${ErrorMessages.getMessageEnglish(failure.code)}');
           _userStats = const UserStats(
             gossipsCount: 0,
             commentsCount: 0,
@@ -95,7 +95,7 @@ class ProfileController extends ChangeNotifier {
       // Manejar resultado de configuraciones
       settingsResult.when(
         onFailure: (failure) {
-          _logger.w('Failed to load settings: ${ErrorMessages.getMessage(failure.code)}');
+          _logger.w('Failed to load settings: ${ErrorMessages.getMessageEnglish(failure.code)}');
           _settings = ProfileSettings.defaultSettings();
         },
         onSuccess: (settings) {
@@ -134,7 +134,7 @@ class ProfileController extends ChangeNotifier {
 
       return result.when(
         onFailure: (failure) {
-          final message = ErrorMessages.getMessage(failure.code);
+          final message = ErrorMessages.getMessageEnglish(failure.code);
           _logger.e('Failed to update settings: $message');
           _errorMessage = message;
           notifyListeners();
@@ -174,7 +174,7 @@ class ProfileController extends ChangeNotifier {
 
       return result.when(
         onFailure: (failure) {
-          final message = ErrorMessages.getMessage(failure.code);
+          final message = ErrorMessages.getMessageEnglish(failure.code);
           _logger.e('Failed to sign out: $message');
           _errorMessage = message;
           _state = ProfileState.loaded;

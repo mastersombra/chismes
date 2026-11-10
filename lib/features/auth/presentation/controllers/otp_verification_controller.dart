@@ -61,7 +61,7 @@ class OtpVerificationController extends ChangeNotifier {
       },
       onFailure: (failure) {
         _logger.w('OTP verification failed', context: {'code': failure.code});
-        final message = ErrorMessages.getMessage(failure.code);
+        final message = ErrorMessages.getMessageEnglish(failure.code);
         _updateState(_state.copyWith(
           isVerifying: false,
           errorMessage: message,
@@ -102,7 +102,7 @@ class OtpVerificationController extends ChangeNotifier {
       },
       onFailure: (failure) {
         _logger.w('Resend OTP failed', context: {'code': failure.code});
-        final message = ErrorMessages.getMessage(failure.code);
+        final message = ErrorMessages.getMessageEnglish(failure.code);
         _updateState(_state.copyWith(
           isResending: false,
           errorMessage: message,

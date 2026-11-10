@@ -1,10 +1,11 @@
-import 'package:easy_localization/easy_localization.dart';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/services/location_service.dart';
 import 'package:get_it/get_it.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 /// Pantalla de configuración de privacidad
 ///
@@ -71,26 +72,26 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
               children: [
                 // Sección: Ubicación
                 _buildSection(
-                  title: 'profile.privacy_settings.sections.location'.tr(),
+                  title: context.l10n.profilePrivacySettingsSectionsLocation,
                   children: [
                     ListTile(
                       title: Text(AppLocalizations.privacySettingsSavedCity),
                       subtitle: Text(
                         _savedLocation?.displayText ??
-                        'profile.privacy_settings.location.not_saved'.tr(),
+                        context.l10n.profilePrivacySettingsLocationNotSaved,
                       ),
                       trailing: _savedLocation != null
                           ? IconButton(
                               icon: const Icon(Icons.delete_outline),
                               onPressed: _forgetLocation,
-                              tooltip: 'profile.privacy_settings.location.forget_tooltip'.tr(),
+                              tooltip: context.l10n.profilePrivacySettingsLocationForgetTooltip,
                             )
                           : null,
                     ),
                     SwitchListTile(
                       title: Text(AppLocalizations.privacySettingsAnonymousMode),
                       subtitle: Text(
-                        'profile.privacy_settings.location.anonymous_mode_subtitle'.tr(),
+                        context.l10n.profilePrivacySettingsLocationAnonymousModeSubtitle,
                       ),
                       value: _anonymousMode,
                       onChanged: _toggleAnonymousMode,
@@ -101,7 +102,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                         vertical: AppSpacing.xs,
                       ),
                       child: Text(
-                        'profile.privacy_settings.location.anonymous_mode_description'.tr(),
+                        context.l10n.profilePrivacySettingsLocationAnonymousModeDescription,
                         style: const TextStyle(
                           fontSize: 12,
                           color: Colors.grey,
@@ -115,7 +116,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
 
                 // Sección: Datos almacenados
                 _buildSection(
-                  title: 'profile.privacy_settings.sections.stored_data'.tr(),
+                  title: context.l10n.profilePrivacySettingsSectionsStoredData,
                   children: [
                     ListTile(
                       title: Text(AppLocalizations.privacySettingsViewMyData),
@@ -135,7 +136,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
 
                 // Sección: Políticas
                 _buildSection(
-                  title: 'profile.privacy_settings.sections.policies'.tr(),
+                  title: context.l10n.profilePrivacySettingsSectionsPolicies,
                   children: [
                     ListTile(
                       title: Text(AppLocalizations.privacySettingsPrivacyPolicy),
@@ -154,15 +155,15 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
 
                 // Sección: Cuenta
                 _buildSection(
-                  title: 'profile.privacy_settings.sections.account'.tr(),
+                  title: context.l10n.profilePrivacySettingsSectionsAccount,
                   children: [
                     ListTile(
                       title: Text(
-                        'profile.privacy_settings.account.delete_title'.tr(),
+                        context.l10n.profilePrivacySettingsAccountDeleteTitle,
                         style: const TextStyle(color: Colors.red),
                       ),
                       subtitle: Text(
-                        'profile.privacy_settings.account.delete_subtitle'.tr(),
+                        context.l10n.profilePrivacySettingsAccountDeleteSubtitle,
                       ),
                       trailing: const Icon(Icons.delete_forever,
                           color: Colors.red),
@@ -208,9 +209,9 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('profile.privacy_settings.dialogs.forget_location_title'.tr()),
+        title: Text(context.l10n.profilePrivacySettingsDialogsForgetLocationTitle),
         content: Text(
-          'profile.privacy_settings.dialogs.forget_location_message'.tr(),
+          context.l10n.profilePrivacySettingsDialogsForgetLocationMessage,
         ),
         actions: [
           TextButton(
@@ -238,7 +239,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     // Mostrar confirmación
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('profile.privacy_settings.snackbars.location_forgotten'.tr()),
+        content: Text(context.l10n.profilePrivacySettingsSnackbarsLocationForgotten),
       ),
     );
   }
@@ -255,8 +256,8 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
       SnackBar(
         content: Text(
           value
-              ? 'profile.privacy_settings.snackbars.anonymous_mode_on'.tr()
-              : 'profile.privacy_settings.snackbars.anonymous_mode_off'.tr(),
+              ? context.l10n.profilePrivacySettingsSnackbarsAnonymousModeOn
+              : context.l10n.profilePrivacySettingsSnackbarsAnonymousModeOff,
         ),
       ),
     );
@@ -269,7 +270,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
         title: Text(AppLocalizations.privacySettingsPrivacyPolicy),
         content: SingleChildScrollView(
           child: Text(
-            'profile.privacy_settings.dialogs.privacy_policy_content'.tr(),
+            context.l10n.profilePrivacySettingsDialogsPrivacyPolicyContent,
           ),
         ),
         actions: [
@@ -289,7 +290,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
         title: Text(AppLocalizations.privacySettingsTermsOfUse),
         content: SingleChildScrollView(
           child: Text(
-            'profile.privacy_settings.dialogs.terms_of_use_content'.tr(),
+            context.l10n.profilePrivacySettingsDialogsTermsOfUseContent,
           ),
         ),
         actions: [
@@ -307,9 +308,9 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('profile.privacy_settings.dialogs.delete_account_title'.tr()),
+        title: Text(context.l10n.profilePrivacySettingsDialogsDeleteAccountTitle),
         content: Text(
-          'profile.privacy_settings.dialogs.delete_account_message'.tr(),
+          context.l10n.profilePrivacySettingsDialogsDeleteAccountMessage,
         ),
         actions: [
           TextButton(
@@ -339,14 +340,14 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'profile.privacy_settings.dialogs.delete_account_confirm_prompt'.tr(),
+              context.l10n.profilePrivacySettingsDialogsDeleteAccountConfirmPrompt,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: AppSpacing.md),
             TextField(
               controller: controller,
               decoration: InputDecoration(
-                hintText: 'profile.privacy_settings.dialogs.delete_account_confirm_placeholder'.tr(),
+                hintText: context.l10n.profilePrivacySettingsDialogsDeleteAccountConfirmPlaceholder,
                 border: const OutlineInputBorder(),
               ),
             ),
@@ -442,7 +443,7 @@ class _DataDashboardScreenState extends State<DataDashboardScreen> {
           IconButton(
             icon: const Icon(Icons.download),
             onPressed: _exportData,
-            tooltip: 'profile.privacy_settings.export_data_tooltip'.tr(),
+            tooltip: context.l10n.profilePrivacySettingsExportDataTooltip,
           ),
         ],
       ),
@@ -450,7 +451,7 @@ class _DataDashboardScreenState extends State<DataDashboardScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _data.isEmpty
               ? Center(
-                  child: Text('profile.privacy_settings.no_local_data'.tr()),
+                  child: Text(context.l10n.profilePrivacySettingsNoLocalData),
                 )
               : ListView(
                   padding: const EdgeInsets.all(AppSpacing.lg),
@@ -466,7 +467,7 @@ class _DataDashboardScreenState extends State<DataDashboardScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'profile.privacy_settings.local_data_info_title'.tr(),
+                            context.l10n.profilePrivacySettingsLocalDataInfoTitle,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -474,7 +475,7 @@ class _DataDashboardScreenState extends State<DataDashboardScreen> {
                           ),
                           const SizedBox(height: AppSpacing.xs),
                           Text(
-                            'profile.privacy_settings.local_data_info_message'.tr(),
+                            context.l10n.profilePrivacySettingsLocalDataInfoMessage,
                             style: const TextStyle(fontSize: 14),
                           ),
                         ],
@@ -520,7 +521,7 @@ class _DataDashboardScreenState extends State<DataDashboardScreen> {
     // TODO: Implementar exportación real (JSON file)
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('profile.privacy_settings.export_coming_soon'.tr()),
+        content: Text(context.l10n.profilePrivacySettingsExportComingSoon),
       ),
     );
   }
@@ -529,9 +530,9 @@ class _DataDashboardScreenState extends State<DataDashboardScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('profile.privacy_settings.dialogs.delete_all_data_title'.tr()),
+        title: Text(context.l10n.profilePrivacySettingsDialogsDeleteAllDataTitle),
         content: Text(
-          'profile.privacy_settings.dialogs.delete_all_data_message'.tr(),
+          context.l10n.profilePrivacySettingsDialogsDeleteAllDataMessage,
         ),
         actions: [
           TextButton(
@@ -558,7 +559,7 @@ class _DataDashboardScreenState extends State<DataDashboardScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('profile.privacy_settings.snackbars.data_erased'.tr()),
+        content: Text(context.l10n.profilePrivacySettingsSnackbarsDataErased),
       ),
     );
   }

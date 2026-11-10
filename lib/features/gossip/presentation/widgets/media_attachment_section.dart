@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../states/add_gossip_state.dart';
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_radius.dart';
 

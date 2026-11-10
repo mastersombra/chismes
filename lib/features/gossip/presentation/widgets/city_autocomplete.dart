@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../location/domain/entities/city.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_radius.dart';
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 /// TextField con autocomplete para búsqueda de ciudades
 ///

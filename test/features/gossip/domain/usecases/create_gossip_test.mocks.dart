@@ -102,6 +102,32 @@ class MockGossipRepository extends _i1.Mock implements _i2.GossipRepository {
             ),
           )
           as _i3.Future<_i4.Result<_i5.Failure, void>>);
+
+  @override
+  _i3.Future<_i4.Result<_i5.Failure, List<_i6.Gossip>>> searchGossips({
+    required String? query,
+    String? cityId,
+    int? limit = 20,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#searchGossips, [], {
+              #query: query,
+              #cityId: cityId,
+              #limit: limit,
+            }),
+            returnValue:
+                _i3.Future<_i4.Result<_i5.Failure, List<_i6.Gossip>>>.value(
+                  _i8.dummyValue<_i4.Result<_i5.Failure, List<_i6.Gossip>>>(
+                    this,
+                    Invocation.method(#searchGossips, [], {
+                      #query: query,
+                      #cityId: cityId,
+                      #limit: limit,
+                    }),
+                  ),
+                ),
+          )
+          as _i3.Future<_i4.Result<_i5.Failure, List<_i6.Gossip>>>);
 }
 
 /// A class which mocks [AuthRepository].

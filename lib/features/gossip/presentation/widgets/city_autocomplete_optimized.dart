@@ -5,7 +5,7 @@ import '../../../location/domain/usecases/search_cities.dart';
 import '../../../../core/result/result.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_radius.dart';
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 /// TextField con autocomplete para búsqueda de ciudades (OPTIMIZADO)
 ///

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:chismes/core/l10n/l10n.dart';
+
 import '../states/add_gossip_state.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_radius.dart';
@@ -36,7 +38,7 @@ class SubmitButton extends StatelessWidget {
                 ),
               )
             : Text(
-                'Publicar chisme',
+                context.l10n.gossipAddScreenSubmitButton,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),

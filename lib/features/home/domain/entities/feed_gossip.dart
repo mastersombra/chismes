@@ -53,10 +53,13 @@ class FeedGossip extends Equatable {
 
   /// Si el chisme es de la ciudad del usuario
   ///
+  /// Puede ser `null` si el usuario no tiene ciudad configurada.
+  ///
   /// Usado para:
   /// - Mostrar/ocultar badge de ciudad en GossipCard
   /// - Si `false`, mostrar badge con nombre de ciudad
-  final bool isFromMyCity;
+  /// - Si `null`, no mostrar badge de ciudad
+  final bool? isFromMyCity;
 
   /// Si el chisme es trending (viral)
   ///
@@ -82,7 +85,7 @@ class FeedGossip extends Equatable {
     this.createdBy,
     this.imageUrl,
     required this.score,
-    required this.isFromMyCity,
+    this.isFromMyCity, // Nullable: puede ser null si el usuario no tiene ciudad
     required this.isTrending,
   });
 

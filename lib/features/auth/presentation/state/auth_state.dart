@@ -54,7 +54,7 @@ class AuthError extends AuthState {
   /// Obtiene mensaje para mostrar al usuario
   String get message {
     if (customMessage != null) return customMessage!;
-    if (failure != null) return ErrorMessages.getMessage(failure!.code);
+    if (failure != null) return ErrorMessages.getMessageEnglish(failure!.code);
     return 'Error desconocido';
   }
 }

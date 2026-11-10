@@ -43,7 +43,7 @@ class FeedGossipModel {
   final String? createdBy;
   final String? imageUrl;
   final double score;
-  final bool isFromMyCity;
+  final bool? isFromMyCity; // Nullable: puede ser null si el usuario no tiene ciudad configurada
   final bool isTrending;
 
   const FeedGossipModel({
@@ -59,7 +59,7 @@ class FeedGossipModel {
     this.createdBy,
     this.imageUrl,
     required this.score,
-    required this.isFromMyCity,
+    this.isFromMyCity, // Nullable: puede ser null
     required this.isTrending,
   });
 
@@ -83,7 +83,7 @@ class FeedGossipModel {
         createdBy: json['created_by'] as String?,
         imageUrl: json['image_url'] as String?,
         score: (json['score'] as num).toDouble(),
-        isFromMyCity: json['is_from_my_city'] as bool,
+        isFromMyCity: json['is_from_my_city'] as bool?, // Nullable: puede ser null
         isTrending: json['is_trending'] as bool,
       );
     } catch (e) {

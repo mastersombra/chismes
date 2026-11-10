@@ -1,12 +1,13 @@
-import 'package:easy_localization/easy_localization.dart';
+
 import 'package:flutter/material.dart';
 import '../../../location/presentation/states/location_state.dart';
 import '../../../location/domain/entities/city.dart';
 import 'city_autocomplete_optimized.dart';
 import '../../../location/domain/usecases/search_cities.dart';
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_radius.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 /// Dialog para cambiar la ubicación del chisme
 ///
@@ -133,7 +134,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
                           const SizedBox(width: AppSpacing.sm),
                           Expanded(
                             child: widget.isLoadingGPS
-                                ? Text('gossip.location_selector.detecting_text'.tr())
+                                ? Text(context.l10n.gossipLocationSelectorDetectingText)
                                 : Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -238,6 +239,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
 
   Widget _buildCountryDropdown() {
     return DropdownButtonFormField<String>(
+      key: ValueKey('country_${widget.state.selectedCountry?.id}'),
       initialValue: widget.state.selectedCountry?.id,
       decoration: InputDecoration(
         labelText: AppLocalizations.locationCountryLabel,
@@ -264,6 +266,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
 
   Widget _buildRegionDropdown() {
     return DropdownButtonFormField<String>(
+      key: ValueKey('region_${widget.state.selectedRegion?.id}'),
       initialValue: widget.state.selectedRegion?.id,
       decoration: InputDecoration(
         labelText: AppLocalizations.locationRegionLabel,

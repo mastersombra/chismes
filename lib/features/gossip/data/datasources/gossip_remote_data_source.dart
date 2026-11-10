@@ -47,4 +47,23 @@ abstract class GossipRemoteDataSource {
     required ReportReason reason,
     String? details,
   });
+
+  /// Busca gossips por texto en servidor usando función RPC.
+  ///
+  /// **Parámetros:**
+  /// - query: Texto a buscar en subject y content
+  /// - cityId: Filtro opcional por ciudad
+  /// - limit: Máximo resultados (default: 20, max: 100)
+  ///
+  /// **Retorna:** Lista de gossips coincidentes
+  ///
+  /// **Performance:**
+  /// - Búsqueda ejecutada en servidor (PostgreSQL)
+  /// - Solo descarga resultados coincidentes
+  /// - Más rápido que descargar todo y filtrar en cliente
+  Future<List<GossipModel>> searchGossips({
+    required String query,
+    String? cityId,
+    int limit = 20,
+  });
 }

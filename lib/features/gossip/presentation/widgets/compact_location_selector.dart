@@ -1,7 +1,8 @@
-import 'package:easy_localization/easy_localization.dart';
+
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_radius.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 /// Widget compacto para mostrar ubicación seleccionada con opción de cambiar
 ///
@@ -33,14 +34,14 @@ class CompactLocationSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     // ✅ Accesibilidad: Descripción semántica del componente
     final semanticLabel = isLoading
-        ? 'gossip.location_selector.semantic_label_detecting'.tr()
+        ? context.l10n.gossipLocationSelectorSemanticLabelDetecting
         : locationText != null
-            ? 'gossip.location_selector.semantic_label_selected'.tr(namedArgs: {'location': locationText!})
-            : 'gossip.location_selector.semantic_label_empty'.tr();
+            ? context.l10n.gossipLocationSelectorSemanticLabelSelected(locationText!)
+            : context.l10n.gossipLocationSelectorSemanticLabelEmpty;
 
     return Semantics(
       label: semanticLabel,
-      hint: 'gossip.location_selector.semantic_hint'.tr(),
+      hint: context.l10n.gossipLocationSelectorSemanticHint,
       container: true,
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.md),
@@ -63,7 +64,7 @@ class CompactLocationSelector extends StatelessWidget {
               children: [
                 // ✅ Ícono de ubicación con semantics
                 Semantics(
-                  label: 'gossip.location_selector.icon_semantic_label'.tr(),
+                  label: context.l10n.gossipLocationSelectorIconSemanticLabel,
                   excludeSemantics: true,
                   child: Icon(
                     Icons.location_on,
@@ -92,7 +93,7 @@ class CompactLocationSelector extends StatelessWidget {
                           const SizedBox(width: AppSpacing.sm),
                           Flexible(
                             child: Text(
-                              'gossip.location_selector.detecting_text'.tr(),
+                              context.l10n.gossipLocationSelectorDetectingText,
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: Theme.of(context).colorScheme.secondary,
                                   ),
@@ -110,7 +111,7 @@ class CompactLocationSelector extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           )
                         : Text(
-                            'gossip.location_selector.placeholder_text'.tr(),
+                            context.l10n.gossipLocationSelectorPlaceholderText,
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Theme.of(context).colorScheme.secondary,
                                 ),
@@ -122,15 +123,15 @@ class CompactLocationSelector extends StatelessWidget {
 
               // ✅ Botón "Cambiar" con touch target accesible (adaptativo)
               Semantics(
-                label: 'gossip.location_selector.change_button_semantic_label'.tr(),
-                hint: 'gossip.location_selector.change_button_semantic_hint'.tr(),
+                label: context.l10n.gossipLocationSelectorChangeButtonSemanticLabel,
+                hint: context.l10n.gossipLocationSelectorChangeButtonSemanticHint,
                 button: true,
                 enabled: !isLoading,
                 child: hasSpaceForButtonText
                     ? TextButton.icon(
                         onPressed: isLoading ? null : onChangePressed,
                         icon: const Icon(Icons.edit_location_alt, size: 18),
-                        label: Text('gossip.location_selector.change_button_label'.tr()),
+                        label: Text(context.l10n.gossipLocationSelectorChangeButtonLabel),
                         style: TextButton.styleFrom(
                           minimumSize: const Size(44, 44), // ✅ Touch target
                           padding: const EdgeInsets.symmetric(
