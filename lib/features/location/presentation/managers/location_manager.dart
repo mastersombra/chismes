@@ -457,10 +457,15 @@ class LocationManager extends ChangeNotifier {
           );
 
       if (region == null) {
-        _logger.w('⚠️ Región guardada no encontrada en BD - limpiando datos inválidos');
-        // Limpiar ubicación inválida guardada
+        _logger.w('⚠️ Región guardada no encontrada en BD - early return');
+        // Early return: mantener país seleccionado pero sin región/ciudad
         await _locationService.clearDefaultLocation();
-        clearLocation();
+        // Solo actualizar país, dejar región y ciudad en null
+        _updateState(_state.copyWith(
+          selectedCountry: country,
+          clearSelectedRegion: true,
+          clearSelectedCity: true,
+        ));
         return;
       }
 
@@ -474,14 +479,19 @@ class LocationManager extends ChangeNotifier {
           );
 
       if (city == null) {
-        _logger.w('⚠️ Ciudad guardada no encontrada en BD - limpiando datos inválidos');
-        // Limpiar ubicación inválida guardada
+        _logger.w('⚠️ Ciudad guardada no encontrada en BD - early return');
+        // Early return: mantener país y región seleccionados pero sin ciudad
         await _locationService.clearDefaultLocation();
-        clearLocation();
+        // Solo actualizar país y región, dejar ciudad en null
+        _updateState(_state.copyWith(
+          selectedCountry: country,
+          selectedRegion: region,
+          clearSelectedCity: true,
+        ));
         return;
       }
 
-      // Seleccionar ciudad
+      // Seleccionar ciudad (esto también actualiza país y región)
       selectCity(city);
 
       _logger.i('✅ Ubicación por defecto cargada exitosamente');
