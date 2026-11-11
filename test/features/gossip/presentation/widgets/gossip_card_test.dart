@@ -38,8 +38,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -55,8 +55,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -98,8 +98,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: longContentGossip),
           ),
         ),
@@ -123,8 +123,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -142,8 +142,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -159,8 +159,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -206,8 +206,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: gossipWithoutImage),
           ),
         ),
@@ -223,8 +223,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -241,8 +241,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -258,8 +258,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -270,13 +270,13 @@ void main() {
       expect(find.byType(Padding), findsWidgets);
     });
 
-    testWidgets('debe tener imagen en Expanded para ocupar espacio', (tester) async {
+    testWidgets('debe tener imagen en AspectRatio para mantener proporción', (tester) async {
       // Act
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -284,15 +284,15 @@ void main() {
       await tester.pumpAndSettle();
 
       // Assert
-      expect(find.byType(Expanded), findsOneWidget);
+      expect(find.byType(AspectRatio), findsOneWidget);
     });
 
     testWidgets('debe renderizar botón de compartir', (tester) async {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -307,8 +307,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -323,8 +323,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -346,8 +346,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -379,8 +379,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -410,8 +410,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -450,8 +450,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: gossipWithThumbnail),
           ),
         ),
@@ -491,8 +491,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: gossipWithoutThumbnail),
           ),
         ),
@@ -532,8 +532,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: gossipWithoutImages),
           ),
         ),
@@ -549,8 +549,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -565,8 +565,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -581,8 +581,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -597,8 +597,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -615,8 +615,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -631,8 +631,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
@@ -647,8 +647,8 @@ void main() {
       await tester.pumpWidget(
         testableWidget(
           child: SizedBox(
-            width: 200,
-            height: 300,
+            width: 350,
+            height: 550,
             child: GossipCard(gossip: testGossip),
           ),
         ),
