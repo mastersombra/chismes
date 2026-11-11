@@ -6,6 +6,7 @@ import 'package:chismes/features/home/presentation/screens/main_navigation_scree
 import 'package:chismes/features/home/presentation/screens/home_screen.dart';
 import 'package:chismes/features/gossip/presentation/controllers/add_gossip_controller.dart';
 import 'package:chismes/features/gossip/domain/usecases/get_gossips.dart';
+import 'package:chismes/features/gossip/domain/usecases/search_gossips.dart';
 import 'package:chismes/features/gossip/domain/entities/gossip.dart';
 import 'package:chismes/features/location/domain/usecases/search_cities.dart';
 import 'package:chismes/features/location/domain/entities/city.dart';
@@ -24,12 +25,14 @@ import 'package:chismes/core/error/error_codes.dart';
 import 'package:chismes/core/di/injection_container.dart';
 
 import '../../../../helpers/mock_add_gossip_controller_helper.dart';
+import '../../../../helpers/test_di_helper.dart';
 import '../../../../helpers/widget_test_wrapper.dart';
 import 'main_navigation_screen_test.mocks.dart';
 
 @GenerateNiceMocks([
   MockSpec<AddGossipController>(),
   MockSpec<GetGossips>(),
+  MockSpec<SearchGossips>(),
   MockSpec<SearchCities>(),
   MockSpec<LocationManager>(),
   MockSpec<PopularTabController>(),
@@ -40,6 +43,7 @@ import 'main_navigation_screen_test.mocks.dart';
 void main() {
   late MockAddGossipController mockController;
   late MockGetGossips mockGetGossips;
+  late MockSearchGossips mockSearchGossips;
   late MockSearchCities mockSearchCities;
   late MockLocationManager mockLocationManager;
   late MockPopularTabController mockPopularTabController;
@@ -47,9 +51,13 @@ void main() {
   late MockProfileController mockProfileController;
   late MockAuthRepository mockAuthRepository;
 
-  setUp(() {
+  setUp(() async {
+    // Inicializar DI para tests (LocaleNotifier, SharedPreferences, etc.)
+    await setupTestDI();
+
     mockController = MockAddGossipController();
     mockGetGossips = MockGetGossips();
+    mockSearchGossips = MockSearchGossips();
     mockSearchCities = MockSearchCities();
     mockLocationManager = MockLocationManager();
     mockPopularTabController = MockPopularTabController();
@@ -120,6 +128,9 @@ void main() {
     if (getIt.isRegistered<GetGossips>()) {
       getIt.unregister<GetGossips>();
     }
+    if (getIt.isRegistered<SearchGossips>()) {
+      getIt.unregister<SearchGossips>();
+    }
     if (getIt.isRegistered<SearchCities>()) {
       getIt.unregister<SearchCities>();
     }
@@ -138,6 +149,7 @@ void main() {
 
     getIt.registerSingleton<AddGossipController>(mockController);
     getIt.registerSingleton<GetGossips>(mockGetGossips);
+    getIt.registerSingleton<SearchGossips>(mockSearchGossips);
     getIt.registerSingleton<SearchCities>(mockSearchCities);
     getIt.registerSingleton<PopularTabController>(mockPopularTabController);
     getIt.registerSingleton<FollowingTabController>(mockFollowingTabController);
@@ -149,6 +161,13 @@ void main() {
       (_) async => Result.success([]),
     );
 
+    // Mock SearchGossips para que SearchScreen funcione
+    when(mockSearchGossips(
+      query: anyNamed('query'),
+      cityId: anyNamed('cityId'),
+      limit: anyNamed('limit'),
+    )).thenAnswer((_) async => Result.success([]));
+
     // Mock SearchCities para que AddGossipScreen funcione
     when(mockSearchCities.call(
       query: anyNamed('query'),
@@ -156,12 +175,15 @@ void main() {
     )).thenAnswer((_) async => Result.success(const []));
   });
 
-  tearDown(() {
+  tearDown(() async {
     if (getIt.isRegistered<AddGossipController>()) {
       getIt.unregister<AddGossipController>();
     }
     if (getIt.isRegistered<GetGossips>()) {
       getIt.unregister<GetGossips>();
+    }
+    if (getIt.isRegistered<SearchGossips>()) {
+      getIt.unregister<SearchGossips>();
     }
     if (getIt.isRegistered<SearchCities>()) {
       getIt.unregister<SearchCities>();
@@ -178,6 +200,9 @@ void main() {
     if (getIt.isRegistered<AuthRepository>()) {
       getIt.unregister<AuthRepository>();
     }
+
+    // Limpiar DI después del test
+    await tearDownTestDI();
   });
 
   Widget createTestWidget() {

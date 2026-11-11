@@ -12,17 +12,28 @@ import 'package:chismes/features/gossip/domain/entities/report_reason.dart';
 
 import 'supabase_gossip_remote_data_source_test.mocks.dart';
 
-@GenerateMocks([SupabaseClient, FunctionsClient, AppLogger])
+@GenerateMocks([SupabaseClient, FunctionsClient, AppLogger, GoTrueClient, User, Session])
 void main() {
   late SupabaseGossipRemoteDataSource dataSource;
   late MockSupabaseClient mockSupabase;
   late MockFunctionsClient mockFunctionsClient;
   late MockAppLogger mockLogger;
+  late MockGoTrueClient mockAuth;
+  late MockUser mockUser;
 
   setUp(() {
     mockSupabase = MockSupabaseClient();
     mockFunctionsClient = MockFunctionsClient();
     mockLogger = MockAppLogger();
+    mockAuth = MockGoTrueClient();
+    mockUser = MockUser();
+
+    // Configurar auth mock
+    when(mockSupabase.auth).thenReturn(mockAuth);
+    when(mockAuth.currentUser).thenReturn(mockUser);
+    when(mockAuth.currentSession).thenReturn(null); // Retornar null para tests
+    when(mockUser.id).thenReturn('test-user-123');
+
     dataSource = SupabaseGossipRemoteDataSource(mockSupabase, mockLogger);
   });
 
@@ -31,6 +42,8 @@ void main() {
   // Estos están cubiertos por integration tests o tests end-to-end.
 
   group('create', () {
+    late MockSession mockSession;
+
     final validInput = CreateGossipInput(
       subject: 'Test Subject',
       content: 'Test Content',
@@ -69,7 +82,11 @@ void main() {
     };
 
     setUp(() {
+      mockSession = MockSession();
       when(mockSupabase.functions).thenReturn(mockFunctionsClient);
+      // Configurar session para que los tests de create funcionen
+      when(mockAuth.currentSession).thenReturn(mockSession);
+      when(mockSession.accessToken).thenReturn('test-access-token');
     });
 
     test('debe crear gossip exitosamente con respuesta 200', () async {
@@ -77,6 +94,7 @@ void main() {
       when(mockFunctionsClient.invoke(
         'moderate-gossip',
         body: anyNamed('body'),
+        headers: anyNamed('headers'),
       )).thenAnswer((_) async => FunctionResponse(
             data: validGossipResponse,
             status: 200,
@@ -94,7 +112,11 @@ void main() {
 
     test('debe incluir todos los campos en el body', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: validGossipResponse,
                 status: 200,
@@ -107,6 +129,7 @@ void main() {
       final captured = verify(mockFunctionsClient.invoke(
         'moderate-gossip',
         body: captureAnyNamed('body'),
+        headers: anyNamed('headers'),
       )).captured.single as Map<String, dynamic>;
 
       expect(captured['subject'], 'Test Subject');
@@ -132,7 +155,11 @@ void main() {
         idempotencyKey: 'key',
       );
 
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: validGossipResponse,
                 status: 200,
@@ -145,6 +172,7 @@ void main() {
       final captured = verify(mockFunctionsClient.invoke(
         'moderate-gossip',
         body: captureAnyNamed('body'),
+        headers: anyNamed('headers'),
       )).captured.single as Map<String, dynamic>;
 
       expect(captured['audio_url'], 'https://example.com/audio.mp3');
@@ -164,7 +192,11 @@ void main() {
         idempotencyKey: 'key',
       );
 
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: validGossipResponse,
                 status: 200,
@@ -177,6 +209,7 @@ void main() {
       final captured = verify(mockFunctionsClient.invoke(
         'moderate-gossip',
         body: captureAnyNamed('body'),
+        headers: anyNamed('headers'),
       )).captured.single as Map<String, dynamic>;
 
       // El código envía image_base64, no image_url directamente
@@ -186,7 +219,11 @@ void main() {
 
     test('debe lanzar ValidationFailure cuando moderación rechaza (status 400)', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: {
                   'error': 'Content rejected by moderation',
@@ -212,7 +249,11 @@ void main() {
 
     test('debe lanzar ValidationFailure con mensaje genérico cuando reasons está vacío', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: {
                   'error': 'Content rejected by moderation',
@@ -236,7 +277,11 @@ void main() {
 
     test('debe lanzar ServerFailure cuando error no coincide con patrón de moderación', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: {'error': 'Content rejected'},
                 status: 400,
@@ -257,7 +302,11 @@ void main() {
 
     test('debe lanzar ServerFailure cuando status es 500', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: {'error': 'Internal server error'},
                 status: 500,
@@ -278,7 +327,11 @@ void main() {
 
     test('debe lanzar ServerFailure cuando status es 404', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: {'error': 'Function not found'},
                 status: 404,
@@ -297,7 +350,11 @@ void main() {
 
     test('debe lanzar ServerFailure cuando hay excepción de red', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenThrow(Exception('Network error'));
 
       // Act & Assert
@@ -321,7 +378,11 @@ void main() {
         technicalMessage: 'Original validation error',
       );
 
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenThrow(originalFailure);
 
       // Act & Assert
@@ -342,7 +403,11 @@ void main() {
         technicalMessage: 'Original server error',
       );
 
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenThrow(originalFailure);
 
       // Act & Assert
@@ -370,7 +435,11 @@ void main() {
         idempotencyKey: 'key',
       );
 
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: validGossipResponse,
                 status: 200,
@@ -383,6 +452,7 @@ void main() {
       final captured = verify(mockFunctionsClient.invoke(
         'moderate-gossip',
         body: captureAnyNamed('body'),
+        headers: anyNamed('headers'),
       )).captured.single as Map<String, dynamic>;
 
       expect(captured['published_as'], 'profile');
@@ -390,7 +460,11 @@ void main() {
 
     test('debe usar publichedAs.value correcto (anonymous)', () async {
       // Arrange - usa el validInput que ya tiene PublishAs.anonymous
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: validGossipResponse,
                 status: 200,
@@ -403,6 +477,7 @@ void main() {
       final captured = verify(mockFunctionsClient.invoke(
         'moderate-gossip',
         body: captureAnyNamed('body'),
+        headers: anyNamed('headers'),
       )).captured.single as Map<String, dynamic>;
 
       expect(captured['published_as'], 'anonymous');
@@ -410,7 +485,11 @@ void main() {
 
     test('debe lanzar RateLimitFailure cuando rate limit excedido (status 429)', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: {
                   'error': 'Rate limit exceeded',
@@ -435,7 +514,11 @@ void main() {
 
     test('debe manejar rate limit sin retryAfter', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: {
                   'error': 'Rate limit exceeded',
@@ -459,7 +542,11 @@ void main() {
 
     test('debe manejar rate limit con mensaje por defecto cuando no hay message', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: {
                   'error': 'Rate limit',
@@ -508,7 +595,11 @@ void main() {
         }
       };
 
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: responseWithAllFields,
                 status: 200,
@@ -536,7 +627,11 @@ void main() {
 
     test('debe llamar Edge Function con nombre correcto', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: validGossipResponse,
                 status: 200,
@@ -549,12 +644,17 @@ void main() {
       verify(mockFunctionsClient.invoke(
         'moderate-gossip',
         body: anyNamed('body'),
+        headers: anyNamed('headers'),
       )).called(1);
     });
 
     test('debe enviar null para audioUrl cuando no está presente', () async {
       // Arrange - validInput ya tiene audioUrl: null
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: validGossipResponse,
                 status: 200,
@@ -567,6 +667,7 @@ void main() {
       final captured = verify(mockFunctionsClient.invoke(
         'moderate-gossip',
         body: captureAnyNamed('body'),
+        headers: anyNamed('headers'),
       )).captured.single as Map<String, dynamic>;
 
       expect(captured.containsKey('audio_url'), isTrue);
@@ -575,7 +676,11 @@ void main() {
 
     test('debe enviar null para image_base64 cuando no hay File de imagen', () async {
       // Arrange - validInput ya tiene imageUrl: null y no pasamos File
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: validGossipResponse,
                 status: 200,
@@ -588,6 +693,7 @@ void main() {
       final captured = verify(mockFunctionsClient.invoke(
         'moderate-gossip',
         body: captureAnyNamed('body'),
+        headers: anyNamed('headers'),
       )).captured.single as Map<String, dynamic>;
 
       expect(captured.containsKey('image_base64'), isTrue);
@@ -608,7 +714,11 @@ void main() {
         idempotencyKey: 'key',
       );
 
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: validGossipResponse,
                 status: 200,
@@ -621,6 +731,7 @@ void main() {
       final captured = verify(mockFunctionsClient.invoke(
         'moderate-gossip',
         body: captureAnyNamed('body'),
+        headers: anyNamed('headers'),
       )).captured.single as Map<String, dynamic>;
 
       expect(captured['audio_url'], 'https://example.com/audio.mp3');
@@ -630,7 +741,11 @@ void main() {
 
     test('debe manejar status code inesperado (por ejemplo 503)', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: {'error': 'Service Unavailable'},
                 status: 503,
@@ -663,7 +778,11 @@ void main() {
         idempotencyKey: 'key',
       );
 
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: validGossipResponse,
                 status: 200,
@@ -676,6 +795,7 @@ void main() {
       final captured = verify(mockFunctionsClient.invoke(
         'moderate-gossip',
         body: captureAnyNamed('body'),
+        headers: anyNamed('headers'),
       )).captured.single as Map<String, dynamic>;
 
       expect(captured['subject'], contains('ñ'));
@@ -697,7 +817,11 @@ void main() {
         idempotencyKey: 'unique-key-12345',
       );
 
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: validGossipResponse,
                 status: 200,
@@ -710,6 +834,7 @@ void main() {
       final captured = verify(mockFunctionsClient.invoke(
         'moderate-gossip',
         body: captureAnyNamed('body'),
+        headers: anyNamed('headers'),
       )).captured.single as Map<String, dynamic>;
 
       expect(captured['idempotency_key'], 'unique-key-12345');
@@ -722,7 +847,11 @@ void main() {
         'idempotent': true,
       };
 
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: responseWithIdempotent,
                 status: 200,
@@ -741,7 +870,11 @@ void main() {
 
     test('debe lanzar ValidationFailure cuando imagen falla (Image upload failed)', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: {
                   'error': 'Image upload failed',
@@ -763,7 +896,11 @@ void main() {
 
     test('debe lanzar AuthFailure cuando hay error de autenticación en catch', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenThrow(Exception('authentication required'));
 
       // Act & Assert
@@ -779,7 +916,11 @@ void main() {
 
     test('debe lanzar AuthFailure cuando hay error unauthorized', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenThrow(Exception('unauthorized access'));
 
       // Act & Assert
@@ -791,17 +932,26 @@ void main() {
   });
 
   group('reportGossip', () {
+    late MockSession mockSession;
+
     setUp(() {
+      mockSession = MockSession();
       when(mockSupabase.functions).thenReturn(mockFunctionsClient);
+      // Configurar session para que los tests de reportGossip funcionen
+      when(mockAuth.currentSession).thenReturn(mockSession);
+      when(mockSession.accessToken).thenReturn('test-access-token');
     });
 
     test('debe reportar gossip exitosamente', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
-          .thenAnswer((_) async => FunctionResponse(
-                data: {'success': true},
-                status: 200,
-              ));
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      )).thenAnswer((_) async => FunctionResponse(
+            data: {'success': true},
+            status: 200,
+          ));
 
       // Act
       await dataSource.reportGossip(
@@ -818,12 +968,17 @@ void main() {
           'reason': 'spam',
           'details': 'Test details',
         },
+        headers: anyNamed('headers'),
       )).called(1);
     });
 
     test('debe reportar gossip sin details', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: {'success': true},
                 status: 200,
@@ -839,6 +994,7 @@ void main() {
       final captured = verify(mockFunctionsClient.invoke(
         'report-gossip',
         body: captureAnyNamed('body'),
+        headers: anyNamed('headers'),
       )).captured.single as Map<String, dynamic>;
 
       expect(captured['gossip_id'], 'gossip-123');
@@ -848,7 +1004,11 @@ void main() {
 
     test('debe lanzar excepción cuando status no es 200', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: {'error': 'Invalid gossip ID'},
                 status: 400,
@@ -866,7 +1026,11 @@ void main() {
 
     test('debe lanzar AuthFailure cuando usuario no autenticado', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenThrow(Exception('missing authorization header'));
 
       // Act & Assert
@@ -885,7 +1049,11 @@ void main() {
 
     test('debe lanzar AuthFailure cuando hay error de authentication', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenThrow(Exception('authentication failed'));
 
       // Act & Assert
@@ -900,7 +1068,11 @@ void main() {
 
     test('debe lanzar AuthFailure cuando hay error unauthorized', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenThrow(Exception('unauthorized access'));
 
       // Act & Assert
@@ -915,7 +1087,11 @@ void main() {
 
     test('debe lanzar ValidationFailure cuando reporte duplicado', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenThrow(Exception('User has already reported this gossip'));
 
       // Act & Assert
@@ -934,7 +1110,11 @@ void main() {
 
     test('debe lanzar ValidationFailure cuando duplicate key', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenThrow(Exception('duplicate key violation'));
 
       // Act & Assert
@@ -949,7 +1129,11 @@ void main() {
 
     test('debe lanzar ServerFailure para otros errores', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenThrow(Exception('Network error'));
 
       // Act & Assert
@@ -968,7 +1152,11 @@ void main() {
 
     test('debe loguear información del reporte', () async {
       // Arrange
-      when(mockFunctionsClient.invoke(any, body: anyNamed('body')))
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => FunctionResponse(
                 data: {'success': true},
                 status: 200,

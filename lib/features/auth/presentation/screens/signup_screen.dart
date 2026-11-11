@@ -115,10 +115,10 @@ class _SignupScreenState extends State<SignupScreen> {
 
   String? _validateConfirmPassword(String? value) {
     if (value == null || value.isEmpty) {
-      return AppLocalizations.signupConfirmPasswordRequired;
+      return context.l10n.signupConfirmPasswordRequired;
     }
     if (value != _passwordController.text) {
-      return AppLocalizations.signupPasswordsMustMatch;
+      return context.l10n.signupPasswordsMustMatch;
     }
     return null;
   }
@@ -158,14 +158,14 @@ class _SignupScreenState extends State<SignupScreen> {
 
                       // Título
                       Text(
-                        AppLocalizations.signupSubtitle,
+                        context.l10n.signupSubtitle,
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.xs),
                       Text(
-                        AppLocalizations.signupDescription,
+                        context.l10n.signupDescription,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.grey[600],
                         ),
@@ -185,7 +185,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       PasswordField(
                         controller: _passwordController,
                         enabled: !isLoading,
-                        labelText: AppLocalizations.passwordHint,
+                        labelText: context.l10n.passwordHint,
                         onChanged: (value) {
                           setState(() {
                             _currentPassword = value;
@@ -193,10 +193,10 @@ class _SignupScreenState extends State<SignupScreen> {
                         },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return AppLocalizations.signupPasswordRequired;
+                            return context.l10n.signupPasswordRequired;
                           }
                           if (value.length < 8) {
-                            return AppLocalizations.signupPasswordMinLength;
+                            return context.l10n.signupPasswordMinLength;
                           }
                           return null;
                         },
@@ -211,7 +211,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       PasswordField(
                         controller: _confirmPasswordController,
                         enabled: !isLoading,
-                        labelText: AppLocalizations.confirmPasswordHint,
+                        labelText: context.l10n.confirmPasswordHint,
                         validator: _validateConfirmPassword,
                       ),
 
@@ -229,7 +229,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           const SizedBox(width: AppSpacing.xs),
                           Expanded(
                             child: Text(
-                              AppLocalizations.signupTermsMessage,
+                              context.l10n.signupTermsMessage,
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: Colors.grey[600],
                               ),
@@ -242,7 +242,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                       // Sign up button
                       AuthButton(
-                        text: AppLocalizations.signUpButton,
+                        text: context.l10n.signUpButton,
                         onPressed: _onSignUpPressed,
                         isLoading: isLoading,
                       ),
@@ -254,14 +254,14 @@ class _SignupScreenState extends State<SignupScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            '${AppLocalizations.alreadyHaveAccount} ',
+                            '${context.l10n.alreadyHaveAccount} ',
                             style: TextStyle(color: Colors.grey[600]),
                           ),
                           TextButton(
                             onPressed: isLoading
                                 ? null
                                 : () => Navigator.pop(context),
-                            child: Text(AppLocalizations.signInLink),
+                            child: Text(context.l10n.signInLink),
                           ),
                         ],
                       ),

@@ -107,8 +107,8 @@ class _CityAutocompleteState extends State<CityAutocomplete> {
           controller: _controller,
           focusNode: _focusNode,
           decoration: InputDecoration(
-            labelText: AppLocalizations.locationCityLabel,
-            hintText: AppLocalizations.locationCityHint,
+            labelText: context.l10n.locationCityLabel,
+            hintText: context.l10n.locationCityHint,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
             prefixIcon: const Icon(Icons.location_on),
             suffixIcon: _controller.text.isNotEmpty
@@ -193,7 +193,7 @@ class _CityAutocompleteState extends State<CityAutocomplete> {
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
-                    AppLocalizations.locationNoResults(_controller.text),
+                    context.l10n.locationNoResults(_controller.text),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.secondary,
                         ),

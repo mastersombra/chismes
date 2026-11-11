@@ -15,7 +15,7 @@ class GossipDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.gossipDetailTitle),
+        title: Text(context.l10n.gossipDetailTitle),
       ),
 
       body: SingleChildScrollView(

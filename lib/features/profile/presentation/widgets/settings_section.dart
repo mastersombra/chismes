@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../../../../core/di/injection_container.dart';
+import '../../../../core/l10n/locale_notifier.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/profile_settings.dart';
 import '../controllers/profile_controller.dart';
@@ -106,7 +108,7 @@ class SettingsSection extends StatelessWidget {
             _buildListTile(
               context,
               title: context.l10n.profileSettingsPrivacyLevel,
-              subtitle: _getPrivacyLevelText(settings.privacyLevel),
+              subtitle: _getPrivacyLevelText(context, settings.privacyLevel),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => _showPrivacyDialog(context),
             ),
@@ -243,7 +245,7 @@ class SettingsSection extends StatelessWidget {
     );
   }
 
-  String _getPrivacyLevelText(String level) {
+  String _getPrivacyLevelText(BuildContext context, String level) {
     switch (level) {
       case 'public':
         return '${context.l10n.profileSettingsPrivacyPublic} - ${context.l10n.profileSettingsPrivacyPublicSubtitle}';
@@ -381,8 +383,9 @@ class SettingsSection extends StatelessWidget {
     if (result != null) {
       if (!context.mounted) return;
 
-      // Cambiar el idioma en EasyLocalization
-      await context.setLocale(Locale(result));
+      // Cambiar el idioma con LocaleNotifier
+      final localeNotifier = getIt<LocaleNotifier>();
+      await localeNotifier.setLocale(Locale(result));
 
       // Guardar preferencia en settings
       if (!context.mounted) return;

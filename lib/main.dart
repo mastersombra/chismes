@@ -5,6 +5,7 @@ import 'core/config/supabase_config.dart';
 import 'core/di/injection_container.dart';
 import 'core/logging/logging.dart';
 import 'core/services/deep_link_service.dart' as core_services;
+import 'core/l10n/locale_notifier.dart';
 import 'features/auth/presentation/widgets/auth_gate.dart';
 import 'core/l10n/l10n.dart';
 
@@ -65,22 +66,28 @@ class ChismesApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Chismes',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      navigatorKey: navigatorKey, // ← Para deep links
+    final localeNotifier = getIt<LocaleNotifier>();
 
-      // Configuración de internacionalización (gen-l10n)
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      // locale: null → usa idioma del sistema
-      // Para soportar cambio de idioma en runtime, usar un Provider/ValueNotifier
+    return ListenableBuilder(
+      listenable: localeNotifier,
+      builder: (context, _) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Chismes',
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: ThemeMode.system,
+          navigatorKey: navigatorKey, // ← Para deep links
 
-      // ✅ AuthGate decide automáticamente entre Home/Login (sin delays artificiales)
-      home: const AuthGate(),
+          // Configuración de internacionalización (gen-l10n)
+          locale: localeNotifier.locale,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+
+          // ✅ AuthGate decide automáticamente entre Home/Login (sin delays artificiales)
+          home: const AuthGate(),
+        );
+      },
     );
   }
 }

@@ -41,7 +41,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.privacyConsentTitle),
+        title: Text(context.l10n.privacyConsentTitle),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -200,7 +200,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                 width: double.infinity,
                 child: TextButton(
                   onPressed: _cancel,
-                  child: Text(AppLocalizations.privacyConsentDeclineButton),
+                  child: Text(context.l10n.privacyConsentDeclineButton),
                 ),
               ),
 
@@ -318,7 +318,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.privacySettingsPrivacyPolicy),
+        title: Text(context.l10n.privacySettingsPrivacyPolicy),
         content: const SingleChildScrollView(
           child: Text(
             'La política de privacidad completa está disponible en:\n\n'
@@ -333,7 +333,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.close),
+            child: Text(context.l10n.close),
           ),
         ],
       ),
@@ -345,7 +345,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.privacySettingsTermsOfUse),
+        title: Text(context.l10n.privacySettingsTermsOfUse),
         content: const SingleChildScrollView(
           child: Text(
             'Los términos de uso completos están disponibles en:\n\n'
@@ -361,7 +361,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.close),
+            child: Text(context.l10n.close),
           ),
         ],
       ),

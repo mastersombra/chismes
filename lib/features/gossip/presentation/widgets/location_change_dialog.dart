@@ -70,7 +70,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
-                        AppLocalizations.locationChangeDialogTitle,
+                        context.l10n.locationChangeDialogTitle,
                         style: textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -139,13 +139,13 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        AppLocalizations.locationUseCurrentLocation,
+                                        context.l10n.locationUseCurrentLocation,
                                         style: textTheme.bodyLarge?.copyWith(
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       Text(
-                                        AppLocalizations.locationGpsDetectSubtitle,
+                                        context.l10n.locationGpsDetectSubtitle,
                                         style: textTheme.bodySmall,
                                       ),
                                     ],
@@ -173,7 +173,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
                       child: Text(
-                        AppLocalizations.locationOrSelectManually,
+                        context.l10n.locationOrSelectManually,
                         style: textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.secondary,
                             ),
@@ -199,7 +199,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
                     searchCities: widget.searchCities,
                     selectedCity: widget.state.selectedCity,
                     onCitySelected: widget.onCityChanged,
-                    validator: (value) => value == null || value.isEmpty ? AppLocalizations.locationCityRequired : null,
+                    validator: (value) => value == null || value.isEmpty ? context.l10n.locationCityRequired : null,
                   ),
                   const SizedBox(height: AppSpacing.lg),
                 ],
@@ -210,7 +210,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
                     Expanded(
                       child: OutlinedButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        child: Text(AppLocalizations.cancel),
+                        child: Text(context.l10n.cancel),
                       ),
                     ),
                     const SizedBox(width: AppSpacing.sm),
@@ -224,7 +224,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
                                 }
                               }
                             : null,
-                        child: Text(AppLocalizations.confirm),
+                        child: Text(context.l10n.confirm),
                       ),
                     ),
                   ],
@@ -242,7 +242,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
       key: ValueKey('country_${widget.state.selectedCountry?.id}'),
       initialValue: widget.state.selectedCountry?.id,
       decoration: InputDecoration(
-        labelText: AppLocalizations.locationCountryLabel,
+        labelText: context.l10n.locationCountryLabel,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
         prefixIcon: const Icon(Icons.public),
         suffixIcon: widget.state.isLoadingCountries
@@ -260,7 +260,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
         );
       }).toList(),
       onChanged: widget.state.isLoadingCountries ? null : widget.onCountryChanged,
-      validator: (value) => value == null || value.isEmpty ? AppLocalizations.locationCountryRequired : null,
+      validator: (value) => value == null || value.isEmpty ? context.l10n.locationCountryRequired : null,
     );
   }
 
@@ -269,7 +269,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
       key: ValueKey('region_${widget.state.selectedRegion?.id}'),
       initialValue: widget.state.selectedRegion?.id,
       decoration: InputDecoration(
-        labelText: AppLocalizations.locationRegionLabel,
+        labelText: context.l10n.locationRegionLabel,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
         prefixIcon: const Icon(Icons.location_city),
         suffixIcon: widget.state.isLoadingRegions
@@ -287,7 +287,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
         );
       }).toList(),
       onChanged: widget.state.isLoadingRegions ? null : widget.onRegionChanged,
-      validator: (value) => value == null || value.isEmpty ? AppLocalizations.locationRegionRequired : null,
+      validator: (value) => value == null || value.isEmpty ? context.l10n.locationRegionRequired : null,
     );
   }
 }

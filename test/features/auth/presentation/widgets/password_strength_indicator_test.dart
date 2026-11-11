@@ -2,9 +2,12 @@ import 'package:chismes/features/auth/presentation/widgets/password_strength_ind
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../../helpers/widget_test_wrapper.dart';
+
 void main() {
   Widget makeTestableWidget(Widget child) {
-    return MaterialApp(home: Scaffold(body: child));
+    // Usar testableWidget para incluir i18n (context.l10n)
+    return testableWidget(child: child, useScaffold: true);
   }
 
   group('PasswordStrengthIndicator', () {

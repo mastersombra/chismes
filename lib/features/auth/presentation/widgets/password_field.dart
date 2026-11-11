@@ -53,7 +53,7 @@ class _PasswordFieldState extends State<PasswordField> {
       textCapitalization: TextCapitalization.none,
       onChanged: widget.onChanged,
       decoration: InputDecoration(
-        labelText: widget.labelText ?? AppLocalizations.passwordFieldLabel,
+        labelText: widget.labelText ?? context.l10n.passwordFieldLabel,
         hintText: widget.hintText,
         prefixIcon: widget.prefixIcon ?? const Icon(Icons.lock_outlined),
         suffixIcon: IconButton(
@@ -61,7 +61,7 @@ class _PasswordFieldState extends State<PasswordField> {
             _obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined,
           ),
           onPressed: _toggleVisibility,
-          tooltip: _obscureText ? AppLocalizations.passwordFieldShow : AppLocalizations.passwordFieldHide,
+          tooltip: _obscureText ? context.l10n.passwordFieldShow : context.l10n.passwordFieldHide,
         ),
         border: const OutlineInputBorder(),
         contentPadding: const EdgeInsets.symmetric(

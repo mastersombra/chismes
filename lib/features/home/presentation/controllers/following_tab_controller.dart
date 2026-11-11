@@ -167,7 +167,7 @@ class FollowingTabController extends ChangeNotifier {
       );
       _updateState(_state.copyWith(
         status: FollowingTabStatus.error,
-        errorMessage: AppLocalizations.homeFollowingUnexpectedError,
+        errorMessage: 'Unexpected error loading following feed',
       ));
     }
   }
@@ -217,7 +217,7 @@ class FollowingTabController extends ChangeNotifier {
       );
       _updateState(_state.copyWith(
         status: FollowingTabStatus.error,
-        errorMessage: AppLocalizations.homeFollowingRecommendedError,
+        errorMessage: 'Error loading recommended feed',
       ));
     }
   }

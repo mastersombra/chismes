@@ -2377,6 +2377,582 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Agrega: {hints}'**
   String authPasswordStrengthHintAdd(String hints);
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Olvidaste tu contraseña?'**
+  String get forgotPassword;
+
+  /// No description provided for @signInButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Iniciar Sesión'**
+  String get signInButton;
+
+  /// No description provided for @orContinueWith.
+  ///
+  /// In es, this message translates to:
+  /// **'O continúa con'**
+  String get orContinueWith;
+
+  /// No description provided for @noAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'¿No tienes cuenta?'**
+  String get noAccount;
+
+  /// No description provided for @signUpLink.
+  ///
+  /// In es, this message translates to:
+  /// **'Regístrate'**
+  String get signUpLink;
+
+  /// No description provided for @forgotPasswordTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Olvidaste tu contraseña?'**
+  String get forgotPasswordTitle;
+
+  /// No description provided for @forgotPasswordMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Te enviaremos un código de 6 dígitos para recuperar tu contraseña'**
+  String get forgotPasswordMessage;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Ya tienes cuenta?'**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @emailHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Correo electrónico'**
+  String get emailHint;
+
+  /// No description provided for @confirmPasswordHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar contraseña'**
+  String get confirmPasswordHint;
+
+  /// No description provided for @changePasswordButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar contraseña'**
+  String get changePasswordButton;
+
+  /// No description provided for @newPasswordHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva contraseña'**
+  String get newPasswordHint;
+
+  /// No description provided for @otpVerifyEmailTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Verificar Email'**
+  String get otpVerifyEmailTitle;
+
+  /// No description provided for @laterButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Después'**
+  String get laterButton;
+
+  /// No description provided for @doItLater.
+  ///
+  /// In es, this message translates to:
+  /// **'Lo haré después'**
+  String get doItLater;
+
+  /// No description provided for @displayNameHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Juan Pérez'**
+  String get displayNameHint;
+
+  /// No description provided for @bioHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuéntanos sobre ti...'**
+  String get bioHint;
+
+  /// No description provided for @cancel.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelar'**
+  String get cancel;
+
+  /// No description provided for @confirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar'**
+  String get confirm;
+
+  /// No description provided for @close.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrar'**
+  String get close;
+
+  /// No description provided for @delete.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar'**
+  String get delete;
+
+  /// No description provided for @forget.
+  ///
+  /// In es, this message translates to:
+  /// **'Olvidar'**
+  String get forget;
+
+  /// No description provided for @emailHintPlaceholder.
+  ///
+  /// In es, this message translates to:
+  /// **'tu@email.com'**
+  String get emailHintPlaceholder;
+
+  /// No description provided for @continueWithApple.
+  ///
+  /// In es, this message translates to:
+  /// **'Continuar con Apple'**
+  String get continueWithApple;
+
+  /// No description provided for @continueWithGoogle.
+  ///
+  /// In es, this message translates to:
+  /// **'Continuar con Google'**
+  String get continueWithGoogle;
+
+  /// No description provided for @privacyConsentTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Configuración de Privacidad'**
+  String get privacyConsentTitle;
+
+  /// No description provided for @privacyConsentDeclineButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Rechazar'**
+  String get privacyConsentDeclineButton;
+
+  /// No description provided for @privacySettingsPrivacyPolicy.
+  ///
+  /// In es, this message translates to:
+  /// **'Política de Privacidad'**
+  String get privacySettingsPrivacyPolicy;
+
+  /// No description provided for @privacySettingsTermsOfUse.
+  ///
+  /// In es, this message translates to:
+  /// **'Términos de Uso'**
+  String get privacySettingsTermsOfUse;
+
+  /// No description provided for @privacySettingsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Privacidad'**
+  String get privacySettingsTitle;
+
+  /// No description provided for @privacySettingsSavedCity.
+  ///
+  /// In es, this message translates to:
+  /// **'Ciudad guardada'**
+  String get privacySettingsSavedCity;
+
+  /// No description provided for @privacySettingsAnonymousMode.
+  ///
+  /// In es, this message translates to:
+  /// **'Modo anónimo'**
+  String get privacySettingsAnonymousMode;
+
+  /// No description provided for @privacySettingsViewMyData.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver mis datos'**
+  String get privacySettingsViewMyData;
+
+  /// No description provided for @privacySettingsViewMyDataSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Descarga tus datos personales'**
+  String get privacySettingsViewMyDataSubtitle;
+
+  /// No description provided for @locationChangeDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar Ubicación'**
+  String get locationChangeDialogTitle;
+
+  /// No description provided for @locationCityHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ciudad'**
+  String get locationCityHint;
+
+  /// No description provided for @locationCityLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Ciudad'**
+  String get locationCityLabel;
+
+  /// No description provided for @locationCityRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'La ciudad es requerida'**
+  String get locationCityRequired;
+
+  /// No description provided for @locationCountryLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'País'**
+  String get locationCountryLabel;
+
+  /// No description provided for @locationCountryRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'El país es requerido'**
+  String get locationCountryRequired;
+
+  /// No description provided for @locationGpsDetectSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Detectar mi ubicación actual'**
+  String get locationGpsDetectSubtitle;
+
+  /// No description provided for @locationOrSelectManually.
+  ///
+  /// In es, this message translates to:
+  /// **'o selecciona manualmente'**
+  String get locationOrSelectManually;
+
+  /// No description provided for @locationRegionLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Región'**
+  String get locationRegionLabel;
+
+  /// No description provided for @homePopularLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al cargar chismes populares'**
+  String get homePopularLoadError;
+
+  /// No description provided for @gossipDetailTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Detalle del Chisme'**
+  String get gossipDetailTitle;
+
+  /// No description provided for @profileSetupTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Configura tu Perfil'**
+  String get profileSetupTitle;
+
+  /// No description provided for @profileSetupSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Completa tu perfil para empezar a compartir chismes'**
+  String get profileSetupSubtitle;
+
+  /// No description provided for @profileSetupWelcome.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Bienvenido!'**
+  String get profileSetupWelcome;
+
+  /// No description provided for @profileSetupInfoMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Necesitas un nombre de usuario para publicar chismes'**
+  String get profileSetupInfoMessage;
+
+  /// No description provided for @profileSetupUsernameLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre de usuario'**
+  String get profileSetupUsernameLabel;
+
+  /// No description provided for @profileSetupUsernameHelper.
+  ///
+  /// In es, this message translates to:
+  /// **'Solo letras minúsculas, números y _'**
+  String get profileSetupUsernameHelper;
+
+  /// No description provided for @profileSetupUsernameAvailabilityCheck.
+  ///
+  /// In es, this message translates to:
+  /// **'Verifica que el nombre de usuario esté disponible'**
+  String get profileSetupUsernameAvailabilityCheck;
+
+  /// No description provided for @profileSetupUsernameTaken.
+  ///
+  /// In es, this message translates to:
+  /// **'Este nombre de usuario ya está en uso'**
+  String get profileSetupUsernameTaken;
+
+  /// No description provided for @profileSetupDisplayNameLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre a mostrar'**
+  String get profileSetupDisplayNameLabel;
+
+  /// No description provided for @profileSetupBioLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Biografía (opcional)'**
+  String get profileSetupBioLabel;
+
+  /// No description provided for @profileSetupSaveButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar Perfil'**
+  String get profileSetupSaveButton;
+
+  /// No description provided for @profileSetupAvatarUploadSoon.
+  ///
+  /// In es, this message translates to:
+  /// **'Próximamente: subir avatar'**
+  String get profileSetupAvatarUploadSoon;
+
+  /// No description provided for @usernameHint.
+  ///
+  /// In es, this message translates to:
+  /// **'juanperez'**
+  String get usernameHint;
+
+  /// No description provided for @usernameRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'El nombre de usuario es requerido'**
+  String get usernameRequired;
+
+  /// No description provided for @usernameTooShort.
+  ///
+  /// In es, this message translates to:
+  /// **'El nombre de usuario es muy corto (mínimo 3 caracteres)'**
+  String get usernameTooShort;
+
+  /// No description provided for @usernameTooLong.
+  ///
+  /// In es, this message translates to:
+  /// **'El nombre de usuario es muy largo (máximo 30 caracteres)'**
+  String get usernameTooLong;
+
+  /// No description provided for @usernameInvalidChars.
+  ///
+  /// In es, this message translates to:
+  /// **'El nombre de usuario solo puede contener letras minúsculas, números y guiones bajos'**
+  String get usernameInvalidChars;
+
+  /// No description provided for @passwordHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña'**
+  String get passwordHint;
+
+  /// No description provided for @passwordFieldLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña'**
+  String get passwordFieldLabel;
+
+  /// No description provided for @passwordFieldShow.
+  ///
+  /// In es, this message translates to:
+  /// **'Mostrar contraseña'**
+  String get passwordFieldShow;
+
+  /// No description provided for @passwordFieldHide.
+  ///
+  /// In es, this message translates to:
+  /// **'Ocultar contraseña'**
+  String get passwordFieldHide;
+
+  /// No description provided for @passwordsMustMatch.
+  ///
+  /// In es, this message translates to:
+  /// **'Las contraseñas deben coincidir'**
+  String get passwordsMustMatch;
+
+  /// No description provided for @passwordUpdatedSuccessTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña actualizada'**
+  String get passwordUpdatedSuccessTitle;
+
+  /// No description provided for @passwordUpdatedSuccessMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu contraseña ha sido actualizada exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña'**
+  String get passwordUpdatedSuccessMessage;
+
+  /// No description provided for @permanentlyDelete.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar permanentemente'**
+  String get permanentlyDelete;
+
+  /// No description provided for @locationRegionRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'La región es requerida'**
+  String get locationRegionRequired;
+
+  /// No description provided for @locationSearchError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al buscar ubicación'**
+  String get locationSearchError;
+
+  /// No description provided for @locationUnexpectedError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error inesperado en ubicación'**
+  String get locationUnexpectedError;
+
+  /// No description provided for @locationUseCurrentLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Usar ubicación actual'**
+  String get locationUseCurrentLocation;
+
+  /// No description provided for @privacySettingsAccountDeleted.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuenta eliminada'**
+  String get privacySettingsAccountDeleted;
+
+  /// No description provided for @privacySettingsConfirmDeletion.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Confirmas que deseas eliminar tu cuenta?'**
+  String get privacySettingsConfirmDeletion;
+
+  /// No description provided for @privacySettingsDeletionCancelled.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminación cancelada'**
+  String get privacySettingsDeletionCancelled;
+
+  /// No description provided for @privacySettingsEraseButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar cuenta'**
+  String get privacySettingsEraseButton;
+
+  /// No description provided for @privacySettingsMyData.
+  ///
+  /// In es, this message translates to:
+  /// **'Mis datos'**
+  String get privacySettingsMyData;
+
+  /// No description provided for @resetPasswordSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Crea tu nueva contraseña'**
+  String get resetPasswordSubtitle;
+
+  /// No description provided for @resetPasswordDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Debe tener mínimo 8 caracteres'**
+  String get resetPasswordDescription;
+
+  /// No description provided for @resetPasswordConfirmHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar contraseña'**
+  String get resetPasswordConfirmHint;
+
+  /// No description provided for @resetPasswordOkButton.
+  ///
+  /// In es, this message translates to:
+  /// **'OK'**
+  String get resetPasswordOkButton;
+
+  /// No description provided for @sendCodeButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviar código'**
+  String get sendCodeButton;
+
+  /// No description provided for @signUpButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Crear Cuenta'**
+  String get signUpButton;
+
+  /// No description provided for @signupSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Únete a Chismes'**
+  String get signupSubtitle;
+
+  /// No description provided for @signupDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Crea tu cuenta en segundos'**
+  String get signupDescription;
+
+  /// No description provided for @signupTermsMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Al crear una cuenta, aceptas nuestros Términos y Condiciones y Política de Privacidad'**
+  String get signupTermsMessage;
+
+  /// No description provided for @signupPasswordRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Ingresa una contraseña'**
+  String get signupPasswordRequired;
+
+  /// No description provided for @signupPasswordMinLength.
+  ///
+  /// In es, this message translates to:
+  /// **'Mínimo 8 caracteres'**
+  String get signupPasswordMinLength;
+
+  /// No description provided for @signupPasswordsMustMatch.
+  ///
+  /// In es, this message translates to:
+  /// **'Las contraseñas no coinciden'**
+  String get signupPasswordsMustMatch;
+
+  /// No description provided for @signupConfirmPasswordRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirma tu contraseña'**
+  String get signupConfirmPasswordRequired;
+
+  /// No description provided for @signInLink.
+  ///
+  /// In es, this message translates to:
+  /// **'Inicia sesión'**
+  String get signInLink;
+
+  /// No results for search query
+  ///
+  /// In es, this message translates to:
+  /// **'Sin resultados para \'{query}\''**
+  String locationNoResults(String query);
+
+  /// Search city hint with min chars
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar ciudad (mín. {minChars} caracteres)'**
+  String locationCitySearchHint(int minChars);
+
+  /// Minimum characters message
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe al menos {minChars} caracteres para buscar'**
+  String locationMinCharsMessage(int minChars);
 }
 
 class _AppLocalizationsDelegate

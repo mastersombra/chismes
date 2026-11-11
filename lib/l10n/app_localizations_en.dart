@@ -1258,4 +1258,306 @@ class AppLocalizationsEn extends AppLocalizations {
   String authPasswordStrengthHintAdd(String hints) {
     return 'Add: $hints';
   }
+
+  @override
+  String get forgotPassword => 'Forgot your password?';
+
+  @override
+  String get signInButton => 'Sign In';
+
+  @override
+  String get orContinueWith => 'Or continue with';
+
+  @override
+  String get noAccount => 'Don\'t have an account?';
+
+  @override
+  String get signUpLink => 'Sign up';
+
+  @override
+  String get forgotPasswordTitle => 'Forgot your password?';
+
+  @override
+  String get forgotPasswordMessage =>
+      'We\'ll send you a 6-digit code to recover your password';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account?';
+
+  @override
+  String get emailHint => 'Email';
+
+  @override
+  String get confirmPasswordHint => 'Confirm password';
+
+  @override
+  String get changePasswordButton => 'Change password';
+
+  @override
+  String get newPasswordHint => 'New password';
+
+  @override
+  String get otpVerifyEmailTitle => 'Verify Email';
+
+  @override
+  String get laterButton => 'Later';
+
+  @override
+  String get doItLater => 'I\'ll do it later';
+
+  @override
+  String get displayNameHint => 'John Smith';
+
+  @override
+  String get bioHint => 'Tell us about yourself...';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get forget => 'Forget';
+
+  @override
+  String get emailHintPlaceholder => 'you@email.com';
+
+  @override
+  String get continueWithApple => 'Continue with Apple';
+
+  @override
+  String get continueWithGoogle => 'Continue with Google';
+
+  @override
+  String get privacyConsentTitle => 'Privacy Settings';
+
+  @override
+  String get privacyConsentDeclineButton => 'Decline';
+
+  @override
+  String get privacySettingsPrivacyPolicy => 'Privacy Policy';
+
+  @override
+  String get privacySettingsTermsOfUse => 'Terms of Use';
+
+  @override
+  String get privacySettingsTitle => 'Privacy';
+
+  @override
+  String get privacySettingsSavedCity => 'Saved city';
+
+  @override
+  String get privacySettingsAnonymousMode => 'Anonymous mode';
+
+  @override
+  String get privacySettingsViewMyData => 'View my data';
+
+  @override
+  String get privacySettingsViewMyDataSubtitle => 'Download your personal data';
+
+  @override
+  String get locationChangeDialogTitle => 'Change Location';
+
+  @override
+  String get locationCityHint => 'City';
+
+  @override
+  String get locationCityLabel => 'City';
+
+  @override
+  String get locationCityRequired => 'City is required';
+
+  @override
+  String get locationCountryLabel => 'Country';
+
+  @override
+  String get locationCountryRequired => 'Country is required';
+
+  @override
+  String get locationGpsDetectSubtitle => 'Detect my current location';
+
+  @override
+  String get locationOrSelectManually => 'or select manually';
+
+  @override
+  String get locationRegionLabel => 'Region';
+
+  @override
+  String get homePopularLoadError => 'Error loading popular gossips';
+
+  @override
+  String get gossipDetailTitle => 'Gossip Detail';
+
+  @override
+  String get profileSetupTitle => 'Set Up Your Profile';
+
+  @override
+  String get profileSetupSubtitle =>
+      'Complete your profile to start sharing gossip';
+
+  @override
+  String get profileSetupWelcome => 'Welcome!';
+
+  @override
+  String get profileSetupInfoMessage => 'You need a username to publish gossip';
+
+  @override
+  String get profileSetupUsernameLabel => 'Username';
+
+  @override
+  String get profileSetupUsernameHelper =>
+      'Only lowercase letters, numbers and _';
+
+  @override
+  String get profileSetupUsernameAvailabilityCheck =>
+      'Verify that the username is available';
+
+  @override
+  String get profileSetupUsernameTaken => 'This username is already taken';
+
+  @override
+  String get profileSetupDisplayNameLabel => 'Display name';
+
+  @override
+  String get profileSetupBioLabel => 'Bio (optional)';
+
+  @override
+  String get profileSetupSaveButton => 'Save Profile';
+
+  @override
+  String get profileSetupAvatarUploadSoon => 'Coming soon: upload avatar';
+
+  @override
+  String get usernameHint => 'johnsmith';
+
+  @override
+  String get usernameRequired => 'Username is required';
+
+  @override
+  String get usernameTooShort => 'Username is too short (min 3 characters)';
+
+  @override
+  String get usernameTooLong => 'Username is too long (max 30 characters)';
+
+  @override
+  String get usernameInvalidChars =>
+      'Username can only contain lowercase letters, numbers and underscores';
+
+  @override
+  String get passwordHint => 'Password';
+
+  @override
+  String get passwordFieldLabel => 'Password';
+
+  @override
+  String get passwordFieldShow => 'Show password';
+
+  @override
+  String get passwordFieldHide => 'Hide password';
+
+  @override
+  String get passwordsMustMatch => 'Passwords must match';
+
+  @override
+  String get passwordUpdatedSuccessTitle => 'Password updated';
+
+  @override
+  String get passwordUpdatedSuccessMessage =>
+      'Your password has been successfully updated. You can now sign in with your new password';
+
+  @override
+  String get permanentlyDelete => 'Permanently delete';
+
+  @override
+  String get locationRegionRequired => 'Region is required';
+
+  @override
+  String get locationSearchError => 'Error searching location';
+
+  @override
+  String get locationUnexpectedError => 'Unexpected location error';
+
+  @override
+  String get locationUseCurrentLocation => 'Use current location';
+
+  @override
+  String get privacySettingsAccountDeleted => 'Account deleted';
+
+  @override
+  String get privacySettingsConfirmDeletion =>
+      'Do you confirm that you want to delete your account?';
+
+  @override
+  String get privacySettingsDeletionCancelled => 'Deletion cancelled';
+
+  @override
+  String get privacySettingsEraseButton => 'Delete account';
+
+  @override
+  String get privacySettingsMyData => 'My data';
+
+  @override
+  String get resetPasswordSubtitle => 'Create your new password';
+
+  @override
+  String get resetPasswordDescription => 'Must be at least 8 characters';
+
+  @override
+  String get resetPasswordConfirmHint => 'Confirm password';
+
+  @override
+  String get resetPasswordOkButton => 'OK';
+
+  @override
+  String get sendCodeButton => 'Send code';
+
+  @override
+  String get signUpButton => 'Create Account';
+
+  @override
+  String get signupSubtitle => 'Join Chismes';
+
+  @override
+  String get signupDescription => 'Create your account in seconds';
+
+  @override
+  String get signupTermsMessage =>
+      'By creating an account, you agree to our Terms and Conditions and Privacy Policy';
+
+  @override
+  String get signupPasswordRequired => 'Enter a password';
+
+  @override
+  String get signupPasswordMinLength => 'Minimum 8 characters';
+
+  @override
+  String get signupPasswordsMustMatch => 'Passwords must match';
+
+  @override
+  String get signupConfirmPasswordRequired => 'Confirm your password';
+
+  @override
+  String get signInLink => 'Sign in';
+
+  @override
+  String locationNoResults(String query) {
+    return 'No results for \'$query\'';
+  }
+
+  @override
+  String locationCitySearchHint(int minChars) {
+    return 'Search city (min. $minChars characters)';
+  }
+
+  @override
+  String locationMinCharsMessage(int minChars) {
+    return 'Type at least $minChars characters to search';
+  }
 }

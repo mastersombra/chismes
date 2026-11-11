@@ -101,7 +101,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(AppLocalizations.otpVerifyEmailTitle),
+            title: Text(context.l10n.otpVerifyEmailTitle),
           ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(AppSpacing.xl),

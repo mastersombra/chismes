@@ -72,8 +72,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       context: context,
       barrierDismissible: false,
       builder: (_) => AlertDialog(
-        title: Text(AppLocalizations.passwordUpdatedSuccessTitle),
-        content: Text(AppLocalizations.passwordUpdatedSuccessMessage),
+        title: Text(context.l10n.passwordUpdatedSuccessTitle),
+        content: Text(context.l10n.passwordUpdatedSuccessMessage),
         actions: [
           FilledButton(
             onPressed: () {
@@ -88,7 +88,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 (route) => false,
               );
             },
-            child: Text(AppLocalizations.resetPasswordOkButton),
+            child: Text(context.l10n.resetPasswordOkButton),
           ),
         ],
       ),
@@ -146,7 +146,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                       // Título
                       Text(
-                        AppLocalizations.resetPasswordSubtitle,
+                        context.l10n.resetPasswordSubtitle,
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -156,7 +156,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                       // Descripción
                       Text(
-                        AppLocalizations.resetPasswordDescription,
+                        context.l10n.resetPasswordDescription,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: Colors.grey[600],
                             ),
@@ -168,8 +168,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       PasswordField(
                         controller: _newPasswordController,
                         enabled: !isLoading,
-                        validator: FormValidators.password,
-                        labelText: AppLocalizations.newPasswordHint,
+                        validator: (v) => FormValidators.password(context, v),
+                        labelText: context.l10n.newPasswordHint,
                         onChanged: (value) {
                           setState(() => _currentPassword = value);
                         },
@@ -184,14 +184,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       PasswordField(
                         controller: _confirmPasswordController,
                         enabled: !isLoading,
-                        labelText: AppLocalizations.resetPasswordConfirmHint,
+                        labelText: context.l10n.resetPasswordConfirmHint,
                         validator: (value) {
-                          final passwordValidation = FormValidators.password(value);
+                          final passwordValidation = FormValidators.password(context, value);
                           if (passwordValidation != null) return passwordValidation;
 
                           // Validar que coincidan
                           if (value != _newPasswordController.text) {
-                            return AppLocalizations.passwordsMustMatch;
+                            return context.l10n.passwordsMustMatch;
                           }
                           return null;
                         },
@@ -200,7 +200,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                       // Botón cambiar contraseña
                       AuthButton(
-                        text: AppLocalizations.changePasswordButton,
+                        text: context.l10n.changePasswordButton,
                         onPressed: _onChangePasswordPressed,
                         isLoading: isLoading,
                       ),

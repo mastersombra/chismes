@@ -106,21 +106,21 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
   String? _validateUsername(String? value) {
     if (value == null || value.isEmpty) {
-      return AppLocalizations.usernameRequired;
+      return context.l10n.usernameRequired;
     }
     if (value.length < 3) {
-      return AppLocalizations.usernameTooShort;
+      return context.l10n.usernameTooShort;
     }
     if (value.length > 30) {
-      return AppLocalizations.usernameTooLong;
+      return context.l10n.usernameTooLong;
     }
     if (!RegExp(r'^[a-z0-9_]+$').hasMatch(value)) {
-      return AppLocalizations.usernameInvalidChars;
+      return context.l10n.usernameInvalidChars;
     }
 
     // Verificar disponibilidad
     if (_controller.usernameAvailable == false) {
-      return AppLocalizations.profileSetupUsernameTaken;
+      return context.l10n.profileSetupUsernameTaken;
     }
 
     return null;
@@ -131,7 +131,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
     // Verificar que username esté disponible
     if (_controller.usernameAvailable != true) {
-      _showError(AppLocalizations.profileSetupUsernameAvailabilityCheck);
+      _showError(context.l10n.profileSetupUsernameAvailabilityCheck);
       return;
     }
 
@@ -160,13 +160,13 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.profileSetupTitle),
+        title: Text(context.l10n.profileSetupTitle),
         automaticallyImplyLeading: false,
         actions: [
           if (widget.canSkip)
             TextButton(
               onPressed: _onSkipPressed,
-              child: Text(AppLocalizations.laterButton),
+              child: Text(context.l10n.laterButton),
             ),
         ],
       ),
@@ -188,14 +188,14 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
                       // Título
                       Text(
-                        AppLocalizations.profileSetupWelcome,
+                        context.l10n.profileSetupWelcome,
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.xs),
                       Text(
-                        AppLocalizations.profileSetupSubtitle,
+                        context.l10n.profileSetupSubtitle,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.grey[600],
                         ),
@@ -232,7 +232,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                                   ),
                                   onPressed: () {
                                     // TODO: Implementar upload de avatar
-                                    _showError(AppLocalizations.profileSetupAvatarUploadSoon);
+                                    _showError(context.l10n.profileSetupAvatarUploadSoon);
                                   },
                                 ),
                               ),
@@ -248,13 +248,13 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                         controller: _usernameController,
                         enabled: !isLoading,
                         decoration: InputDecoration(
-                          labelText: AppLocalizations.profileSetupUsernameLabel,
-                          hintText: AppLocalizations.usernameHint,
+                          labelText: context.l10n.profileSetupUsernameLabel,
+                          hintText: context.l10n.usernameHint,
                           prefixText: '@',
                           prefixIcon: const Icon(Icons.alternate_email),
                           suffixIcon: _buildUsernameSuffixIcon(controller),
                           border: const OutlineInputBorder(),
-                          helperText: AppLocalizations.profileSetupUsernameHelper,
+                          helperText: context.l10n.profileSetupUsernameHelper,
                           helperMaxLines: 2,
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: AppSpacing.lg,
@@ -274,8 +274,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                         controller: _displayNameController,
                         enabled: !isLoading,
                         decoration: InputDecoration(
-                          labelText: AppLocalizations.profileSetupDisplayNameLabel,
-                          hintText: AppLocalizations.displayNameHint,
+                          labelText: context.l10n.profileSetupDisplayNameLabel,
+                          hintText: context.l10n.displayNameHint,
                           prefixIcon: const Icon(Icons.person_outline),
                           border: const OutlineInputBorder(),
                           contentPadding: const EdgeInsets.symmetric(
@@ -283,7 +283,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                             vertical: AppSpacing.md,
                           ),
                         ),
-                        validator: (v) => FormValidators.required(v, 'nombre a mostrar'),
+                        validator: (v) => FormValidators.required(context, v, 'nombre a mostrar'),
                         textCapitalization: TextCapitalization.words,
                       ),
 
@@ -296,8 +296,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                         maxLines: 3,
                         maxLength: 160,
                         decoration: InputDecoration(
-                          labelText: AppLocalizations.profileSetupBioLabel,
-                          hintText: AppLocalizations.bioHint,
+                          labelText: context.l10n.profileSetupBioLabel,
+                          hintText: context.l10n.bioHint,
                           prefixIcon: const Icon(Icons.description_outlined),
                           border: const OutlineInputBorder(),
                           contentPadding: const EdgeInsets.symmetric(
@@ -327,7 +327,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                             const SizedBox(width: AppSpacing.sm),
                             Expanded(
                               child: Text(
-                                AppLocalizations.profileSetupInfoMessage,
+                                context.l10n.profileSetupInfoMessage,
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ),
@@ -339,7 +339,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
                       // Save button
                       AuthButton(
-                        text: AppLocalizations.profileSetupSaveButton,
+                        text: context.l10n.profileSetupSaveButton,
                         onPressed: _onSavePressed,
                         isLoading: isLoading,
                       ),
@@ -348,7 +348,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                         const SizedBox(height: AppSpacing.md),
                         TextButton(
                           onPressed: isLoading ? null : _onSkipPressed,
-                          child: Text(AppLocalizations.doItLater),
+                          child: Text(context.l10n.doItLater),
                         ),
                       ],
                     ],

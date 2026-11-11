@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/l10n/locale_notifier.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../controllers/profile_controller.dart';
 import '../widgets/profile_header.dart';
@@ -41,13 +42,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _onControllerChanged() {
     if (!mounted) return;
 
-    // Sincronizar idioma con EasyLocalization cuando se cargan los settings
+    // Sincronizar idioma con LocaleNotifier cuando se cargan los settings
     final settings = _controller.settings;
-    if (settings != null && context.locale.languageCode != settings.language) {
+    final localeNotifier = getIt<LocaleNotifier>();
+    if (settings != null && localeNotifier.locale.languageCode != settings.language) {
       // Cambiar el idioma de la app si no coincide con los settings
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          context.setLocale(Locale(settings.language));
+          localeNotifier.setLocale(Locale(settings.language));
         }
       });
     }

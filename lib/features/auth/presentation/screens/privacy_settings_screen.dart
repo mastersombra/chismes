@@ -64,7 +64,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.privacySettingsTitle),
+        title: Text(context.l10n.privacySettingsTitle),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -75,7 +75,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                   title: context.l10n.profilePrivacySettingsSectionsLocation,
                   children: [
                     ListTile(
-                      title: Text(AppLocalizations.privacySettingsSavedCity),
+                      title: Text(context.l10n.privacySettingsSavedCity),
                       subtitle: Text(
                         _savedLocation?.displayText ??
                         context.l10n.profilePrivacySettingsLocationNotSaved,
@@ -89,7 +89,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                           : null,
                     ),
                     SwitchListTile(
-                      title: Text(AppLocalizations.privacySettingsAnonymousMode),
+                      title: Text(context.l10n.privacySettingsAnonymousMode),
                       subtitle: Text(
                         context.l10n.profilePrivacySettingsLocationAnonymousModeSubtitle,
                       ),
@@ -119,8 +119,8 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                   title: context.l10n.profilePrivacySettingsSectionsStoredData,
                   children: [
                     ListTile(
-                      title: Text(AppLocalizations.privacySettingsViewMyData),
-                      subtitle: Text(AppLocalizations.privacySettingsViewMyDataSubtitle),
+                      title: Text(context.l10n.privacySettingsViewMyData),
+                      subtitle: Text(context.l10n.privacySettingsViewMyDataSubtitle),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () => Navigator.push(
                         context,
@@ -139,12 +139,12 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                   title: context.l10n.profilePrivacySettingsSectionsPolicies,
                   children: [
                     ListTile(
-                      title: Text(AppLocalizations.privacySettingsPrivacyPolicy),
+                      title: Text(context.l10n.privacySettingsPrivacyPolicy),
                       trailing: const Icon(Icons.open_in_new),
                       onTap: _openPrivacyPolicy,
                     ),
                     ListTile(
-                      title: Text(AppLocalizations.privacySettingsTermsOfUse),
+                      title: Text(context.l10n.privacySettingsTermsOfUse),
                       trailing: const Icon(Icons.open_in_new),
                       onTap: _openTermsOfService,
                     ),
@@ -216,11 +216,11 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(AppLocalizations.cancel),
+            child: Text(context.l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(AppLocalizations.forget),
+            child: Text(context.l10n.forget),
           ),
         ],
       ),
@@ -267,7 +267,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.privacySettingsPrivacyPolicy),
+        title: Text(context.l10n.privacySettingsPrivacyPolicy),
         content: SingleChildScrollView(
           child: Text(
             context.l10n.profilePrivacySettingsDialogsPrivacyPolicyContent,
@@ -276,7 +276,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.close),
+            child: Text(context.l10n.close),
           ),
         ],
       ),
@@ -287,7 +287,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.privacySettingsTermsOfUse),
+        title: Text(context.l10n.privacySettingsTermsOfUse),
         content: SingleChildScrollView(
           child: Text(
             context.l10n.profilePrivacySettingsDialogsTermsOfUseContent,
@@ -296,7 +296,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.close),
+            child: Text(context.l10n.close),
           ),
         ],
       ),
@@ -315,12 +315,12 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(AppLocalizations.cancel),
+            child: Text(context.l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text(AppLocalizations.delete),
+            child: Text(context.l10n.delete),
           ),
         ],
       ),
@@ -334,7 +334,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     final doubleConfirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.privacySettingsConfirmDeletion),
+        title: Text(context.l10n.privacySettingsConfirmDeletion),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -356,7 +356,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(AppLocalizations.cancel),
+            child: Text(context.l10n.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -367,7 +367,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
               }
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text(AppLocalizations.permanentlyDelete),
+            child: Text(context.l10n.permanentlyDelete),
           ),
         ],
       ),
@@ -376,7 +376,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     if (doubleConfirmed != true) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.privacySettingsDeletionCancelled)),
+        SnackBar(content: Text(context.l10n.privacySettingsDeletionCancelled)),
       );
       return;
     }
@@ -388,7 +388,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
 
     // Logout y volver a login
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppLocalizations.privacySettingsAccountDeleted)),
+      SnackBar(content: Text(context.l10n.privacySettingsAccountDeleted)),
     );
 
     Navigator.pushReplacementNamed(context, '/login');
@@ -438,7 +438,7 @@ class _DataDashboardScreenState extends State<DataDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.privacySettingsMyData),
+        title: Text(context.l10n.privacySettingsMyData),
         actions: [
           IconButton(
             icon: const Icon(Icons.download),
@@ -537,12 +537,12 @@ class _DataDashboardScreenState extends State<DataDashboardScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(AppLocalizations.cancel),
+            child: Text(context.l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text(AppLocalizations.privacySettingsEraseButton),
+            child: Text(context.l10n.privacySettingsEraseButton),
           ),
         ],
       ),

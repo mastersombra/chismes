@@ -100,9 +100,9 @@ $deepLink
         onFailure: (failure) {
           // Obtener mensaje según tipo de Failure
           final message = switch (failure) {
-            ServerFailure(:final message) => message ?? AppLocalizations.gossipCardReportError,
-            RateLimitFailure(:final message) => message ?? AppLocalizations.gossipCardRateLimitError,
-            _ => failure.technicalMessage ?? AppLocalizations.gossipCardReportError,
+            ServerFailure(:final message) => message ?? context.l10n.gossipCardReportError,
+            RateLimitFailure(:final message) => message ?? context.l10n.gossipCardRateLimitError,
+            _ => failure.technicalMessage ?? context.l10n.gossipCardReportError,
           };
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -128,8 +128,8 @@ $deepLink
   Widget build(BuildContext context) {
     // ✅ Accesibilidad: Semantics para toda la card
     return Semantics(
-      label: AppLocalizations.gossipCardSemanticLabel(gossip.subject, gossip.content),
-      hint: AppLocalizations.gossipCardSemanticHint,
+      label: context.l10n.gossipCardSemanticLabel(gossip.subject, gossip.content),
+      hint: context.l10n.gossipCardSemanticHint,
       button: true,
       excludeSemantics: true, // No leer hijos (evitar duplicación)
       child: InkWell(
@@ -207,8 +207,8 @@ $deepLink
                     children: [
                       // Botón compartir
                       Semantics(
-                        label: AppLocalizations.gossipCardShareSemanticLabel,
-                        hint: AppLocalizations.gossipCardShareSemanticHint,
+                        label: context.l10n.gossipCardShareSemanticLabel,
+                        hint: context.l10n.gossipCardShareSemanticHint,
                         button: true,
                         child: IconButton(
                           icon: const Icon(Icons.share, size: 20),
@@ -219,14 +219,14 @@ $deepLink
                             minHeight: 48,
                           ),
                           iconSize: 20,
-                          tooltip: AppLocalizations.gossipCardShareTooltip,
+                          tooltip: context.l10n.gossipCardShareTooltip,
                         ),
                       ),
 
                       // Botón reportar (menú)
                       Semantics(
-                        label: AppLocalizations.gossipCardReportSemanticLabel,
-                        hint: AppLocalizations.gossipCardReportSemanticHint,
+                        label: context.l10n.gossipCardReportSemanticLabel,
+                        hint: context.l10n.gossipCardReportSemanticHint,
                         button: true,
                         child: IconButton(
                           icon: const Icon(Icons.flag_outlined, size: 20),
@@ -236,7 +236,7 @@ $deepLink
                             minHeight: 48,
                           ),
                           iconSize: 20,
-                          tooltip: AppLocalizations.gossipCardReportTooltip,
+                          tooltip: context.l10n.gossipCardReportTooltip,
                         ),
                       ),
                     ],

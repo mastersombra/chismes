@@ -108,6 +108,7 @@ import '../../features/profile/presentation/controllers/profile_controller.dart'
     as _i658;
 import '../id/id_generator.dart' as _i1000;
 import '../id/timestamp_id_generator.dart' as _i458;
+import '../l10n/locale_notifier.dart' as _i817;
 import '../logging/app_logger.dart' as _i354;
 import '../logging/device_info_provider.dart' as _i966;
 import '../logging/logging.dart' as _i482;
@@ -129,6 +130,9 @@ _i174.GetIt $initGetIt(
   gh.singleton<_i966.DeviceInfoProvider>(() => _i966.DeviceInfoProvider());
   gh.singleton<_i110.MvpModerationPolicy>(() => gossipModule.moderationPolicy);
   gh.lazySingleton<_i454.SupabaseClient>(() => gossipModule.supabaseClient);
+  gh.singleton<_i817.LocaleNotifier>(
+    () => _i817.LocaleNotifier(gh<_i460.SharedPreferences>()),
+  );
   gh.singleton<_i1000.IdGenerator>(() => _i458.TimestampIdGenerator());
   gh.singleton<_i332.LocationRepository>(
     () => _i42.MockLocationRepository(),

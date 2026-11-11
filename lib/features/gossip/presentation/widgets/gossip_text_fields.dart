@@ -24,14 +24,14 @@ class GossipTextFields extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _buildSubjectField(),
+        _buildSubjectField(context),
         const SizedBox(height: AppSpacing.lg),
-        _buildContentField(),
+        _buildContentField(context),
       ],
     );
   }
 
-  Widget _buildSubjectField() {
+  Widget _buildSubjectField(BuildContext context) {
     return TextFormField(
       controller: subjectController,
       decoration: InputDecoration(
@@ -49,7 +49,7 @@ class GossipTextFields extends StatelessWidget {
     );
   }
 
-  Widget _buildContentField() {
+  Widget _buildContentField(BuildContext context) {
     return TextFormField(
       controller: contentController,
       decoration: InputDecoration(

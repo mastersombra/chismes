@@ -111,7 +111,7 @@ class ProfileController extends ChangeNotifier {
         error: error,
         stackTrace: stackTrace,
       );
-      _errorMessage = AppLocalizations.profileControllerLoadError;
+      _errorMessage = 'Error loading profile';
       _state = ProfileState.error;
     }
 
@@ -153,7 +153,7 @@ class ProfileController extends ChangeNotifier {
         error: error,
         stackTrace: stackTrace,
       );
-      _errorMessage = AppLocalizations.profileControllerUpdateError;
+      _errorMessage = 'Error updating settings';
       notifyListeners();
       return false;
     }
@@ -193,7 +193,7 @@ class ProfileController extends ChangeNotifier {
         error: error,
         stackTrace: stackTrace,
       );
-      _errorMessage = AppLocalizations.profileControllerSignoutError;
+      _errorMessage = 'Error signing out';
       _state = ProfileState.loaded;
       notifyListeners();
       return false;

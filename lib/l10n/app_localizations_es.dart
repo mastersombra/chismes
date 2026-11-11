@@ -1284,4 +1284,311 @@ class AppLocalizationsEs extends AppLocalizations {
   String authPasswordStrengthHintAdd(String hints) {
     return 'Agrega: $hints';
   }
+
+  @override
+  String get forgotPassword => '¿Olvidaste tu contraseña?';
+
+  @override
+  String get signInButton => 'Iniciar Sesión';
+
+  @override
+  String get orContinueWith => 'O continúa con';
+
+  @override
+  String get noAccount => '¿No tienes cuenta?';
+
+  @override
+  String get signUpLink => 'Regístrate';
+
+  @override
+  String get forgotPasswordTitle => '¿Olvidaste tu contraseña?';
+
+  @override
+  String get forgotPasswordMessage =>
+      'Te enviaremos un código de 6 dígitos para recuperar tu contraseña';
+
+  @override
+  String get alreadyHaveAccount => '¿Ya tienes cuenta?';
+
+  @override
+  String get emailHint => 'Correo electrónico';
+
+  @override
+  String get confirmPasswordHint => 'Confirmar contraseña';
+
+  @override
+  String get changePasswordButton => 'Cambiar contraseña';
+
+  @override
+  String get newPasswordHint => 'Nueva contraseña';
+
+  @override
+  String get otpVerifyEmailTitle => 'Verificar Email';
+
+  @override
+  String get laterButton => 'Después';
+
+  @override
+  String get doItLater => 'Lo haré después';
+
+  @override
+  String get displayNameHint => 'Juan Pérez';
+
+  @override
+  String get bioHint => 'Cuéntanos sobre ti...';
+
+  @override
+  String get cancel => 'Cancelar';
+
+  @override
+  String get confirm => 'Confirmar';
+
+  @override
+  String get close => 'Cerrar';
+
+  @override
+  String get delete => 'Eliminar';
+
+  @override
+  String get forget => 'Olvidar';
+
+  @override
+  String get emailHintPlaceholder => 'tu@email.com';
+
+  @override
+  String get continueWithApple => 'Continuar con Apple';
+
+  @override
+  String get continueWithGoogle => 'Continuar con Google';
+
+  @override
+  String get privacyConsentTitle => 'Configuración de Privacidad';
+
+  @override
+  String get privacyConsentDeclineButton => 'Rechazar';
+
+  @override
+  String get privacySettingsPrivacyPolicy => 'Política de Privacidad';
+
+  @override
+  String get privacySettingsTermsOfUse => 'Términos de Uso';
+
+  @override
+  String get privacySettingsTitle => 'Privacidad';
+
+  @override
+  String get privacySettingsSavedCity => 'Ciudad guardada';
+
+  @override
+  String get privacySettingsAnonymousMode => 'Modo anónimo';
+
+  @override
+  String get privacySettingsViewMyData => 'Ver mis datos';
+
+  @override
+  String get privacySettingsViewMyDataSubtitle =>
+      'Descarga tus datos personales';
+
+  @override
+  String get locationChangeDialogTitle => 'Cambiar Ubicación';
+
+  @override
+  String get locationCityHint => 'Ciudad';
+
+  @override
+  String get locationCityLabel => 'Ciudad';
+
+  @override
+  String get locationCityRequired => 'La ciudad es requerida';
+
+  @override
+  String get locationCountryLabel => 'País';
+
+  @override
+  String get locationCountryRequired => 'El país es requerido';
+
+  @override
+  String get locationGpsDetectSubtitle => 'Detectar mi ubicación actual';
+
+  @override
+  String get locationOrSelectManually => 'o selecciona manualmente';
+
+  @override
+  String get locationRegionLabel => 'Región';
+
+  @override
+  String get homePopularLoadError => 'Error al cargar chismes populares';
+
+  @override
+  String get gossipDetailTitle => 'Detalle del Chisme';
+
+  @override
+  String get profileSetupTitle => 'Configura tu Perfil';
+
+  @override
+  String get profileSetupSubtitle =>
+      'Completa tu perfil para empezar a compartir chismes';
+
+  @override
+  String get profileSetupWelcome => '¡Bienvenido!';
+
+  @override
+  String get profileSetupInfoMessage =>
+      'Necesitas un nombre de usuario para publicar chismes';
+
+  @override
+  String get profileSetupUsernameLabel => 'Nombre de usuario';
+
+  @override
+  String get profileSetupUsernameHelper =>
+      'Solo letras minúsculas, números y _';
+
+  @override
+  String get profileSetupUsernameAvailabilityCheck =>
+      'Verifica que el nombre de usuario esté disponible';
+
+  @override
+  String get profileSetupUsernameTaken =>
+      'Este nombre de usuario ya está en uso';
+
+  @override
+  String get profileSetupDisplayNameLabel => 'Nombre a mostrar';
+
+  @override
+  String get profileSetupBioLabel => 'Biografía (opcional)';
+
+  @override
+  String get profileSetupSaveButton => 'Guardar Perfil';
+
+  @override
+  String get profileSetupAvatarUploadSoon => 'Próximamente: subir avatar';
+
+  @override
+  String get usernameHint => 'juanperez';
+
+  @override
+  String get usernameRequired => 'El nombre de usuario es requerido';
+
+  @override
+  String get usernameTooShort =>
+      'El nombre de usuario es muy corto (mínimo 3 caracteres)';
+
+  @override
+  String get usernameTooLong =>
+      'El nombre de usuario es muy largo (máximo 30 caracteres)';
+
+  @override
+  String get usernameInvalidChars =>
+      'El nombre de usuario solo puede contener letras minúsculas, números y guiones bajos';
+
+  @override
+  String get passwordHint => 'Contraseña';
+
+  @override
+  String get passwordFieldLabel => 'Contraseña';
+
+  @override
+  String get passwordFieldShow => 'Mostrar contraseña';
+
+  @override
+  String get passwordFieldHide => 'Ocultar contraseña';
+
+  @override
+  String get passwordsMustMatch => 'Las contraseñas deben coincidir';
+
+  @override
+  String get passwordUpdatedSuccessTitle => 'Contraseña actualizada';
+
+  @override
+  String get passwordUpdatedSuccessMessage =>
+      'Tu contraseña ha sido actualizada exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña';
+
+  @override
+  String get permanentlyDelete => 'Eliminar permanentemente';
+
+  @override
+  String get locationRegionRequired => 'La región es requerida';
+
+  @override
+  String get locationSearchError => 'Error al buscar ubicación';
+
+  @override
+  String get locationUnexpectedError => 'Error inesperado en ubicación';
+
+  @override
+  String get locationUseCurrentLocation => 'Usar ubicación actual';
+
+  @override
+  String get privacySettingsAccountDeleted => 'Cuenta eliminada';
+
+  @override
+  String get privacySettingsConfirmDeletion =>
+      '¿Confirmas que deseas eliminar tu cuenta?';
+
+  @override
+  String get privacySettingsDeletionCancelled => 'Eliminación cancelada';
+
+  @override
+  String get privacySettingsEraseButton => 'Eliminar cuenta';
+
+  @override
+  String get privacySettingsMyData => 'Mis datos';
+
+  @override
+  String get resetPasswordSubtitle => 'Crea tu nueva contraseña';
+
+  @override
+  String get resetPasswordDescription => 'Debe tener mínimo 8 caracteres';
+
+  @override
+  String get resetPasswordConfirmHint => 'Confirmar contraseña';
+
+  @override
+  String get resetPasswordOkButton => 'OK';
+
+  @override
+  String get sendCodeButton => 'Enviar código';
+
+  @override
+  String get signUpButton => 'Crear Cuenta';
+
+  @override
+  String get signupSubtitle => 'Únete a Chismes';
+
+  @override
+  String get signupDescription => 'Crea tu cuenta en segundos';
+
+  @override
+  String get signupTermsMessage =>
+      'Al crear una cuenta, aceptas nuestros Términos y Condiciones y Política de Privacidad';
+
+  @override
+  String get signupPasswordRequired => 'Ingresa una contraseña';
+
+  @override
+  String get signupPasswordMinLength => 'Mínimo 8 caracteres';
+
+  @override
+  String get signupPasswordsMustMatch => 'Las contraseñas no coinciden';
+
+  @override
+  String get signupConfirmPasswordRequired => 'Confirma tu contraseña';
+
+  @override
+  String get signInLink => 'Inicia sesión';
+
+  @override
+  String locationNoResults(String query) {
+    return 'Sin resultados para \'$query\'';
+  }
+
+  @override
+  String locationCitySearchHint(int minChars) {
+    return 'Buscar ciudad (mín. $minChars caracteres)';
+  }
+
+  @override
+  String locationMinCharsMessage(int minChars) {
+    return 'Escribe al menos $minChars caracteres para buscar';
+  }
 }

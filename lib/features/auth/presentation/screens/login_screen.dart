@@ -195,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: AppSpacing.xs),
                       Text(
-                        AppLocalizations.appTagline,
+                        context.l10n.appTagline,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.grey[600],
                         ),
@@ -216,7 +216,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       PasswordField(
                         controller: _passwordController,
                         enabled: !isLoading,
-                        validator: FormValidators.password,
+                        validator: (v) => FormValidators.password(context, v),
                       ),
 
                       const SizedBox(height: AppSpacing.sm),
@@ -226,7 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: isLoading ? null : _onForgotPasswordPressed,
-                          child: Text(AppLocalizations.forgotPassword),
+                          child: Text(context.l10n.forgotPassword),
                         ),
                       ),
 
@@ -234,7 +234,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       // Sign in button
                       AuthButton(
-                        text: AppLocalizations.signInButton,
+                        text: context.l10n.signInButton,
                         onPressed: _onSignInPressed,
                         isLoading: isLoading,
                       ),
@@ -250,7 +250,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               horizontal: AppSpacing.md,
                             ),
                             child: Text(
-                              AppLocalizations.orContinueWith,
+                              context.l10n.orContinueWith,
                               style: TextStyle(color: Colors.grey[600]),
                             ),
                           ),
@@ -274,12 +274,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            '${AppLocalizations.noAccount} ',
+                            '${context.l10n.noAccount} ',
                             style: TextStyle(color: Colors.grey[600]),
                           ),
                           TextButton(
                             onPressed: isLoading ? null : _onSignUpPressed,
-                            child: Text(AppLocalizations.signUpLink),
+                            child: Text(context.l10n.signUpLink),
                           ),
                         ],
                       ),

@@ -12,6 +12,7 @@ import 'package:chismes/features/gossip/domain/usecases/search_gossips.dart';
 import 'package:chismes/features/gossip/domain/entities/gossip.dart';
 import 'package:chismes/core/services/search_history_service.dart';
 import 'package:chismes/core/services/location_service.dart';
+import '../../../../helpers/test_di_helper.dart';
 import '../../../../helpers/widget_test_wrapper.dart';
 
 import 'search_screen_test.mocks.dart';
@@ -23,7 +24,9 @@ void main() {
   late MockSearchHistoryService mockSearchHistoryService;
   late MockLocationService mockLocationService;
 
-  setUp(() {
+  setUp(() async {
+    // Inicializar DI para tests (LocaleNotifier, SharedPreferences, etc.)
+    await setupTestDI();
     mockGetGossips = MockGetGossips();
     mockSearchGossips = MockSearchGossips();
     mockSearchHistoryService = MockSearchHistoryService();
@@ -59,7 +62,7 @@ void main() {
     getIt.registerSingleton<LocationService>(mockLocationService);
   });
 
-  tearDown(() {
+  tearDown(() async {
     if (getIt.isRegistered<GetGossips>()) {
       getIt.unregister<GetGossips>();
     }
@@ -72,6 +75,9 @@ void main() {
     if (getIt.isRegistered<LocationService>()) {
       getIt.unregister<LocationService>();
     }
+
+    // Limpiar DI después del test
+    await tearDownTestDI();
   });
 
   group('SearchScreen', () {

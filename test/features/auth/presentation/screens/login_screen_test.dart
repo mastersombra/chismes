@@ -18,6 +18,7 @@ import 'package:chismes/core/error/error_codes.dart';
 import 'package:chismes/features/auth/presentation/state/auth_state.dart';
 import 'package:chismes/features/auth/domain/entities/user.dart';
 
+import '../../../../helpers/test_di_helper.dart';
 import '../../../../helpers/widget_test_wrapper.dart';
 import 'login_screen_test.mocks.dart';
 
@@ -33,7 +34,10 @@ void main() {
     provideDummy<AuthState>(const AuthInitial());
   });
 
-  setUp(() {
+  setUp(() async {
+    // Inicializar DI para tests (LocaleNotifier, SharedPreferences, etc.)
+    await setupTestDI();
+
     mockLoginController = MockLoginController();
     when(mockLoginController.state).thenReturn(const AuthInitial());
     when(mockLoginController.addListener(any)).thenReturn(null);
@@ -46,10 +50,13 @@ void main() {
     getIt.registerSingleton<LoginController>(mockLoginController);
   });
 
-  tearDown(() {
+  tearDown(() async {
     if (getIt.isRegistered<LoginController>()) {
       getIt.unregister<LoginController>();
     }
+
+    // Limpiar DI después del test
+    await tearDownTestDI();
   });
 
   Widget createTestWidget() {

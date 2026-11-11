@@ -14,6 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
+import '../../../../helpers/test_di_helper.dart';
 import '../../../../helpers/widget_test_wrapper.dart';
 import 'signup_screen_test.mocks.dart';
 
@@ -25,7 +26,10 @@ void main() {
     provideDummy<AuthState>(const AuthInitial());
   });
 
-  setUp(() {
+  setUp(() async {
+    // Inicializar DI para tests (LocaleNotifier, SharedPreferences, etc.)
+    await setupTestDI();
+
     mockController = MockSignupController();
     when(mockController.state).thenReturn(const AuthInitial());
     when(mockController.addListener(any)).thenReturn(null);
@@ -38,10 +42,13 @@ void main() {
     getIt.registerSingleton<SignupController>(mockController);
   });
 
-  tearDown(() {
+  tearDown(() async {
     if (getIt.isRegistered<SignupController>()) {
       getIt.unregister<SignupController>();
     }
+
+    // Limpiar DI después del test
+    await tearDownTestDI();
   });
 
   Widget makeTestableWidget(Widget child) {

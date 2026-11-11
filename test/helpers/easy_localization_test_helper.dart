@@ -1,89 +1,113 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'test_translations_loader.dart';
+import 'package:chismes/l10n/app_localizations.dart';
 
-/// Helper para inicializar EasyLocalization en tests
+/// Helper para proveer context con AppLocalizations en tests
 ///
-/// Para tests de widgets:
+/// Uso:
 /// ```dart
 /// testWidgets('mi test', (tester) async {
 ///   await tester.pumpWidget(
-///     await buildTestableWidgetWithLocalization(
-///       child: MyWidget(),
+///     TestL10nApp(
+///       child: Builder(
+///         builder: (context) {
+///           // Aquí tienes context con context.l10n disponible
+///           final result = FormValidators.email(context, 'test@test.com');
+///           return Text(result ?? 'valid');
+///         },
+///       ),
 ///     ),
 ///   );
 /// });
 /// ```
-///
-/// Para tests unitarios:
-/// ```dart
-/// testWidgets('mi test unitario', (tester) async {
-///   await initializeEasyLocalizationForTest(tester);
-///
-///   final message = 'errors.network.connection_error'.tr();
-///   expect(message, 'Error de conexión. Por favor verifica tu internet.');
-/// });
-/// ```
 
-/// Inicializa EasyLocalization para tests
+class TestL10nApp extends StatelessWidget {
+  final Widget child;
+  final Locale locale;
+
+  const TestL10nApp({
+    super.key,
+    required this.child,
+    this.locale = const Locale('es'),
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      locale: locale,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(body: child),
+    );
+  }
+}
+
+/// Wrapper más simple para tests unitarios
 ///
-/// IMPORTANTE: Debe usarse dentro de un testWidgets() porque requiere WidgetTester
+/// Retorna el context dentro del callback para usar en asserts
+Future<T> withL10nContext<T>(
+  WidgetTester tester,
+  T Function(BuildContext context) callback, {
+  Locale locale = const Locale('es'),
+}) async {
+  late T result;
+
+  await tester.pumpWidget(
+    TestL10nApp(
+      locale: locale,
+      child: Builder(
+        builder: (context) {
+          result = callback(context);
+          return const SizedBox.shrink();
+        },
+      ),
+    ),
+  );
+
+  await tester.pumpAndSettle();
+
+  return result;
+}
+
+/// Construye un widget testeable con localizaciones (gen-l10n)
+///
+/// Uso:
+/// ```dart
+/// await tester.pumpWidget(
+///   await buildTestableWidgetWithLocalization(
+///     child: MyWidget(),
+///   ),
+/// );
+/// ```
+Widget buildTestableWidgetWithLocalization({
+  required Widget child,
+  Locale locale = const Locale('es'),
+}) {
+  return TestL10nApp(
+    locale: locale,
+    child: child,
+  );
+}
+
+/// Inicializa el sistema de localización para tests
+///
+/// NOTA: En gen-l10n no necesitamos inicialización asíncrona
+/// Esta función se mantiene por compatibilidad pero ya no es necesaria
 Future<void> initializeEasyLocalizationForTest(
   WidgetTester tester, {
   Locale locale = const Locale('es'),
 }) async {
   await tester.pumpWidget(
-    EasyLocalization(
-      supportedLocales: const [Locale('es'), Locale('en')],
-      path: 'assets/translations', // No se usa con el loader personalizado
-      fallbackLocale: const Locale('es'),
-      startLocale: locale,
-      assetLoader: const TestTranslationsLoader(),
-      child: Builder(
-        builder: (context) {
-          return MaterialApp(
-            localizationsDelegates: context.localizationDelegates,
-            supportedLocales: context.supportedLocales,
-            locale: locale,
-            home: const SizedBox.shrink(),
-          );
-        },
-      ),
+    TestL10nApp(
+      locale: locale,
+      child: const SizedBox.shrink(),
     ),
   );
   await tester.pumpAndSettle();
-}
-
-/// Construye un widget envuelto con EasyLocalization para tests
-///
-/// Ejemplo:
-/// ```dart
-/// testWidgets('mi test', (tester) async {
-///   await tester.pumpWidget(
-///     await buildTestableWidgetWithLocalization(
-///       child: MyWidget(),
-///     ),
-///   );
-/// });
-/// ```
-Future<Widget> buildTestableWidgetWithLocalization({
-  required Widget child,
-  Locale locale = const Locale('es'),
-}) async {
-  await EasyLocalization.ensureInitialized();
-
-  return EasyLocalization(
-    supportedLocales: const [Locale('es'), Locale('en')],
-    path: 'assets/translations', // No se usa con el loader personalizado
-    fallbackLocale: const Locale('es'),
-    startLocale: locale,
-    assetLoader: const TestTranslationsLoader(),
-    child: MaterialApp(
-      localizationsDelegates: const [],
-      supportedLocales: const [Locale('es'), Locale('en')],
-      locale: locale,
-      home: child,
-    ),
-  );
 }

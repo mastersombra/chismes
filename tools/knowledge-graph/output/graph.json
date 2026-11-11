@@ -16,6 +16,51 @@
       "detail": "ChismesApp"
     },
     {
+      "id": "l10n.app_localizations",
+      "file": "l10n/app_localizations.dart",
+      "type": "other",
+      "layer": "shared",
+      "feature": "shared",
+      "evidence": [
+        "class AppLocalizations",
+        "extends LocalizationsDelegate",
+        "method:MaterialApp",
+        "method:authOtpVerificationResendTimer",
+        "method:larga"
+      ],
+      "detail": "AppLocalizations"
+    },
+    {
+      "id": "l10n.app_localizations_es",
+      "file": "l10n/app_localizations_es.dart",
+      "type": "other",
+      "layer": "shared",
+      "feature": "shared",
+      "evidence": [
+        "class AppLocalizationsEs",
+        "extends AppLocalizations",
+        "method:Castilian",
+        "method:authOtpVerificationResendTimer",
+        "method:larga"
+      ],
+      "detail": "AppLocalizationsEs"
+    },
+    {
+      "id": "l10n.app_localizations_en",
+      "file": "l10n/app_localizations_en.dart",
+      "type": "other",
+      "layer": "shared",
+      "feature": "shared",
+      "evidence": [
+        "class AppLocalizationsEn",
+        "extends AppLocalizations",
+        "method:English",
+        "method:authOtpVerificationResendTimer",
+        "method:long"
+      ],
+      "detail": "AppLocalizationsEn"
+    },
+    {
       "id": "shared.data.gossip_mock_data",
       "file": "shared/data/gossip_mock_data.dart",
       "type": "other",
@@ -1895,6 +1940,30 @@
       "detail": "FeedGossipModel"
     },
     {
+      "id": "core.l10n.locale_notifier",
+      "file": "core/l10n/locale_notifier.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class LocaleNotifier",
+        "extends ChangeNotifier",
+        "method:Locale",
+        "method:Locale",
+        "method:Locale"
+      ],
+      "detail": "LocaleNotifier"
+    },
+    {
+      "id": "core.l10n.l10n",
+      "file": "core/l10n/l10n.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [],
+      "detail": ""
+    },
+    {
       "id": "core.result.result",
       "file": "core/result/result.dart",
       "type": "other",
@@ -2168,8 +2237,9 @@
       "feature": "core",
       "evidence": [
         "class ErrorMessages",
-        "method:getMessage",
-        "method:getTitle"
+        "method:inglés",
+        "method:getMessageEnglish",
+        "method:getMessage"
       ],
       "detail": "ErrorMessages"
     },
@@ -2338,20 +2408,6 @@
       "detail": "FormValidators"
     },
     {
-      "id": "core.localization.app_localizations",
-      "file": "core/localization/app_localizations.dart",
-      "type": "other",
-      "layer": "core",
-      "feature": "core",
-      "evidence": [
-        "class para",
-        "method:otpResendTimer",
-        "method:select",
-        "method:minLength"
-      ],
-      "detail": "para"
-    },
-    {
       "id": "core.localization.locale_detector",
       "file": "core/localization/locale_detector.dart",
       "type": "other",
@@ -2422,12 +2478,32 @@
     },
     {
       "from": "main",
+      "to": "core.l10n.locale_notifier",
+      "relation": "imports"
+    },
+    {
+      "from": "main",
       "to": "features.auth.presentation.widgets.auth_gate",
+      "relation": "imports"
+    },
+    {
+      "from": "main",
+      "to": "core.l10n.l10n",
+      "relation": "imports"
+    },
+    {
+      "from": "l10n.app_localizations",
+      "to": "l10n.app_localizations",
       "relation": "imports"
     },
     {
       "from": "features.profile.presentation.screens.profile_screen",
       "to": "core.di.injection_container",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.presentation.screens.profile_screen",
+      "to": "core.l10n.locale_notifier",
       "relation": "imports"
     },
     {
@@ -2438,11 +2514,6 @@
     {
       "from": "features.profile.presentation.controllers.profile_controller",
       "to": "core.error.error_messages",
-      "relation": "imports"
-    },
-    {
-      "from": "features.profile.presentation.controllers.profile_controller",
-      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -2462,22 +2533,22 @@
     },
     {
       "from": "features.profile.presentation.widgets.profile_stats_card",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.profile.presentation.widgets.profile_stats_card",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
     {
       "from": "features.profile.presentation.widgets.settings_section",
-      "to": "core.theme.app_spacing",
+      "to": "core.di.injection_container",
       "relation": "imports"
     },
     {
-      "from": "features.profile.presentation.widgets.profile_header",
-      "to": "core.localization.app_localizations",
+      "from": "features.profile.presentation.widgets.settings_section",
+      "to": "core.l10n.locale_notifier",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.presentation.widgets.settings_section",
+      "to": "core.theme.app_spacing",
       "relation": "imports"
     },
     {
@@ -2632,11 +2703,6 @@
     },
     {
       "from": "features.gossip.presentation.screens.gossip_detail_screen",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.gossip.presentation.screens.gossip_detail_screen",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
@@ -2681,16 +2747,6 @@
       "relation": "imports"
     },
     {
-      "from": "features.gossip.presentation.widgets.city_autocomplete_optimized",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.gossip.presentation.widgets.image_picker_widget",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
       "from": "features.gossip.presentation.widgets.image_picker_widget",
       "to": "core.theme.app_spacing",
       "relation": "imports"
@@ -2717,11 +2773,6 @@
     },
     {
       "from": "features.gossip.presentation.widgets.media_attachment_section",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.gossip.presentation.widgets.media_attachment_section",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
@@ -2743,11 +2794,6 @@
     {
       "from": "features.gossip.presentation.widgets.gossip_text_fields",
       "to": "core.validation.form_validators",
-      "relation": "imports"
-    },
-    {
-      "from": "features.gossip.presentation.widgets.gossip_card",
-      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -2792,11 +2838,6 @@
     },
     {
       "from": "features.gossip.presentation.widgets.report_gossip_dialog",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.gossip.presentation.widgets.report_gossip_dialog",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
@@ -2811,11 +2852,6 @@
       "relation": "imports"
     },
     {
-      "from": "features.gossip.presentation.widgets.city_autocomplete",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
       "from": "features.gossip.presentation.widgets.location_selector",
       "to": "core.theme.app_spacing",
       "relation": "imports"
@@ -2823,16 +2859,6 @@
     {
       "from": "features.gossip.presentation.widgets.location_selector",
       "to": "core.theme.app_radius",
-      "relation": "imports"
-    },
-    {
-      "from": "features.gossip.presentation.widgets.location_selector",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.gossip.presentation.widgets.location_change_dialog",
-      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -3067,22 +3093,12 @@
     },
     {
       "from": "features.auth.presentation.screens.otp_verification_screen",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.screens.otp_verification_screen",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
     {
       "from": "features.auth.presentation.screens.signup_screen",
       "to": "core.di.injection_container",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.screens.signup_screen",
-      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -3103,11 +3119,6 @@
     {
       "from": "features.auth.presentation.screens.signup_screen",
       "to": "core.widgets.language_selector",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.screens.privacy_settings_screen",
-      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -3127,11 +3138,6 @@
     },
     {
       "from": "features.auth.presentation.screens.profile_setup_screen",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.screens.profile_setup_screen",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
@@ -3143,11 +3149,6 @@
     {
       "from": "features.auth.presentation.screens.login_screen",
       "to": "core.di.injection_container",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.screens.login_screen",
-      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -3172,22 +3173,12 @@
     },
     {
       "from": "features.auth.presentation.screens.privacy_consent_screen",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.screens.privacy_consent_screen",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
     {
       "from": "features.auth.presentation.screens.reset_password_screen",
       "to": "core.di.injection_container",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.screens.reset_password_screen",
-      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -3272,11 +3263,6 @@
     },
     {
       "from": "features.auth.presentation.widgets.forgot_password_dialog",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.widgets.forgot_password_dialog",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
@@ -3297,11 +3283,6 @@
     },
     {
       "from": "features.auth.presentation.widgets.email_field",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.widgets.email_field",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
@@ -3312,17 +3293,7 @@
     },
     {
       "from": "features.auth.presentation.widgets.password_field",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.widgets.password_field",
       "to": "core.theme.app_spacing",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.widgets.social_login_buttons",
-      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -3368,11 +3339,6 @@
     {
       "from": "features.auth.domain.validators.auth_validator",
       "to": "core.error.failure",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.domain.validators.auth_validator",
-      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -3517,11 +3483,6 @@
     },
     {
       "from": "features.home.presentation.screens.gossip_detail_screen",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.home.presentation.screens.gossip_detail_screen",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
@@ -3538,11 +3499,6 @@
     {
       "from": "features.home.presentation.screens.home_screen",
       "to": "core.di.injection_container",
-      "relation": "imports"
-    },
-    {
-      "from": "features.home.presentation.controllers.following_tab_controller",
-      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -3568,11 +3524,6 @@
     {
       "from": "features.home.presentation.widgets.following_tab",
       "to": "core.theme.app_spacing",
-      "relation": "imports"
-    },
-    {
-      "from": "features.home.presentation.widgets.popular_tab",
-      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -3673,6 +3624,11 @@
     {
       "from": "features.home.data.repositories.home_repository_impl",
       "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "core.l10n.l10n",
+      "to": "l10n.app_localizations",
       "relation": "imports"
     },
     {
@@ -3977,8 +3933,8 @@
     }
   ],
   "stats": {
-    "total_nodes": 169,
-    "total_edges": 316,
-    "files_analyzed": 169
+    "total_nodes": 173,
+    "total_edges": 296,
+    "files_analyzed": 173
   }
 }
