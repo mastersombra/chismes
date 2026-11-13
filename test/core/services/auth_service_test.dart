@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase hide User;
 import 'package:chismes/core/services/auth_service.dart';
 import 'package:chismes/core/logging/logging.dart';
 import 'package:chismes/features/auth/domain/repositories/auth_repository.dart';
@@ -8,16 +9,33 @@ import 'package:chismes/features/auth/domain/entities/user.dart';
 
 import 'auth_service_test.mocks.dart';
 
-@GenerateMocks([AuthRepository, AppLogger])
+@GenerateMocks([
+  AuthRepository,
+  AppLogger,
+  supabase.SupabaseClient,
+  supabase.GoTrueClient,
+])
 void main() {
   late AuthService authService;
   late MockAuthRepository mockAuthRepository;
+  late MockSupabaseClient mockSupabaseClient;
+  late MockGoTrueClient mockGoTrueClient;
   late MockAppLogger mockLogger;
 
   setUp(() {
     mockAuthRepository = MockAuthRepository();
+    mockSupabaseClient = MockSupabaseClient();
+    mockGoTrueClient = MockGoTrueClient();
     mockLogger = MockAppLogger();
-    authService = AuthService(mockAuthRepository, mockLogger);
+
+    // Setup mock para auth
+    when(mockSupabaseClient.auth).thenReturn(mockGoTrueClient);
+
+    authService = AuthService(
+      mockAuthRepository,
+      mockSupabaseClient,
+      mockLogger,
+    );
   });
 
   group('AuthService', () {
@@ -695,6 +713,64 @@ void main() {
 
         when(mockAuthRepository.currentUser).thenReturn(null);
         expect(authService.isAuthenticated, isFalse);
+      });
+    });
+
+    group('debugSessionStatus', () {
+      test('debe retornar estado sin sesión cuando no hay sesión activa', () {
+        // Arrange
+        when(mockGoTrueClient.currentSession).thenReturn(null);
+        when(mockGoTrueClient.currentUser).thenReturn(null);
+
+        // Act
+        final result = authService.debugSessionStatus();
+
+        // Assert
+        expect(result['hasSession'], isFalse);
+        expect(result['hasUser'], isFalse);
+        expect(result['isAuthenticated'], isFalse);
+        verify(mockLogger.w('debugSessionStatus: No active session or user'))
+            .called(1);
+      });
+
+      test('debe llamar a supabase auth correctamente', () {
+        // Arrange
+        when(mockGoTrueClient.currentSession).thenReturn(null);
+        when(mockGoTrueClient.currentUser).thenReturn(null);
+
+        // Act
+        authService.debugSessionStatus();
+
+        // Assert
+        verify(mockSupabaseClient.auth).called(greaterThan(0));
+        verify(mockGoTrueClient.currentSession).called(1);
+        verify(mockGoTrueClient.currentUser).called(1);
+      });
+    });
+
+    group('isSessionExpired', () {
+      test('debe retornar true cuando no hay sesión', () {
+        // Arrange
+        when(mockGoTrueClient.currentSession).thenReturn(null);
+
+        // Act
+        final result = authService.isSessionExpired();
+
+        // Assert
+        expect(result, isTrue);
+        verify(mockLogger.w('isSessionExpired: No session found')).called(1);
+      });
+
+      test('debe llamar a supabase auth correctamente', () {
+        // Arrange
+        when(mockGoTrueClient.currentSession).thenReturn(null);
+
+        // Act
+        authService.isSessionExpired();
+
+        // Assert
+        verify(mockSupabaseClient.auth).called(greaterThan(0));
+        verify(mockGoTrueClient.currentSession).called(1);
       });
     });
   });

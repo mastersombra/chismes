@@ -159,8 +159,20 @@ _i174.GetIt $initGetIt(
       gh<_i482.AppLogger>(),
     ),
   );
+  gh.singleton<_i278.HomeRemoteDataSource>(
+    () => _i278.HomeRemoteDataSource(
+      gh<_i454.SupabaseClient>(),
+      gh<_i482.AppLogger>(),
+    ),
+  );
   gh.singleton<_i852.SupabaseLocationRemoteDataSource>(
     () => _i852.SupabaseLocationRemoteDataSource(
+      gh<_i454.SupabaseClient>(),
+      gh<_i482.AppLogger>(),
+    ),
+  );
+  gh.singleton<_i327.ProfileRemoteDataSource>(
+    () => _i327.ProfileRemoteDataSource(
       gh<_i454.SupabaseClient>(),
       gh<_i482.AppLogger>(),
     ),
@@ -174,12 +186,6 @@ _i174.GetIt $initGetIt(
   gh.singleton<_i669.LocationService>(
     () => _i669.LocationService(gh<_i482.AppLogger>()),
   );
-  gh.singleton<_i278.HomeRemoteDataSource>(
-    () => _i278.HomeRemoteDataSource(gh<_i482.AppLogger>()),
-  );
-  gh.singleton<_i327.ProfileRemoteDataSource>(
-    () => _i327.ProfileRemoteDataSource(gh<_i482.AppLogger>()),
-  );
   gh.singleton<_i0.HomeRepository>(
     () => _i76.HomeRepositoryImpl(
       gh<_i278.HomeRemoteDataSource>(),
@@ -187,7 +193,10 @@ _i174.GetIt $initGetIt(
     ),
   );
   gh.singleton<_i76.SupabaseAuthDataSource>(
-    () => _i743.SupabaseAuthDataSourceImpl(gh<_i482.AppLogger>()),
+    () => _i743.SupabaseAuthDataSourceImpl(
+      gh<_i454.SupabaseClient>(),
+      gh<_i482.AppLogger>(),
+    ),
   );
   gh.singleton<_i302.GossipLocalDataSource>(
     () => _i837.SharedPrefsGossipLocalDataSource(gh<_i482.AppLogger>()),
@@ -254,6 +263,13 @@ _i174.GetIt $initGetIt(
   gh.factory<_i108.SearchCities>(
     () => _i108.SearchCities(gh<_i332.LocationRepository>()),
   );
+  gh.singleton<_i745.AuthService>(
+    () => _i745.AuthService(
+      gh<_i787.AuthRepository>(),
+      gh<_i454.SupabaseClient>(),
+      gh<_i482.AppLogger>(),
+    ),
+  );
   gh.factory<_i913.GetCitiesByRegion>(
     () => _i913.GetCitiesByRegion(repository: gh<_i332.LocationRepository>()),
   );
@@ -309,6 +325,16 @@ _i174.GetIt $initGetIt(
       gh<_i482.AppLogger>(),
     ),
   );
+  gh.factory<_i658.ProfileController>(
+    () => _i658.ProfileController(
+      gh<_i669.GetUserStats>(),
+      gh<_i729.GetSettings>(),
+      gh<_i862.UpdateSettings>(),
+      gh<_i487.SignOut>(),
+      gh<_i745.AuthService>(),
+      gh<_i482.AppLogger>(),
+    ),
+  );
   gh.factory<_i166.SignupController>(
     () => _i166.SignupController(
       gh<_i460.SignUpWithEmailUseCase>(),
@@ -321,9 +347,6 @@ _i174.GetIt $initGetIt(
       logger: gh<_i482.AppLogger>(),
       email: gh<String>(),
     ),
-  );
-  gh.singleton<_i745.AuthService>(
-    () => _i745.AuthService(gh<_i787.AuthRepository>(), gh<_i482.AppLogger>()),
   );
   gh.factory<_i491.LocationManager>(
     () => _i491.LocationManager(
@@ -369,16 +392,6 @@ _i174.GetIt $initGetIt(
       gh<_i692.SignInWithGoogleUseCase>(),
       gh<_i263.SignInWithAppleUseCase>(),
       gh<_i1066.ResetPasswordUseCase>(),
-      gh<_i482.AppLogger>(),
-    ),
-  );
-  gh.factory<_i658.ProfileController>(
-    () => _i658.ProfileController(
-      gh<_i669.GetUserStats>(),
-      gh<_i729.GetSettings>(),
-      gh<_i862.UpdateSettings>(),
-      gh<_i487.SignOut>(),
-      gh<_i745.AuthService>(),
       gh<_i482.AppLogger>(),
     ),
   );

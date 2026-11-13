@@ -3,16 +3,17 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i3;
+import 'dart:async' as _i4;
 
-import 'package:chismes/core/error/failure.dart' as _i6;
-import 'package:chismes/core/logging/app_logger.dart' as _i8;
-import 'package:chismes/core/result/result.dart' as _i5;
-import 'package:chismes/features/auth/domain/entities/user.dart' as _i4;
+import 'package:chismes/core/error/failure.dart' as _i7;
+import 'package:chismes/core/logging/app_logger.dart' as _i9;
+import 'package:chismes/core/result/result.dart' as _i6;
+import 'package:chismes/features/auth/domain/entities/user.dart' as _i5;
 import 'package:chismes/features/auth/domain/repositories/auth_repository.dart'
-    as _i2;
+    as _i3;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i7;
+import 'package:mockito/src/dummies.dart' as _i8;
+import 'package:supabase/supabase.dart' as _i2;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -29,24 +30,138 @@ import 'package:mockito/src/dummies.dart' as _i7;
 // ignore_for_file: subtype_of_sealed_class
 // ignore_for_file: invalid_use_of_internal_member
 
+class _FakeFunctionsClient_0 extends _i1.SmartFake
+    implements _i2.FunctionsClient {
+  _FakeFunctionsClient_0(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeSupabaseStorageClient_1 extends _i1.SmartFake
+    implements _i2.SupabaseStorageClient {
+  _FakeSupabaseStorageClient_1(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeRealtimeClient_2 extends _i1.SmartFake
+    implements _i2.RealtimeClient {
+  _FakeRealtimeClient_2(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakePostgrestClient_3 extends _i1.SmartFake
+    implements _i2.PostgrestClient {
+  _FakePostgrestClient_3(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeGoTrueClient_4 extends _i1.SmartFake implements _i2.GoTrueClient {
+  _FakeGoTrueClient_4(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeSupabaseQueryBuilder_5 extends _i1.SmartFake
+    implements _i2.SupabaseQueryBuilder {
+  _FakeSupabaseQueryBuilder_5(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeSupabaseQuerySchema_6 extends _i1.SmartFake
+    implements _i2.SupabaseQuerySchema {
+  _FakeSupabaseQuerySchema_6(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakePostgrestFilterBuilder_7<T1> extends _i1.SmartFake
+    implements _i2.PostgrestFilterBuilder<T1> {
+  _FakePostgrestFilterBuilder_7(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeRealtimeChannel_8 extends _i1.SmartFake
+    implements _i2.RealtimeChannel {
+  _FakeRealtimeChannel_8(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeGoTrueAdminApi_9 extends _i1.SmartFake
+    implements _i2.GoTrueAdminApi {
+  _FakeGoTrueAdminApi_9(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeGoTrueMFAApi_10 extends _i1.SmartFake implements _i2.GoTrueMFAApi {
+  _FakeGoTrueMFAApi_10(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeGoTrueOAuthApi_11 extends _i1.SmartFake
+    implements _i2.GoTrueOAuthApi {
+  _FakeGoTrueOAuthApi_11(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeGoTruePasskeyApi_12 extends _i1.SmartFake
+    implements _i2.GoTruePasskeyApi {
+  _FakeGoTruePasskeyApi_12(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeAuthResponse_13 extends _i1.SmartFake implements _i2.AuthResponse {
+  _FakeAuthResponse_13(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeOAuthResponse_14 extends _i1.SmartFake implements _i2.OAuthResponse {
+  _FakeOAuthResponse_14(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeAuthSessionUrlResponse_15 extends _i1.SmartFake
+    implements _i2.AuthSessionUrlResponse {
+  _FakeAuthSessionUrlResponse_15(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeResendResponse_16 extends _i1.SmartFake
+    implements _i2.ResendResponse {
+  _FakeResendResponse_16(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeUserResponse_17 extends _i1.SmartFake implements _i2.UserResponse {
+  _FakeUserResponse_17(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeObject_18 extends _i1.SmartFake implements Object {
+  _FakeObject_18(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class _FakeGetClaimsResponse_19 extends _i1.SmartFake
+    implements _i2.GetClaimsResponse {
+  _FakeGetClaimsResponse_19(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
 /// A class which mocks [AuthRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAuthRepository extends _i1.Mock implements _i2.AuthRepository {
+class MockAuthRepository extends _i1.Mock implements _i3.AuthRepository {
   MockAuthRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Stream<_i4.User?> get authStateChanges =>
+  _i4.Stream<_i5.User?> get authStateChanges =>
       (super.noSuchMethod(
             Invocation.getter(#authStateChanges),
-            returnValue: _i3.Stream<_i4.User?>.empty(),
+            returnValue: _i4.Stream<_i5.User?>.empty(),
           )
-          as _i3.Stream<_i4.User?>);
+          as _i4.Stream<_i5.User?>);
 
   @override
-  _i3.Future<_i5.Result<_i6.Failure, _i4.User>> signInWithEmail({
+  _i4.Future<_i6.Result<_i7.Failure, _i5.User>> signInWithEmail({
     required String? email,
     required String? password,
   }) =>
@@ -55,8 +170,8 @@ class MockAuthRepository extends _i1.Mock implements _i2.AuthRepository {
               #email: email,
               #password: password,
             }),
-            returnValue: _i3.Future<_i5.Result<_i6.Failure, _i4.User>>.value(
-              _i7.dummyValue<_i5.Result<_i6.Failure, _i4.User>>(
+            returnValue: _i4.Future<_i6.Result<_i7.Failure, _i5.User>>.value(
+              _i8.dummyValue<_i6.Result<_i7.Failure, _i5.User>>(
                 this,
                 Invocation.method(#signInWithEmail, [], {
                   #email: email,
@@ -65,10 +180,10 @@ class MockAuthRepository extends _i1.Mock implements _i2.AuthRepository {
               ),
             ),
           )
-          as _i3.Future<_i5.Result<_i6.Failure, _i4.User>>);
+          as _i4.Future<_i6.Result<_i7.Failure, _i5.User>>);
 
   @override
-  _i3.Future<_i5.Result<_i6.Failure, void>> signUpWithEmail({
+  _i4.Future<_i6.Result<_i7.Failure, void>> signUpWithEmail({
     required String? email,
     required String? password,
   }) =>
@@ -77,8 +192,8 @@ class MockAuthRepository extends _i1.Mock implements _i2.AuthRepository {
               #email: email,
               #password: password,
             }),
-            returnValue: _i3.Future<_i5.Result<_i6.Failure, void>>.value(
-              _i7.dummyValue<_i5.Result<_i6.Failure, void>>(
+            returnValue: _i4.Future<_i6.Result<_i7.Failure, void>>.value(
+              _i8.dummyValue<_i6.Result<_i7.Failure, void>>(
                 this,
                 Invocation.method(#signUpWithEmail, [], {
                   #email: email,
@@ -87,10 +202,10 @@ class MockAuthRepository extends _i1.Mock implements _i2.AuthRepository {
               ),
             ),
           )
-          as _i3.Future<_i5.Result<_i6.Failure, void>>);
+          as _i4.Future<_i6.Result<_i7.Failure, void>>);
 
   @override
-  _i3.Future<_i5.Result<_i6.Failure, _i4.User>> verifyOTP({
+  _i4.Future<_i6.Result<_i7.Failure, _i5.User>> verifyOTP({
     required String? email,
     required String? token,
     bool? isPasswordReset = false,
@@ -101,8 +216,8 @@ class MockAuthRepository extends _i1.Mock implements _i2.AuthRepository {
               #token: token,
               #isPasswordReset: isPasswordReset,
             }),
-            returnValue: _i3.Future<_i5.Result<_i6.Failure, _i4.User>>.value(
-              _i7.dummyValue<_i5.Result<_i6.Failure, _i4.User>>(
+            returnValue: _i4.Future<_i6.Result<_i7.Failure, _i5.User>>.value(
+              _i8.dummyValue<_i6.Result<_i7.Failure, _i5.User>>(
                 this,
                 Invocation.method(#verifyOTP, [], {
                   #email: email,
@@ -112,77 +227,77 @@ class MockAuthRepository extends _i1.Mock implements _i2.AuthRepository {
               ),
             ),
           )
-          as _i3.Future<_i5.Result<_i6.Failure, _i4.User>>);
+          as _i4.Future<_i6.Result<_i7.Failure, _i5.User>>);
 
   @override
-  _i3.Future<_i5.Result<_i6.Failure, void>> resendOTP({
+  _i4.Future<_i6.Result<_i7.Failure, void>> resendOTP({
     required String? email,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#resendOTP, [], {#email: email}),
-            returnValue: _i3.Future<_i5.Result<_i6.Failure, void>>.value(
-              _i7.dummyValue<_i5.Result<_i6.Failure, void>>(
+            returnValue: _i4.Future<_i6.Result<_i7.Failure, void>>.value(
+              _i8.dummyValue<_i6.Result<_i7.Failure, void>>(
                 this,
                 Invocation.method(#resendOTP, [], {#email: email}),
               ),
             ),
           )
-          as _i3.Future<_i5.Result<_i6.Failure, void>>);
+          as _i4.Future<_i6.Result<_i7.Failure, void>>);
 
   @override
-  _i3.Future<_i5.Result<_i6.Failure, _i4.User>> signInWithGoogle() =>
+  _i4.Future<_i6.Result<_i7.Failure, _i5.User>> signInWithGoogle() =>
       (super.noSuchMethod(
             Invocation.method(#signInWithGoogle, []),
-            returnValue: _i3.Future<_i5.Result<_i6.Failure, _i4.User>>.value(
-              _i7.dummyValue<_i5.Result<_i6.Failure, _i4.User>>(
+            returnValue: _i4.Future<_i6.Result<_i7.Failure, _i5.User>>.value(
+              _i8.dummyValue<_i6.Result<_i7.Failure, _i5.User>>(
                 this,
                 Invocation.method(#signInWithGoogle, []),
               ),
             ),
           )
-          as _i3.Future<_i5.Result<_i6.Failure, _i4.User>>);
+          as _i4.Future<_i6.Result<_i7.Failure, _i5.User>>);
 
   @override
-  _i3.Future<_i5.Result<_i6.Failure, _i4.User>> signInWithApple() =>
+  _i4.Future<_i6.Result<_i7.Failure, _i5.User>> signInWithApple() =>
       (super.noSuchMethod(
             Invocation.method(#signInWithApple, []),
-            returnValue: _i3.Future<_i5.Result<_i6.Failure, _i4.User>>.value(
-              _i7.dummyValue<_i5.Result<_i6.Failure, _i4.User>>(
+            returnValue: _i4.Future<_i6.Result<_i7.Failure, _i5.User>>.value(
+              _i8.dummyValue<_i6.Result<_i7.Failure, _i5.User>>(
                 this,
                 Invocation.method(#signInWithApple, []),
               ),
             ),
           )
-          as _i3.Future<_i5.Result<_i6.Failure, _i4.User>>);
+          as _i4.Future<_i6.Result<_i7.Failure, _i5.User>>);
 
   @override
-  _i3.Future<_i5.Result<_i6.Failure, void>> signOut() =>
+  _i4.Future<_i6.Result<_i7.Failure, void>> signOut() =>
       (super.noSuchMethod(
             Invocation.method(#signOut, []),
-            returnValue: _i3.Future<_i5.Result<_i6.Failure, void>>.value(
-              _i7.dummyValue<_i5.Result<_i6.Failure, void>>(
+            returnValue: _i4.Future<_i6.Result<_i7.Failure, void>>.value(
+              _i8.dummyValue<_i6.Result<_i7.Failure, void>>(
                 this,
                 Invocation.method(#signOut, []),
               ),
             ),
           )
-          as _i3.Future<_i5.Result<_i6.Failure, void>>);
+          as _i4.Future<_i6.Result<_i7.Failure, void>>);
 
   @override
-  _i3.Future<_i5.Result<_i6.Failure, _i4.User?>> getCurrentUser() =>
+  _i4.Future<_i6.Result<_i7.Failure, _i5.User?>> getCurrentUser() =>
       (super.noSuchMethod(
             Invocation.method(#getCurrentUser, []),
-            returnValue: _i3.Future<_i5.Result<_i6.Failure, _i4.User?>>.value(
-              _i7.dummyValue<_i5.Result<_i6.Failure, _i4.User?>>(
+            returnValue: _i4.Future<_i6.Result<_i7.Failure, _i5.User?>>.value(
+              _i8.dummyValue<_i6.Result<_i7.Failure, _i5.User?>>(
                 this,
                 Invocation.method(#getCurrentUser, []),
               ),
             ),
           )
-          as _i3.Future<_i5.Result<_i6.Failure, _i4.User?>>);
+          as _i4.Future<_i6.Result<_i7.Failure, _i5.User?>>);
 
   @override
-  _i3.Future<_i5.Result<_i6.Failure, _i4.User>> updateProfile({
+  _i4.Future<_i6.Result<_i7.Failure, _i5.User>> updateProfile({
     String? username,
     String? displayName,
     String? avatarUrl,
@@ -195,8 +310,8 @@ class MockAuthRepository extends _i1.Mock implements _i2.AuthRepository {
               #avatarUrl: avatarUrl,
               #bio: bio,
             }),
-            returnValue: _i3.Future<_i5.Result<_i6.Failure, _i4.User>>.value(
-              _i7.dummyValue<_i5.Result<_i6.Failure, _i4.User>>(
+            returnValue: _i4.Future<_i6.Result<_i7.Failure, _i5.User>>.value(
+              _i8.dummyValue<_i6.Result<_i7.Failure, _i5.User>>(
                 this,
                 Invocation.method(#updateProfile, [], {
                   #username: username,
@@ -207,46 +322,46 @@ class MockAuthRepository extends _i1.Mock implements _i2.AuthRepository {
               ),
             ),
           )
-          as _i3.Future<_i5.Result<_i6.Failure, _i4.User>>);
+          as _i4.Future<_i6.Result<_i7.Failure, _i5.User>>);
 
   @override
-  _i3.Future<_i5.Result<_i6.Failure, bool>> isUsernameAvailable(
+  _i4.Future<_i6.Result<_i7.Failure, bool>> isUsernameAvailable(
     String? username,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#isUsernameAvailable, [username]),
-            returnValue: _i3.Future<_i5.Result<_i6.Failure, bool>>.value(
-              _i7.dummyValue<_i5.Result<_i6.Failure, bool>>(
+            returnValue: _i4.Future<_i6.Result<_i7.Failure, bool>>.value(
+              _i8.dummyValue<_i6.Result<_i7.Failure, bool>>(
                 this,
                 Invocation.method(#isUsernameAvailable, [username]),
               ),
             ),
           )
-          as _i3.Future<_i5.Result<_i6.Failure, bool>>);
+          as _i4.Future<_i6.Result<_i7.Failure, bool>>);
 
   @override
-  _i3.Future<_i5.Result<_i6.Failure, void>> resetPassword({
+  _i4.Future<_i6.Result<_i7.Failure, void>> resetPassword({
     required String? email,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#resetPassword, [], {#email: email}),
-            returnValue: _i3.Future<_i5.Result<_i6.Failure, void>>.value(
-              _i7.dummyValue<_i5.Result<_i6.Failure, void>>(
+            returnValue: _i4.Future<_i6.Result<_i7.Failure, void>>.value(
+              _i8.dummyValue<_i6.Result<_i7.Failure, void>>(
                 this,
                 Invocation.method(#resetPassword, [], {#email: email}),
               ),
             ),
           )
-          as _i3.Future<_i5.Result<_i6.Failure, void>>);
+          as _i4.Future<_i6.Result<_i7.Failure, void>>);
 
   @override
-  _i3.Future<_i5.Result<_i6.Failure, void>> updatePassword({
+  _i4.Future<_i6.Result<_i7.Failure, void>> updatePassword({
     required String? newPassword,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#updatePassword, [], {#newPassword: newPassword}),
-            returnValue: _i3.Future<_i5.Result<_i6.Failure, void>>.value(
-              _i7.dummyValue<_i5.Result<_i6.Failure, void>>(
+            returnValue: _i4.Future<_i6.Result<_i7.Failure, void>>.value(
+              _i8.dummyValue<_i6.Result<_i7.Failure, void>>(
                 this,
                 Invocation.method(#updatePassword, [], {
                   #newPassword: newPassword,
@@ -254,41 +369,41 @@ class MockAuthRepository extends _i1.Mock implements _i2.AuthRepository {
               ),
             ),
           )
-          as _i3.Future<_i5.Result<_i6.Failure, void>>);
+          as _i4.Future<_i6.Result<_i7.Failure, void>>);
 
   @override
-  _i3.Future<_i5.Result<_i6.Failure, void>> resendVerificationEmail() =>
+  _i4.Future<_i6.Result<_i7.Failure, void>> resendVerificationEmail() =>
       (super.noSuchMethod(
             Invocation.method(#resendVerificationEmail, []),
-            returnValue: _i3.Future<_i5.Result<_i6.Failure, void>>.value(
-              _i7.dummyValue<_i5.Result<_i6.Failure, void>>(
+            returnValue: _i4.Future<_i6.Result<_i7.Failure, void>>.value(
+              _i8.dummyValue<_i6.Result<_i7.Failure, void>>(
                 this,
                 Invocation.method(#resendVerificationEmail, []),
               ),
             ),
           )
-          as _i3.Future<_i5.Result<_i6.Failure, void>>);
+          as _i4.Future<_i6.Result<_i7.Failure, void>>);
 
   @override
-  _i3.Future<_i5.Result<_i6.Failure, bool>> checkEmailExistsAndConfirmed(
+  _i4.Future<_i6.Result<_i7.Failure, bool>> checkEmailExistsAndConfirmed(
     String? email,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#checkEmailExistsAndConfirmed, [email]),
-            returnValue: _i3.Future<_i5.Result<_i6.Failure, bool>>.value(
-              _i7.dummyValue<_i5.Result<_i6.Failure, bool>>(
+            returnValue: _i4.Future<_i6.Result<_i7.Failure, bool>>.value(
+              _i8.dummyValue<_i6.Result<_i7.Failure, bool>>(
                 this,
                 Invocation.method(#checkEmailExistsAndConfirmed, [email]),
               ),
             ),
           )
-          as _i3.Future<_i5.Result<_i6.Failure, bool>>);
+          as _i4.Future<_i6.Result<_i7.Failure, bool>>);
 }
 
 /// A class which mocks [AppLogger].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAppLogger extends _i1.Mock implements _i8.AppLogger {
+class MockAppLogger extends _i1.Mock implements _i9.AppLogger {
   MockAppLogger() {
     _i1.throwOnMissingStub(this);
   }
@@ -379,4 +494,900 @@ class MockAppLogger extends _i1.Mock implements _i8.AppLogger {
     Invocation.method(#close, []),
     returnValueForMissingStub: null,
   );
+}
+
+/// A class which mocks [SupabaseClient].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSupabaseClient extends _i1.Mock implements _i2.SupabaseClient {
+  MockSupabaseClient() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.FunctionsClient get functions =>
+      (super.noSuchMethod(
+            Invocation.getter(#functions),
+            returnValue: _FakeFunctionsClient_0(
+              this,
+              Invocation.getter(#functions),
+            ),
+          )
+          as _i2.FunctionsClient);
+
+  @override
+  _i2.SupabaseStorageClient get storage =>
+      (super.noSuchMethod(
+            Invocation.getter(#storage),
+            returnValue: _FakeSupabaseStorageClient_1(
+              this,
+              Invocation.getter(#storage),
+            ),
+          )
+          as _i2.SupabaseStorageClient);
+
+  @override
+  _i2.RealtimeClient get realtime =>
+      (super.noSuchMethod(
+            Invocation.getter(#realtime),
+            returnValue: _FakeRealtimeClient_2(
+              this,
+              Invocation.getter(#realtime),
+            ),
+          )
+          as _i2.RealtimeClient);
+
+  @override
+  _i2.PostgrestClient get rest =>
+      (super.noSuchMethod(
+            Invocation.getter(#rest),
+            returnValue: _FakePostgrestClient_3(this, Invocation.getter(#rest)),
+          )
+          as _i2.PostgrestClient);
+
+  @override
+  Map<String, String> get headers =>
+      (super.noSuchMethod(
+            Invocation.getter(#headers),
+            returnValue: <String, String>{},
+          )
+          as Map<String, String>);
+
+  @override
+  _i2.GoTrueClient get auth =>
+      (super.noSuchMethod(
+            Invocation.getter(#auth),
+            returnValue: _FakeGoTrueClient_4(this, Invocation.getter(#auth)),
+          )
+          as _i2.GoTrueClient);
+
+  @override
+  set functions(_i2.FunctionsClient? value) => super.noSuchMethod(
+    Invocation.setter(#functions, value),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  set storage(_i2.SupabaseStorageClient? value) => super.noSuchMethod(
+    Invocation.setter(#storage, value),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  set realtime(_i2.RealtimeClient? value) => super.noSuchMethod(
+    Invocation.setter(#realtime, value),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  set rest(_i2.PostgrestClient? value) => super.noSuchMethod(
+    Invocation.setter(#rest, value),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  set headers(Map<String, String>? newHeaders) => super.noSuchMethod(
+    Invocation.setter(#headers, newHeaders),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  _i2.SupabaseQueryBuilder from(String? table) =>
+      (super.noSuchMethod(
+            Invocation.method(#from, [table]),
+            returnValue: _FakeSupabaseQueryBuilder_5(
+              this,
+              Invocation.method(#from, [table]),
+            ),
+          )
+          as _i2.SupabaseQueryBuilder);
+
+  @override
+  _i2.SupabaseQuerySchema schema(String? schema) =>
+      (super.noSuchMethod(
+            Invocation.method(#schema, [schema]),
+            returnValue: _FakeSupabaseQuerySchema_6(
+              this,
+              Invocation.method(#schema, [schema]),
+            ),
+          )
+          as _i2.SupabaseQuerySchema);
+
+  @override
+  _i2.PostgrestFilterBuilder<T> rpc<T>(
+    String? fn, {
+    Map<String, dynamic>? params,
+    dynamic get = false,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#rpc, [fn], {#params: params, #get: get}),
+            returnValue: _FakePostgrestFilterBuilder_7<T>(
+              this,
+              Invocation.method(#rpc, [fn], {#params: params, #get: get}),
+            ),
+          )
+          as _i2.PostgrestFilterBuilder<T>);
+
+  @override
+  _i2.RealtimeChannel channel(
+    String? name, {
+    _i2.RealtimeChannelConfig? opts = const _i2.RealtimeChannelConfig(),
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#channel, [name], {#opts: opts}),
+            returnValue: _FakeRealtimeChannel_8(
+              this,
+              Invocation.method(#channel, [name], {#opts: opts}),
+            ),
+          )
+          as _i2.RealtimeChannel);
+
+  @override
+  List<_i2.RealtimeChannel> getChannels() =>
+      (super.noSuchMethod(
+            Invocation.method(#getChannels, []),
+            returnValue: <_i2.RealtimeChannel>[],
+          )
+          as List<_i2.RealtimeChannel>);
+
+  @override
+  _i4.Future<String> removeChannel(_i2.RealtimeChannel? channel) =>
+      (super.noSuchMethod(
+            Invocation.method(#removeChannel, [channel]),
+            returnValue: _i4.Future<String>.value(
+              _i8.dummyValue<String>(
+                this,
+                Invocation.method(#removeChannel, [channel]),
+              ),
+            ),
+          )
+          as _i4.Future<String>);
+
+  @override
+  _i4.Future<List<String>> removeAllChannels() =>
+      (super.noSuchMethod(
+            Invocation.method(#removeAllChannels, []),
+            returnValue: _i4.Future<List<String>>.value(<String>[]),
+          )
+          as _i4.Future<List<String>>);
+
+  @override
+  _i4.Future<void> dispose() =>
+      (super.noSuchMethod(
+            Invocation.method(#dispose, []),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+}
+
+/// A class which mocks [GoTrueClient].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGoTrueClient extends _i1.Mock implements _i2.GoTrueClient {
+  MockGoTrueClient() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.GoTrueAdminApi get admin =>
+      (super.noSuchMethod(
+            Invocation.getter(#admin),
+            returnValue: _FakeGoTrueAdminApi_9(this, Invocation.getter(#admin)),
+          )
+          as _i2.GoTrueAdminApi);
+
+  @override
+  _i2.GoTrueMFAApi get mfa =>
+      (super.noSuchMethod(
+            Invocation.getter(#mfa),
+            returnValue: _FakeGoTrueMFAApi_10(this, Invocation.getter(#mfa)),
+          )
+          as _i2.GoTrueMFAApi);
+
+  @override
+  _i2.GoTrueOAuthApi get oauth =>
+      (super.noSuchMethod(
+            Invocation.getter(#oauth),
+            returnValue: _FakeGoTrueOAuthApi_11(
+              this,
+              Invocation.getter(#oauth),
+            ),
+          )
+          as _i2.GoTrueOAuthApi);
+
+  @override
+  _i2.GoTruePasskeyApi get passkey =>
+      (super.noSuchMethod(
+            Invocation.getter(#passkey),
+            returnValue: _FakeGoTruePasskeyApi_12(
+              this,
+              Invocation.getter(#passkey),
+            ),
+          )
+          as _i2.GoTruePasskeyApi);
+
+  @override
+  _i4.Stream<_i2.AuthState> get onAuthStateChange =>
+      (super.noSuchMethod(
+            Invocation.getter(#onAuthStateChange),
+            returnValue: _i4.Stream<_i2.AuthState>.empty(),
+          )
+          as _i4.Stream<_i2.AuthState>);
+
+  @override
+  _i4.Stream<_i2.AuthState> get onAuthStateChangeSync =>
+      (super.noSuchMethod(
+            Invocation.getter(#onAuthStateChangeSync),
+            returnValue: _i4.Stream<_i2.AuthState>.empty(),
+          )
+          as _i4.Stream<_i2.AuthState>);
+
+  @override
+  Map<String, String> get headers =>
+      (super.noSuchMethod(
+            Invocation.getter(#headers),
+            returnValue: <String, String>{},
+          )
+          as Map<String, String>);
+
+  @override
+  set admin(_i2.GoTrueAdminApi? value) => super.noSuchMethod(
+    Invocation.setter(#admin, value),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  set mfa(_i2.GoTrueMFAApi? value) => super.noSuchMethod(
+    Invocation.setter(#mfa, value),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  set oauth(_i2.GoTrueOAuthApi? value) => super.noSuchMethod(
+    Invocation.setter(#oauth, value),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  set passkey(_i2.GoTruePasskeyApi? value) => super.noSuchMethod(
+    Invocation.setter(#passkey, value),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  _i4.Future<_i2.Session?> getSession() =>
+      (super.noSuchMethod(
+            Invocation.method(#getSession, []),
+            returnValue: _i4.Future<_i2.Session?>.value(),
+          )
+          as _i4.Future<_i2.Session?>);
+
+  @override
+  _i4.Future<_i2.AuthResponse> signInAnonymously({
+    Map<String, dynamic>? data,
+    String? captchaToken,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#signInAnonymously, [], {
+              #data: data,
+              #captchaToken: captchaToken,
+            }),
+            returnValue: _i4.Future<_i2.AuthResponse>.value(
+              _FakeAuthResponse_13(
+                this,
+                Invocation.method(#signInAnonymously, [], {
+                  #data: data,
+                  #captchaToken: captchaToken,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.AuthResponse>);
+
+  @override
+  _i4.Future<_i2.AuthResponse> signUp({
+    String? email,
+    String? phone,
+    required String? password,
+    String? emailRedirectTo,
+    Map<String, dynamic>? data,
+    String? captchaToken,
+    _i2.OtpChannel? channel = _i2.OtpChannel.sms,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#signUp, [], {
+              #email: email,
+              #phone: phone,
+              #password: password,
+              #emailRedirectTo: emailRedirectTo,
+              #data: data,
+              #captchaToken: captchaToken,
+              #channel: channel,
+            }),
+            returnValue: _i4.Future<_i2.AuthResponse>.value(
+              _FakeAuthResponse_13(
+                this,
+                Invocation.method(#signUp, [], {
+                  #email: email,
+                  #phone: phone,
+                  #password: password,
+                  #emailRedirectTo: emailRedirectTo,
+                  #data: data,
+                  #captchaToken: captchaToken,
+                  #channel: channel,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.AuthResponse>);
+
+  @override
+  _i4.Future<_i2.AuthResponse> signInWithPassword({
+    String? email,
+    String? phone,
+    required String? password,
+    String? captchaToken,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#signInWithPassword, [], {
+              #email: email,
+              #phone: phone,
+              #password: password,
+              #captchaToken: captchaToken,
+            }),
+            returnValue: _i4.Future<_i2.AuthResponse>.value(
+              _FakeAuthResponse_13(
+                this,
+                Invocation.method(#signInWithPassword, [], {
+                  #email: email,
+                  #phone: phone,
+                  #password: password,
+                  #captchaToken: captchaToken,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.AuthResponse>);
+
+  @override
+  _i4.Future<_i2.OAuthResponse> getOAuthSignInUrl({
+    required _i2.OAuthProvider? provider,
+    String? redirectTo,
+    String? scopes,
+    Map<String, String>? queryParams,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#getOAuthSignInUrl, [], {
+              #provider: provider,
+              #redirectTo: redirectTo,
+              #scopes: scopes,
+              #queryParams: queryParams,
+            }),
+            returnValue: _i4.Future<_i2.OAuthResponse>.value(
+              _FakeOAuthResponse_14(
+                this,
+                Invocation.method(#getOAuthSignInUrl, [], {
+                  #provider: provider,
+                  #redirectTo: redirectTo,
+                  #scopes: scopes,
+                  #queryParams: queryParams,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.OAuthResponse>);
+
+  @override
+  _i4.Future<_i2.AuthSessionUrlResponse> exchangeCodeForSession(
+    String? authCode,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#exchangeCodeForSession, [authCode]),
+            returnValue: _i4.Future<_i2.AuthSessionUrlResponse>.value(
+              _FakeAuthSessionUrlResponse_15(
+                this,
+                Invocation.method(#exchangeCodeForSession, [authCode]),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.AuthSessionUrlResponse>);
+
+  @override
+  _i4.Future<_i2.AuthResponse> signInWithIdToken({
+    required _i2.OAuthProvider? provider,
+    required String? idToken,
+    String? accessToken,
+    String? nonce,
+    String? captchaToken,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#signInWithIdToken, [], {
+              #provider: provider,
+              #idToken: idToken,
+              #accessToken: accessToken,
+              #nonce: nonce,
+              #captchaToken: captchaToken,
+            }),
+            returnValue: _i4.Future<_i2.AuthResponse>.value(
+              _FakeAuthResponse_13(
+                this,
+                Invocation.method(#signInWithIdToken, [], {
+                  #provider: provider,
+                  #idToken: idToken,
+                  #accessToken: accessToken,
+                  #nonce: nonce,
+                  #captchaToken: captchaToken,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.AuthResponse>);
+
+  @override
+  _i4.Future<_i2.AuthResponse> signInWithWeb3({
+    required _i2.Web3Chain? chain,
+    required String? message,
+    required String? signature,
+    String? captchaToken,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#signInWithWeb3, [], {
+              #chain: chain,
+              #message: message,
+              #signature: signature,
+              #captchaToken: captchaToken,
+            }),
+            returnValue: _i4.Future<_i2.AuthResponse>.value(
+              _FakeAuthResponse_13(
+                this,
+                Invocation.method(#signInWithWeb3, [], {
+                  #chain: chain,
+                  #message: message,
+                  #signature: signature,
+                  #captchaToken: captchaToken,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.AuthResponse>);
+
+  @override
+  _i4.Future<void> signInWithOtp({
+    String? email,
+    String? phone,
+    String? emailRedirectTo,
+    bool? shouldCreateUser,
+    Map<String, dynamic>? data,
+    String? captchaToken,
+    _i2.OtpChannel? channel = _i2.OtpChannel.sms,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#signInWithOtp, [], {
+              #email: email,
+              #phone: phone,
+              #emailRedirectTo: emailRedirectTo,
+              #shouldCreateUser: shouldCreateUser,
+              #data: data,
+              #captchaToken: captchaToken,
+              #channel: channel,
+            }),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<_i2.AuthResponse> verifyOTP({
+    String? email,
+    String? phone,
+    String? token,
+    required _i2.OtpType? type,
+    String? redirectTo,
+    String? captchaToken,
+    String? tokenHash,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#verifyOTP, [], {
+              #email: email,
+              #phone: phone,
+              #token: token,
+              #type: type,
+              #redirectTo: redirectTo,
+              #captchaToken: captchaToken,
+              #tokenHash: tokenHash,
+            }),
+            returnValue: _i4.Future<_i2.AuthResponse>.value(
+              _FakeAuthResponse_13(
+                this,
+                Invocation.method(#verifyOTP, [], {
+                  #email: email,
+                  #phone: phone,
+                  #token: token,
+                  #type: type,
+                  #redirectTo: redirectTo,
+                  #captchaToken: captchaToken,
+                  #tokenHash: tokenHash,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.AuthResponse>);
+
+  @override
+  _i4.Future<String> getSSOSignInUrl({
+    String? providerId,
+    String? domain,
+    String? redirectTo,
+    String? captchaToken,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#getSSOSignInUrl, [], {
+              #providerId: providerId,
+              #domain: domain,
+              #redirectTo: redirectTo,
+              #captchaToken: captchaToken,
+            }),
+            returnValue: _i4.Future<String>.value(
+              _i8.dummyValue<String>(
+                this,
+                Invocation.method(#getSSOSignInUrl, [], {
+                  #providerId: providerId,
+                  #domain: domain,
+                  #redirectTo: redirectTo,
+                  #captchaToken: captchaToken,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<String>);
+
+  @override
+  _i4.Future<_i2.AuthResponse> refreshSession([String? refreshToken]) =>
+      (super.noSuchMethod(
+            Invocation.method(#refreshSession, [refreshToken]),
+            returnValue: _i4.Future<_i2.AuthResponse>.value(
+              _FakeAuthResponse_13(
+                this,
+                Invocation.method(#refreshSession, [refreshToken]),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.AuthResponse>);
+
+  @override
+  _i4.Future<void> reauthenticate() =>
+      (super.noSuchMethod(
+            Invocation.method(#reauthenticate, []),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<_i2.ResendResponse> resend({
+    String? email,
+    String? phone,
+    required _i2.OtpType? type,
+    String? emailRedirectTo,
+    String? captchaToken,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#resend, [], {
+              #email: email,
+              #phone: phone,
+              #type: type,
+              #emailRedirectTo: emailRedirectTo,
+              #captchaToken: captchaToken,
+            }),
+            returnValue: _i4.Future<_i2.ResendResponse>.value(
+              _FakeResendResponse_16(
+                this,
+                Invocation.method(#resend, [], {
+                  #email: email,
+                  #phone: phone,
+                  #type: type,
+                  #emailRedirectTo: emailRedirectTo,
+                  #captchaToken: captchaToken,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.ResendResponse>);
+
+  @override
+  _i4.Future<_i2.UserResponse> getUser([String? jwt]) =>
+      (super.noSuchMethod(
+            Invocation.method(#getUser, [jwt]),
+            returnValue: _i4.Future<_i2.UserResponse>.value(
+              _FakeUserResponse_17(this, Invocation.method(#getUser, [jwt])),
+            ),
+          )
+          as _i4.Future<_i2.UserResponse>);
+
+  @override
+  _i4.Future<_i2.UserResponse> updateUser(
+    _i2.UserAttributes? attributes, {
+    String? emailRedirectTo,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #updateUser,
+              [attributes],
+              {#emailRedirectTo: emailRedirectTo},
+            ),
+            returnValue: _i4.Future<_i2.UserResponse>.value(
+              _FakeUserResponse_17(
+                this,
+                Invocation.method(
+                  #updateUser,
+                  [attributes],
+                  {#emailRedirectTo: emailRedirectTo},
+                ),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.UserResponse>);
+
+  @override
+  _i4.Future<_i2.AuthResponse> setSession(
+    String? refreshToken, {
+    String? accessToken,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #setSession,
+              [refreshToken],
+              {#accessToken: accessToken},
+            ),
+            returnValue: _i4.Future<_i2.AuthResponse>.value(
+              _FakeAuthResponse_13(
+                this,
+                Invocation.method(
+                  #setSession,
+                  [refreshToken],
+                  {#accessToken: accessToken},
+                ),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.AuthResponse>);
+
+  @override
+  _i4.Future<_i2.AuthSessionUrlResponse> getSessionFromUrl(
+    Uri? originUrl, {
+    bool? storeSession = true,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #getSessionFromUrl,
+              [originUrl],
+              {#storeSession: storeSession},
+            ),
+            returnValue: _i4.Future<_i2.AuthSessionUrlResponse>.value(
+              _FakeAuthSessionUrlResponse_15(
+                this,
+                Invocation.method(
+                  #getSessionFromUrl,
+                  [originUrl],
+                  {#storeSession: storeSession},
+                ),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.AuthSessionUrlResponse>);
+
+  @override
+  _i4.Future<void> signOut({
+    _i2.SignOutScope? scope = _i2.SignOutScope.local,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#signOut, [], {#scope: scope}),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> resetPasswordForEmail(
+    String? email, {
+    String? redirectTo,
+    String? captchaToken,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #resetPasswordForEmail,
+              [email],
+              {#redirectTo: redirectTo, #captchaToken: captchaToken},
+            ),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<List<_i2.UserIdentity>> getUserIdentities() =>
+      (super.noSuchMethod(
+            Invocation.method(#getUserIdentities, []),
+            returnValue: _i4.Future<List<_i2.UserIdentity>>.value(
+              <_i2.UserIdentity>[],
+            ),
+          )
+          as _i4.Future<List<_i2.UserIdentity>>);
+
+  @override
+  _i4.Future<_i2.AuthResponse> linkIdentityWithIdToken({
+    required _i2.OAuthProvider? provider,
+    required String? idToken,
+    String? accessToken,
+    String? nonce,
+    String? captchaToken,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#linkIdentityWithIdToken, [], {
+              #provider: provider,
+              #idToken: idToken,
+              #accessToken: accessToken,
+              #nonce: nonce,
+              #captchaToken: captchaToken,
+            }),
+            returnValue: _i4.Future<_i2.AuthResponse>.value(
+              _FakeAuthResponse_13(
+                this,
+                Invocation.method(#linkIdentityWithIdToken, [], {
+                  #provider: provider,
+                  #idToken: idToken,
+                  #accessToken: accessToken,
+                  #nonce: nonce,
+                  #captchaToken: captchaToken,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.AuthResponse>);
+
+  @override
+  _i4.Future<_i2.OAuthResponse> getLinkIdentityUrl(
+    _i2.OAuthProvider? provider, {
+    String? redirectTo,
+    String? scopes,
+    Map<String, String>? queryParams,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #getLinkIdentityUrl,
+              [provider],
+              {
+                #redirectTo: redirectTo,
+                #scopes: scopes,
+                #queryParams: queryParams,
+              },
+            ),
+            returnValue: _i4.Future<_i2.OAuthResponse>.value(
+              _FakeOAuthResponse_14(
+                this,
+                Invocation.method(
+                  #getLinkIdentityUrl,
+                  [provider],
+                  {
+                    #redirectTo: redirectTo,
+                    #scopes: scopes,
+                    #queryParams: queryParams,
+                  },
+                ),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.OAuthResponse>);
+
+  @override
+  _i4.Future<void> unlinkIdentity(_i2.UserIdentity? identity) =>
+      (super.noSuchMethod(
+            Invocation.method(#unlinkIdentity, [identity]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> setInitialSession(String? jsonStr) =>
+      (super.noSuchMethod(
+            Invocation.method(#setInitialSession, [jsonStr]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<_i2.AuthResponse> recoverSession(String? jsonStr) =>
+      (super.noSuchMethod(
+            Invocation.method(#recoverSession, [jsonStr]),
+            returnValue: _i4.Future<_i2.AuthResponse>.value(
+              _FakeAuthResponse_13(
+                this,
+                Invocation.method(#recoverSession, [jsonStr]),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.AuthResponse>);
+
+  @override
+  void startAutoRefresh() => super.noSuchMethod(
+    Invocation.method(#startAutoRefresh, []),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void stopAutoRefresh() => super.noSuchMethod(
+    Invocation.method(#stopAutoRefresh, []),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void dispose() => super.noSuchMethod(
+    Invocation.method(#dispose, []),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void notifyAllSubscribers(
+    _i2.AuthChangeEvent? event, {
+    _i2.Session? session,
+    bool? broadcast = true,
+    _i2.SignOutReason? signOutReason,
+  }) => super.noSuchMethod(
+    Invocation.method(
+      #notifyAllSubscribers,
+      [event],
+      {#session: session, #broadcast: broadcast, #signOutReason: signOutReason},
+    ),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  Object notifyException(Object? exception, [StackTrace? stackTrace]) =>
+      (super.noSuchMethod(
+            Invocation.method(#notifyException, [exception, stackTrace]),
+            returnValue: _FakeObject_18(
+              this,
+              Invocation.method(#notifyException, [exception, stackTrace]),
+            ),
+          )
+          as Object);
+
+  @override
+  _i4.Future<_i2.GetClaimsResponse> getClaims([
+    String? jwt,
+    _i2.GetClaimsOptions? options,
+  ]) =>
+      (super.noSuchMethod(
+            Invocation.method(#getClaims, [jwt, options]),
+            returnValue: _i4.Future<_i2.GetClaimsResponse>.value(
+              _FakeGetClaimsResponse_19(
+                this,
+                Invocation.method(#getClaims, [jwt, options]),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.GetClaimsResponse>);
 }
