@@ -1,13 +1,13 @@
 
 import 'package:flutter/material.dart';
 import '../../../location/presentation/states/location_state.dart';
+import '../../../location/presentation/managers/location_error_key.dart';
 import '../../../location/domain/entities/city.dart';
 import 'city_autocomplete_optimized.dart';
 import '../../../location/domain/usecases/search_cities.dart';
 import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_radius.dart';
-import 'package:chismes/core/l10n/l10n.dart';
 
 /// Dialog para cambiar la ubicación del chisme
 ///
@@ -85,7 +85,7 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
                 const SizedBox(height: AppSpacing.lg),
 
                 // Mostrar error si hay
-                if (widget.state.error != null) ...[
+                if (widget.state.errorKey != null) ...[
                   Container(
                     padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
@@ -105,7 +105,10 @@ class _LocationChangeDialogState extends State<LocationChangeDialog> {
                         const SizedBox(width: AppSpacing.sm),
                         Expanded(
                           child: Text(
-                            widget.state.error!,
+                            widget.state.errorKey!.getMessage(
+                              context,
+                              entityName: widget.state.errorEntityName,
+                            ),
                             style: textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.error,
                             ),

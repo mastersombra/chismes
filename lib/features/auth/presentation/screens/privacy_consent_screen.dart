@@ -50,9 +50,9 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Título
-              const Text(
-                '🔒 Tu privacidad es importante',
-                style: TextStyle(
+              Text(
+                context.l10n.privacyConsentHeader,
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
@@ -60,21 +60,21 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
               const SizedBox(height: AppSpacing.md),
 
               // Subtítulo
-              const Text(
-                'Antes de comenzar, queremos que sepas cómo manejamos tus datos.',
-                style: TextStyle(fontSize: 16),
+              Text(
+                context.l10n.privacyConsentSubheader,
+                style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: AppSpacing.xl),
 
               // Sección: Datos que recopilamos
               _buildSection(
                 icon: '📊',
-                title: '¿Qué datos recopilamos?',
+                title: context.l10n.privacyConsentDataCollectedTitle,
                 items: [
-                  'Tu email y contraseña (encriptada)',
-                  'Solo tu ciudad (NO coordenadas exactas)',
-                  'Contenido de tus chismes (texto, imagen, audio)',
-                  'Estadísticas de uso (para mejorar la app)',
+                  context.l10n.privacyConsentDataCollectedItem1,
+                  context.l10n.privacyConsentDataCollectedItem2,
+                  context.l10n.privacyConsentDataCollectedItem3,
+                  context.l10n.privacyConsentDataCollectedItem4,
                 ],
               ),
               const SizedBox(height: AppSpacing.lg),
@@ -82,11 +82,11 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
               // Sección: Cómo los usamos
               _buildSection(
                 icon: '🎯',
-                title: '¿Cómo los usamos?',
+                title: context.l10n.privacyConsentDataUsageTitle,
                 items: [
-                  'Proporcionar el servicio (publicar chismes)',
-                  'Moderar contenido (mantener comunidad segura)',
-                  'Mejorar la app (analizar uso)',
+                  context.l10n.privacyConsentDataUsageItem1,
+                  context.l10n.privacyConsentDataUsageItem2,
+                  context.l10n.privacyConsentDataUsageItem3,
                 ],
               ),
               const SizedBox(height: AppSpacing.lg),
@@ -94,13 +94,13 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
               // Sección: Moderación con OpenAI
               _buildSection(
                 icon: '🤖',
-                title: 'Moderación de contenido',
+                title: context.l10n.privacyConsentModerationTitle,
                 items: [
-                  'Usamos OpenAI para analizar texto',
-                  'Solo se envía el texto del chisme',
-                  'NO enviamos tu nombre, ubicación ni otros datos',
-                  'OpenAI retiene el texto por 30 días, luego lo elimina',
-                  'NO se usa para entrenar modelos de IA',
+                  context.l10n.privacyConsentModerationItem1,
+                  context.l10n.privacyConsentModerationItem2,
+                  context.l10n.privacyConsentModerationItem3,
+                  context.l10n.privacyConsentModerationItem4,
+                  context.l10n.privacyConsentModerationItem5,
                 ],
               ),
               const SizedBox(height: AppSpacing.lg),
@@ -108,12 +108,12 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
               // Sección: Tu ubicación
               _buildSection(
                 icon: '📍',
-                title: 'Tu ubicación',
+                title: context.l10n.privacyConsentLocationTitle,
                 items: [
-                  'Solo detectamos tu ciudad (ej: "Bogotá")',
-                  'Coordenadas GPS se descartan inmediatamente',
-                  'NUNCA almacenamos ni enviamos coordenadas exactas',
-                  'Puedes elegir la ciudad manualmente',
+                  context.l10n.privacyConsentLocationItem1,
+                  context.l10n.privacyConsentLocationItem2,
+                  context.l10n.privacyConsentLocationItem3,
+                  context.l10n.privacyConsentLocationItem4,
                 ],
               ),
               const SizedBox(height: AppSpacing.lg),
@@ -121,12 +121,12 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
               // Sección: Tus derechos
               _buildSection(
                 icon: '✅',
-                title: 'Tus derechos',
+                title: context.l10n.privacyConsentRightsTitle,
                 items: [
-                  'Acceder a tus datos en cualquier momento',
-                  'Eliminar tu cuenta y datos',
-                  'Olvidar tu ubicación guardada',
-                  'Exportar tus datos (portabilidad)',
+                  context.l10n.privacyConsentRightsItem1,
+                  context.l10n.privacyConsentRightsItem2,
+                  context.l10n.privacyConsentRightsItem3,
+                  context.l10n.privacyConsentRightsItem4,
                 ],
               ),
               const SizedBox(height: AppSpacing.xxl),
@@ -137,8 +137,8 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                 onChanged: (value) =>
                     setState(() => _acceptedPrivacy = value ?? false),
                 label: _buildCheckboxLabel(
-                  'He leído y acepto la ',
-                  'Política de Privacidad',
+                  context.l10n.privacyConsentCheckboxPrivacy,
+                  context.l10n.privacyConsentCheckboxPrivacyLink,
                   onTap: _openPrivacyPolicy,
                 ),
               ),
@@ -149,8 +149,8 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                 onChanged: (value) =>
                     setState(() => _acceptedTerms = value ?? false),
                 label: _buildCheckboxLabel(
-                  'He leído y acepto los ',
-                  'Términos de Uso',
+                  context.l10n.privacyConsentCheckboxTerms,
+                  context.l10n.privacyConsentCheckboxTermsLink,
                   onTap: _openTermsOfService,
                 ),
               ),
@@ -160,18 +160,18 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                 value: _acceptedModeration,
                 onChanged: (value) =>
                     setState(() => _acceptedModeration = value ?? false),
-                label: const Text.rich(
+                label: Text.rich(
                   TextSpan(
                     children: [
                       TextSpan(
-                        text: 'Acepto que el texto de mis chismes se envíe a ',
+                        text: context.l10n.privacyConsentCheckboxModeration,
                       ),
                       TextSpan(
-                        text: 'OpenAI',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        text: context.l10n.privacyConsentCheckboxModerationBold,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       TextSpan(
-                        text: ' para moderación de contenido (30 días de retención)',
+                        text: context.l10n.privacyConsentCheckboxModerationSuffix,
                       ),
                     ],
                   ),
@@ -187,9 +187,9 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.all(AppSpacing.lg),
                   ),
-                  child: const Text(
-                    'Aceptar y Continuar',
-                    style: TextStyle(fontSize: 16),
+                  child: Text(
+                    context.l10n.privacyConsentAcceptButton,
+                    style: const TextStyle(fontSize: 16),
                   ),
                 ),
               ),
@@ -209,7 +209,7 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
               // Disclaimer
               Center(
                 child: Text(
-                  'Al continuar, aceptas nuestras políticas',
+                  context.l10n.privacyConsentDisclaimer,
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey[600],
@@ -319,15 +319,15 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(context.l10n.privacySettingsPrivacyPolicy),
-        content: const SingleChildScrollView(
+        content: SingleChildScrollView(
           child: Text(
-            'La política de privacidad completa está disponible en:\n\n'
-            'https://chismes.app/privacy\n\n'
-            'O en el archivo PRIVACY_POLICY.md del proyecto.\n\n'
-            'Resumen:\n'
-            '• Solo recopilamos datos necesarios\n'
-            '• No vendemos tus datos\n'
-            '• Puedes eliminar tu cuenta en cualquier momento',
+            '${context.l10n.privacyConsentDialogPrivacyAvailable}\n\n'
+            '${context.l10n.privacyConsentDialogPrivacyUrl}\n\n'
+            '${context.l10n.privacyConsentDialogPrivacyFile}\n\n'
+            '${context.l10n.privacyConsentDialogPrivacySummary}\n'
+            '${context.l10n.privacyConsentDialogPrivacyItem1}\n'
+            '${context.l10n.privacyConsentDialogPrivacyItem2}\n'
+            '${context.l10n.privacyConsentDialogPrivacyItem3}',
           ),
         ),
         actions: [
@@ -346,16 +346,16 @@ class _PrivacyConsentScreenState extends State<PrivacyConsentScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(context.l10n.privacySettingsTermsOfUse),
-        content: const SingleChildScrollView(
+        content: SingleChildScrollView(
           child: Text(
-            'Los términos de uso completos están disponibles en:\n\n'
-            'https://chismes.app/terms\n\n'
-            'O en el archivo TERMS_OF_SERVICE.md del proyecto.\n\n'
-            'Resumen:\n'
-            '• Edad mínima: 13 años\n'
-            '• No publicar contenido inapropiado\n'
-            '• Moderación automática + manual\n'
-            '• Podemos suspender cuentas que violen normas',
+            '${context.l10n.privacyConsentDialogTermsAvailable}\n\n'
+            '${context.l10n.privacyConsentDialogTermsUrl}\n\n'
+            '${context.l10n.privacyConsentDialogTermsFile}\n\n'
+            '${context.l10n.privacyConsentDialogTermsSummary}\n'
+            '${context.l10n.privacyConsentDialogTermsItem1}\n'
+            '${context.l10n.privacyConsentDialogTermsItem2}\n'
+            '${context.l10n.privacyConsentDialogTermsItem3}\n'
+            '${context.l10n.privacyConsentDialogTermsItem4}',
           ),
         ),
         actions: [

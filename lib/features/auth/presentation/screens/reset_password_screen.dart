@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../core/di/injection_container.dart';
 import 'package:chismes/core/l10n/l10n.dart';
@@ -59,8 +58,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       // Password actualizada - mostrar mensaje y navegar a login
       _showSuccessAndNavigateToLogin();
     } else if (state is AuthError) {
-      // Mostrar error
-      _showError(state.message);
+      // Mostrar error - traducir mensaje con BuildContext
+      _showError(state.getMessage(context));
     }
   }
 
@@ -123,93 +122,91 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         ],
       ),
       body: SafeArea(
-        child: ChangeNotifierProvider.value(
-          value: _controller,
-          child: Consumer<ResetPasswordController>(
-            builder: (context, controller, _) {
-              final isLoading = controller.state is AuthLoading;
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            final isLoading = _controller.state is AuthLoading;
 
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(AppSpacing.xl),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Icono
-                      Icon(
-                        Icons.lock_reset,
-                        size: 80,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      const SizedBox(height: AppSpacing.xl),
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Icono
+                    Icon(
+                      Icons.lock_reset,
+                      size: 80,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
 
-                      // Título
-                      Text(
-                        context.l10n.resetPasswordSubtitle,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
+                    // Título
+                    Text(
+                      context.l10n.resetPasswordSubtitle,
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
 
-                      // Descripción
-                      Text(
-                        context.l10n.resetPasswordDescription,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey[600],
-                            ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: AppSpacing.xxl),
+                    // Descripción
+                    Text(
+                      context.l10n.resetPasswordDescription,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey[600],
+                          ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: AppSpacing.xxl),
 
-                      // Nueva contraseña
-                      PasswordField(
-                        controller: _newPasswordController,
-                        enabled: !isLoading,
-                        validator: (v) => FormValidators.password(context, v),
-                        labelText: context.l10n.newPasswordHint,
-                        onChanged: (value) {
-                          setState(() => _currentPassword = value);
-                        },
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
+                    // Nueva contraseña
+                    PasswordField(
+                      controller: _newPasswordController,
+                      enabled: !isLoading,
+                      validator: (v) => FormValidators.password(context, v),
+                      labelText: context.l10n.newPasswordHint,
+                      onChanged: (value) {
+                        setState(() => _currentPassword = value);
+                      },
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
 
-                      // Indicador de fortaleza
-                      PasswordStrengthIndicator(password: _currentPassword),
-                      const SizedBox(height: AppSpacing.lg),
+                    // Indicador de fortaleza
+                    PasswordStrengthIndicator(password: _currentPassword),
+                    const SizedBox(height: AppSpacing.lg),
 
-                      // Confirmar contraseña
-                      PasswordField(
-                        controller: _confirmPasswordController,
-                        enabled: !isLoading,
-                        labelText: context.l10n.resetPasswordConfirmHint,
-                        validator: (value) {
-                          final passwordValidation = FormValidators.password(context, value);
-                          if (passwordValidation != null) return passwordValidation;
+                    // Confirmar contraseña
+                    PasswordField(
+                      controller: _confirmPasswordController,
+                      enabled: !isLoading,
+                      labelText: context.l10n.resetPasswordConfirmHint,
+                      validator: (value) {
+                        final passwordValidation = FormValidators.password(context, value);
+                        if (passwordValidation != null) return passwordValidation;
 
-                          // Validar que coincidan
-                          if (value != _newPasswordController.text) {
-                            return context.l10n.passwordsMustMatch;
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: AppSpacing.xxl),
+                        // Validar que coincidan
+                        if (value != _newPasswordController.text) {
+                          return context.l10n.passwordsMustMatch;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: AppSpacing.xxl),
 
-                      // Botón cambiar contraseña
-                      AuthButton(
-                        text: context.l10n.changePasswordButton,
-                        onPressed: _onChangePasswordPressed,
-                        isLoading: isLoading,
-                      ),
-                    ],
-                  ),
+                    // Botón cambiar contraseña
+                    AuthButton(
+                      text: context.l10n.changePasswordButton,
+                      onPressed: _onChangePasswordPressed,
+                      isLoading: isLoading,
+                    ),
+                  ],
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

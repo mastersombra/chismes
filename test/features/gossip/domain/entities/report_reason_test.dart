@@ -4,40 +4,34 @@ import 'package:chismes/features/gossip/domain/entities/report_reason.dart';
 void main() {
   group('ReportReason', () {
     group('Valores del enum', () {
-      test('spam debe tener valores correctos', () {
+      test('spam debe tener valor correcto', () {
         // Act & Assert
         expect(ReportReason.spam.value, 'spam');
-        expect(ReportReason.spam.displayName, 'Spam');
       });
 
-      test('harassment debe tener valores correctos', () {
+      test('harassment debe tener valor correcto', () {
         // Act & Assert
         expect(ReportReason.harassment.value, 'harassment');
-        expect(ReportReason.harassment.displayName, 'Acoso o intimidación');
       });
 
-      test('violence debe tener valores correctos', () {
+      test('violence debe tener valor correcto', () {
         // Act & Assert
         expect(ReportReason.violence.value, 'violence');
-        expect(ReportReason.violence.displayName, 'Violencia o amenazas');
       });
 
-      test('sexualContent debe tener valores correctos', () {
+      test('sexualContent debe tener valor correcto', () {
         // Act & Assert
         expect(ReportReason.sexualContent.value, 'sexual_content');
-        expect(ReportReason.sexualContent.displayName, 'Contenido sexual');
       });
 
-      test('misinformation debe tener valores correctos', () {
+      test('misinformation debe tener valor correcto', () {
         // Act & Assert
         expect(ReportReason.misinformation.value, 'misinformation');
-        expect(ReportReason.misinformation.displayName, 'Desinformación');
       });
 
-      test('other debe tener valores correctos', () {
+      test('other debe tener valor correcto', () {
         // Act & Assert
         expect(ReportReason.other.value, 'other');
-        expect(ReportReason.other.displayName, 'Otro motivo');
       });
 
       test('debe tener todos los valores esperados', () {
@@ -181,15 +175,8 @@ void main() {
         expect(message, 'Spam detectado');
       });
 
-      test('displayName debe ser útil para mostrar al usuario', () {
-        // Act & Assert - Todos los displayName deben ser no vacíos y legibles
-        for (final reason in ReportReason.values) {
-          expect(reason.displayName.isNotEmpty, isTrue,
-              reason: '${reason.name} debe tener displayName no vacío');
-          expect(reason.displayName.length, greaterThan(3),
-              reason: '${reason.name} debe tener displayName descriptivo');
-        }
-      });
+      // Nota: displayName ahora es un método que requiere BuildContext.
+      // Los tests de traducción deben hacerse en widget tests.
 
       test('value debe ser útil para serialización', () {
         // Act & Assert - Todos los values deben ser snake_case o lowercase

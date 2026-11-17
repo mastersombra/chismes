@@ -234,38 +234,24 @@ void main() {
 
     testWidgets('debe filtrar gossips por subject', (tester) async {
       // Arrange
-      final gossips = [
-        Gossip(
-          id: '1',
-          countryId: 'co',
-          regionId: 'ant',
-          cityId: 'med',
-          subject: 'Flutter es genial',
-          content: 'Otro contenido',
-          publishedAs: PublishAs.anonymous,
-          status: GossipStatus.published,
-          moderationStatus: ModerationStatus.approved,
-          visibility: GossipVisibility.public,
-          createdAt: DateTime.now(),
-          createdBy: 'user1',
-        ),
-        Gossip(
-          id: '2',
-          countryId: 'co',
-          regionId: 'ant',
-          cityId: 'med',
-          subject: 'Dart es increíble',
-          content: 'Contenido diferente',
-          publishedAs: PublishAs.anonymous,
-          status: GossipStatus.published,
-          moderationStatus: ModerationStatus.approved,
-          visibility: GossipVisibility.public,
-          createdAt: DateTime.now(),
-          createdBy: 'user1',
-        ),
-      ];
+      final flutterGossip = Gossip(
+        id: '1',
+        countryId: 'co',
+        regionId: 'ant',
+        cityId: 'med',
+        subject: 'Flutter es genial',
+        content: 'Otro contenido',
+        publishedAs: PublishAs.anonymous,
+        status: GossipStatus.published,
+        moderationStatus: ModerationStatus.approved,
+        visibility: GossipVisibility.public,
+        createdAt: DateTime.now(),
+        createdBy: 'user1',
+      );
 
-      when(mockGetGossips()).thenAnswer((_) async => Result.success(gossips));
+      // Mock SearchGossips para devolver solo el resultado filtrado
+      when(mockSearchGossips(query: 'Flutter', cityId: null, limit: 20))
+          .thenAnswer((_) async => Result.success([flutterGossip]));
 
       await tester.pumpWidget(
         testableWidget(
@@ -278,46 +264,32 @@ void main() {
       await tester.enterText(find.byType(TextField), 'Flutter');
       await tester.pumpAndSettle();
 
-      // Assert - debe encontrar solo el primer gossip
-      verify(mockGetGossips()).called(2); // initState + búsqueda
+      // Assert - debe llamar a SearchGossips (búsqueda en servidor)
+      verify(mockSearchGossips(query: 'Flutter', cityId: null, limit: 20)).called(1);
       expect(find.byType(GridView), findsOneWidget);
       expect(find.text('1 resultado'), findsOneWidget);
     });
 
     testWidgets('debe filtrar gossips por content', (tester) async {
       // Arrange
-      final gossips = [
-        Gossip(
-          id: '1',
-          countryId: 'co',
-          regionId: 'ant',
-          cityId: 'med',
-          subject: 'Título',
-          content: 'Contenido con Flutter',
-          publishedAs: PublishAs.anonymous,
-          status: GossipStatus.published,
-          moderationStatus: ModerationStatus.approved,
-          visibility: GossipVisibility.public,
-          createdAt: DateTime.now(),
-          createdBy: 'user1',
-        ),
-        Gossip(
-          id: '2',
-          countryId: 'co',
-          regionId: 'ant',
-          cityId: 'med',
-          subject: 'Otro título',
-          content: 'Contenido diferente',
-          publishedAs: PublishAs.anonymous,
-          status: GossipStatus.published,
-          moderationStatus: ModerationStatus.approved,
-          visibility: GossipVisibility.public,
-          createdAt: DateTime.now(),
-          createdBy: 'user1',
-        ),
-      ];
+      final contentGossip = Gossip(
+        id: '1',
+        countryId: 'co',
+        regionId: 'ant',
+        cityId: 'med',
+        subject: 'Título',
+        content: 'Contenido con Flutter',
+        publishedAs: PublishAs.anonymous,
+        status: GossipStatus.published,
+        moderationStatus: ModerationStatus.approved,
+        visibility: GossipVisibility.public,
+        createdAt: DateTime.now(),
+        createdBy: 'user1',
+      );
 
-      when(mockGetGossips()).thenAnswer((_) async => Result.success(gossips));
+      // Mock SearchGossips para devolver solo el resultado filtrado
+      when(mockSearchGossips(query: 'Flutter', cityId: null, limit: 20))
+          .thenAnswer((_) async => Result.success([contentGossip]));
 
       await tester.pumpWidget(
         testableWidget(
@@ -330,32 +302,32 @@ void main() {
       await tester.enterText(find.byType(TextField), 'Flutter');
       await tester.pumpAndSettle();
 
-      // Assert
-      verify(mockGetGossips()).called(2); // initState + búsqueda
+      // Assert - debe llamar a SearchGossips (búsqueda en servidor)
+      verify(mockSearchGossips(query: 'Flutter', cityId: null, limit: 20)).called(1);
       expect(find.byType(GridView), findsOneWidget);
       expect(find.text('1 resultado'), findsOneWidget);
     });
 
     testWidgets('debe buscar case-insensitive', (tester) async {
       // Arrange
-      final gossips = [
-        Gossip(
-          id: '1',
-          countryId: 'co',
-          regionId: 'ant',
-          cityId: 'med',
-          subject: 'Flutter es GENIAL',
-          content: 'Contenido',
-          publishedAs: PublishAs.anonymous,
-          status: GossipStatus.published,
-          moderationStatus: ModerationStatus.approved,
-          visibility: GossipVisibility.public,
-          createdAt: DateTime.now(),
-          createdBy: 'user1',
-        ),
-      ];
+      final gossip = Gossip(
+        id: '1',
+        countryId: 'co',
+        regionId: 'ant',
+        cityId: 'med',
+        subject: 'Flutter es GENIAL',
+        content: 'Contenido',
+        publishedAs: PublishAs.anonymous,
+        status: GossipStatus.published,
+        moderationStatus: ModerationStatus.approved,
+        visibility: GossipVisibility.public,
+        createdAt: DateTime.now(),
+        createdBy: 'user1',
+      );
 
-      when(mockGetGossips()).thenAnswer((_) async => Result.success(gossips));
+      // Mock SearchGossips - la búsqueda case-insensitive se hace en el servidor
+      when(mockSearchGossips(query: 'flutter', cityId: null, limit: 20))
+          .thenAnswer((_) async => Result.success([gossip]));
 
       await tester.pumpWidget(
         testableWidget(
@@ -369,30 +341,30 @@ void main() {
       await tester.pumpAndSettle();
 
       // Assert - debe encontrar el gossip aunque el subject tenga mayúsculas
-      verify(mockGetGossips()).called(2); // initState + búsqueda
+      verify(mockSearchGossips(query: 'flutter', cityId: null, limit: 20)).called(1);
       expect(find.byType(GridView), findsOneWidget);
     });
 
     testWidgets('debe usar GridView con 2 columnas', (tester) async {
       // Arrange
-      final gossips = [
-        Gossip(
-          id: '1',
-          countryId: 'co',
-          regionId: 'ant',
-          cityId: 'med',
-          subject: 'Test',
-          content: 'Content',
-          publishedAs: PublishAs.anonymous,
-          status: GossipStatus.published,
-          moderationStatus: ModerationStatus.approved,
-          visibility: GossipVisibility.public,
-          createdAt: DateTime.now(),
-          createdBy: 'user1',
-        ),
-      ];
+      final gossip = Gossip(
+        id: '1',
+        countryId: 'co',
+        regionId: 'ant',
+        cityId: 'med',
+        subject: 'Test',
+        content: 'Content',
+        publishedAs: PublishAs.anonymous,
+        status: GossipStatus.published,
+        moderationStatus: ModerationStatus.approved,
+        visibility: GossipVisibility.public,
+        createdAt: DateTime.now(),
+        createdBy: 'user1',
+      );
 
-      when(mockGetGossips()).thenAnswer((_) async => Result.success(gossips));
+      // Mock SearchGossips para devolver resultado
+      when(mockSearchGossips(query: 'Test', cityId: null, limit: 20))
+          .thenAnswer((_) async => Result.success([gossip]));
 
       await tester.pumpWidget(
         testableWidget(
@@ -405,8 +377,8 @@ void main() {
       await tester.enterText(find.byType(TextField), 'Test');
       await tester.pumpAndSettle();
 
-      // Assert
-      verify(mockGetGossips()).called(2); // initState + búsqueda
+      // Assert - debe llamar a SearchGossips
+      verify(mockSearchGossips(query: 'Test', cityId: null, limit: 20)).called(1);
       final gridView = tester.widget<GridView>(find.byType(GridView));
       final delegate = gridView.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
       expect(delegate.crossAxisCount, 2);
@@ -443,7 +415,10 @@ void main() {
         code: ErrorCode.networkError,
         technicalMessage: 'Network error',
       );
-      when(mockGetGossips()).thenAnswer((_) async => Result.failure(failure));
+
+      // Mock SearchGossips para devolver error
+      when(mockSearchGossips(query: 'Test', cityId: null, limit: 20))
+          .thenAnswer((_) async => Result.failure(failure));
 
       await tester.pumpWidget(
         testableWidget(
@@ -456,9 +431,9 @@ void main() {
       await tester.enterText(find.byType(TextField), 'Test');
       await tester.pumpAndSettle();
 
-      // Assert - Se llama 2 veces: initState + búsqueda
-      verify(mockGetGossips()).called(2);
-      // Verifica que se llamó al getGossips y se manejó el error
+      // Assert - debe llamar a SearchGossips
+      verify(mockSearchGossips(query: 'Test', cityId: null, limit: 20)).called(1);
+      // Verifica que se llamó al searchGossips y se manejó el error
       expect(find.byType(GridView), findsNothing);
       // Verifica que se muestra el mensaje de error
       expect(find.byIcon(Icons.error_outline), findsOneWidget);
@@ -466,24 +441,28 @@ void main() {
 
     testWidgets('debe resetear búsqueda al limpiar el TextField', (tester) async {
       // Arrange
-      final gossips = [
-        Gossip(
-          id: '1',
-          countryId: 'co',
-          regionId: 'ant',
-          cityId: 'med',
-          subject: 'Test',
-          content: 'Content',
-          publishedAs: PublishAs.anonymous,
-          status: GossipStatus.published,
-          moderationStatus: ModerationStatus.approved,
-          visibility: GossipVisibility.public,
-          createdAt: DateTime.now(),
-          createdBy: 'user1',
-        ),
-      ];
+      final gossip = Gossip(
+        id: '1',
+        countryId: 'co',
+        regionId: 'ant',
+        cityId: 'med',
+        subject: 'Test',
+        content: 'Content',
+        publishedAs: PublishAs.anonymous,
+        status: GossipStatus.published,
+        moderationStatus: ModerationStatus.approved,
+        visibility: GossipVisibility.public,
+        createdAt: DateTime.now(),
+        createdBy: 'user1',
+      );
 
-      when(mockGetGossips()).thenAnswer((_) async => Result.success(gossips));
+      // Mock GetGossips para mostrar recientes
+      final recentGossips = [gossip];
+      when(mockGetGossips()).thenAnswer((_) async => Result.success(recentGossips));
+
+      // Mock SearchGossips para búsqueda
+      when(mockSearchGossips(query: 'Test', cityId: null, limit: 20))
+          .thenAnswer((_) async => Result.success([gossip]));
 
       await tester.pumpWidget(
         testableWidget(
@@ -510,7 +489,9 @@ void main() {
 
     testWidgets('debe mostrar loading indicator mientras busca', (tester) async {
       // Arrange
-      when(mockGetGossips()).thenAnswer((_) async {
+      // Mock SearchGossips con delay para capturar loading state
+      when(mockSearchGossips(query: 'Test', cityId: null, limit: 20))
+          .thenAnswer((_) async {
         await Future.delayed(const Duration(milliseconds: 100));
         return Result.success([]);
       });

@@ -43,7 +43,7 @@ class _ReportGossipDialogState extends State<ReportGossipDialog> {
             // Lista de razones
             ...ReportReason.values.map((reason) {
               return ListTile(
-                title: Text(reason.displayName),
+                title: Text(reason.getDisplayName(context)),
                 leading: Radio<ReportReason>(
                   value: reason,
                   // ignore: deprecated_member_use

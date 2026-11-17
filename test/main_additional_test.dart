@@ -12,8 +12,6 @@ import 'package:chismes/features/auth/presentation/state/auth_state.dart';
 import 'package:chismes/features/auth/domain/repositories/auth_repository.dart';
 import 'package:chismes/features/auth/presentation/controllers/otp_verification_controller.dart';
 import 'package:chismes/features/auth/presentation/states/otp_verification_state.dart';
-import 'package:chismes/l10n/app_localizations.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'helpers/mock_app_logger_helper.dart';
 import 'helpers/test_di_helper.dart';
@@ -31,21 +29,6 @@ import 'main_additional_test.mocks.dart';
 /// - Error recovery
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-
-  // Helper para envolver ChismesApp con gen-l10n
-  Widget wrapWithI18n(Widget child) {
-    return MaterialApp(
-      locale: const Locale('es'),
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: child,
-    );
-  }
 
   // Guardar callbacks originales
   late Future<void> Function({String fileName}) originalLoadEnv;

@@ -1,7 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../../core/config/supabase_config.dart';
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/error/error_codes.dart' as app_errors;
 import '../../../../core/logging/logging.dart';
@@ -21,12 +20,13 @@ import '../models/paginated_gossips_model.dart';
 /// - Conversión a Entities (lo hace el Repository)
 @singleton
 class HomeRemoteDataSource {
-  final AppLogger _logger;
   final SupabaseClient _supabase;
+  final AppLogger _logger;
 
   HomeRemoteDataSource(
+    this._supabase,
     this._logger,
-  ) : _supabase = SupabaseConfig.client;
+  );
 
   /// Llama a `get_popular_feed` RPC.
   ///
@@ -95,7 +95,7 @@ class HomeRemoteDataSource {
       );
       throw ServerException(
         code: app_errors.ErrorCode.serverError,
-        technicalMessage: 'Error al cargar feed popular: ${error.message}',
+        technicalMessage: 'Error cargar feed popular: ${error.message}',
       );
     } on FormatException catch (error, stackTrace) {
       _logger.e(
@@ -184,7 +184,7 @@ class HomeRemoteDataSource {
       );
       throw ServerException(
         code: app_errors.ErrorCode.serverError,
-        technicalMessage: 'Error al cargar feed de seguidos: ${error.message}',
+        technicalMessage: 'Error cargar feed de seguidos: ${error.message}',
       );
     } catch (error, stackTrace) {
       _logger.e(
@@ -241,7 +241,7 @@ class HomeRemoteDataSource {
       );
       throw ServerException(
         code: app_errors.ErrorCode.serverError,
-        technicalMessage: 'Error al verificar chismes nuevos: ${error.message}',
+        technicalMessage: 'Error verificar chismes nuevos: ${error.message}',
       );
     } catch (error, stackTrace) {
       _logger.e(

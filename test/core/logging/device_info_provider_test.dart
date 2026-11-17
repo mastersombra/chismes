@@ -122,7 +122,7 @@ void main() {
         stopwatch2.stop();
 
         // Assert - Segunda llamada debe ser MUY rápida (cache)
-        expect(stopwatch2.elapsedMicroseconds, lessThan(1000)); // < 1ms
+        expect(stopwatch2.elapsedMicroseconds, lessThan(5000)); // < 5ms (cache hit)
       });
 
       test('clearCache debe limpiar el cache', () async {

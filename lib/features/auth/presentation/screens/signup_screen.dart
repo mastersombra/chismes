@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../core/di/injection_container.dart';
 import 'package:chismes/core/l10n/l10n.dart';
@@ -70,8 +69,8 @@ class _SignupScreenState extends State<SignupScreen> {
       // Autenticación exitosa (flujo legacy o después de OTP)
       _navigateToProfileSetup();
     } else if (state is AuthError) {
-      // Mostrar error
-      _showError(state.message);
+      // Mostrar error - traducir mensaje con BuildContext
+      _showError(state.getMessage(context));
     }
   }
 
@@ -141,136 +140,134 @@ class _SignupScreenState extends State<SignupScreen> {
         ],
       ),
       body: SafeArea(
-        child: ChangeNotifierProvider.value(
-          value: _controller,
-          child: Consumer<SignupController>(
-            builder: (context, controller, _) {
-              final isLoading = controller.state is AuthLoading;
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            final isLoading = _controller.state is AuthLoading;
 
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: AppSpacing.lg),
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: AppSpacing.lg),
 
-                      // Título
-                      Text(
-                        context.l10n.signupSubtitle,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
+                    // Título
+                    Text(
+                      context.l10n.signupSubtitle,
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      context.l10n.signupDescription,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                    ),
+
+                    const SizedBox(height: AppSpacing.xxl),
+
+                    // Email field
+                    EmailField(
+                      controller: _emailController,
+                      enabled: !isLoading,
+                    ),
+
+                    const SizedBox(height: AppSpacing.lg),
+
+                    // Password field
+                    PasswordField(
+                      controller: _passwordController,
+                      enabled: !isLoading,
+                      labelText: context.l10n.passwordHint,
+                      onChanged: (value) {
+                        setState(() {
+                          _currentPassword = value;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return context.l10n.signupPasswordRequired;
+                        }
+                        if (value.length < 8) {
+                          return context.l10n.signupPasswordMinLength;
+                        }
+                        return null;
+                      },
+                    ),
+
+                    // Password strength indicator
+                    PasswordStrengthIndicator(password: _currentPassword),
+
+                    const SizedBox(height: AppSpacing.lg),
+
+                    // Confirm password field
+                    PasswordField(
+                      controller: _confirmPasswordController,
+                      enabled: !isLoading,
+                      labelText: context.l10n.confirmPasswordHint,
+                      validator: _validateConfirmPassword,
+                    ),
+
+                    const SizedBox(height: AppSpacing.xl),
+
+                    // Terms and conditions
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.info_outline,
+                          size: 16,
+                          color: Colors.grey,
                         ),
-                      ),
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        context.l10n.signupDescription,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey[600],
-                        ),
-                      ),
-
-                      const SizedBox(height: AppSpacing.xxl),
-
-                      // Email field
-                      EmailField(
-                        controller: _emailController,
-                        enabled: !isLoading,
-                      ),
-
-                      const SizedBox(height: AppSpacing.lg),
-
-                      // Password field
-                      PasswordField(
-                        controller: _passwordController,
-                        enabled: !isLoading,
-                        labelText: context.l10n.passwordHint,
-                        onChanged: (value) {
-                          setState(() {
-                            _currentPassword = value;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return context.l10n.signupPasswordRequired;
-                          }
-                          if (value.length < 8) {
-                            return context.l10n.signupPasswordMinLength;
-                          }
-                          return null;
-                        },
-                      ),
-
-                      // Password strength indicator
-                      PasswordStrengthIndicator(password: _currentPassword),
-
-                      const SizedBox(height: AppSpacing.lg),
-
-                      // Confirm password field
-                      PasswordField(
-                        controller: _confirmPasswordController,
-                        enabled: !isLoading,
-                        labelText: context.l10n.confirmPasswordHint,
-                        validator: _validateConfirmPassword,
-                      ),
-
-                      const SizedBox(height: AppSpacing.xl),
-
-                      // Terms and conditions
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Icon(
-                            Icons.info_outline,
-                            size: 16,
-                            color: Colors.grey,
-                          ),
-                          const SizedBox(width: AppSpacing.xs),
-                          Expanded(
-                            child: Text(
-                              context.l10n.signupTermsMessage,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Colors.grey[600],
-                              ),
+                        const SizedBox(width: AppSpacing.xs),
+                        Expanded(
+                          child: Text(
+                            context.l10n.signupTermsMessage,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.grey[600],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
+                    ),
 
-                      const SizedBox(height: AppSpacing.xl),
+                    const SizedBox(height: AppSpacing.xl),
 
-                      // Sign up button
-                      AuthButton(
-                        text: context.l10n.signUpButton,
-                        onPressed: _onSignUpPressed,
-                        isLoading: isLoading,
-                      ),
+                    // Sign up button
+                    AuthButton(
+                      text: context.l10n.signUpButton,
+                      onPressed: _onSignUpPressed,
+                      isLoading: isLoading,
+                    ),
 
-                      const SizedBox(height: AppSpacing.xxl),
+                    const SizedBox(height: AppSpacing.xxl),
 
-                      // Login link
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '${context.l10n.alreadyHaveAccount} ',
-                            style: TextStyle(color: Colors.grey[600]),
-                          ),
-                          TextButton(
-                            onPressed: isLoading
-                                ? null
-                                : () => Navigator.pop(context),
-                            child: Text(context.l10n.signInLink),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                    // Login link
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '${context.l10n.alreadyHaveAccount} ',
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                        TextButton(
+                          onPressed: isLoading
+                              ? null
+                              : () => Navigator.pop(context),
+                          child: Text(context.l10n.signInLink),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

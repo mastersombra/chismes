@@ -328,56 +328,62 @@ class SettingsSection extends StatelessWidget {
     required String value,
     required String currentValue,
   }) {
-    return RadioListTile<String>(
+    final isSelected = value == currentValue;
+    return ListTile(
       title: Text(title),
       subtitle: Text(subtitle),
-      value: value,
-      groupValue: currentValue,
-      onChanged: (newValue) {
-        if (newValue != null) {
-          Navigator.pop(context, newValue);
-        }
-      },
+      leading: Icon(
+        isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+        color: isSelected ? Theme.of(context).colorScheme.primary : null,
+      ),
+      onTap: () => Navigator.pop(context, value),
     );
   }
 
   Future<void> _showLanguageDialog(BuildContext context) async {
     final result = await showDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(context.l10n.profileSettingsLanguage),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            RadioListTile<String>(
-              title: Text(context.l10n.profileSettingsLanguageSpanish),
-              value: 'es',
-              groupValue: settings.language,
-              onChanged: (value) {
-                if (value != null) {
-                  Navigator.pop(context, value);
-                }
-              },
-            ),
-            RadioListTile<String>(
-              title: Text(context.l10n.profileSettingsLanguageEnglish),
-              value: 'en',
-              groupValue: settings.language,
-              onChanged: (value) {
-                if (value != null) {
-                  Navigator.pop(context, value);
-                }
-              },
+      builder: (context) {
+        final currentLanguage = settings.language;
+        return AlertDialog(
+          title: Text(context.l10n.profileSettingsLanguage),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: Text(context.l10n.profileSettingsLanguageSpanish),
+                leading: Icon(
+                  currentLanguage == 'es'
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_unchecked,
+                  color: currentLanguage == 'es'
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                ),
+                onTap: () => Navigator.pop(context, 'es'),
+              ),
+              ListTile(
+                title: Text(context.l10n.profileSettingsLanguageEnglish),
+                leading: Icon(
+                  currentLanguage == 'en'
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_unchecked,
+                  color: currentLanguage == 'en'
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                ),
+                onTap: () => Navigator.pop(context, 'en'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(context.l10n.commonCancel),
             ),
           ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(context.l10n.commonCancel),
-          ),
-        ],
-      ),
+        );
+      },
     );
 
     if (result != null) {

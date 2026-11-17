@@ -98,599 +98,11 @@ abstract class AppLocalizations {
     Locale('es'),
   ];
 
-  /// No description provided for @appName.
-  ///
-  /// In es, this message translates to:
-  /// **'Chismes'**
-  String get appName;
-
   /// No description provided for @appTagline.
   ///
   /// In es, this message translates to:
   /// **'Comparte historias, descubre secretos'**
   String get appTagline;
-
-  /// No description provided for @authErrorsEmailAlreadyInUse.
-  ///
-  /// In es, this message translates to:
-  /// **'El email ya está en uso'**
-  String get authErrorsEmailAlreadyInUse;
-
-  /// No description provided for @authErrorsInvalidCredentials.
-  ///
-  /// In es, this message translates to:
-  /// **'Credenciales inválidas'**
-  String get authErrorsInvalidCredentials;
-
-  /// No description provided for @authErrorsNetworkError.
-  ///
-  /// In es, this message translates to:
-  /// **'Error de conexión'**
-  String get authErrorsNetworkError;
-
-  /// No description provided for @authErrorsUnknownError.
-  ///
-  /// In es, this message translates to:
-  /// **'Error desconocido'**
-  String get authErrorsUnknownError;
-
-  /// No description provided for @authErrorsUserNotFound.
-  ///
-  /// In es, this message translates to:
-  /// **'Usuario no encontrado'**
-  String get authErrorsUserNotFound;
-
-  /// No description provided for @authErrorsWeakPassword.
-  ///
-  /// In es, this message translates to:
-  /// **'La contraseña es muy débil'**
-  String get authErrorsWeakPassword;
-
-  /// No description provided for @authForgotPasswordCodeSentMessage.
-  ///
-  /// In es, this message translates to:
-  /// **'Revisa tu email para obtener el código de verificación'**
-  String get authForgotPasswordCodeSentMessage;
-
-  /// No description provided for @authForgotPasswordCodeSentTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Código enviado'**
-  String get authForgotPasswordCodeSentTitle;
-
-  /// No description provided for @authForgotPasswordEmailHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Correo electrónico'**
-  String get authForgotPasswordEmailHint;
-
-  /// No description provided for @authForgotPasswordMessage.
-  ///
-  /// In es, this message translates to:
-  /// **'Te enviaremos un código de 6 dígitos para recuperar tu contraseña'**
-  String get authForgotPasswordMessage;
-
-  /// No description provided for @authForgotPasswordSendCodeButton.
-  ///
-  /// In es, this message translates to:
-  /// **'Enviar código'**
-  String get authForgotPasswordSendCodeButton;
-
-  /// No description provided for @authForgotPasswordTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'¿Olvidaste tu contraseña?'**
-  String get authForgotPasswordTitle;
-
-  /// No description provided for @authLoginContinueWithApple.
-  ///
-  /// In es, this message translates to:
-  /// **'Continuar con Apple'**
-  String get authLoginContinueWithApple;
-
-  /// No description provided for @authLoginContinueWithGoogle.
-  ///
-  /// In es, this message translates to:
-  /// **'Continuar con Google'**
-  String get authLoginContinueWithGoogle;
-
-  /// No description provided for @authLoginEmailHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Correo electrónico'**
-  String get authLoginEmailHint;
-
-  /// No description provided for @authLoginForgotPassword.
-  ///
-  /// In es, this message translates to:
-  /// **'¿Olvidaste tu contraseña?'**
-  String get authLoginForgotPassword;
-
-  /// No description provided for @authLoginNoAccount.
-  ///
-  /// In es, this message translates to:
-  /// **'¿No tienes cuenta?'**
-  String get authLoginNoAccount;
-
-  /// No description provided for @authLoginOrContinueWith.
-  ///
-  /// In es, this message translates to:
-  /// **'O continúa con'**
-  String get authLoginOrContinueWith;
-
-  /// No description provided for @authLoginPasswordHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Contraseña'**
-  String get authLoginPasswordHint;
-
-  /// No description provided for @authLoginSignInButton.
-  ///
-  /// In es, this message translates to:
-  /// **'Iniciar Sesión'**
-  String get authLoginSignInButton;
-
-  /// No description provided for @authLoginSignUpLink.
-  ///
-  /// In es, this message translates to:
-  /// **'Regístrate'**
-  String get authLoginSignUpLink;
-
-  /// No description provided for @authLoginTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Iniciar Sesión'**
-  String get authLoginTitle;
-
-  /// No description provided for @authOtpVerificationCodeHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Código'**
-  String get authOtpVerificationCodeHint;
-
-  /// No description provided for @authOtpVerificationResendButton.
-  ///
-  /// In es, this message translates to:
-  /// **'Reenviar'**
-  String get authOtpVerificationResendButton;
-
-  /// No description provided for @authOtpVerificationResendLabel.
-  ///
-  /// In es, this message translates to:
-  /// **'¿No recibiste el código?'**
-  String get authOtpVerificationResendLabel;
-
-  /// Translated from: auth.otp_verification.resend_timer
-  ///
-  /// In es, this message translates to:
-  /// **'Reenviar ({seconds}s)'**
-  String authOtpVerificationResendTimer(String seconds);
-
-  /// No description provided for @authOtpVerificationSubtitleReset.
-  ///
-  /// In es, this message translates to:
-  /// **'Ingresa el código que enviamos a:'**
-  String get authOtpVerificationSubtitleReset;
-
-  /// No description provided for @authOtpVerificationSubtitleSignup.
-  ///
-  /// In es, this message translates to:
-  /// **'Enviamos un código de 6 dígitos a:'**
-  String get authOtpVerificationSubtitleSignup;
-
-  /// No description provided for @authOtpVerificationTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Verificar Código'**
-  String get authOtpVerificationTitle;
-
-  /// No description provided for @authOtpVerificationVerifyEmailTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Verificar Email'**
-  String get authOtpVerificationVerifyEmailTitle;
-
-  /// No description provided for @authOtpVerificationVerifying.
-  ///
-  /// In es, this message translates to:
-  /// **'Verificando...'**
-  String get authOtpVerificationVerifying;
-
-  /// No description provided for @authPasswordFieldHide.
-  ///
-  /// In es, this message translates to:
-  /// **'Ocultar contraseña'**
-  String get authPasswordFieldHide;
-
-  /// No description provided for @authPasswordFieldLabel.
-  ///
-  /// In es, this message translates to:
-  /// **'Contraseña'**
-  String get authPasswordFieldLabel;
-
-  /// No description provided for @authPasswordFieldShow.
-  ///
-  /// In es, this message translates to:
-  /// **'Mostrar contraseña'**
-  String get authPasswordFieldShow;
-
-  /// No description provided for @authProfileSetupAvatarUploadSoon.
-  ///
-  /// In es, this message translates to:
-  /// **'Próximamente: subir avatar'**
-  String get authProfileSetupAvatarUploadSoon;
-
-  /// No description provided for @authProfileSetupBioHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Cuéntanos sobre ti...'**
-  String get authProfileSetupBioHint;
-
-  /// No description provided for @authProfileSetupBioLabel.
-  ///
-  /// In es, this message translates to:
-  /// **'Biografía (opcional)'**
-  String get authProfileSetupBioLabel;
-
-  /// No description provided for @authProfileSetupCompleteButton.
-  ///
-  /// In es, this message translates to:
-  /// **'Completar perfil'**
-  String get authProfileSetupCompleteButton;
-
-  /// No description provided for @authProfileSetupDisplayNameHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Juan Pérez'**
-  String get authProfileSetupDisplayNameHint;
-
-  /// No description provided for @authProfileSetupDisplayNameLabel.
-  ///
-  /// In es, this message translates to:
-  /// **'Nombre a mostrar'**
-  String get authProfileSetupDisplayNameLabel;
-
-  /// No description provided for @authProfileSetupDoItLater.
-  ///
-  /// In es, this message translates to:
-  /// **'Lo haré después'**
-  String get authProfileSetupDoItLater;
-
-  /// No description provided for @authProfileSetupInfoMessage.
-  ///
-  /// In es, this message translates to:
-  /// **'Necesitas un nombre de usuario para publicar chismes'**
-  String get authProfileSetupInfoMessage;
-
-  /// No description provided for @authProfileSetupLaterButton.
-  ///
-  /// In es, this message translates to:
-  /// **'Después'**
-  String get authProfileSetupLaterButton;
-
-  /// No description provided for @authProfileSetupSaveButton.
-  ///
-  /// In es, this message translates to:
-  /// **'Guardar Perfil'**
-  String get authProfileSetupSaveButton;
-
-  /// No description provided for @authProfileSetupSubtitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Completa tu perfil para empezar a compartir chismes'**
-  String get authProfileSetupSubtitle;
-
-  /// No description provided for @authProfileSetupTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Configura tu Perfil'**
-  String get authProfileSetupTitle;
-
-  /// No description provided for @authProfileSetupUsernameAvailabilityCheck.
-  ///
-  /// In es, this message translates to:
-  /// **'Verifica que el nombre de usuario esté disponible'**
-  String get authProfileSetupUsernameAvailabilityCheck;
-
-  /// No description provided for @authProfileSetupUsernameHelper.
-  ///
-  /// In es, this message translates to:
-  /// **'Solo letras minúsculas, números y _'**
-  String get authProfileSetupUsernameHelper;
-
-  /// No description provided for @authProfileSetupUsernameHint.
-  ///
-  /// In es, this message translates to:
-  /// **'juanperez'**
-  String get authProfileSetupUsernameHint;
-
-  /// No description provided for @authProfileSetupUsernameLabel.
-  ///
-  /// In es, this message translates to:
-  /// **'Nombre de usuario'**
-  String get authProfileSetupUsernameLabel;
-
-  /// No description provided for @authProfileSetupUsernameTaken.
-  ///
-  /// In es, this message translates to:
-  /// **'Este nombre de usuario ya está en uso'**
-  String get authProfileSetupUsernameTaken;
-
-  /// No description provided for @authProfileSetupWelcome.
-  ///
-  /// In es, this message translates to:
-  /// **'¡Bienvenido!'**
-  String get authProfileSetupWelcome;
-
-  /// No description provided for @authResetPasswordChangePasswordButton.
-  ///
-  /// In es, this message translates to:
-  /// **'Cambiar contraseña'**
-  String get authResetPasswordChangePasswordButton;
-
-  /// No description provided for @authResetPasswordConfirmPasswordHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Confirmar contraseña'**
-  String get authResetPasswordConfirmPasswordHint;
-
-  /// No description provided for @authResetPasswordDescription.
-  ///
-  /// In es, this message translates to:
-  /// **'Debe tener mínimo 8 caracteres'**
-  String get authResetPasswordDescription;
-
-  /// No description provided for @authResetPasswordNewPasswordHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Nueva contraseña'**
-  String get authResetPasswordNewPasswordHint;
-
-  /// No description provided for @authResetPasswordOkButton.
-  ///
-  /// In es, this message translates to:
-  /// **'OK'**
-  String get authResetPasswordOkButton;
-
-  /// No description provided for @authResetPasswordSubtitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Crea tu nueva contraseña'**
-  String get authResetPasswordSubtitle;
-
-  /// No description provided for @authResetPasswordSuccessMessage.
-  ///
-  /// In es, this message translates to:
-  /// **'Tu contraseña ha sido actualizada exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña'**
-  String get authResetPasswordSuccessMessage;
-
-  /// No description provided for @authResetPasswordSuccessTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Contraseña actualizada'**
-  String get authResetPasswordSuccessTitle;
-
-  /// No description provided for @authResetPasswordTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Nueva Contraseña'**
-  String get authResetPasswordTitle;
-
-  /// No description provided for @authSignupAlreadyHaveAccount.
-  ///
-  /// In es, this message translates to:
-  /// **'¿Ya tienes cuenta?'**
-  String get authSignupAlreadyHaveAccount;
-
-  /// No description provided for @authSignupConfirmPasswordHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Confirmar contraseña'**
-  String get authSignupConfirmPasswordHint;
-
-  /// No description provided for @authSignupConfirmPasswordRequired.
-  ///
-  /// In es, this message translates to:
-  /// **'Confirma tu contraseña'**
-  String get authSignupConfirmPasswordRequired;
-
-  /// No description provided for @authSignupDescription.
-  ///
-  /// In es, this message translates to:
-  /// **'Crea tu cuenta en segundos'**
-  String get authSignupDescription;
-
-  /// No description provided for @authSignupEmailHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Correo electrónico'**
-  String get authSignupEmailHint;
-
-  /// No description provided for @authSignupPasswordHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Contraseña'**
-  String get authSignupPasswordHint;
-
-  /// No description provided for @authSignupPasswordMinLength.
-  ///
-  /// In es, this message translates to:
-  /// **'Mínimo 8 caracteres'**
-  String get authSignupPasswordMinLength;
-
-  /// No description provided for @authSignupPasswordRequired.
-  ///
-  /// In es, this message translates to:
-  /// **'Ingresa una contraseña'**
-  String get authSignupPasswordRequired;
-
-  /// No description provided for @authSignupPasswordsMustMatch.
-  ///
-  /// In es, this message translates to:
-  /// **'Las contraseñas no coinciden'**
-  String get authSignupPasswordsMustMatch;
-
-  /// No description provided for @authSignupSignInLink.
-  ///
-  /// In es, this message translates to:
-  /// **'Inicia sesión'**
-  String get authSignupSignInLink;
-
-  /// No description provided for @authSignupSignUpButton.
-  ///
-  /// In es, this message translates to:
-  /// **'Crear Cuenta'**
-  String get authSignupSignUpButton;
-
-  /// No description provided for @authSignupSubtitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Únete a Chismes'**
-  String get authSignupSubtitle;
-
-  /// No description provided for @authSignupTermsMessage.
-  ///
-  /// In es, this message translates to:
-  /// **'Al crear una cuenta, aceptas nuestros Términos y Condiciones y Política de Privacidad'**
-  String get authSignupTermsMessage;
-
-  /// No description provided for @authSignupTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Crear Cuenta'**
-  String get authSignupTitle;
-
-  /// No description provided for @authValidationBioTooLong.
-  ///
-  /// In es, this message translates to:
-  /// **'La biografía es muy larga (máximo 160 caracteres)'**
-  String get authValidationBioTooLong;
-
-  /// No description provided for @authValidationDisplayNameEmpty.
-  ///
-  /// In es, this message translates to:
-  /// **'El nombre a mostrar no puede estar vacío'**
-  String get authValidationDisplayNameEmpty;
-
-  /// No description provided for @authValidationDisplayNameRequired.
-  ///
-  /// In es, this message translates to:
-  /// **'El nombre a mostrar es requerido'**
-  String get authValidationDisplayNameRequired;
-
-  /// No description provided for @authValidationDisplayNameTooLong.
-  ///
-  /// In es, this message translates to:
-  /// **'El nombre a mostrar es muy largo (máximo 50 caracteres)'**
-  String get authValidationDisplayNameTooLong;
-
-  /// No description provided for @authValidationEmailInvalid.
-  ///
-  /// In es, this message translates to:
-  /// **'El formato del email es inválido'**
-  String get authValidationEmailInvalid;
-
-  /// No description provided for @authValidationEmailRequired.
-  ///
-  /// In es, this message translates to:
-  /// **'El email es requerido'**
-  String get authValidationEmailRequired;
-
-  /// No description provided for @authValidationEmailTooLong.
-  ///
-  /// In es, this message translates to:
-  /// **'El email es muy largo (máximo 254 caracteres)'**
-  String get authValidationEmailTooLong;
-
-  /// No description provided for @authValidationPasswordNeedsLowercase.
-  ///
-  /// In es, this message translates to:
-  /// **'La contraseña debe contener al menos una letra minúscula'**
-  String get authValidationPasswordNeedsLowercase;
-
-  /// No description provided for @authValidationPasswordNeedsNumber.
-  ///
-  /// In es, this message translates to:
-  /// **'La contraseña debe contener al menos un número'**
-  String get authValidationPasswordNeedsNumber;
-
-  /// No description provided for @authValidationPasswordNeedsSpecial.
-  ///
-  /// In es, this message translates to:
-  /// **'La contraseña debe contener al menos un carácter especial'**
-  String get authValidationPasswordNeedsSpecial;
-
-  /// No description provided for @authValidationPasswordNeedsUppercase.
-  ///
-  /// In es, this message translates to:
-  /// **'La contraseña debe contener al menos una letra mayúscula'**
-  String get authValidationPasswordNeedsUppercase;
-
-  /// No description provided for @authValidationPasswordRequired.
-  ///
-  /// In es, this message translates to:
-  /// **'La contraseña es requerida'**
-  String get authValidationPasswordRequired;
-
-  /// No description provided for @authValidationPasswordTooLong.
-  ///
-  /// In es, this message translates to:
-  /// **'La contraseña es muy larga (máximo 128 caracteres)'**
-  String get authValidationPasswordTooLong;
-
-  /// No description provided for @authValidationPasswordTooShort.
-  ///
-  /// In es, this message translates to:
-  /// **'La contraseña es muy corta (mínimo 8 caracteres)'**
-  String get authValidationPasswordTooShort;
-
-  /// No description provided for @authValidationPasswordsMustMatch.
-  ///
-  /// In es, this message translates to:
-  /// **'Las contraseñas deben coincidir'**
-  String get authValidationPasswordsMustMatch;
-
-  /// No description provided for @authValidationUsernameInvalidChars.
-  ///
-  /// In es, this message translates to:
-  /// **'El nombre de usuario solo puede contener letras minúsculas, números y guiones bajos'**
-  String get authValidationUsernameInvalidChars;
-
-  /// No description provided for @authValidationUsernameInvalidUnderscore.
-  ///
-  /// In es, this message translates to:
-  /// **'El nombre de usuario no puede empezar o terminar con guión bajo'**
-  String get authValidationUsernameInvalidUnderscore;
-
-  /// No description provided for @authValidationUsernameRequired.
-  ///
-  /// In es, this message translates to:
-  /// **'El nombre de usuario es requerido'**
-  String get authValidationUsernameRequired;
-
-  /// No description provided for @authValidationUsernameReserved.
-  ///
-  /// In es, this message translates to:
-  /// **'El nombre de usuario está reservado'**
-  String get authValidationUsernameReserved;
-
-  /// No description provided for @authValidationUsernameStartsWithNumber.
-  ///
-  /// In es, this message translates to:
-  /// **'El nombre de usuario no puede empezar con un número'**
-  String get authValidationUsernameStartsWithNumber;
-
-  /// No description provided for @authValidationUsernameTooLong.
-  ///
-  /// In es, this message translates to:
-  /// **'El nombre de usuario es muy largo (máximo 30 caracteres)'**
-  String get authValidationUsernameTooLong;
-
-  /// No description provided for @authValidationUsernameTooShort.
-  ///
-  /// In es, this message translates to:
-  /// **'El nombre de usuario es muy corto (mínimo 3 caracteres)'**
-  String get authValidationUsernameTooShort;
 
   /// No description provided for @commonBack.
   ///
@@ -703,36 +115,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Cancelar'**
   String get commonCancel;
-
-  /// No description provided for @commonClose.
-  ///
-  /// In es, this message translates to:
-  /// **'Cerrar'**
-  String get commonClose;
-
-  /// No description provided for @commonConfirm.
-  ///
-  /// In es, this message translates to:
-  /// **'Confirmar'**
-  String get commonConfirm;
-
-  /// No description provided for @commonDelete.
-  ///
-  /// In es, this message translates to:
-  /// **'Eliminar'**
-  String get commonDelete;
-
-  /// No description provided for @commonEdit.
-  ///
-  /// In es, this message translates to:
-  /// **'Editar'**
-  String get commonEdit;
-
-  /// No description provided for @commonEmailHintPlaceholder.
-  ///
-  /// In es, this message translates to:
-  /// **'tu@email.com'**
-  String get commonEmailHintPlaceholder;
 
   /// No description provided for @commonEmailInvalid.
   ///
@@ -752,24 +134,6 @@ abstract class AppLocalizations {
   /// **'Ingresa tu contraseña'**
   String get commonEnterPassword;
 
-  /// No description provided for @commonError.
-  ///
-  /// In es, this message translates to:
-  /// **'Error'**
-  String get commonError;
-
-  /// No description provided for @commonForget.
-  ///
-  /// In es, this message translates to:
-  /// **'Olvidar'**
-  String get commonForget;
-
-  /// No description provided for @commonLoading.
-  ///
-  /// In es, this message translates to:
-  /// **'Cargando...'**
-  String get commonLoading;
-
   /// Translated from: common.max_length
   ///
   /// In es, this message translates to:
@@ -782,29 +146,11 @@ abstract class AppLocalizations {
   /// **'Debe tener al menos {count} caracteres'**
   String commonMinLength(String count);
 
-  /// No description provided for @commonPermanentlyDelete.
-  ///
-  /// In es, this message translates to:
-  /// **'Eliminar permanentemente'**
-  String get commonPermanentlyDelete;
-
-  /// No description provided for @commonRequiredField.
-  ///
-  /// In es, this message translates to:
-  /// **'Campo requerido'**
-  String get commonRequiredField;
-
   /// No description provided for @commonRetry.
   ///
   /// In es, this message translates to:
   /// **'Reintentar'**
   String get commonRetry;
-
-  /// No description provided for @commonSave.
-  ///
-  /// In es, this message translates to:
-  /// **'Guardar'**
-  String get commonSave;
 
   /// Translated from: common.select
   ///
@@ -812,17 +158,17 @@ abstract class AppLocalizations {
   /// **'Selecciona {field}'**
   String commonSelect(String field);
 
-  /// No description provided for @commonSuccess.
-  ///
-  /// In es, this message translates to:
-  /// **'Éxito'**
-  String get commonSuccess;
-
   /// No description provided for @errorsAuthEmailAlreadyInUse.
   ///
   /// In es, this message translates to:
   /// **'Este email ya está registrado.'**
   String get errorsAuthEmailAlreadyInUse;
+
+  /// No description provided for @authEmailAlreadyInUseAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Este email ya está registrado. Inicia sesión en su lugar.'**
+  String get authEmailAlreadyInUseAction;
 
   /// No description provided for @errorsAuthEmailNotVerified.
   ///
@@ -1208,108 +554,6 @@ abstract class AppLocalizations {
   /// **'Compartir chisme'**
   String get gossipCardShareTooltip;
 
-  /// No description provided for @gossipDetailScreenTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Detalle'**
-  String get gossipDetailScreenTitle;
-
-  /// No description provided for @gossipLocationChangeDialogTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Cambiar ubicación'**
-  String get gossipLocationChangeDialogTitle;
-
-  /// No description provided for @gossipLocationCityHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Buscar ciudad...'**
-  String get gossipLocationCityHint;
-
-  /// No description provided for @gossipLocationCityLabel.
-  ///
-  /// In es, this message translates to:
-  /// **'Ciudad'**
-  String get gossipLocationCityLabel;
-
-  /// No description provided for @gossipLocationCityRequired.
-  ///
-  /// In es, this message translates to:
-  /// **'Selecciona una ciudad'**
-  String get gossipLocationCityRequired;
-
-  /// Translated from: gossip.location.city_search_hint
-  ///
-  /// In es, this message translates to:
-  /// **'Buscar ciudad... (mín. {minChars} caracteres)'**
-  String gossipLocationCitySearchHint(String minChars);
-
-  /// No description provided for @gossipLocationCountryLabel.
-  ///
-  /// In es, this message translates to:
-  /// **'País'**
-  String get gossipLocationCountryLabel;
-
-  /// No description provided for @gossipLocationCountryRequired.
-  ///
-  /// In es, this message translates to:
-  /// **'Selecciona un país'**
-  String get gossipLocationCountryRequired;
-
-  /// No description provided for @gossipLocationGpsDetectSubtitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Detectar automáticamente con GPS'**
-  String get gossipLocationGpsDetectSubtitle;
-
-  /// Translated from: gossip.location.min_chars_message
-  ///
-  /// In es, this message translates to:
-  /// **'Escribe al menos {minChars} caracteres para buscar'**
-  String gossipLocationMinCharsMessage(String minChars);
-
-  /// Translated from: gossip.location.no_results
-  ///
-  /// In es, this message translates to:
-  /// **'No se encontraron ciudades con \"{query}\"'**
-  String gossipLocationNoResults(String query);
-
-  /// No description provided for @gossipLocationOrSelectManually.
-  ///
-  /// In es, this message translates to:
-  /// **'O seleccionar manualmente'**
-  String get gossipLocationOrSelectManually;
-
-  /// No description provided for @gossipLocationRegionLabel.
-  ///
-  /// In es, this message translates to:
-  /// **'Región'**
-  String get gossipLocationRegionLabel;
-
-  /// No description provided for @gossipLocationRegionRequired.
-  ///
-  /// In es, this message translates to:
-  /// **'Selecciona una región'**
-  String get gossipLocationRegionRequired;
-
-  /// No description provided for @gossipLocationSearchError.
-  ///
-  /// In es, this message translates to:
-  /// **'Error al buscar ciudades. Intenta de nuevo.'**
-  String get gossipLocationSearchError;
-
-  /// No description provided for @gossipLocationUnexpectedError.
-  ///
-  /// In es, this message translates to:
-  /// **'Error inesperado. Intenta de nuevo.'**
-  String get gossipLocationUnexpectedError;
-
-  /// No description provided for @gossipLocationUseCurrentLocation.
-  ///
-  /// In es, this message translates to:
-  /// **'Usar mi ubicación actual'**
-  String get gossipLocationUseCurrentLocation;
-
   /// No description provided for @gossipLocationSelectorChangeButtonLabel.
   ///
   /// In es, this message translates to:
@@ -1526,11 +770,41 @@ abstract class AppLocalizations {
   /// **'Reportar chisme'**
   String get gossipReportTitle;
 
-  /// No description provided for @gossipSubmitButtonPublishSemantic.
+  /// No description provided for @gossipReportReasonSpam.
   ///
   /// In es, this message translates to:
-  /// **'Publicar chisme'**
-  String get gossipSubmitButtonPublishSemantic;
+  /// **'Spam'**
+  String get gossipReportReasonSpam;
+
+  /// No description provided for @gossipReportReasonHarassment.
+  ///
+  /// In es, this message translates to:
+  /// **'Acoso o intimidación'**
+  String get gossipReportReasonHarassment;
+
+  /// No description provided for @gossipReportReasonViolence.
+  ///
+  /// In es, this message translates to:
+  /// **'Violencia o amenazas'**
+  String get gossipReportReasonViolence;
+
+  /// No description provided for @gossipReportReasonSexualContent.
+  ///
+  /// In es, this message translates to:
+  /// **'Contenido sexual'**
+  String get gossipReportReasonSexualContent;
+
+  /// No description provided for @gossipReportReasonMisinformation.
+  ///
+  /// In es, this message translates to:
+  /// **'Desinformación'**
+  String get gossipReportReasonMisinformation;
+
+  /// No description provided for @gossipReportReasonOther.
+  ///
+  /// In es, this message translates to:
+  /// **'Otro motivo'**
+  String get gossipReportReasonOther;
 
   /// No description provided for @gossipTextFieldsContentHint.
   ///
@@ -1622,18 +896,6 @@ abstract class AppLocalizations {
   /// **'💡 Recomendados para ti'**
   String get homeFollowingRecommendedBadge;
 
-  /// No description provided for @homeFollowingRecommendedError.
-  ///
-  /// In es, this message translates to:
-  /// **'Error al cargar recomendados'**
-  String get homeFollowingRecommendedError;
-
-  /// No description provided for @homeFollowingUnexpectedError.
-  ///
-  /// In es, this message translates to:
-  /// **'Error inesperado al cargar feed'**
-  String get homeFollowingUnexpectedError;
-
   /// No description provided for @homeFollowingUsePopularTabHint.
   ///
   /// In es, this message translates to:
@@ -1652,24 +914,6 @@ abstract class AppLocalizations {
   /// **'No hay chismes disponibles'**
   String get homePopularEmpty;
 
-  /// No description provided for @homePopularGlobal.
-  ///
-  /// In es, this message translates to:
-  /// **'Popular 🌎'**
-  String get homePopularGlobal;
-
-  /// Translated from: home.popular.in_city
-  ///
-  /// In es, this message translates to:
-  /// **'Popular en {city}'**
-  String homePopularInCity(String city);
-
-  /// Translated from: home.popular.new_gossips_banner
-  ///
-  /// In es, this message translates to:
-  /// **'{count} nuevos chismes · Tap aquí'**
-  String homePopularNewGossipsBanner(String count);
-
   /// No description provided for @homePopularNoMore.
   ///
   /// In es, this message translates to:
@@ -1687,12 +931,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Populares'**
   String get homeTabsPopular;
-
-  /// No description provided for @homeTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Chismes 🔥'**
-  String get homeTitle;
 
   /// No description provided for @navigationCreate.
   ///
@@ -1718,24 +956,6 @@ abstract class AppLocalizations {
   /// **'Perfil'**
   String get navigationProfile;
 
-  /// No description provided for @profileControllerLoadError.
-  ///
-  /// In es, this message translates to:
-  /// **'Error al cargar el perfil'**
-  String get profileControllerLoadError;
-
-  /// No description provided for @profileControllerSignoutError.
-  ///
-  /// In es, this message translates to:
-  /// **'Error al cerrar sesión'**
-  String get profileControllerSignoutError;
-
-  /// No description provided for @profileControllerUpdateError.
-  ///
-  /// In es, this message translates to:
-  /// **'Error al actualizar configuración'**
-  String get profileControllerUpdateError;
-
   /// No description provided for @profileHeaderCompleteness.
   ///
   /// In es, this message translates to:
@@ -1754,18 +974,6 @@ abstract class AppLocalizations {
   /// **'Sin nombre'**
   String get profileHeaderNoName;
 
-  /// No description provided for @profilePrivacyConsentDeclineButton.
-  ///
-  /// In es, this message translates to:
-  /// **'No acepto, volver'**
-  String get profilePrivacyConsentDeclineButton;
-
-  /// No description provided for @profilePrivacyConsentTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Privacidad y Términos'**
-  String get profilePrivacyConsentTitle;
-
   /// No description provided for @profilePrivacySettingsAccountDeleteSubtitle.
   ///
   /// In es, this message translates to:
@@ -1777,30 +985,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Eliminar cuenta'**
   String get profilePrivacySettingsAccountDeleteTitle;
-
-  /// No description provided for @profilePrivacySettingsAccountDeleted.
-  ///
-  /// In es, this message translates to:
-  /// **'Cuenta eliminada'**
-  String get profilePrivacySettingsAccountDeleted;
-
-  /// No description provided for @profilePrivacySettingsAnonymousModeTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Modo anónimo'**
-  String get profilePrivacySettingsAnonymousModeTitle;
-
-  /// No description provided for @profilePrivacySettingsConfirmDeletionTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Confirmar eliminación'**
-  String get profilePrivacySettingsConfirmDeletionTitle;
-
-  /// No description provided for @profilePrivacySettingsDeletionCancelled.
-  ///
-  /// In es, this message translates to:
-  /// **'Eliminación cancelada'**
-  String get profilePrivacySettingsDeletionCancelled;
 
   /// No description provided for @profilePrivacySettingsDialogsDeleteAccountConfirmPlaceholder.
   ///
@@ -1862,12 +1046,6 @@ abstract class AppLocalizations {
   /// **'Los términos de uso completos están disponibles en:\n\nhttps://chismes.app/terms\n\nO en el archivo TERMS_OF_SERVICE.md del proyecto.'**
   String get profilePrivacySettingsDialogsTermsOfUseContent;
 
-  /// No description provided for @profilePrivacySettingsEraseButton.
-  ///
-  /// In es, this message translates to:
-  /// **'Borrar'**
-  String get profilePrivacySettingsEraseButton;
-
   /// No description provided for @profilePrivacySettingsExportComingSoon.
   ///
   /// In es, this message translates to:
@@ -1916,29 +1094,11 @@ abstract class AppLocalizations {
   /// **'No guardada'**
   String get profilePrivacySettingsLocationNotSaved;
 
-  /// No description provided for @profilePrivacySettingsMyDataTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Mis Datos'**
-  String get profilePrivacySettingsMyDataTitle;
-
   /// No description provided for @profilePrivacySettingsNoLocalData.
   ///
   /// In es, this message translates to:
   /// **'No hay datos guardados localmente'**
   String get profilePrivacySettingsNoLocalData;
-
-  /// No description provided for @profilePrivacySettingsPrivacyPolicyTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Política de Privacidad'**
-  String get profilePrivacySettingsPrivacyPolicyTitle;
-
-  /// No description provided for @profilePrivacySettingsSavedCityTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Ciudad guardada'**
-  String get profilePrivacySettingsSavedCityTitle;
 
   /// No description provided for @profilePrivacySettingsSectionsAccount.
   ///
@@ -1988,30 +1148,6 @@ abstract class AppLocalizations {
   /// **'✅ Ubicación olvidada'**
   String get profilePrivacySettingsSnackbarsLocationForgotten;
 
-  /// No description provided for @profilePrivacySettingsTermsOfUseTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Términos de Uso'**
-  String get profilePrivacySettingsTermsOfUseTitle;
-
-  /// No description provided for @profilePrivacySettingsTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Privacidad'**
-  String get profilePrivacySettingsTitle;
-
-  /// No description provided for @profilePrivacySettingsViewMyDataSubtitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Dashboard de datos'**
-  String get profilePrivacySettingsViewMyDataSubtitle;
-
-  /// No description provided for @profilePrivacySettingsViewMyDataTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Ver mis datos'**
-  String get profilePrivacySettingsViewMyDataTitle;
-
   /// No description provided for @profileScreenErrorLoading.
   ///
   /// In es, this message translates to:
@@ -2054,11 +1190,11 @@ abstract class AppLocalizations {
   /// **'Cerrando sesión...'**
   String get profileScreenSigningOut;
 
-  /// No description provided for @profileSettingsAppearanceTitle.
+  /// No description provided for @profileSignOutError.
   ///
   /// In es, this message translates to:
-  /// **'Apariencia'**
-  String get profileSettingsAppearanceTitle;
+  /// **'Error al cerrar sesión'**
+  String get profileSignOutError;
 
   /// No description provided for @profileSettingsComments.
   ///
@@ -2071,12 +1207,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Notificar cuando comenten tus chismes'**
   String get profileSettingsCommentsSubtitle;
-
-  /// No description provided for @profileSettingsDailySummary.
-  ///
-  /// In es, this message translates to:
-  /// **'Resumen diario'**
-  String get profileSettingsDailySummary;
 
   /// No description provided for @profileSettingsDailySummarySubtitle.
   ///
@@ -2144,12 +1274,6 @@ abstract class AppLocalizations {
   /// **'Notificar cuando alguien te siga'**
   String get profileSettingsNewFollowersSubtitle;
 
-  /// No description provided for @profileSettingsNotificationsTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Notificaciones'**
-  String get profileSettingsNotificationsTitle;
-
   /// No description provided for @profileSettingsPrivacyDialogTitle.
   ///
   /// In es, this message translates to:
@@ -2197,12 +1321,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Todos pueden ver tu perfil'**
   String get profileSettingsPrivacyPublicSubtitle;
-
-  /// No description provided for @profileSettingsPrivacyTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Privacidad'**
-  String get profileSettingsPrivacyTitle;
 
   /// No description provided for @profileSettingsPushNotifications.
   ///
@@ -2300,11 +1418,11 @@ abstract class AppLocalizations {
   /// **'Estadísticas'**
   String get profileStatsTitle;
 
-  /// No description provided for @searchEmptyState.
+  /// Filter chip label to show only gossips from user's city
   ///
   /// In es, this message translates to:
-  /// **'Escribe para buscar chismes 🔎'**
-  String get searchEmptyState;
+  /// **'Solo {cityName}'**
+  String searchFilterOnlyCity(String cityName);
 
   /// No description provided for @searchHint.
   ///
@@ -2953,6 +2071,474 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Escribe al menos {minChars} caracteres para buscar'**
   String locationMinCharsMessage(int minChars);
+
+  /// No description provided for @privacyConsentHeader.
+  ///
+  /// In es, this message translates to:
+  /// **'🔒 Tu privacidad es importante'**
+  String get privacyConsentHeader;
+
+  /// No description provided for @privacyConsentSubheader.
+  ///
+  /// In es, this message translates to:
+  /// **'Antes de comenzar, queremos que sepas cómo manejamos tus datos.'**
+  String get privacyConsentSubheader;
+
+  /// No description provided for @privacyConsentDataCollectedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'📊 ¿Qué datos recopilamos?'**
+  String get privacyConsentDataCollectedTitle;
+
+  /// No description provided for @privacyConsentDataCollectedItem1.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu email y contraseña (encriptada)'**
+  String get privacyConsentDataCollectedItem1;
+
+  /// No description provided for @privacyConsentDataCollectedItem2.
+  ///
+  /// In es, this message translates to:
+  /// **'Solo tu ciudad (NO coordenadas exactas)'**
+  String get privacyConsentDataCollectedItem2;
+
+  /// No description provided for @privacyConsentDataCollectedItem3.
+  ///
+  /// In es, this message translates to:
+  /// **'Contenido de tus chismes (texto, imagen, audio)'**
+  String get privacyConsentDataCollectedItem3;
+
+  /// No description provided for @privacyConsentDataCollectedItem4.
+  ///
+  /// In es, this message translates to:
+  /// **'Estadísticas de uso (para mejorar la app)'**
+  String get privacyConsentDataCollectedItem4;
+
+  /// No description provided for @privacyConsentDataUsageTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'🎯 ¿Cómo los usamos?'**
+  String get privacyConsentDataUsageTitle;
+
+  /// No description provided for @privacyConsentDataUsageItem1.
+  ///
+  /// In es, this message translates to:
+  /// **'Proporcionar el servicio (publicar chismes)'**
+  String get privacyConsentDataUsageItem1;
+
+  /// No description provided for @privacyConsentDataUsageItem2.
+  ///
+  /// In es, this message translates to:
+  /// **'Moderar contenido (mantener comunidad segura)'**
+  String get privacyConsentDataUsageItem2;
+
+  /// No description provided for @privacyConsentDataUsageItem3.
+  ///
+  /// In es, this message translates to:
+  /// **'Mejorar la app (analizar uso)'**
+  String get privacyConsentDataUsageItem3;
+
+  /// No description provided for @privacyConsentModerationTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'🤖 Moderación de contenido'**
+  String get privacyConsentModerationTitle;
+
+  /// No description provided for @privacyConsentModerationItem1.
+  ///
+  /// In es, this message translates to:
+  /// **'Usamos OpenAI para analizar texto'**
+  String get privacyConsentModerationItem1;
+
+  /// No description provided for @privacyConsentModerationItem2.
+  ///
+  /// In es, this message translates to:
+  /// **'Solo se envía el texto del chisme'**
+  String get privacyConsentModerationItem2;
+
+  /// No description provided for @privacyConsentModerationItem3.
+  ///
+  /// In es, this message translates to:
+  /// **'NO enviamos tu nombre, ubicación ni otros datos'**
+  String get privacyConsentModerationItem3;
+
+  /// No description provided for @privacyConsentModerationItem4.
+  ///
+  /// In es, this message translates to:
+  /// **'OpenAI retiene el texto por 30 días, luego lo elimina'**
+  String get privacyConsentModerationItem4;
+
+  /// No description provided for @privacyConsentModerationItem5.
+  ///
+  /// In es, this message translates to:
+  /// **'NO se usa para entrenar modelos de IA'**
+  String get privacyConsentModerationItem5;
+
+  /// No description provided for @privacyConsentLocationTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'📍 Tu ubicación'**
+  String get privacyConsentLocationTitle;
+
+  /// No description provided for @privacyConsentLocationItem1.
+  ///
+  /// In es, this message translates to:
+  /// **'Solo detectamos tu ciudad (ej: \"Bogotá\")'**
+  String get privacyConsentLocationItem1;
+
+  /// No description provided for @privacyConsentLocationItem2.
+  ///
+  /// In es, this message translates to:
+  /// **'Coordenadas GPS se descartan inmediatamente'**
+  String get privacyConsentLocationItem2;
+
+  /// No description provided for @privacyConsentLocationItem3.
+  ///
+  /// In es, this message translates to:
+  /// **'NUNCA almacenamos ni enviamos coordenadas exactas'**
+  String get privacyConsentLocationItem3;
+
+  /// No description provided for @privacyConsentLocationItem4.
+  ///
+  /// In es, this message translates to:
+  /// **'Puedes elegir la ciudad manualmente'**
+  String get privacyConsentLocationItem4;
+
+  /// No description provided for @privacyConsentRightsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'✅ Tus derechos'**
+  String get privacyConsentRightsTitle;
+
+  /// No description provided for @privacyConsentRightsItem1.
+  ///
+  /// In es, this message translates to:
+  /// **'Acceder a tus datos en cualquier momento'**
+  String get privacyConsentRightsItem1;
+
+  /// No description provided for @privacyConsentRightsItem2.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar tu cuenta y datos'**
+  String get privacyConsentRightsItem2;
+
+  /// No description provided for @privacyConsentRightsItem3.
+  ///
+  /// In es, this message translates to:
+  /// **'Olvidar tu ubicación guardada'**
+  String get privacyConsentRightsItem3;
+
+  /// No description provided for @privacyConsentRightsItem4.
+  ///
+  /// In es, this message translates to:
+  /// **'Exportar tus datos (portabilidad)'**
+  String get privacyConsentRightsItem4;
+
+  /// No description provided for @privacyConsentCheckboxPrivacy.
+  ///
+  /// In es, this message translates to:
+  /// **'He leído y acepto la '**
+  String get privacyConsentCheckboxPrivacy;
+
+  /// No description provided for @privacyConsentCheckboxPrivacyLink.
+  ///
+  /// In es, this message translates to:
+  /// **'Política de Privacidad'**
+  String get privacyConsentCheckboxPrivacyLink;
+
+  /// No description provided for @privacyConsentCheckboxTerms.
+  ///
+  /// In es, this message translates to:
+  /// **'He leído y acepto los '**
+  String get privacyConsentCheckboxTerms;
+
+  /// No description provided for @privacyConsentCheckboxTermsLink.
+  ///
+  /// In es, this message translates to:
+  /// **'Términos de Uso'**
+  String get privacyConsentCheckboxTermsLink;
+
+  /// No description provided for @privacyConsentCheckboxModeration.
+  ///
+  /// In es, this message translates to:
+  /// **'Acepto que el texto de mis chismes se envíe a '**
+  String get privacyConsentCheckboxModeration;
+
+  /// No description provided for @privacyConsentCheckboxModerationBold.
+  ///
+  /// In es, this message translates to:
+  /// **'OpenAI'**
+  String get privacyConsentCheckboxModerationBold;
+
+  /// No description provided for @privacyConsentCheckboxModerationSuffix.
+  ///
+  /// In es, this message translates to:
+  /// **' para moderación de contenido (30 días de retención)'**
+  String get privacyConsentCheckboxModerationSuffix;
+
+  /// No description provided for @privacyConsentAcceptButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Aceptar y Continuar'**
+  String get privacyConsentAcceptButton;
+
+  /// No description provided for @privacyConsentDisclaimer.
+  ///
+  /// In es, this message translates to:
+  /// **'Al continuar, aceptas nuestras políticas'**
+  String get privacyConsentDisclaimer;
+
+  /// No description provided for @authOtpResendCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Reenviar código'**
+  String get authOtpResendCode;
+
+  /// Resend countdown timer
+  ///
+  /// In es, this message translates to:
+  /// **'Reenviar en {seconds}s'**
+  String authOtpResendIn(int seconds);
+
+  /// No description provided for @authOtpHelpText.
+  ///
+  /// In es, this message translates to:
+  /// **'¿No recibiste el código? Revisa tu carpeta de spam o solicita uno nuevo.'**
+  String get authOtpHelpText;
+
+  /// No description provided for @authOtpEnterCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Ingresa el código'**
+  String get authOtpEnterCode;
+
+  /// No description provided for @authOtpSentCodeTo.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviamos un código de 6 dígitos a:'**
+  String get authOtpSentCodeTo;
+
+  /// No description provided for @authOtpCodeMustBe6Digits.
+  ///
+  /// In es, this message translates to:
+  /// **'El código debe tener 6 dígitos'**
+  String get authOtpCodeMustBe6Digits;
+
+  /// No description provided for @privacyConsentDialogPrivacyAvailable.
+  ///
+  /// In es, this message translates to:
+  /// **'La política de privacidad completa está disponible en:'**
+  String get privacyConsentDialogPrivacyAvailable;
+
+  /// No description provided for @privacyConsentDialogPrivacyUrl.
+  ///
+  /// In es, this message translates to:
+  /// **'https://chismes.app/privacy'**
+  String get privacyConsentDialogPrivacyUrl;
+
+  /// No description provided for @privacyConsentDialogPrivacyFile.
+  ///
+  /// In es, this message translates to:
+  /// **'O en el archivo PRIVACY_POLICY.md del proyecto.'**
+  String get privacyConsentDialogPrivacyFile;
+
+  /// No description provided for @privacyConsentDialogPrivacySummary.
+  ///
+  /// In es, this message translates to:
+  /// **'Resumen:'**
+  String get privacyConsentDialogPrivacySummary;
+
+  /// No description provided for @privacyConsentDialogPrivacyItem1.
+  ///
+  /// In es, this message translates to:
+  /// **'• Solo recopilamos datos necesarios'**
+  String get privacyConsentDialogPrivacyItem1;
+
+  /// No description provided for @privacyConsentDialogPrivacyItem2.
+  ///
+  /// In es, this message translates to:
+  /// **'• No vendemos tus datos'**
+  String get privacyConsentDialogPrivacyItem2;
+
+  /// No description provided for @privacyConsentDialogPrivacyItem3.
+  ///
+  /// In es, this message translates to:
+  /// **'• Puedes eliminar tu cuenta en cualquier momento'**
+  String get privacyConsentDialogPrivacyItem3;
+
+  /// No description provided for @privacyConsentDialogTermsAvailable.
+  ///
+  /// In es, this message translates to:
+  /// **'Los términos de uso completos están disponibles en:'**
+  String get privacyConsentDialogTermsAvailable;
+
+  /// No description provided for @privacyConsentDialogTermsUrl.
+  ///
+  /// In es, this message translates to:
+  /// **'https://chismes.app/terms'**
+  String get privacyConsentDialogTermsUrl;
+
+  /// No description provided for @privacyConsentDialogTermsFile.
+  ///
+  /// In es, this message translates to:
+  /// **'O en el archivo TERMS_OF_SERVICE.md del proyecto.'**
+  String get privacyConsentDialogTermsFile;
+
+  /// No description provided for @privacyConsentDialogTermsSummary.
+  ///
+  /// In es, this message translates to:
+  /// **'Resumen:'**
+  String get privacyConsentDialogTermsSummary;
+
+  /// No description provided for @privacyConsentDialogTermsItem1.
+  ///
+  /// In es, this message translates to:
+  /// **'• Edad mínima: 13 años'**
+  String get privacyConsentDialogTermsItem1;
+
+  /// No description provided for @privacyConsentDialogTermsItem2.
+  ///
+  /// In es, this message translates to:
+  /// **'• No publicar contenido inapropiado'**
+  String get privacyConsentDialogTermsItem2;
+
+  /// No description provided for @privacyConsentDialogTermsItem3.
+  ///
+  /// In es, this message translates to:
+  /// **'• Moderación automática + manual'**
+  String get privacyConsentDialogTermsItem3;
+
+  /// No description provided for @privacyConsentDialogTermsItem4.
+  ///
+  /// In es, this message translates to:
+  /// **'• Podemos suspender cuentas que violen normas'**
+  String get privacyConsentDialogTermsItem4;
+
+  /// No description provided for @searchRecentSearches.
+  ///
+  /// In es, this message translates to:
+  /// **'Búsquedas recientes'**
+  String get searchRecentSearches;
+
+  /// No description provided for @searchTryOtherWords.
+  ///
+  /// In es, this message translates to:
+  /// **'Intenta con otras palabras'**
+  String get searchTryOtherWords;
+
+  /// No description provided for @searchByTopic.
+  ///
+  /// In es, this message translates to:
+  /// **'Busca chismes por tema'**
+  String get searchByTopic;
+
+  /// No description provided for @searchByKeyword.
+  ///
+  /// In es, this message translates to:
+  /// **'o palabra clave'**
+  String get searchByKeyword;
+
+  /// No description provided for @searchRecent.
+  ///
+  /// In es, this message translates to:
+  /// **'Recientes'**
+  String get searchRecent;
+
+  /// No description provided for @searchClearAll.
+  ///
+  /// In es, this message translates to:
+  /// **'Borrar todo'**
+  String get searchClearAll;
+
+  /// Search results count with ICU plural
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =0{Sin resultados} =1{1 resultado} other{{count} resultados}}'**
+  String searchResultsCount(int count);
+
+  /// New gossips banner with ICU plural
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =1{1 nuevo chisme · Toca aquí} other{{count} nuevos chismes · Toca aquí}}'**
+  String homeNewGossipsBanner(int count);
+
+  /// Opening gossip via deep link
+  ///
+  /// In es, this message translates to:
+  /// **'Abriendo chisme: {gossipId}'**
+  String deepLinkOpeningGossip(String gossipId);
+
+  /// Opening profile via deep link
+  ///
+  /// In es, this message translates to:
+  /// **'Abriendo perfil: {userId}'**
+  String deepLinkOpeningProfile(String userId);
+
+  /// Opening city feed via deep link
+  ///
+  /// In es, this message translates to:
+  /// **'Abriendo feed de ciudad: {cityId}'**
+  String deepLinkOpeningCityFeed(String cityId);
+
+  /// No description provided for @locationErrorLoadCountries.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al cargar países'**
+  String get locationErrorLoadCountries;
+
+  /// No description provided for @locationErrorLoadRegions.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al cargar regiones'**
+  String get locationErrorLoadRegions;
+
+  /// No description provided for @locationErrorLoadCities.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al cargar ciudades'**
+  String get locationErrorLoadCities;
+
+  /// No description provided for @locationErrorUnexpected.
+  ///
+  /// In es, this message translates to:
+  /// **'Error inesperado'**
+  String get locationErrorUnexpected;
+
+  /// No description provided for @locationErrorGpsPosition.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo detectar ubicación. Activa GPS e intenta de nuevo.'**
+  String get locationErrorGpsPosition;
+
+  /// No description provided for @locationErrorGeocoding.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo identificar la ubicación'**
+  String get locationErrorGeocoding;
+
+  /// Error when detected country is not in database
+  ///
+  /// In es, this message translates to:
+  /// **'País \"{entityName}\" no disponible. Selecciona manualmente.'**
+  String locationErrorCountryNotAvailable(String entityName);
+
+  /// Error when detected region is not in database
+  ///
+  /// In es, this message translates to:
+  /// **'Región \"{entityName}\" no disponible. Selecciona manualmente.'**
+  String locationErrorRegionNotAvailable(String entityName);
+
+  /// Error when detected city is not in database
+  ///
+  /// In es, this message translates to:
+  /// **'Ciudad \"{entityName}\" no disponible. Selecciona manualmente.'**
+  String locationErrorCityNotAvailable(String entityName);
+
+  /// No description provided for @locationErrorDetection.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al detectar ubicación. Intenta de nuevo.'**
+  String get locationErrorDetection;
 }
 
 class _AppLocalizationsDelegate

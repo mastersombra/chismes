@@ -20,7 +20,7 @@ enum FollowingTabStatus {
   /// No sigue a nadie (empty state)
   notFollowing,
 
-  /// Error al cargar
+  /// Error cargar
   error,
 
   /// Cargando más chismes (infinite scroll)

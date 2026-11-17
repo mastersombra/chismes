@@ -39,9 +39,30 @@ Inicial: ~3,448 tests pasando
 
 **Total estimado:** 1.5-2 horas → **+265 líneas** → **75.5% coverage** ✅
 
-## 🔍 Análisis Pre-Sesión
+## ✅ Progreso - Fase 1 Completada
 
-### Widgets sin Tests (Buscando candidatos)
+### Archivos Completados
+
+| # | Archivo | Tests | Líneas Agregadas | Estado |
+|---|---------|-------|------------------|--------|
+| 1 | feed_gossip_adapter_test.dart | 24 | ~10 líneas | ✅ |
+| 2 | new_gossips_banner_test.dart | 13 | ~13 líneas | ✅ |
+
+### Coverage Actual
+```
+Inicial: 71.5% (5,433 / 7,598)
+Actual:  71.8% (5,456 / 7,598)
+Delta:   +23 líneas (+37 tests)
+```
+
+### Resumen Fase 1
+- **Tiempo:** ~45 minutos
+- **Tests:** 37 tests (100% passing)
+- **ROI:** ~31 líneas/hora ejecutables
+- **Nota:** ROI más bajo del esperado porque:
+  - feed_gossip_adapter tiene poca lógica ejecutable (solo mapeos)
+  - new_gossips_banner es principalmente presentación
+  - Helper functions en tests no cuentan como coverage
 
 ---
 

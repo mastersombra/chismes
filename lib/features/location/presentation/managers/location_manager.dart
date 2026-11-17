@@ -11,6 +11,7 @@ import '../../domain/usecases/get_cities_by_region.dart';
 import '../../domain/usecases/get_countries.dart';
 import '../../domain/usecases/get_regions_by_country.dart';
 import '../states/location_state.dart';
+import 'location_error_key.dart';
 
 /// Manager para gestión de ubicación en formularios
 ///
@@ -81,7 +82,7 @@ class LocationManager extends ChangeNotifier {
 
   /// Carga la lista de países disponibles
   Future<void> loadCountries() async {
-    _logger.d('🌍 Cargando países');
+    _logger.d('Loading countries');
 
     _updateState(_state.copyWith(
       isLoadingCountries: true,
@@ -93,16 +94,16 @@ class LocationManager extends ChangeNotifier {
 
       result.when(
         onFailure: (failure) {
-          _logger.e('Error al cargar países', context: {
+          _logger.e('Failed to load countries', context: {
             'error': failure.toString(),
           });
           _updateState(_state.copyWith(
             isLoadingCountries: false,
-            error: 'Error al cargar países',
+            errorKey: LocationErrorKey.failedToLoadCountries,
           ));
         },
         onSuccess: (countries) {
-          _logger.i('✅ Países cargados', context: {'count': countries.length});
+          _logger.i('Countries loaded', context: {'count': countries.length});
           _updateState(_state.copyWith(
             countries: countries,
             isLoadingCountries: false,
@@ -111,18 +112,18 @@ class LocationManager extends ChangeNotifier {
         },
       );
     } catch (error, stackTrace) {
-      _logger.e('Error inesperado al cargar países',
+      _logger.e('Unexpected error loading countries',
           error: error, stackTrace: stackTrace);
       _updateState(_state.copyWith(
         isLoadingCountries: false,
-        error: 'Error inesperado',
+        errorKey: LocationErrorKey.unexpectedError,
       ));
     }
   }
 
   /// Carga las regiones del país seleccionado
   Future<void> loadRegions(Country country) async {
-    _logger.d('🗺️ Cargando regiones', context: {'countryId': country.id});
+    _logger.d('Loading regions', context: {'countryId': country.id});
 
     _updateState(_state.copyWith(
       selectedCountry: country,
@@ -139,17 +140,17 @@ class LocationManager extends ChangeNotifier {
 
       result.when(
         onFailure: (failure) {
-          _logger.e('Error al cargar regiones', context: {
+          _logger.e('Failed to load regions', context: {
             'countryId': country.id,
             'error': failure.toString(),
           });
           _updateState(_state.copyWith(
             isLoadingRegions: false,
-            error: 'Error al cargar regiones',
+            errorKey: LocationErrorKey.failedToLoadRegions,
           ));
         },
         onSuccess: (regions) {
-          _logger.i('✅ Regiones cargadas', context: {
+          _logger.i('Regions loaded', context: {
             'countryId': country.id,
             'count': regions.length,
           });
@@ -161,18 +162,18 @@ class LocationManager extends ChangeNotifier {
         },
       );
     } catch (error, stackTrace) {
-      _logger.e('Error inesperado al cargar regiones',
+      _logger.e('Unexpected error loading regions',
           error: error, stackTrace: stackTrace);
       _updateState(_state.copyWith(
         isLoadingRegions: false,
-        error: 'Error inesperado',
+        errorKey: LocationErrorKey.unexpectedError,
       ));
     }
   }
 
   /// Carga las ciudades de la región seleccionada
   Future<void> loadCities(Region region) async {
-    _logger.d('🏙️ Cargando ciudades', context: {'regionId': region.id});
+    _logger.d('Loading cities', context: {'regionId': region.id});
 
     _updateState(_state.copyWith(
       selectedRegion: region,
@@ -187,17 +188,17 @@ class LocationManager extends ChangeNotifier {
 
       result.when(
         onFailure: (failure) {
-          _logger.e('Error al cargar ciudades', context: {
+          _logger.e('Failed to load cities', context: {
             'regionId': region.id,
             'error': failure.toString(),
           });
           _updateState(_state.copyWith(
             isLoadingCities: false,
-            error: 'Error al cargar ciudades',
+            errorKey: LocationErrorKey.failedToLoadCities,
           ));
         },
         onSuccess: (cities) {
-          _logger.i('✅ Ciudades cargadas', context: {
+          _logger.i('Cities loaded', context: {
             'regionId': region.id,
             'count': cities.length,
           });
@@ -209,18 +210,18 @@ class LocationManager extends ChangeNotifier {
         },
       );
     } catch (error, stackTrace) {
-      _logger.e('Error inesperado al cargar ciudades',
+      _logger.e('Unexpected error loading cities',
           error: error, stackTrace: stackTrace);
       _updateState(_state.copyWith(
         isLoadingCities: false,
-        error: 'Error inesperado',
+        errorKey: LocationErrorKey.unexpectedError,
       ));
     }
   }
 
   /// Selecciona una ciudad (sin recargar)
   void selectCity(City city) {
-    _logger.d('📍 Ciudad seleccionada', context: {'cityId': city.id});
+    _logger.d('City selected', context: {'cityId': city.id});
 
     _updateState(_state.copyWith(
       selectedCity: city,
@@ -240,7 +241,7 @@ class LocationManager extends ChangeNotifier {
   /// 3. Buscar país/región/ciudad en BD
   /// 4. Seleccionar automáticamente
   Future<void> detectLocationFromGPS() async {
-    _logger.i('📡 Detectando ubicación por GPS');
+    _logger.i('Detecting location via GPS');
 
     _updateState(_state.copyWith(
       isDetectingLocation: true,
@@ -251,15 +252,15 @@ class LocationManager extends ChangeNotifier {
       // Paso 1: Obtener coordenadas GPS
       final position = await _locationService.getCurrentPosition();
       if (position == null) {
-        _logger.w('❌ No se pudo obtener posición GPS');
+        _logger.w('Failed to get GPS position');
         _updateState(_state.copyWith(
           isDetectingLocation: false,
-          error: 'No se pudo detectar ubicación. Activa GPS e intenta de nuevo.',
+          errorKey: LocationErrorKey.gpsPositionFailed,
         ));
         return;
       }
 
-      _logger.d('📍 Posición GPS obtenida', context: {
+      _logger.d('GPS position obtained', context: {
         'lat': position.latitude,
         'lon': position.longitude,
       });
@@ -271,10 +272,10 @@ class LocationManager extends ChangeNotifier {
       );
 
       if (detectedLocation == null) {
-        _logger.w('❌ No se pudo geocodificar ubicación');
+        _logger.w('Failed to geocode location');
         _updateState(_state.copyWith(
           isDetectingLocation: false,
-          error: 'No se pudo identificar la ubicación',
+          errorKey: LocationErrorKey.geocodingFailed,
         ));
         return;
       }
@@ -299,13 +300,13 @@ class LocationManager extends ChangeNotifier {
           );
 
       if (country == null) {
-        _logger.w('❌ País no encontrado en BD', context: {
+        _logger.w('Country not found in DB', context: {
           'country': detectedLocation.countryName,
         });
         _updateState(_state.copyWith(
           isDetectingLocation: false,
-          error:
-              'País "${detectedLocation.countryName}" no disponible. Selecciona manualmente.',
+          errorKey: LocationErrorKey.countryNotAvailable,
+          errorEntityName: detectedLocation.countryName,
         ));
         return;
       }
@@ -322,13 +323,13 @@ class LocationManager extends ChangeNotifier {
           );
 
       if (region == null) {
-        _logger.w('❌ Región no encontrada en BD', context: {
+        _logger.w('Region not found in DB', context: {
           'region': detectedLocation.regionName,
         });
         _updateState(_state.copyWith(
           isDetectingLocation: false,
-          error:
-              'Región "${detectedLocation.regionName}" no disponible. Selecciona manualmente.',
+          errorKey: LocationErrorKey.regionNotAvailable,
+          errorEntityName: detectedLocation.regionName,
         ));
         return;
       }
@@ -344,13 +345,13 @@ class LocationManager extends ChangeNotifier {
           );
 
       if (city == null) {
-        _logger.w('❌ Ciudad no encontrada en BD', context: {
+        _logger.w('City not found in DB', context: {
           'city': detectedLocation.cityName,
         });
         _updateState(_state.copyWith(
           isDetectingLocation: false,
-          error:
-              'Ciudad "${detectedLocation.cityName}" no disponible. Selecciona manualmente.',
+          errorKey: LocationErrorKey.cityNotAvailable,
+          errorEntityName: detectedLocation.cityName,
         ));
         return;
       }
@@ -358,7 +359,7 @@ class LocationManager extends ChangeNotifier {
       // Éxito: Seleccionar ciudad
       selectCity(city);
 
-      _logger.i('✅ Ubicación detectada automáticamente', context: {
+      _logger.i('Location detected automatically', context: {
         'country': country.name,
         'region': region.name,
         'city': city.name,
@@ -369,11 +370,11 @@ class LocationManager extends ChangeNotifier {
         clearError: true,
       ));
     } catch (error, stackTrace) {
-      _logger.e('Error al detectar ubicación',
+      _logger.e('Failed to detect location',
           error: error, stackTrace: stackTrace);
       _updateState(_state.copyWith(
         isDetectingLocation: false,
-        error: 'Error al detectar ubicación. Intenta de nuevo.',
+        errorKey: LocationErrorKey.detectionFailed,
       ));
     }
   }
@@ -385,7 +386,7 @@ class LocationManager extends ChangeNotifier {
   /// Guarda la ubicación seleccionada como por defecto
   Future<void> saveDefaultLocation() async {
     if (!_state.isValid) {
-      _logger.w('⚠️ No se puede guardar ubicación incompleta');
+      _logger.w('Cannot save incomplete location');
       return;
     }
 
@@ -399,32 +400,32 @@ class LocationManager extends ChangeNotifier {
         cityName: _state.selectedCity!.name,
       );
 
-      _logger.i('✅ Ubicación por defecto guardada', context: {
+      _logger.i('Default location saved', context: {
         'country': _state.selectedCountry!.name,
         'region': _state.selectedRegion!.name,
         'city': _state.selectedCity!.name,
       });
     } catch (error, stackTrace) {
-      _logger.e('Error al guardar ubicación por defecto',
+      _logger.e('Failed to save default location',
           error: error, stackTrace: stackTrace);
     }
   }
 
   /// Carga la ubicación por defecto guardada
   Future<void> loadDefaultLocation() async {
-    _logger.d('📂 Cargando ubicación por defecto');
+    _logger.d('Loading default location');
 
     try {
       final defaultLocation = await _locationService.getDefaultLocation();
 
       if (defaultLocation == null) {
-        _logger.d('ℹ️ No hay ubicación por defecto guardada');
+        _logger.d('No default location saved');
         // Intentar auto-detectar
         await detectLocationFromGPS();
         return;
       }
 
-      _logger.i('✅ Ubicación por defecto encontrada', context: {
+      _logger.i('Default location found', context: {
         'location': defaultLocation.compactText,
       });
 
@@ -440,7 +441,7 @@ class LocationManager extends ChangeNotifier {
           );
 
       if (country == null) {
-        _logger.w('⚠️ País guardado no encontrado en BD - limpiando datos inválidos');
+        _logger.w('Saved country not found in DB - clearing invalid data');
         // Limpiar ubicación inválida guardada
         await _locationService.clearDefaultLocation();
         clearLocation();
@@ -457,7 +458,7 @@ class LocationManager extends ChangeNotifier {
           );
 
       if (region == null) {
-        _logger.w('⚠️ Región guardada no encontrada en BD - early return');
+        _logger.w('Saved region not found in DB - early return');
         // Early return: mantener país seleccionado pero sin región/ciudad
         await _locationService.clearDefaultLocation();
         // Solo actualizar país, dejar región y ciudad en null
@@ -479,7 +480,7 @@ class LocationManager extends ChangeNotifier {
           );
 
       if (city == null) {
-        _logger.w('⚠️ Ciudad guardada no encontrada en BD - early return');
+        _logger.w('Saved city not found in DB - early return');
         // Early return: mantener país y región seleccionados pero sin ciudad
         await _locationService.clearDefaultLocation();
         // Solo actualizar país y región, dejar ciudad en null
@@ -494,16 +495,16 @@ class LocationManager extends ChangeNotifier {
       // Seleccionar ciudad (esto también actualiza país y región)
       selectCity(city);
 
-      _logger.i('✅ Ubicación por defecto cargada exitosamente');
+      _logger.i('Default location loaded successfully');
     } catch (error, stackTrace) {
-      _logger.e('Error al cargar ubicación por defecto',
+      _logger.e('Failed to load default location',
           error: error, stackTrace: stackTrace);
     }
   }
 
   /// Limpia la ubicación seleccionada (reset)
   void clearLocation() {
-    _logger.d('🗑️ Limpiando ubicación seleccionada');
+    _logger.d('Clearing selected location');
 
     _updateState(_state.copyWith(
       clearSelectedCountry: true,
@@ -531,7 +532,7 @@ class LocationManager extends ChangeNotifier {
     );
 
     if (!regionBelongsToCountry) {
-      _logger.e('⚠️ Región no pertenece al país seleccionado');
+      _logger.e('Region does not belong to selected country');
       return false;
     }
 
@@ -541,7 +542,7 @@ class LocationManager extends ChangeNotifier {
     );
 
     if (!cityBelongsToRegion) {
-      _logger.e('⚠️ Ciudad no pertenece a la región seleccionada');
+      _logger.e('City does not belong to selected region');
       return false;
     }
 

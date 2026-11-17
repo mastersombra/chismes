@@ -55,10 +55,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     // Mostrar errores si hay
-    if (_controller.errorMessage != null) {
+    final errorMessage = _controller.getErrorMessage(context);
+    if (errorMessage != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_controller.errorMessage!),
+          content: Text(errorMessage),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -105,7 +106,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   Text(
-                    _controller.errorMessage ?? context.l10n.profileScreenErrorLoading,
+                    _controller.getErrorMessage(context) ?? context.l10n.profileScreenErrorLoading,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: AppSpacing.lg),

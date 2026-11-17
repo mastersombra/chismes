@@ -5,6 +5,28 @@ import '../entities/gossip.dart';
 import '../entities/gossip_query.dart';
 import '../repositories/gossip_repository.dart';
 
+/// Use case para obtener gossips filtrados y paginados
+///
+/// **Flujo:**
+/// 1. Repository intenta obtener de remote (Supabase)
+/// 2. Si falla, usa cache local como fallback
+/// 3. Filtra en servidor usando [GossipQuery]
+/// 4. Validación adicional en cliente (defense in depth)
+///
+/// **Parámetros:**
+/// - `query`: Criterios de búsqueda (opcional, default: GossipQuery.defaultPublic())
+///
+/// **Retorna:**
+/// - `Result<Failure, List<Gossip>>` con gossips publicados y aprobados
+///
+/// **Ejemplo:**
+/// ```dart
+/// final result = await getGossips(GossipQuery.byCity('city123'));
+/// result.fold(
+///   onFailure: (failure) => print('Error: $failure'),
+///   onSuccess: (gossips) => print('${gossips.length} gossips'),
+/// );
+/// ```
 @injectable
 class GetGossips {
   final GossipRepository repository;

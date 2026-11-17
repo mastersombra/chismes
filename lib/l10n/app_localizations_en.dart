@@ -9,345 +9,13 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'Chismes';
-
-  @override
   String get appTagline => 'Share stories, discover secrets';
-
-  @override
-  String get authErrorsEmailAlreadyInUse => 'Email already in use';
-
-  @override
-  String get authErrorsInvalidCredentials => 'Invalid credentials';
-
-  @override
-  String get authErrorsNetworkError => 'Network error';
-
-  @override
-  String get authErrorsUnknownError => 'Unknown error';
-
-  @override
-  String get authErrorsUserNotFound => 'User not found';
-
-  @override
-  String get authErrorsWeakPassword => 'Password is too weak';
-
-  @override
-  String get authForgotPasswordCodeSentMessage =>
-      'Check your email for the verification code';
-
-  @override
-  String get authForgotPasswordCodeSentTitle => 'Code sent';
-
-  @override
-  String get authForgotPasswordEmailHint => 'Email';
-
-  @override
-  String get authForgotPasswordMessage =>
-      'We\'ll send you a 6-digit code to recover your password';
-
-  @override
-  String get authForgotPasswordSendCodeButton => 'Send code';
-
-  @override
-  String get authForgotPasswordTitle => 'Forgot your password?';
-
-  @override
-  String get authLoginContinueWithApple => 'Continue with Apple';
-
-  @override
-  String get authLoginContinueWithGoogle => 'Continue with Google';
-
-  @override
-  String get authLoginEmailHint => 'Email';
-
-  @override
-  String get authLoginForgotPassword => 'Forgot your password?';
-
-  @override
-  String get authLoginNoAccount => 'Don\'t have an account?';
-
-  @override
-  String get authLoginOrContinueWith => 'Or continue with';
-
-  @override
-  String get authLoginPasswordHint => 'Password';
-
-  @override
-  String get authLoginSignInButton => 'Sign In';
-
-  @override
-  String get authLoginSignUpLink => 'Sign up';
-
-  @override
-  String get authLoginTitle => 'Sign In';
-
-  @override
-  String get authOtpVerificationCodeHint => 'Code';
-
-  @override
-  String get authOtpVerificationResendButton => 'Resend';
-
-  @override
-  String get authOtpVerificationResendLabel => 'Didn\'t receive the code?';
-
-  @override
-  String authOtpVerificationResendTimer(String seconds) {
-    return 'Resend (${seconds}s)';
-  }
-
-  @override
-  String get authOtpVerificationSubtitleReset => 'Enter the code we sent to:';
-
-  @override
-  String get authOtpVerificationSubtitleSignup => 'We sent a 6-digit code to:';
-
-  @override
-  String get authOtpVerificationTitle => 'Verify Code';
-
-  @override
-  String get authOtpVerificationVerifyEmailTitle => 'Verify Email';
-
-  @override
-  String get authOtpVerificationVerifying => 'Verifying...';
-
-  @override
-  String get authPasswordFieldHide => 'Hide password';
-
-  @override
-  String get authPasswordFieldLabel => 'Password';
-
-  @override
-  String get authPasswordFieldShow => 'Show password';
-
-  @override
-  String get authProfileSetupAvatarUploadSoon => 'Coming soon: upload avatar';
-
-  @override
-  String get authProfileSetupBioHint => 'Tell us about yourself...';
-
-  @override
-  String get authProfileSetupBioLabel => 'Bio (optional)';
-
-  @override
-  String get authProfileSetupCompleteButton => 'Complete profile';
-
-  @override
-  String get authProfileSetupDisplayNameHint => 'John Smith';
-
-  @override
-  String get authProfileSetupDisplayNameLabel => 'Display name';
-
-  @override
-  String get authProfileSetupDoItLater => 'I\'ll do it later';
-
-  @override
-  String get authProfileSetupInfoMessage =>
-      'You need a username to publish gossip';
-
-  @override
-  String get authProfileSetupLaterButton => 'Later';
-
-  @override
-  String get authProfileSetupSaveButton => 'Save Profile';
-
-  @override
-  String get authProfileSetupSubtitle =>
-      'Complete your profile to start sharing gossip';
-
-  @override
-  String get authProfileSetupTitle => 'Set Up Your Profile';
-
-  @override
-  String get authProfileSetupUsernameAvailabilityCheck =>
-      'Verify that the username is available';
-
-  @override
-  String get authProfileSetupUsernameHelper =>
-      'Only lowercase letters, numbers and _';
-
-  @override
-  String get authProfileSetupUsernameHint => 'johnsmith';
-
-  @override
-  String get authProfileSetupUsernameLabel => 'Username';
-
-  @override
-  String get authProfileSetupUsernameTaken => 'This username is already taken';
-
-  @override
-  String get authProfileSetupWelcome => 'Welcome!';
-
-  @override
-  String get authResetPasswordChangePasswordButton => 'Change password';
-
-  @override
-  String get authResetPasswordConfirmPasswordHint => 'Confirm password';
-
-  @override
-  String get authResetPasswordDescription => 'Must be at least 8 characters';
-
-  @override
-  String get authResetPasswordNewPasswordHint => 'New password';
-
-  @override
-  String get authResetPasswordOkButton => 'OK';
-
-  @override
-  String get authResetPasswordSubtitle => 'Create your new password';
-
-  @override
-  String get authResetPasswordSuccessMessage =>
-      'Your password has been successfully updated. You can now sign in with your new password';
-
-  @override
-  String get authResetPasswordSuccessTitle => 'Password updated';
-
-  @override
-  String get authResetPasswordTitle => 'New Password';
-
-  @override
-  String get authSignupAlreadyHaveAccount => 'Already have an account?';
-
-  @override
-  String get authSignupConfirmPasswordHint => 'Confirm password';
-
-  @override
-  String get authSignupConfirmPasswordRequired => 'Confirm your password';
-
-  @override
-  String get authSignupDescription => 'Create your account in seconds';
-
-  @override
-  String get authSignupEmailHint => 'Email';
-
-  @override
-  String get authSignupPasswordHint => 'Password';
-
-  @override
-  String get authSignupPasswordMinLength => 'Minimum 8 characters';
-
-  @override
-  String get authSignupPasswordRequired => 'Enter a password';
-
-  @override
-  String get authSignupPasswordsMustMatch => 'Passwords must match';
-
-  @override
-  String get authSignupSignInLink => 'Sign in';
-
-  @override
-  String get authSignupSignUpButton => 'Create Account';
-
-  @override
-  String get authSignupSubtitle => 'Join Chismes';
-
-  @override
-  String get authSignupTermsMessage =>
-      'By creating an account, you agree to our Terms and Conditions and Privacy Policy';
-
-  @override
-  String get authSignupTitle => 'Create Account';
-
-  @override
-  String get authValidationBioTooLong => 'Bio is too long (max 160 characters)';
-
-  @override
-  String get authValidationDisplayNameEmpty => 'Display name cannot be empty';
-
-  @override
-  String get authValidationDisplayNameRequired => 'Display name is required';
-
-  @override
-  String get authValidationDisplayNameTooLong =>
-      'Display name is too long (max 50 characters)';
-
-  @override
-  String get authValidationEmailInvalid => 'Email format is invalid';
-
-  @override
-  String get authValidationEmailRequired => 'Email is required';
-
-  @override
-  String get authValidationEmailTooLong =>
-      'Email is too long (max 254 characters)';
-
-  @override
-  String get authValidationPasswordNeedsLowercase =>
-      'Password must contain at least one lowercase letter';
-
-  @override
-  String get authValidationPasswordNeedsNumber =>
-      'Password must contain at least one number';
-
-  @override
-  String get authValidationPasswordNeedsSpecial =>
-      'Password must contain at least one special character';
-
-  @override
-  String get authValidationPasswordNeedsUppercase =>
-      'Password must contain at least one uppercase letter';
-
-  @override
-  String get authValidationPasswordRequired => 'Password is required';
-
-  @override
-  String get authValidationPasswordTooLong =>
-      'Password is too long (max 128 characters)';
-
-  @override
-  String get authValidationPasswordTooShort =>
-      'Password is too short (min 8 characters)';
-
-  @override
-  String get authValidationPasswordsMustMatch => 'Passwords must match';
-
-  @override
-  String get authValidationUsernameInvalidChars =>
-      'Username can only contain lowercase letters, numbers and underscores';
-
-  @override
-  String get authValidationUsernameInvalidUnderscore =>
-      'Username cannot start or end with underscore';
-
-  @override
-  String get authValidationUsernameRequired => 'Username is required';
-
-  @override
-  String get authValidationUsernameReserved => 'Username is reserved';
-
-  @override
-  String get authValidationUsernameStartsWithNumber =>
-      'Username cannot start with a number';
-
-  @override
-  String get authValidationUsernameTooLong =>
-      'Username is too long (max 30 characters)';
-
-  @override
-  String get authValidationUsernameTooShort =>
-      'Username is too short (min 3 characters)';
 
   @override
   String get commonBack => 'Back';
 
   @override
   String get commonCancel => 'Cancel';
-
-  @override
-  String get commonClose => 'Close';
-
-  @override
-  String get commonConfirm => 'Confirm';
-
-  @override
-  String get commonDelete => 'Delete';
-
-  @override
-  String get commonEdit => 'Edit';
-
-  @override
-  String get commonEmailHintPlaceholder => 'you@email.com';
 
   @override
   String get commonEmailInvalid => 'Invalid email';
@@ -357,15 +25,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commonEnterPassword => 'Enter your password';
-
-  @override
-  String get commonError => 'Error';
-
-  @override
-  String get commonForget => 'Forget';
-
-  @override
-  String get commonLoading => 'Loading...';
 
   @override
   String commonMaxLength(String count) {
@@ -378,16 +37,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get commonPermanentlyDelete => 'Permanently delete';
-
-  @override
-  String get commonRequiredField => 'Required field';
-
-  @override
   String get commonRetry => 'Retry';
-
-  @override
-  String get commonSave => 'Save';
 
   @override
   String commonSelect(String field) {
@@ -395,10 +45,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get commonSuccess => 'Success';
+  String get errorsAuthEmailAlreadyInUse => 'This email is already registered.';
 
   @override
-  String get errorsAuthEmailAlreadyInUse => 'This email is already registered.';
+  String get authEmailAlreadyInUseAction =>
+      'This email is already registered. Sign in instead.';
 
   @override
   String get errorsAuthEmailNotVerified =>
@@ -621,65 +272,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gossipCardShareTooltip => 'Share gossip';
 
   @override
-  String get gossipDetailScreenTitle => 'Detail';
-
-  @override
-  String get gossipLocationChangeDialogTitle => 'Change location';
-
-  @override
-  String get gossipLocationCityHint => 'Search city...';
-
-  @override
-  String get gossipLocationCityLabel => 'City';
-
-  @override
-  String get gossipLocationCityRequired => 'Select a city';
-
-  @override
-  String gossipLocationCitySearchHint(String minChars) {
-    return 'Search city... (min. $minChars characters)';
-  }
-
-  @override
-  String get gossipLocationCountryLabel => 'Country';
-
-  @override
-  String get gossipLocationCountryRequired => 'Select a country';
-
-  @override
-  String get gossipLocationGpsDetectSubtitle => 'Detect automatically with GPS';
-
-  @override
-  String gossipLocationMinCharsMessage(String minChars) {
-    return 'Type at least $minChars characters to search';
-  }
-
-  @override
-  String gossipLocationNoResults(String query) {
-    return 'No cities found with \"$query\"';
-  }
-
-  @override
-  String get gossipLocationOrSelectManually => 'Or select manually';
-
-  @override
-  String get gossipLocationRegionLabel => 'Region';
-
-  @override
-  String get gossipLocationRegionRequired => 'Select a region';
-
-  @override
-  String get gossipLocationSearchError =>
-      'Error searching cities. Please try again.';
-
-  @override
-  String get gossipLocationUnexpectedError =>
-      'Unexpected error. Please try again.';
-
-  @override
-  String get gossipLocationUseCurrentLocation => 'Use my current location';
-
-  @override
   String get gossipLocationSelectorChangeButtonLabel => 'Change';
 
   @override
@@ -796,7 +388,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gossipReportTitle => 'Report gossip';
 
   @override
-  String get gossipSubmitButtonPublishSemantic => 'Publish gossip';
+  String get gossipReportReasonSpam => 'Spam';
+
+  @override
+  String get gossipReportReasonHarassment => 'Harassment or bullying';
+
+  @override
+  String get gossipReportReasonViolence => 'Violence or threats';
+
+  @override
+  String get gossipReportReasonSexualContent => 'Sexual content';
+
+  @override
+  String get gossipReportReasonMisinformation => 'Misinformation';
+
+  @override
+  String get gossipReportReasonOther => 'Other reason';
 
   @override
   String get gossipTextFieldsContentHint => 'Tell us what you know...';
@@ -849,12 +456,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeFollowingRecommendedBadge => '💡 Recommended for you';
 
   @override
-  String get homeFollowingRecommendedError => 'Error loading recommendations';
-
-  @override
-  String get homeFollowingUnexpectedError => 'Unexpected error loading feed';
-
-  @override
   String get homeFollowingUsePopularTabHint => 'Use the Popular tab above';
 
   @override
@@ -864,19 +465,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homePopularEmpty => 'No gossips available';
 
   @override
-  String get homePopularGlobal => 'Popular 🌎';
-
-  @override
-  String homePopularInCity(String city) {
-    return 'Popular in $city';
-  }
-
-  @override
-  String homePopularNewGossipsBanner(String count) {
-    return '$count new gossips · Tap here';
-  }
-
-  @override
   String get homePopularNoMore => 'No more gossips for now 🌙';
 
   @override
@@ -884,9 +472,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeTabsPopular => 'Popular';
-
-  @override
-  String get homeTitle => 'Gossips 🔥';
 
   @override
   String get navigationCreate => 'Create';
@@ -901,15 +486,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navigationProfile => 'Profile';
 
   @override
-  String get profileControllerLoadError => 'Error loading profile';
-
-  @override
-  String get profileControllerSignoutError => 'Error signing out';
-
-  @override
-  String get profileControllerUpdateError => 'Error updating settings';
-
-  @override
   String get profileHeaderCompleteness => 'Profile completeness';
 
   @override
@@ -919,29 +495,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileHeaderNoName => 'No name';
 
   @override
-  String get profilePrivacyConsentDeclineButton => 'I don\'t accept, go back';
-
-  @override
-  String get profilePrivacyConsentTitle => 'Privacy and Terms';
-
-  @override
   String get profilePrivacySettingsAccountDeleteSubtitle =>
       'Delete your account and all your data';
 
   @override
   String get profilePrivacySettingsAccountDeleteTitle => 'Delete account';
-
-  @override
-  String get profilePrivacySettingsAccountDeleted => 'Account deleted';
-
-  @override
-  String get profilePrivacySettingsAnonymousModeTitle => 'Anonymous mode';
-
-  @override
-  String get profilePrivacySettingsConfirmDeletionTitle => 'Confirm deletion';
-
-  @override
-  String get profilePrivacySettingsDeletionCancelled => 'Deletion cancelled';
 
   @override
   String get profilePrivacySettingsDialogsDeleteAccountConfirmPlaceholder =>
@@ -984,9 +542,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'The complete terms of use are available at:\n\nhttps://chismes.app/terms\n\nOr in the TERMS_OF_SERVICE.md file of the project.';
 
   @override
-  String get profilePrivacySettingsEraseButton => 'Erase';
-
-  @override
   String get profilePrivacySettingsExportComingSoon => 'Export coming soon';
 
   @override
@@ -1014,16 +569,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profilePrivacySettingsLocationNotSaved => 'Not saved';
 
   @override
-  String get profilePrivacySettingsMyDataTitle => 'My Data';
-
-  @override
   String get profilePrivacySettingsNoLocalData => 'No local data saved';
-
-  @override
-  String get profilePrivacySettingsPrivacyPolicyTitle => 'Privacy Policy';
-
-  @override
-  String get profilePrivacySettingsSavedCityTitle => 'Saved city';
 
   @override
   String get profilePrivacySettingsSectionsAccount => '🔒 Account';
@@ -1053,18 +599,6 @@ class AppLocalizationsEn extends AppLocalizations {
       '✅ Location forgotten';
 
   @override
-  String get profilePrivacySettingsTermsOfUseTitle => 'Terms of Use';
-
-  @override
-  String get profilePrivacySettingsTitle => 'Privacy';
-
-  @override
-  String get profilePrivacySettingsViewMyDataSubtitle => 'Data dashboard';
-
-  @override
-  String get profilePrivacySettingsViewMyDataTitle => 'View my data';
-
-  @override
   String get profileScreenErrorLoading => 'Error loading profile';
 
   @override
@@ -1087,7 +621,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileScreenSigningOut => 'Signing out...';
 
   @override
-  String get profileSettingsAppearanceTitle => 'Appearance';
+  String get profileSignOutError => 'Error signing out';
 
   @override
   String get profileSettingsComments => 'Comments';
@@ -1095,9 +629,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get profileSettingsCommentsSubtitle =>
       'Notify when someone comments on your gossips';
-
-  @override
-  String get profileSettingsDailySummary => 'Daily summary';
 
   @override
   String get profileSettingsDailySummarySubtitle =>
@@ -1136,9 +667,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Notify when someone follows you';
 
   @override
-  String get profileSettingsNotificationsTitle => 'Notifications';
-
-  @override
   String get profileSettingsPrivacyDialogTitle => 'Privacy level';
 
   @override
@@ -1163,9 +691,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get profileSettingsPrivacyPublicSubtitle =>
       'Everyone can see your profile';
-
-  @override
-  String get profileSettingsPrivacyTitle => 'Privacy';
 
   @override
   String get profileSettingsPushNotifications => 'Push notifications';
@@ -1219,7 +744,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileStatsTitle => 'Stats';
 
   @override
-  String get searchEmptyState => 'Type to search gossips 🔎';
+  String searchFilterOnlyCity(String cityName) {
+    return 'Only $cityName';
+  }
 
   @override
   String get searchHint => 'Search gossips...';
@@ -1560,4 +1087,295 @@ class AppLocalizationsEn extends AppLocalizations {
   String locationMinCharsMessage(int minChars) {
     return 'Type at least $minChars characters to search';
   }
+
+  @override
+  String get privacyConsentHeader => '🔒 Your privacy matters';
+
+  @override
+  String get privacyConsentSubheader =>
+      'Before we begin, we want you to know how we handle your data.';
+
+  @override
+  String get privacyConsentDataCollectedTitle => '📊 What data do we collect?';
+
+  @override
+  String get privacyConsentDataCollectedItem1 =>
+      'Your email and password (encrypted)';
+
+  @override
+  String get privacyConsentDataCollectedItem2 =>
+      'Only your city (NOT exact coordinates)';
+
+  @override
+  String get privacyConsentDataCollectedItem3 =>
+      'Content of your gossip (text, image, audio)';
+
+  @override
+  String get privacyConsentDataCollectedItem4 =>
+      'Usage statistics (to improve the app)';
+
+  @override
+  String get privacyConsentDataUsageTitle => '🎯 How do we use it?';
+
+  @override
+  String get privacyConsentDataUsageItem1 =>
+      'Provide the service (publish gossip)';
+
+  @override
+  String get privacyConsentDataUsageItem2 =>
+      'Moderate content (keep community safe)';
+
+  @override
+  String get privacyConsentDataUsageItem3 => 'Improve the app (analyze usage)';
+
+  @override
+  String get privacyConsentModerationTitle => '🤖 Content moderation';
+
+  @override
+  String get privacyConsentModerationItem1 => 'We use OpenAI to analyze text';
+
+  @override
+  String get privacyConsentModerationItem2 => 'Only the gossip text is sent';
+
+  @override
+  String get privacyConsentModerationItem3 =>
+      'We do NOT send your name, location or other data';
+
+  @override
+  String get privacyConsentModerationItem4 =>
+      'OpenAI retains text for 30 days, then deletes it';
+
+  @override
+  String get privacyConsentModerationItem5 => 'NOT used to train AI models';
+
+  @override
+  String get privacyConsentLocationTitle => '📍 Your location';
+
+  @override
+  String get privacyConsentLocationItem1 =>
+      'We only detect your city (e.g. \"Bogotá\")';
+
+  @override
+  String get privacyConsentLocationItem2 =>
+      'GPS coordinates are discarded immediately';
+
+  @override
+  String get privacyConsentLocationItem3 =>
+      'We NEVER store or send exact coordinates';
+
+  @override
+  String get privacyConsentLocationItem4 => 'You can manually choose the city';
+
+  @override
+  String get privacyConsentRightsTitle => '✅ Your rights';
+
+  @override
+  String get privacyConsentRightsItem1 => 'Access your data at any time';
+
+  @override
+  String get privacyConsentRightsItem2 => 'Delete your account and data';
+
+  @override
+  String get privacyConsentRightsItem3 => 'Forget your saved location';
+
+  @override
+  String get privacyConsentRightsItem4 => 'Export your data (portability)';
+
+  @override
+  String get privacyConsentCheckboxPrivacy => 'I have read and accept the ';
+
+  @override
+  String get privacyConsentCheckboxPrivacyLink => 'Privacy Policy';
+
+  @override
+  String get privacyConsentCheckboxTerms => 'I have read and accept the ';
+
+  @override
+  String get privacyConsentCheckboxTermsLink => 'Terms of Use';
+
+  @override
+  String get privacyConsentCheckboxModeration =>
+      'I accept that my gossip text will be sent to ';
+
+  @override
+  String get privacyConsentCheckboxModerationBold => 'OpenAI';
+
+  @override
+  String get privacyConsentCheckboxModerationSuffix =>
+      ' for content moderation (30 days retention)';
+
+  @override
+  String get privacyConsentAcceptButton => 'Accept and Continue';
+
+  @override
+  String get privacyConsentDisclaimer =>
+      'By continuing, you accept our policies';
+
+  @override
+  String get authOtpResendCode => 'Resend code';
+
+  @override
+  String authOtpResendIn(int seconds) {
+    return 'Resend in ${seconds}s';
+  }
+
+  @override
+  String get authOtpHelpText =>
+      'Didn\'t receive the code? Check your spam folder or request a new one.';
+
+  @override
+  String get authOtpEnterCode => 'Enter the code';
+
+  @override
+  String get authOtpSentCodeTo => 'We sent a 6-digit code to:';
+
+  @override
+  String get authOtpCodeMustBe6Digits => 'Code must be 6 digits';
+
+  @override
+  String get privacyConsentDialogPrivacyAvailable =>
+      'The complete privacy policy is available at:';
+
+  @override
+  String get privacyConsentDialogPrivacyUrl => 'https://chismes.app/privacy';
+
+  @override
+  String get privacyConsentDialogPrivacyFile =>
+      'Or in the PRIVACY_POLICY.md file of the project.';
+
+  @override
+  String get privacyConsentDialogPrivacySummary => 'Summary:';
+
+  @override
+  String get privacyConsentDialogPrivacyItem1 =>
+      '• We only collect necessary data';
+
+  @override
+  String get privacyConsentDialogPrivacyItem2 => '• We don\'t sell your data';
+
+  @override
+  String get privacyConsentDialogPrivacyItem3 =>
+      '• You can delete your account at any time';
+
+  @override
+  String get privacyConsentDialogTermsAvailable =>
+      'The complete terms of use are available at:';
+
+  @override
+  String get privacyConsentDialogTermsUrl => 'https://chismes.app/terms';
+
+  @override
+  String get privacyConsentDialogTermsFile =>
+      'Or in the TERMS_OF_SERVICE.md file of the project.';
+
+  @override
+  String get privacyConsentDialogTermsSummary => 'Summary:';
+
+  @override
+  String get privacyConsentDialogTermsItem1 => '• Minimum age: 13 years';
+
+  @override
+  String get privacyConsentDialogTermsItem2 =>
+      '• Do not post inappropriate content';
+
+  @override
+  String get privacyConsentDialogTermsItem3 =>
+      '• Automatic + manual moderation';
+
+  @override
+  String get privacyConsentDialogTermsItem4 =>
+      '• We may suspend accounts that violate rules';
+
+  @override
+  String get searchRecentSearches => 'Recent searches';
+
+  @override
+  String get searchTryOtherWords => 'Try other words';
+
+  @override
+  String get searchByTopic => 'Search gossip by topic';
+
+  @override
+  String get searchByKeyword => 'or keyword';
+
+  @override
+  String get searchRecent => 'Recent';
+
+  @override
+  String get searchClearAll => 'Clear all';
+
+  @override
+  String searchResultsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count results',
+      one: '1 result',
+      zero: 'No results',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String homeNewGossipsBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count new gossips · Tap here',
+      one: '1 new gossip · Tap here',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String deepLinkOpeningGossip(String gossipId) {
+    return 'Opening gossip: $gossipId';
+  }
+
+  @override
+  String deepLinkOpeningProfile(String userId) {
+    return 'Opening profile: $userId';
+  }
+
+  @override
+  String deepLinkOpeningCityFeed(String cityId) {
+    return 'Opening city feed: $cityId';
+  }
+
+  @override
+  String get locationErrorLoadCountries => 'Failed to load countries';
+
+  @override
+  String get locationErrorLoadRegions => 'Failed to load regions';
+
+  @override
+  String get locationErrorLoadCities => 'Failed to load cities';
+
+  @override
+  String get locationErrorUnexpected => 'Unexpected error occurred';
+
+  @override
+  String get locationErrorGpsPosition =>
+      'Could not detect location. Enable GPS and try again.';
+
+  @override
+  String get locationErrorGeocoding => 'Could not identify the location';
+
+  @override
+  String locationErrorCountryNotAvailable(String entityName) {
+    return 'Country \"$entityName\" not available. Select manually.';
+  }
+
+  @override
+  String locationErrorRegionNotAvailable(String entityName) {
+    return 'Region \"$entityName\" not available. Select manually.';
+  }
+
+  @override
+  String locationErrorCityNotAvailable(String entityName) {
+    return 'City \"$entityName\" not available. Select manually.';
+  }
+
+  @override
+  String get locationErrorDetection => 'Error detecting location. Try again.';
 }

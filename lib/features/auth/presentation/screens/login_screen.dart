@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../core/di/injection_container.dart';
 import 'package:chismes/core/l10n/l10n.dart';
@@ -62,8 +61,8 @@ class _LoginScreenState extends State<LoginScreen> {
       // No navegamos manualmente, AuthGate escucha authStateChanges
       // y navega a MainNavigationScreen cuando detecta usuario autenticado
     } else if (state is AuthError) {
-      // Mostrar error
-      _showError(state.message);
+      // Mostrar error - traducir mensaje con BuildContext
+      _showError(state.getMessage(context));
     }
   }
 
@@ -164,131 +163,129 @@ class _LoginScreenState extends State<LoginScreen> {
         ],
       ),
       body: SafeArea(
-        child: ChangeNotifierProvider.value(
-          value: _controller,
-          child: Consumer<LoginController>(
-            builder: (context, controller, _) {
-              final isLoading = controller.state is AuthLoading;
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            final isLoading = _controller.state is AuthLoading;
 
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: AppSpacing.xl),
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: AppSpacing.xl),
 
-                      // Logo o título
-                      const Icon(
-                        Icons.chat_bubble_outline,
-                        size: 80,
-                        color: Colors.blue,
+                    // Logo o título
+                    const Icon(
+                      Icons.chat_bubble_outline,
+                      size: 80,
+                      color: Colors.blue,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      'Chismes',
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(height: AppSpacing.sm),
-                      Text(
-                        'Chismes',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      context.l10n.appTagline,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey[600],
                       ),
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        context.l10n.appTagline,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey[600],
-                        ),
-                        textAlign: TextAlign.center,
+                      textAlign: TextAlign.center,
+                    ),
+
+                    const SizedBox(height: AppSpacing.xxl),
+
+                    // Email field
+                    EmailField(
+                      controller: _emailController,
+                      enabled: !isLoading,
+                    ),
+
+                    const SizedBox(height: AppSpacing.lg),
+
+                    // Password field
+                    PasswordField(
+                      controller: _passwordController,
+                      enabled: !isLoading,
+                      validator: (v) => FormValidators.password(context, v),
+                    ),
+
+                    const SizedBox(height: AppSpacing.sm),
+
+                    // Forgot password link
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: isLoading ? null : _onForgotPasswordPressed,
+                        child: Text(context.l10n.forgotPassword),
                       ),
+                    ),
 
-                      const SizedBox(height: AppSpacing.xxl),
+                    const SizedBox(height: AppSpacing.md),
 
-                      // Email field
-                      EmailField(
-                        controller: _emailController,
-                        enabled: !isLoading,
-                      ),
+                    // Sign in button
+                    AuthButton(
+                      text: context.l10n.signInButton,
+                      onPressed: _onSignInPressed,
+                      isLoading: isLoading,
+                    ),
 
-                      const SizedBox(height: AppSpacing.lg),
+                    const SizedBox(height: AppSpacing.xl),
 
-                      // Password field
-                      PasswordField(
-                        controller: _passwordController,
-                        enabled: !isLoading,
-                        validator: (v) => FormValidators.password(context, v),
-                      ),
-
-                      const SizedBox(height: AppSpacing.sm),
-
-                      // Forgot password link
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: isLoading ? null : _onForgotPasswordPressed,
-                          child: Text(context.l10n.forgotPassword),
-                        ),
-                      ),
-
-                      const SizedBox(height: AppSpacing.md),
-
-                      // Sign in button
-                      AuthButton(
-                        text: context.l10n.signInButton,
-                        onPressed: _onSignInPressed,
-                        isLoading: isLoading,
-                      ),
-
-                      const SizedBox(height: AppSpacing.xl),
-
-                      // Divider
-                      Row(
-                        children: [
-                          Expanded(child: Divider(color: Colors.grey[400])),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.md,
-                            ),
-                            child: Text(
-                              context.l10n.orContinueWith,
-                              style: TextStyle(color: Colors.grey[600]),
-                            ),
+                    // Divider
+                    Row(
+                      children: [
+                        Expanded(child: Divider(color: Colors.grey[400])),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md,
                           ),
-                          Expanded(child: Divider(color: Colors.grey[400])),
-                        ],
-                      ),
-
-                      const SizedBox(height: AppSpacing.xl),
-
-                      // Social login buttons
-                      SocialLoginButtons(
-                        onGooglePressed: _onGooglePressed,
-                        onApplePressed: _onApplePressed,
-                        isLoading: isLoading,
-                      ),
-
-                      const SizedBox(height: AppSpacing.xxl),
-
-                      // Sign up link
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '${context.l10n.noAccount} ',
+                          child: Text(
+                            context.l10n.orContinueWith,
                             style: TextStyle(color: Colors.grey[600]),
                           ),
-                          TextButton(
-                            onPressed: isLoading ? null : _onSignUpPressed,
-                            child: Text(context.l10n.signUpLink),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                        Expanded(child: Divider(color: Colors.grey[400])),
+                      ],
+                    ),
+
+                    const SizedBox(height: AppSpacing.xl),
+
+                    // Social login buttons
+                    SocialLoginButtons(
+                      onGooglePressed: _onGooglePressed,
+                      onApplePressed: _onApplePressed,
+                      isLoading: isLoading,
+                    ),
+
+                    const SizedBox(height: AppSpacing.xxl),
+
+                    // Sign up link
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '${context.l10n.noAccount} ',
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                        TextButton(
+                          onPressed: isLoading ? null : _onSignUpPressed,
+                          child: Text(context.l10n.signUpLink),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

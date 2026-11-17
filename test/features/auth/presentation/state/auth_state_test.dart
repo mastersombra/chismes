@@ -1,3 +1,4 @@
+import 'package:chismes/core/error/custom_error_keys.dart';
 import 'package:chismes/core/error/error_codes.dart';
 import 'package:chismes/core/error/failure.dart';
 import 'package:chismes/features/auth/domain/entities/user.dart';
@@ -106,15 +107,16 @@ void main() {
         );
 
         // Act
-        const state = AuthError(failure);
+        final state = AuthError(failure);
 
         // Assert
         expect(state, isA<AuthState>());
         expect(state, isA<AuthError>());
-        expect(state.failure, failure);
+        expect(state.errorCode, ErrorCode.invalidCredentials);
+        expect(state.customMessageKey, isNull);
       });
 
-      test('debe retornar mensaje traducido desde ErrorMessages', () {
+      test('debe guardar ErrorCode desde failure', () {
         // Arrange
         const failure = AuthFailure(
           code: ErrorCode.invalidCredentials,
@@ -122,24 +124,10 @@ void main() {
         );
 
         // Act
-        const state = AuthError(failure);
+        final state = AuthError(failure);
 
-        // Assert - debe retornar mensaje traducido (no verificamos contenido específico de i18n)
-        expect(state.message, isNotEmpty);
-        expect(state.message, isNot(equals('Invalid credentials'))); // No debe retornar technicalMessage
-      });
-
-      test('debe retornar mensaje traducido incluso sin technicalMessage', () {
-        // Arrange
-        const failure = AuthFailure(
-          code: ErrorCode.invalidCredentials,
-        );
-
-        // Act
-        const state = AuthError(failure);
-
-        // Assert - debe retornar mensaje traducido basado en el código (no verificamos contenido específico)
-        expect(state.message, isNotEmpty);
+        // Assert - guarda el errorCode, no el mensaje
+        expect(state.errorCode, ErrorCode.invalidCredentials);
       });
 
       test('debe funcionar con diferentes tipos de failure', () {
@@ -158,29 +146,78 @@ void main() {
         );
 
         // Act
-        const state1 = AuthError(authFailure);
-        const state2 = AuthError(networkFailure);
-        const state3 = AuthError(validationFailure);
+        final state1 = AuthError(authFailure);
+        final state2 = AuthError(networkFailure);
+        final state3 = AuthError(validationFailure);
 
-        // Assert - debe retornar mensajes traducidos (no verificamos contenido específico)
-        expect(state1.message, isNotEmpty);
-        expect(state2.message, isNotEmpty);
-        expect(state3.message, isNotEmpty);
+        // Assert - debe guardar los códigos correctamente
+        expect(state1.errorCode, ErrorCode.invalidCredentials);
+        expect(state2.errorCode, ErrorCode.networkError);
+        expect(state3.errorCode, ErrorCode.invalidInput);
       });
 
-      test('debe exponer el failure original', () {
-        // Arrange
-        const failure = AuthFailure(
-          code: ErrorCode.invalidCredentials,
-          technicalMessage: 'Invalid credentials',
-        );
-
+      test('debe crear instancia con customMessageKey', () {
         // Act
-        const state = AuthError(failure);
+        const state = AuthError.withMessageKey(
+            CustomErrorKey.authEmailAlreadyInUseAction);
 
         // Assert
-        expect(state.failure, isA<AuthFailure>());
-        expect(state.failure!.code, ErrorCode.invalidCredentials);
+        expect(state, isA<AuthState>());
+        expect(state, isA<AuthError>());
+        expect(state.errorCode, isNull);
+        expect(
+            state.customMessageKey, CustomErrorKey.authEmailAlreadyInUseAction);
+      });
+
+      test('withMessageKey debe ser const', () {
+        // Arrange
+        const state1 = AuthError.withMessageKey(
+            CustomErrorKey.authEmailAlreadyInUseAction);
+        const state2 = AuthError.withMessageKey(
+            CustomErrorKey.authEmailAlreadyInUseAction);
+
+        // Assert
+        expect(identical(state1, state2), isTrue);
+      });
+    });
+
+    group('AuthOtpSent', () {
+      test('debe crear instancia con email', () {
+        // Act
+        const state = AuthOtpSent('test@example.com');
+
+        // Assert
+        expect(state, isA<AuthState>());
+        expect(state, isA<AuthOtpSent>());
+        expect(state.email, equals('test@example.com'));
+      });
+
+      test('debe mantener email correcto', () {
+        // Act
+        const state = AuthOtpSent('user@test.com');
+
+        // Assert
+        expect(state.email, equals('user@test.com'));
+      });
+    });
+
+    group('AuthPasswordUpdated', () {
+      test('debe crear instancia', () {
+        // Act
+        const state = AuthPasswordUpdated();
+
+        // Assert
+        expect(state, isA<AuthState>());
+        expect(state, isA<AuthPasswordUpdated>());
+      });
+
+      test('debe ser const', () {
+        // Arrange
+        const state1 = AuthPasswordUpdated();
+        const state2 = AuthPasswordUpdated();
+
+        // Assert
+        expect(identical(state1, state2), isTrue);
       });
     });
 
@@ -218,8 +255,8 @@ void main() {
             createdAt: DateTime.now(),
           ),
         );
-        const error = AuthError(
-          AuthFailure(
+        final error = AuthError(
+          const AuthFailure(
             code: ErrorCode.invalidCredentials,
             technicalMessage: 'Error',
           ),
@@ -286,7 +323,7 @@ void main() {
         );
 
         final AuthState successState = AuthSuccess(user);
-        const AuthState errorState = AuthError(failure);
+        final AuthState errorState = AuthError(failure);
 
         // Act & Assert
         if (successState is AuthSuccess) {
@@ -294,8 +331,7 @@ void main() {
         }
 
         if (errorState is AuthError) {
-          expect(errorState.failure, failure);
-          expect(errorState.message, isNotEmpty); // No verificamos contenido específico de i18n
+          expect(errorState.errorCode, ErrorCode.invalidCredentials);
         }
       });
     });

@@ -118,7 +118,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
                 // Título
                 Text(
-                  'Ingresa el código',
+                  context.l10n.authOtpEnterCode,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -128,7 +128,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
                 // Subtítulo con email
                 Text(
-                  'Enviamos un código de 6 dígitos a:',
+                  context.l10n.authOtpSentCodeTo,
                   style: Theme.of(context).textTheme.bodyMedium,
                   textAlign: TextAlign.center,
                 ),
@@ -168,36 +168,42 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 const SizedBox(height: AppSpacing.lg),
 
                 // Error message
-                if (state.errorMessage != null &&
-                    state.errorMessage!.isNotEmpty)
-                  Container(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.error.withValues(alpha: 0.3),
+                Builder(
+                  builder: (ctx) {
+                    final errorMessage = state.getErrorMessage(ctx);
+                    if (errorMessage == null || errorMessage.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    return Container(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.error.withValues(alpha: 0.3),
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          color: Theme.of(context).colorScheme.error,
-                          size: 20,
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: Text(
-                            state.errorMessage!,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.error,
-                                ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            color: Theme.of(context).colorScheme.error,
+                            size: 20,
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Expanded(
+                            child: Text(
+                              errorMessage,
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context).colorScheme.error,
+                                  ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
                 const SizedBox(height: AppSpacing.xl),
 
                 // Loading indicator
@@ -220,15 +226,15 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                         : const Icon(Icons.refresh),
                     label: Text(
                       state.canResend
-                          ? 'Reenviar código'
-                          : 'Reenviar en ${state.remainingSeconds}s',
+                          ? context.l10n.authOtpResendCode
+                          : context.l10n.authOtpResendIn(state.remainingSeconds),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
 
                   // Texto ayuda
                   Text(
-                    'No recibiste el código? Revisa tu carpeta de spam o solicita uno nuevo.',
+                    context.l10n.authOtpHelpText,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context)
                               .colorScheme

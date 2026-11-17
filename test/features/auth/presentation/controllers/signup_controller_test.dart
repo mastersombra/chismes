@@ -1,3 +1,4 @@
+import 'package:chismes/core/error/custom_error_keys.dart';
 import 'package:chismes/core/error/error_codes.dart';
 import 'package:chismes/core/error/failure.dart';
 import 'package:chismes/core/logging/logging.dart';
@@ -135,8 +136,9 @@ void main() {
         // Assert
         expect(controller.state, isA<AuthError>());
         final errorState = controller.state as AuthError;
-        expect(errorState.customMessage,
-            'Este email ya está registrado. Inicia sesión en su lugar.');
+        expect(errorState.customMessageKey,
+            CustomErrorKey.authEmailAlreadyInUseAction);
+        expect(errorState.errorCode, isNull);
       });
 
       test('debe cambiar estado a error cuando registro falla', () async {
@@ -159,7 +161,7 @@ void main() {
         // Assert
         expect(controller.state, isA<AuthError>());
         final errorState = controller.state as AuthError;
-        expect(errorState.failure, tFailure);
+        expect(errorState.errorCode, tFailure.code);
       });
 
       test('debe logear intento de registro', () async {
@@ -235,7 +237,7 @@ void main() {
         // Assert
         expect(controller.state, isA<AuthError>());
         final errorState = controller.state as AuthError;
-        expect(errorState.failure, tFailure);
+        expect(errorState.errorCode, tFailure.code);
       });
 
       test('debe manejar errores de red', () async {
@@ -258,7 +260,7 @@ void main() {
         // Assert
         expect(controller.state, isA<AuthError>());
         final errorState = controller.state as AuthError;
-        expect(errorState.failure, tFailure);
+        expect(errorState.errorCode, tFailure.code);
       });
     });
 

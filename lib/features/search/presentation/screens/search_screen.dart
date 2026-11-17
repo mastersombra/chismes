@@ -259,7 +259,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       children: [
                         const Icon(Icons.location_on, size: 16),
                         const SizedBox(width: AppSpacing.xs),
-                        Text('Solo ${userLocation!.cityName}'),
+                        Text(context.l10n.searchFilterOnlyCity(userLocation!.cityName)),
                       ],
                     ),
                     selected: filterByCity,
@@ -342,7 +342,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
-                'Intenta con otras palabras',
+                context.l10n.searchTryOtherWords,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
@@ -358,7 +358,7 @@ class _SearchScreenState extends State<SearchScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             child: Text(
-              '${results.length} resultado${results.length != 1 ? 's' : ''}',
+              context.l10n.searchResultsCount(results.length),
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
@@ -404,12 +404,12 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(
-              'Busca chismes por tema',
+              context.l10n.searchByTopic,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              'o palabra clave',
+              context.l10n.searchByKeyword,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
@@ -432,7 +432,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
               const SizedBox(width: AppSpacing.xs),
               Text(
-                'Recientes',
+                context.l10n.searchRecent,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -489,7 +489,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                   const SizedBox(width: AppSpacing.xs),
                   Text(
-                    'Búsquedas recientes',
+                    context.l10n.searchRecentSearches,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -504,7 +504,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
                 child: Text(
-                  'Borrar todo',
+                  context.l10n.searchClearAll,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: Theme.of(context).colorScheme.error,
                       ),

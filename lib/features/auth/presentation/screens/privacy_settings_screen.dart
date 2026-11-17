@@ -5,7 +5,7 @@ import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/services/location_service.dart';
 import 'package:get_it/get_it.dart';
-import 'package:chismes/core/l10n/l10n.dart';
+
 
 /// Pantalla de configuración de privacidad
 ///

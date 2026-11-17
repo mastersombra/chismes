@@ -14,7 +14,6 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/result/result.dart';
 import '../../../../core/error/failure.dart';
 import 'report_gossip_dialog.dart';
-import 'package:chismes/core/l10n/l10n.dart';
 
 class GossipCard extends StatelessWidget {
   final Gossip gossip;

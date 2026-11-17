@@ -28,8 +28,9 @@ void main() {
 
       // Verificar que existe TextField (el widget principal)
       expect(find.byType(TextFormField), findsOneWidget);
-      // Verificar que tiene contenido relacionado a ciudad
-      expect(find.textContaining('ciud'), findsWidgets); // Case insensitive "ciudad"
+      // Verificar que tiene contenido relacionado a ciudad (puede ser "Ciudad" o "City")
+      final textFinder = find.textContaining(RegExp(r'[Cc]iudad|[Cc]ity'));
+      expect(textFinder, findsWidgets);
       // Verificar ícono
       expect(find.byIcon(Icons.location_on), findsOneWidget);
     });

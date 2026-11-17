@@ -312,14 +312,14 @@ class AddGossipController extends ChangeNotifier {
         isUploadingImage: false,
       ));
 
-      _logger.i('✅ Imagen seleccionada', context: {'path': image.path});
+      _logger.i('Image selected', context: {'path': image.path});
     } catch (e) {
-      _logger.e('Error seleccionando imagen', error: e);
+      _logger.e('Error selecting image', error: e);
       _updateState(_state.copyWith(
         isUploadingImage: false,
         failure: Failure(
           code: ErrorCode.unknownError,
-          technicalMessage: 'Error al seleccionar imagen: $e',
+          technicalMessage: 'Error seleccionar imagen: $e',
         ),
       ));
     }

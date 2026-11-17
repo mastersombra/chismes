@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 
+import '../../../../core/error/custom_error_keys.dart';
 import '../../../../core/logging/logging.dart';
-import '../../../../core/error/error_messages.dart';
 import '../../../../core/result/result.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../states/otp_verification_state.dart';
@@ -37,15 +37,14 @@ class OtpVerificationController extends ChangeNotifier {
   Future<bool> verifyOTP(String code) async {
     if (code.length != 6) {
       _updateState(_state.copyWith(
-        errorMessage: 'El código debe tener 6 dígitos',
+        customErrorKey: CustomErrorKey.authOtpCodeMustBe6Digits,
       ));
       return false;
     }
 
     _logger.i('Verifying OTP', context: {'email': _state.email});
-    _updateState(_state.copyWith(
+    _updateState(_state.clearError().copyWith(
       isVerifying: true,
-      errorMessage: '',
     ));
 
     final result = await _authRepository.verifyOTP(
@@ -61,10 +60,9 @@ class OtpVerificationController extends ChangeNotifier {
       },
       onFailure: (failure) {
         _logger.w('OTP verification failed', context: {'code': failure.code});
-        final message = ErrorMessages.getMessageEnglish(failure.code);
         _updateState(_state.copyWith(
           isVerifying: false,
-          errorMessage: message,
+          errorCode: failure.code,
         ));
         return false;
       },
@@ -81,9 +79,8 @@ class OtpVerificationController extends ChangeNotifier {
     }
 
     _logger.i('Resending OTP', context: {'email': _state.email});
-    _updateState(_state.copyWith(
+    _updateState(_state.clearError().copyWith(
       isResending: true,
-      errorMessage: '',
     ));
 
     final result = await _authRepository.resendOTP(
@@ -102,10 +99,9 @@ class OtpVerificationController extends ChangeNotifier {
       },
       onFailure: (failure) {
         _logger.w('Resend OTP failed', context: {'code': failure.code});
-        final message = ErrorMessages.getMessageEnglish(failure.code);
         _updateState(_state.copyWith(
           isResending: false,
-          errorMessage: message,
+          errorCode: failure.code,
         ));
       },
     );

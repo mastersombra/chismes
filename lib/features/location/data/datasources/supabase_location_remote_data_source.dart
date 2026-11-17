@@ -35,7 +35,7 @@ class SupabaseLocationRemoteDataSource {
           .map((json) => Country.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      _logger.e('Error obteniendo países', error: e);
+      _logger.e('Error getting countries', error: e);
       rethrow;
     }
   }
@@ -88,7 +88,7 @@ class SupabaseLocationRemoteDataSource {
           .map((json) => City.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      _logger.e('Error obteniendo ciudades', error: e, context: {'regionId': regionId});
+      _logger.e('Error getting cities', error: e, context: {'regionId': regionId});
       rethrow;
     }
   }
@@ -130,7 +130,7 @@ class SupabaseLocationRemoteDataSource {
           .map((json) => City.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      _logger.e('Error buscando ciudades', error: e, context: {
+      _logger.e('Error searching cities', error: e, context: {
         'query': query,
         'regionId': regionId,
         'maxResults': maxResults,
@@ -173,7 +173,7 @@ class SupabaseLocationRemoteDataSource {
       );
 
       if (response == null || response is! List || response.isEmpty) {
-        _logger.w('No se encontró ciudad cercana', context: {
+        _logger.w('Nearby city not found', context: {
           'latitude': latitude,
           'longitude': longitude,
           'maxDistanceKm': maxDistanceKm,
@@ -191,7 +191,7 @@ class SupabaseLocationRemoteDataSource {
         'distance_km': result['distance_km'] as num,
       };
     } catch (e) {
-      _logger.e('Error en reverse geocoding', error: e, context: {
+      _logger.e('Reverse geocoding error', error: e, context: {
         'latitude': latitude,
         'longitude': longitude,
         'maxDistanceKm': maxDistanceKm,

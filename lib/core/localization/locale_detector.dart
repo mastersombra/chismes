@@ -45,14 +45,6 @@ class LocaleDetector {
         return 'Spanish';
       case 'en':
         return 'English';
-      case 'pt':
-        return 'Portuguese';
-      case 'fr':
-        return 'French';
-      case 'de':
-        return 'German';
-      case 'it':
-        return 'Italian';
       default:
         return 'Unknown';
     }
@@ -65,14 +57,6 @@ class LocaleDetector {
         return 'Español';
       case 'en':
         return 'English';
-      case 'pt':
-        return 'Português';
-      case 'fr':
-        return 'Français';
-      case 'de':
-        return 'Deutsch';
-      case 'it':
-        return 'Italiano';
       default:
         return 'Unknown';
     }
@@ -85,14 +69,6 @@ class LocaleDetector {
         return '🇪🇸';
       case 'en':
         return '🇺🇸';
-      case 'pt':
-        return '🇧🇷';
-      case 'fr':
-        return '🇫🇷';
-      case 'de':
-        return '🇩🇪';
-      case 'it':
-        return '🇮🇹';
       default:
         return '🌐';
     }

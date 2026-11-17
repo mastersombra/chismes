@@ -147,9 +147,9 @@ class PopularTabController extends ChangeNotifier {
             'hasMore': paginated.hasMore,
           });
 
-          // ⚠️ DEBUG: Log para verificar que los chismes lleguen al estado
-          print('🔍 DEBUG PopularTab: Loaded ${paginated.data.length} gossips');
-          print('🔍 DEBUG PopularTab: First gossip: ${paginated.data.isNotEmpty ? paginated.data.first.subject : "EMPTY"}');
+          // DEBUG: Log para verificar que los chismes lleguen al estado
+          _logger.d('DEBUG PopularTab: Loaded ${paginated.data.length} gossips');
+          _logger.d('DEBUG PopularTab: First gossip: ${paginated.data.isNotEmpty ? paginated.data.first.subject : "EMPTY"}');
 
           _updateState(_state.copyWith(
             status: PopularTabStatus.loaded,

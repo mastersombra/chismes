@@ -1,8 +1,9 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:injectable/injectable.dart';
 
+import '../../../../core/error/custom_error_keys.dart';
+import '../../../../core/error/error_codes.dart';
 import '../../../../core/error/error_messages.dart';
-import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/logging/logging.dart';
 import '../../../../core/result/result.dart';
 import '../../../../core/services/auth_service.dart';
@@ -53,15 +54,31 @@ class ProfileController extends ChangeNotifier {
   ProfileSettings? _settings;
   ProfileSettings? get settings => _settings;
 
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
+  ErrorCode? _errorCode;
+  CustomErrorKey? _customErrorKey;
+
+  /// Obtiene el mensaje de error traducido
+  ///
+  /// Debe llamarse desde la UI que tiene BuildContext.
+  String? getErrorMessage(BuildContext context) {
+    if (_customErrorKey != null) {
+      return _customErrorKey!.getMessage(context);
+    }
+
+    if (_errorCode != null) {
+      return ErrorMessages.getMessage(context, _errorCode!);
+    }
+
+    return null;
+  }
 
   /// Carga los datos del perfil
   Future<void> loadProfile() async {
     if (_state == ProfileState.loading) return;
 
     _state = ProfileState.loading;
-    _errorMessage = null;
+    _errorCode = null;
+    _customErrorKey = null;
     notifyListeners();
 
     try {
@@ -111,7 +128,7 @@ class ProfileController extends ChangeNotifier {
         error: error,
         stackTrace: stackTrace,
       );
-      _errorMessage = 'Error loading profile';
+      _customErrorKey = CustomErrorKey.profileScreenErrorLoading;
       _state = ProfileState.error;
     }
 
@@ -134,9 +151,9 @@ class ProfileController extends ChangeNotifier {
 
       return result.when(
         onFailure: (failure) {
-          final message = ErrorMessages.getMessageEnglish(failure.code);
-          _logger.e('Failed to update settings: $message');
-          _errorMessage = message;
+          _logger.e('Failed to update settings: ${ErrorMessages.getMessageEnglish(failure.code)}');
+          _errorCode = failure.code;
+          _customErrorKey = null;
           notifyListeners();
           return false;
         },
@@ -153,7 +170,8 @@ class ProfileController extends ChangeNotifier {
         error: error,
         stackTrace: stackTrace,
       );
-      _errorMessage = 'Error updating settings';
+      _customErrorKey = CustomErrorKey.profileSettingsUpdateError;
+      _errorCode = null;
       notifyListeners();
       return false;
     }
@@ -164,7 +182,8 @@ class ProfileController extends ChangeNotifier {
     if (_state == ProfileState.signingOut) return false;
 
     _state = ProfileState.signingOut;
-    _errorMessage = null;
+    _errorCode = null;
+    _customErrorKey = null;
     notifyListeners();
 
     try {
@@ -174,9 +193,9 @@ class ProfileController extends ChangeNotifier {
 
       return result.when(
         onFailure: (failure) {
-          final message = ErrorMessages.getMessageEnglish(failure.code);
-          _logger.e('Failed to sign out: $message');
-          _errorMessage = message;
+          _logger.e('Failed to sign out: ${ErrorMessages.getMessageEnglish(failure.code)}');
+          _errorCode = failure.code;
+          _customErrorKey = null;
           _state = ProfileState.loaded;
           notifyListeners();
           return false;
@@ -193,7 +212,8 @@ class ProfileController extends ChangeNotifier {
         error: error,
         stackTrace: stackTrace,
       );
-      _errorMessage = 'Error signing out';
+      _customErrorKey = CustomErrorKey.profileSignOutError;
+      _errorCode = null;
       _state = ProfileState.loaded;
       notifyListeners();
       return false;

@@ -117,6 +117,7 @@ import '../media/supabase_storage_service.dart' as _i710;
 import '../services/auth_service.dart' as _i745;
 import '../services/deep_link_service.dart' as _i391;
 import '../services/location_service.dart' as _i669;
+import '../services/profile_service.dart' as _i989;
 import '../services/search_history_service.dart' as _i283;
 
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -128,6 +129,7 @@ _i174.GetIt $initGetIt(
   final gh = _i526.GetItHelper(getIt, environment, environmentFilter);
   final gossipModule = _$GossipModule();
   gh.singleton<_i966.DeviceInfoProvider>(() => _i966.DeviceInfoProvider());
+  gh.singleton<_i989.ProfileService>(() => _i989.ProfileService());
   gh.singleton<_i110.MvpModerationPolicy>(() => gossipModule.moderationPolicy);
   gh.lazySingleton<_i454.SupabaseClient>(() => gossipModule.supabaseClient);
   gh.singleton<_i817.LocaleNotifier>(
@@ -364,14 +366,6 @@ _i174.GetIt $initGetIt(
       logger: gh<_i482.AppLogger>(),
     ),
   );
-  gh.factory<_i527.FollowingTabController>(
-    () => _i527.FollowingTabController(
-      gh<_i760.GetFollowingFeed>(),
-      gh<_i890.GetRecommendedFeed>(),
-      gh<_i491.LocationManager>(),
-      gh<_i482.AppLogger>(),
-    ),
-  );
   gh.factory<_i840.PopularTabController>(
     () => _i840.PopularTabController(
       gh<_i214.GetPopularFeed>(),
@@ -392,6 +386,15 @@ _i174.GetIt $initGetIt(
       gh<_i692.SignInWithGoogleUseCase>(),
       gh<_i263.SignInWithAppleUseCase>(),
       gh<_i1066.ResetPasswordUseCase>(),
+      gh<_i482.AppLogger>(),
+    ),
+  );
+  gh.factory<_i527.FollowingTabController>(
+    () => _i527.FollowingTabController(
+      gh<_i760.GetFollowingFeed>(),
+      gh<_i890.GetRecommendedFeed>(),
+      gh<_i491.LocationManager>(),
+      gh<_i989.ProfileService>(),
       gh<_i482.AppLogger>(),
     ),
   );

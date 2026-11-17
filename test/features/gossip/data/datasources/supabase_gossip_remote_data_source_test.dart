@@ -1174,9 +1174,342 @@ void main() {
         context: anyNamed('context'),
       )).called(1);
       verify(mockLogger.i(
-        argThat(contains('reportado exitosamente')),
+        argThat(contains('reported successfully')),
         context: anyNamed('context'),
       )).called(1);
+    });
+  });
+
+  group('searchGossips', () {
+    // NOTA: Los tests de searchGossips son limitados debido a la complejidad de mockear
+    // la respuesta de RPC de Supabase. Los casos exitosos están cubiertos por integration tests.
+    // Aquí solo testeamos el manejo de errores.
+
+    test('debe lanzar ServerFailure cuando hay error de RPC', () async {
+      // Arrange
+      when(mockSupabase.rpc(
+        any,
+        params: anyNamed('params'),
+      )).thenThrow(Exception('RPC error'));
+
+      // Act & Assert
+      expect(
+        () => dataSource.searchGossips(
+          query: 'test',
+          cityId: null,
+          limit: 20,
+        ),
+        throwsA(
+          predicate<ServerFailure>(
+            (e) =>
+                e.code == error_codes.ErrorCode.serverError &&
+                (e.technicalMessage?.contains('Failed to search gossips') ?? false) &&
+                (e.technicalMessage?.contains('RPC error') ?? false),
+          ),
+        ),
+      );
+    });
+
+    test('debe lanzar ServerFailure con PostgrestException', () async {
+      // Arrange
+      when(mockSupabase.rpc(
+        any,
+        params: anyNamed('params'),
+      )).thenThrow(PostgrestException(message: 'Database error'));
+
+      // Act & Assert
+      expect(
+        () => dataSource.searchGossips(
+          query: 'test',
+          cityId: 'MED',
+          limit: 20,
+        ),
+        throwsA(
+          predicate<ServerFailure>(
+            (e) =>
+                e.code == error_codes.ErrorCode.serverError &&
+                (e.technicalMessage?.contains('Failed to search gossips') ?? false) &&
+                (e.technicalMessage?.contains('Database error') ?? false),
+          ),
+        ),
+      );
+    });
+
+    test('debe loguear error cuando falla', () async {
+      // Arrange
+      final exception = Exception('Test error');
+      when(mockSupabase.rpc(
+        any,
+        params: anyNamed('params'),
+      )).thenThrow(exception);
+
+      // Act & Assert
+      try {
+        await dataSource.searchGossips(
+          query: 'test',
+          cityId: null,
+          limit: 20,
+        );
+      } catch (_) {}
+
+      verify(mockLogger.e(
+        argThat(contains('Failed to search gossips')),
+        error: exception,
+        stackTrace: anyNamed('stackTrace'),
+        context: anyNamed('context'),
+      )).called(1);
+    });
+  });
+
+  group('createWithImage - additional error cases', () {
+    late MockSession mockSession;
+
+    final validInput = CreateGossipInput(
+      subject: 'Test',
+      content: 'Content',
+      countryId: 'CO',
+      regionId: 'ANT',
+      cityId: 'MED',
+      publishedAs: PublishAs.anonymous,
+      audioUrl: null,
+      imageUrl: null,
+      idempotencyKey: 'key',
+    );
+
+    setUp(() {
+      mockSession = MockSession();
+      when(mockSupabase.functions).thenReturn(mockFunctionsClient);
+      when(mockAuth.currentSession).thenReturn(mockSession);
+      when(mockSession.accessToken).thenReturn('test-token');
+    });
+
+    test('debe lanzar AuthFailure cuando no hay sesión activa', () async {
+      // Arrange
+      when(mockAuth.currentSession).thenReturn(null);
+
+      // Act & Assert
+      expect(
+        () => dataSource.createWithImage(validInput, null),
+        throwsA(
+          predicate<AuthFailure>(
+            (e) =>
+                e.code == error_codes.ErrorCode.unauthorized &&
+                (e.technicalMessage?.contains('No active session') ?? false),
+          ),
+        ),
+      );
+    });
+
+    test('debe loguear cuando gossip es idempotente', () async {
+      // Arrange
+      final idempotentResponse = {
+        'gossip': {
+          'id': '123',
+          'country_id': 'CO',
+          'region_id': 'ANT',
+          'city_id': 'MED',
+          'subject': 'Test',
+          'content': 'Content',
+          'audio_url': null,
+          'image_url': null,
+          'published_as': 'anonymous',
+          'status': 'published',
+          'moderation_status': 'approved',
+          'report_count': 0,
+          'view_count': 0,
+          'deleted_at': null,
+          'deleted_by': null,
+          'visibility': 'public',
+          'created_at': '2024-01-01T00:00:00.000Z',
+          'created_by': 'user-123',
+          'modified_at': null,
+          'modified_by': null,
+        },
+        'idempotent': true,
+      };
+
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      )).thenAnswer((_) async => FunctionResponse(
+            data: idempotentResponse,
+            status: 200,
+          ));
+
+      // Act
+      await dataSource.createWithImage(validInput, null);
+
+      // Assert
+      verify(mockLogger.i(
+        argThat(contains('♻️ Gossip duplicado detectado')),
+        context: anyNamed('context'),
+      )).called(1);
+    });
+
+    test('debe incluir Authorization header con token', () async {
+      // Arrange
+      final validResponse = {
+        'gossip': {
+          'id': '123',
+          'country_id': 'CO',
+          'region_id': 'ANT',
+          'city_id': 'MED',
+          'subject': 'Test',
+          'content': 'Content',
+          'audio_url': null,
+          'image_url': null,
+          'published_as': 'anonymous',
+          'status': 'published',
+          'moderation_status': 'approved',
+          'report_count': 0,
+          'view_count': 0,
+          'deleted_at': null,
+          'deleted_by': null,
+          'visibility': 'public',
+          'created_at': '2024-01-01T00:00:00.000Z',
+          'created_by': 'user-123',
+          'modified_at': null,
+          'modified_by': null,
+        }
+      };
+
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      )).thenAnswer((_) async => FunctionResponse(
+            data: validResponse,
+            status: 200,
+          ));
+
+      // Act
+      await dataSource.createWithImage(validInput, null);
+
+      // Assert
+      final captured = verify(mockFunctionsClient.invoke(
+        'moderate-gossip',
+        body: anyNamed('body'),
+        headers: captureAnyNamed('headers'),
+      )).captured.single as Map<String, String>;
+
+      expect(captured['Authorization'], 'Bearer test-token');
+    });
+  });
+
+  group('reportGossip - additional cases', () {
+    late MockSession mockSession;
+
+    setUp(() {
+      mockSession = MockSession();
+      when(mockSupabase.functions).thenReturn(mockFunctionsClient);
+      when(mockAuth.currentSession).thenReturn(mockSession);
+      when(mockSession.accessToken).thenReturn('test-token');
+    });
+
+    test('debe lanzar AuthFailure cuando no hay sesión activa', () async {
+      // Arrange
+      when(mockAuth.currentSession).thenReturn(null);
+
+      // Act & Assert
+      expect(
+        () => dataSource.reportGossip(
+          gossipId: 'gossip-123',
+          reason: ReportReason.spam,
+        ),
+        throwsA(
+          predicate<AuthFailure>(
+            (e) =>
+                e.code == error_codes.ErrorCode.unauthorized &&
+                (e.technicalMessage?.contains('logged in') ?? false),
+          ),
+        ),
+      );
+    });
+
+    test('debe incluir Authorization header con token', () async {
+      // Arrange
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      )).thenAnswer((_) async => FunctionResponse(
+            data: {'success': true},
+            status: 200,
+          ));
+
+      // Act
+      await dataSource.reportGossip(
+        gossipId: 'gossip-123',
+        reason: ReportReason.spam,
+      );
+
+      // Assert
+      final captured = verify(mockFunctionsClient.invoke(
+        'report-gossip',
+        body: anyNamed('body'),
+        headers: captureAnyNamed('headers'),
+      )).captured.single as Map<String, String>;
+
+      expect(captured['Authorization'], 'Bearer test-token');
+    });
+
+    test('debe incluir details cuando está presente', () async {
+      // Arrange
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      )).thenAnswer((_) async => FunctionResponse(
+            data: {'success': true},
+            status: 200,
+          ));
+
+      // Act
+      await dataSource.reportGossip(
+        gossipId: 'gossip-123',
+        reason: ReportReason.other,
+        details: 'Additional context',
+      );
+
+      // Assert
+      final captured = verify(mockFunctionsClient.invoke(
+        'report-gossip',
+        body: captureAnyNamed('body'),
+        headers: anyNamed('headers'),
+      )).captured.single as Map<String, dynamic>;
+
+      expect(captured['gossip_id'], 'gossip-123');
+      expect(captured['reason'], 'other');
+      expect(captured['details'], 'Additional context');
+    });
+
+    test('debe lanzar ServerFailure con mensaje de error del response', () async {
+      // Arrange
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      )).thenAnswer((_) async => FunctionResponse(
+            data: {'error': 'Custom error message'},
+            status: 400,
+          ));
+
+      // Act & Assert
+      expect(
+        () => dataSource.reportGossip(
+          gossipId: 'gossip-123',
+          reason: ReportReason.spam,
+        ),
+        throwsA(
+          predicate<ServerFailure>(
+            (e) =>
+                e.code == error_codes.ErrorCode.serverError &&
+                (e.technicalMessage?.contains('Failed to report gossip') ?? false) &&
+                (e.technicalMessage?.contains('Custom error message') ?? false),
+          ),
+        ),
+      );
     });
   });
 }

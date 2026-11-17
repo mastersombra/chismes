@@ -1,127 +1,12 @@
 {
   "@@locale": "es",
   "@@context": "chismes_app",
-  "appName": "Chismes",
   "appTagline": "Comparte historias, descubre secretos",
-  "authErrorsEmailAlreadyInUse": "El email ya está en uso",
-  "authErrorsInvalidCredentials": "Credenciales inválidas",
-  "authErrorsNetworkError": "Error de conexión",
-  "authErrorsUnknownError": "Error desconocido",
-  "authErrorsUserNotFound": "Usuario no encontrado",
-  "authErrorsWeakPassword": "La contraseña es muy débil",
-  "authForgotPasswordCodeSentMessage": "Revisa tu email para obtener el código de verificación",
-  "authForgotPasswordCodeSentTitle": "Código enviado",
-  "authForgotPasswordEmailHint": "Correo electrónico",
-  "authForgotPasswordMessage": "Te enviaremos un código de 6 dígitos para recuperar tu contraseña",
-  "authForgotPasswordSendCodeButton": "Enviar código",
-  "authForgotPasswordTitle": "¿Olvidaste tu contraseña?",
-  "authLoginContinueWithApple": "Continuar con Apple",
-  "authLoginContinueWithGoogle": "Continuar con Google",
-  "authLoginEmailHint": "Correo electrónico",
-  "authLoginForgotPassword": "¿Olvidaste tu contraseña?",
-  "authLoginNoAccount": "¿No tienes cuenta?",
-  "authLoginOrContinueWith": "O continúa con",
-  "authLoginPasswordHint": "Contraseña",
-  "authLoginSignInButton": "Iniciar Sesión",
-  "authLoginSignUpLink": "Regístrate",
-  "authLoginTitle": "Iniciar Sesión",
-  "authOtpVerificationCodeHint": "Código",
-  "authOtpVerificationResendButton": "Reenviar",
-  "authOtpVerificationResendLabel": "¿No recibiste el código?",
-  "authOtpVerificationResendTimer": "Reenviar ({seconds}s)",
-  "@authOtpVerificationResendTimer": {
-    "description": "Translated from: auth.otp_verification.resend_timer",
-    "placeholders": {
-      "seconds": {
-        "type": "String",
-        "example": "SECONDS"
-      }
-    }
-  },
-  "authOtpVerificationSubtitleReset": "Ingresa el código que enviamos a:",
-  "authOtpVerificationSubtitleSignup": "Enviamos un código de 6 dígitos a:",
-  "authOtpVerificationTitle": "Verificar Código",
-  "authOtpVerificationVerifyEmailTitle": "Verificar Email",
-  "authOtpVerificationVerifying": "Verificando...",
-  "authPasswordFieldHide": "Ocultar contraseña",
-  "authPasswordFieldLabel": "Contraseña",
-  "authPasswordFieldShow": "Mostrar contraseña",
-  "authProfileSetupAvatarUploadSoon": "Próximamente: subir avatar",
-  "authProfileSetupBioHint": "Cuéntanos sobre ti...",
-  "authProfileSetupBioLabel": "Biografía (opcional)",
-  "authProfileSetupCompleteButton": "Completar perfil",
-  "authProfileSetupDisplayNameHint": "Juan Pérez",
-  "authProfileSetupDisplayNameLabel": "Nombre a mostrar",
-  "authProfileSetupDoItLater": "Lo haré después",
-  "authProfileSetupInfoMessage": "Necesitas un nombre de usuario para publicar chismes",
-  "authProfileSetupLaterButton": "Después",
-  "authProfileSetupSaveButton": "Guardar Perfil",
-  "authProfileSetupSubtitle": "Completa tu perfil para empezar a compartir chismes",
-  "authProfileSetupTitle": "Configura tu Perfil",
-  "authProfileSetupUsernameAvailabilityCheck": "Verifica que el nombre de usuario esté disponible",
-  "authProfileSetupUsernameHelper": "Solo letras minúsculas, números y _",
-  "authProfileSetupUsernameHint": "juanperez",
-  "authProfileSetupUsernameLabel": "Nombre de usuario",
-  "authProfileSetupUsernameTaken": "Este nombre de usuario ya está en uso",
-  "authProfileSetupWelcome": "¡Bienvenido!",
-  "authResetPasswordChangePasswordButton": "Cambiar contraseña",
-  "authResetPasswordConfirmPasswordHint": "Confirmar contraseña",
-  "authResetPasswordDescription": "Debe tener mínimo 8 caracteres",
-  "authResetPasswordNewPasswordHint": "Nueva contraseña",
-  "authResetPasswordOkButton": "OK",
-  "authResetPasswordSubtitle": "Crea tu nueva contraseña",
-  "authResetPasswordSuccessMessage": "Tu contraseña ha sido actualizada exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña",
-  "authResetPasswordSuccessTitle": "Contraseña actualizada",
-  "authResetPasswordTitle": "Nueva Contraseña",
-  "authSignupAlreadyHaveAccount": "¿Ya tienes cuenta?",
-  "authSignupConfirmPasswordHint": "Confirmar contraseña",
-  "authSignupConfirmPasswordRequired": "Confirma tu contraseña",
-  "authSignupDescription": "Crea tu cuenta en segundos",
-  "authSignupEmailHint": "Correo electrónico",
-  "authSignupPasswordHint": "Contraseña",
-  "authSignupPasswordMinLength": "Mínimo 8 caracteres",
-  "authSignupPasswordRequired": "Ingresa una contraseña",
-  "authSignupPasswordsMustMatch": "Las contraseñas no coinciden",
-  "authSignupSignInLink": "Inicia sesión",
-  "authSignupSignUpButton": "Crear Cuenta",
-  "authSignupSubtitle": "Únete a Chismes",
-  "authSignupTermsMessage": "Al crear una cuenta, aceptas nuestros Términos y Condiciones y Política de Privacidad",
-  "authSignupTitle": "Crear Cuenta",
-  "authValidationBioTooLong": "La biografía es muy larga (máximo 160 caracteres)",
-  "authValidationDisplayNameEmpty": "El nombre a mostrar no puede estar vacío",
-  "authValidationDisplayNameRequired": "El nombre a mostrar es requerido",
-  "authValidationDisplayNameTooLong": "El nombre a mostrar es muy largo (máximo 50 caracteres)",
-  "authValidationEmailInvalid": "El formato del email es inválido",
-  "authValidationEmailRequired": "El email es requerido",
-  "authValidationEmailTooLong": "El email es muy largo (máximo 254 caracteres)",
-  "authValidationPasswordNeedsLowercase": "La contraseña debe contener al menos una letra minúscula",
-  "authValidationPasswordNeedsNumber": "La contraseña debe contener al menos un número",
-  "authValidationPasswordNeedsSpecial": "La contraseña debe contener al menos un carácter especial",
-  "authValidationPasswordNeedsUppercase": "La contraseña debe contener al menos una letra mayúscula",
-  "authValidationPasswordRequired": "La contraseña es requerida",
-  "authValidationPasswordTooLong": "La contraseña es muy larga (máximo 128 caracteres)",
-  "authValidationPasswordTooShort": "La contraseña es muy corta (mínimo 8 caracteres)",
-  "authValidationPasswordsMustMatch": "Las contraseñas deben coincidir",
-  "authValidationUsernameInvalidChars": "El nombre de usuario solo puede contener letras minúsculas, números y guiones bajos",
-  "authValidationUsernameInvalidUnderscore": "El nombre de usuario no puede empezar o terminar con guión bajo",
-  "authValidationUsernameRequired": "El nombre de usuario es requerido",
-  "authValidationUsernameReserved": "El nombre de usuario está reservado",
-  "authValidationUsernameStartsWithNumber": "El nombre de usuario no puede empezar con un número",
-  "authValidationUsernameTooLong": "El nombre de usuario es muy largo (máximo 30 caracteres)",
-  "authValidationUsernameTooShort": "El nombre de usuario es muy corto (mínimo 3 caracteres)",
   "commonBack": "Volver",
   "commonCancel": "Cancelar",
-  "commonClose": "Cerrar",
-  "commonConfirm": "Confirmar",
-  "commonDelete": "Eliminar",
-  "commonEdit": "Editar",
-  "commonEmailHintPlaceholder": "tu@email.com",
   "commonEmailInvalid": "Email inválido",
   "commonEnterEmail": "Ingresa un email",
   "commonEnterPassword": "Ingresa tu contraseña",
-  "commonError": "Error",
-  "commonForget": "Olvidar",
-  "commonLoading": "Cargando...",
   "commonMaxLength": "No puede exceder {count} caracteres",
   "@commonMaxLength": {
     "description": "Translated from: common.max_length",
@@ -142,10 +27,7 @@
       }
     }
   },
-  "commonPermanentlyDelete": "Eliminar permanentemente",
-  "commonRequiredField": "Campo requerido",
   "commonRetry": "Reintentar",
-  "commonSave": "Guardar",
   "commonSelect": "Selecciona {field}",
   "@commonSelect": {
     "description": "Translated from: common.select",
@@ -156,8 +38,8 @@
       }
     }
   },
-  "commonSuccess": "Éxito",
   "errorsAuthEmailAlreadyInUse": "Este email ya está registrado.",
+  "authEmailAlreadyInUseAction": "Este email ya está registrado. Inicia sesión en su lugar.",
   "errorsAuthEmailNotVerified": "Debes verificar tu email para continuar.",
   "errorsAuthExpiredToken": "Código inválido o expirado. Solicita uno nuevo.",
   "errorsAuthInvalidCredentials": "Email o contraseña incorrectos. Por favor, verifica tus datos e intenta nuevamente.",
@@ -235,50 +117,6 @@
   "gossipCardShareSemanticHint": "Abre opciones para compartir con otros",
   "gossipCardShareSemanticLabel": "Compartir este chisme",
   "gossipCardShareTooltip": "Compartir chisme",
-  "gossipDetailScreenTitle": "Detalle",
-  "gossipLocationChangeDialogTitle": "Cambiar ubicación",
-  "gossipLocationCityHint": "Buscar ciudad...",
-  "gossipLocationCityLabel": "Ciudad",
-  "gossipLocationCityRequired": "Selecciona una ciudad",
-  "gossipLocationCitySearchHint": "Buscar ciudad... (mín. {minChars} caracteres)",
-  "@gossipLocationCitySearchHint": {
-    "description": "Translated from: gossip.location.city_search_hint",
-    "placeholders": {
-      "minChars": {
-        "type": "String",
-        "example": "MINCHARS"
-      }
-    }
-  },
-  "gossipLocationCountryLabel": "País",
-  "gossipLocationCountryRequired": "Selecciona un país",
-  "gossipLocationGpsDetectSubtitle": "Detectar automáticamente con GPS",
-  "gossipLocationMinCharsMessage": "Escribe al menos {minChars} caracteres para buscar",
-  "@gossipLocationMinCharsMessage": {
-    "description": "Translated from: gossip.location.min_chars_message",
-    "placeholders": {
-      "minChars": {
-        "type": "String",
-        "example": "MINCHARS"
-      }
-    }
-  },
-  "gossipLocationNoResults": "No se encontraron ciudades con \"{query}\"",
-  "@gossipLocationNoResults": {
-    "description": "Translated from: gossip.location.no_results",
-    "placeholders": {
-      "query": {
-        "type": "String",
-        "example": "QUERY"
-      }
-    }
-  },
-  "gossipLocationOrSelectManually": "O seleccionar manualmente",
-  "gossipLocationRegionLabel": "Región",
-  "gossipLocationRegionRequired": "Selecciona una región",
-  "gossipLocationSearchError": "Error al buscar ciudades. Intenta de nuevo.",
-  "gossipLocationUnexpectedError": "Error inesperado. Intenta de nuevo.",
-  "gossipLocationUseCurrentLocation": "Usar mi ubicación actual",
   "gossipLocationSelectorChangeButtonLabel": "Cambiar",
   "gossipLocationSelectorChangeButtonSemanticHint": "Abre el selector de ubicación",
   "gossipLocationSelectorChangeButtonSemanticLabel": "Cambiar ubicación",
@@ -324,7 +162,12 @@
   "gossipReportDetailsLabel": "Detalles adicionales (opcional)",
   "gossipReportReasonQuestion": "¿Por qué reportas este chisme?",
   "gossipReportTitle": "Reportar chisme",
-  "gossipSubmitButtonPublishSemantic": "Publicar chisme",
+  "gossipReportReasonSpam": "Spam",
+  "gossipReportReasonHarassment": "Acoso o intimidación",
+  "gossipReportReasonViolence": "Violencia o amenazas",
+  "gossipReportReasonSexualContent": "Contenido sexual",
+  "gossipReportReasonMisinformation": "Desinformación",
+  "gossipReportReasonOther": "Otro motivo",
   "gossipTextFieldsContentHint": "Cuenta lo que sabes...",
   "gossipTextFieldsContentLabel": "El chisme",
   "gossipTextFieldsContentValidation": "Cuenta el chisme",
@@ -340,54 +183,21 @@
   "homeFollowingFeatureNotImplemented": "Feature por implementar",
   "homeFollowingNoPostsMessage": "💬 Las personas que sigues aún no han publicado nada",
   "homeFollowingRecommendedBadge": "💡 Recomendados para ti",
-  "homeFollowingRecommendedError": "Error al cargar recomendados",
-  "homeFollowingUnexpectedError": "Error inesperado al cargar feed",
   "homeFollowingUsePopularTabHint": "Usa el tab de Populares arriba",
   "homeFollowingViewPopularLink": "Ver Populares",
   "homePopularEmpty": "No hay chismes disponibles",
-  "homePopularGlobal": "Popular 🌎",
-  "homePopularInCity": "Popular en {city}",
-  "@homePopularInCity": {
-    "description": "Translated from: home.popular.in_city",
-    "placeholders": {
-      "city": {
-        "type": "String",
-        "example": "CITY"
-      }
-    }
-  },
-  "homePopularNewGossipsBanner": "{count} nuevos chismes · Tap aquí",
-  "@homePopularNewGossipsBanner": {
-    "description": "Translated from: home.popular.new_gossips_banner",
-    "placeholders": {
-      "count": {
-        "type": "String",
-        "example": "COUNT"
-      }
-    }
-  },
   "homePopularNoMore": "No hay más chismes por ahora 🌙",
   "homeTabsFollowing": "Siguiendo",
   "homeTabsPopular": "Populares",
-  "homeTitle": "Chismes 🔥",
   "navigationCreate": "Crea",
   "navigationExplore": "Explora",
   "navigationHome": "Inicio",
   "navigationProfile": "Perfil",
-  "profileControllerLoadError": "Error al cargar el perfil",
-  "profileControllerSignoutError": "Error al cerrar sesión",
-  "profileControllerUpdateError": "Error al actualizar configuración",
   "profileHeaderCompleteness": "Completitud del perfil",
   "profileHeaderEmailVerified": "Email verificado",
   "profileHeaderNoName": "Sin nombre",
-  "profilePrivacyConsentDeclineButton": "No acepto, volver",
-  "profilePrivacyConsentTitle": "Privacidad y Términos",
   "profilePrivacySettingsAccountDeleteSubtitle": "Elimina tu cuenta y todos tus datos",
   "profilePrivacySettingsAccountDeleteTitle": "Eliminar cuenta",
-  "profilePrivacySettingsAccountDeleted": "Cuenta eliminada",
-  "profilePrivacySettingsAnonymousModeTitle": "Modo anónimo",
-  "profilePrivacySettingsConfirmDeletionTitle": "Confirmar eliminación",
-  "profilePrivacySettingsDeletionCancelled": "Eliminación cancelada",
   "profilePrivacySettingsDialogsDeleteAccountConfirmPlaceholder": "ELIMINAR",
   "profilePrivacySettingsDialogsDeleteAccountConfirmPrompt": "Para confirmar, escribe ELIMINAR",
   "profilePrivacySettingsDialogsDeleteAccountMessage": "Esto eliminará:\n• Tu cuenta\n• Todos tus chismes\n• Todas tus interacciones\n\n⚠️ Esta acción NO se puede deshacer.",
@@ -398,7 +208,6 @@
   "profilePrivacySettingsDialogsForgetLocationTitle": "¿Olvidar ubicación?",
   "profilePrivacySettingsDialogsPrivacyPolicyContent": "La política de privacidad completa está disponible en:\n\nhttps://chismes.app/privacy\n\nO en el archivo PRIVACY_POLICY.md del proyecto.",
   "profilePrivacySettingsDialogsTermsOfUseContent": "Los términos de uso completos están disponibles en:\n\nhttps://chismes.app/terms\n\nO en el archivo TERMS_OF_SERVICE.md del proyecto.",
-  "profilePrivacySettingsEraseButton": "Borrar",
   "profilePrivacySettingsExportComingSoon": "Exportación disponible próximamente",
   "profilePrivacySettingsExportDataTooltip": "Exportar datos",
   "profilePrivacySettingsLocalDataInfoMessage": "Estos datos se almacenan solo en tu teléfono (SharedPreferences). NO se envían al servidor.",
@@ -407,10 +216,7 @@
   "profilePrivacySettingsLocationAnonymousModeSubtitle": "No guardar ubicación por defecto",
   "profilePrivacySettingsLocationForgetTooltip": "Olvidar ubicación",
   "profilePrivacySettingsLocationNotSaved": "No guardada",
-  "profilePrivacySettingsMyDataTitle": "Mis Datos",
   "profilePrivacySettingsNoLocalData": "No hay datos guardados localmente",
-  "profilePrivacySettingsPrivacyPolicyTitle": "Política de Privacidad",
-  "profilePrivacySettingsSavedCityTitle": "Ciudad guardada",
   "profilePrivacySettingsSectionsAccount": "🔒 Cuenta",
   "profilePrivacySettingsSectionsLocation": "📍 Ubicación",
   "profilePrivacySettingsSectionsPolicies": "📄 Políticas",
@@ -419,10 +225,6 @@
   "profilePrivacySettingsSnackbarsAnonymousModeOn": "✅ Modo anónimo activado",
   "profilePrivacySettingsSnackbarsDataErased": "✅ Datos borrados",
   "profilePrivacySettingsSnackbarsLocationForgotten": "✅ Ubicación olvidada",
-  "profilePrivacySettingsTermsOfUseTitle": "Términos de Uso",
-  "profilePrivacySettingsTitle": "Privacidad",
-  "profilePrivacySettingsViewMyDataSubtitle": "Dashboard de datos",
-  "profilePrivacySettingsViewMyDataTitle": "Ver mis datos",
   "profileScreenErrorLoading": "Error al cargar perfil",
   "profileScreenNoUser": "No hay usuario autenticado",
   "profileScreenRefreshTooltip": "Refrescar",
@@ -430,10 +232,9 @@
   "profileScreenSignOutDialogContent": "¿Estás seguro que deseas cerrar sesión?",
   "profileScreenSignOutDialogTitle": "Cerrar sesión",
   "profileScreenSigningOut": "Cerrando sesión...",
-  "profileSettingsAppearanceTitle": "Apariencia",
+  "profileSignOutError": "Error al cerrar sesión",
   "profileSettingsComments": "Comentarios",
   "profileSettingsCommentsSubtitle": "Notificar cuando comenten tus chismes",
-  "profileSettingsDailySummary": "Resumen diario",
   "profileSettingsDailySummarySubtitle": "Recibir resumen diario por email",
   "profileSettingsDarkMode": "Modo oscuro",
   "profileSettingsDarkModeSubtitle": "Usar tema oscuro en la aplicación",
@@ -445,7 +246,6 @@
   "profileSettingsLanguageSpanish": "Español",
   "profileSettingsNewFollowers": "Nuevos seguidores",
   "profileSettingsNewFollowersSubtitle": "Notificar cuando alguien te siga",
-  "profileSettingsNotificationsTitle": "Notificaciones",
   "profileSettingsPrivacyDialogTitle": "Nivel de privacidad",
   "profileSettingsPrivacyFriends": "Amigos",
   "profileSettingsPrivacyFriendsSubtitle": "Solo tus amigos pueden ver",
@@ -454,7 +254,6 @@
   "profileSettingsPrivacyPrivateSubtitle": "Solo tú puedes ver",
   "profileSettingsPrivacyPublic": "Público",
   "profileSettingsPrivacyPublicSubtitle": "Todos pueden ver tu perfil",
-  "profileSettingsPrivacyTitle": "Privacidad",
   "profileSettingsPushNotifications": "Notificaciones push",
   "profileSettingsPushNotificationsSubtitle": "Recibir notificaciones push en el dispositivo",
   "profileSettingsSectionAppearance": "Apariencia",
@@ -471,7 +270,16 @@
   "profileStatsFollowing": "Siguiendo",
   "profileStatsGossips": "Chismes",
   "profileStatsTitle": "Estadísticas",
-  "searchEmptyState": "Escribe para buscar chismes 🔎",
+  "searchFilterOnlyCity": "Solo {cityName}",
+  "@searchFilterOnlyCity": {
+    "description": "Filter chip label to show only gossips from user's city",
+    "placeholders": {
+      "cityName": {
+        "type": "String",
+        "example": "Bogotá"
+      }
+    }
+  },
   "searchHint": "Buscar chismes...",
   "searchNoResults": "No se encontraron chismes 😢",
   "searchTitle": "Buscar 🔎",
@@ -615,5 +423,156 @@
         "example": "2"
       }
     }
-  }
+  },
+  "privacyConsentHeader": "🔒 Tu privacidad es importante",
+  "privacyConsentSubheader": "Antes de comenzar, queremos que sepas cómo manejamos tus datos.",
+  "privacyConsentDataCollectedTitle": "📊 ¿Qué datos recopilamos?",
+  "privacyConsentDataCollectedItem1": "Tu email y contraseña (encriptada)",
+  "privacyConsentDataCollectedItem2": "Solo tu ciudad (NO coordenadas exactas)",
+  "privacyConsentDataCollectedItem3": "Contenido de tus chismes (texto, imagen, audio)",
+  "privacyConsentDataCollectedItem4": "Estadísticas de uso (para mejorar la app)",
+  "privacyConsentDataUsageTitle": "🎯 ¿Cómo los usamos?",
+  "privacyConsentDataUsageItem1": "Proporcionar el servicio (publicar chismes)",
+  "privacyConsentDataUsageItem2": "Moderar contenido (mantener comunidad segura)",
+  "privacyConsentDataUsageItem3": "Mejorar la app (analizar uso)",
+  "privacyConsentModerationTitle": "🤖 Moderación de contenido",
+  "privacyConsentModerationItem1": "Usamos OpenAI para analizar texto",
+  "privacyConsentModerationItem2": "Solo se envía el texto del chisme",
+  "privacyConsentModerationItem3": "NO enviamos tu nombre, ubicación ni otros datos",
+  "privacyConsentModerationItem4": "OpenAI retiene el texto por 30 días, luego lo elimina",
+  "privacyConsentModerationItem5": "NO se usa para entrenar modelos de IA",
+  "privacyConsentLocationTitle": "📍 Tu ubicación",
+  "privacyConsentLocationItem1": "Solo detectamos tu ciudad (ej: \"Bogotá\")",
+  "privacyConsentLocationItem2": "Coordenadas GPS se descartan inmediatamente",
+  "privacyConsentLocationItem3": "NUNCA almacenamos ni enviamos coordenadas exactas",
+  "privacyConsentLocationItem4": "Puedes elegir la ciudad manualmente",
+  "privacyConsentRightsTitle": "✅ Tus derechos",
+  "privacyConsentRightsItem1": "Acceder a tus datos en cualquier momento",
+  "privacyConsentRightsItem2": "Eliminar tu cuenta y datos",
+  "privacyConsentRightsItem3": "Olvidar tu ubicación guardada",
+  "privacyConsentRightsItem4": "Exportar tus datos (portabilidad)",
+  "privacyConsentCheckboxPrivacy": "He leído y acepto la ",
+  "privacyConsentCheckboxPrivacyLink": "Política de Privacidad",
+  "privacyConsentCheckboxTerms": "He leído y acepto los ",
+  "privacyConsentCheckboxTermsLink": "Términos de Uso",
+  "privacyConsentCheckboxModeration": "Acepto que el texto de mis chismes se envíe a ",
+  "privacyConsentCheckboxModerationBold": "OpenAI",
+  "privacyConsentCheckboxModerationSuffix": " para moderación de contenido (30 días de retención)",
+  "privacyConsentAcceptButton": "Aceptar y Continuar",
+  "privacyConsentDisclaimer": "Al continuar, aceptas nuestras políticas",
+  "authOtpResendCode": "Reenviar código",
+  "authOtpResendIn": "Reenviar en {seconds}s",
+  "@authOtpResendIn": {
+    "description": "Resend countdown timer",
+    "placeholders": {
+      "seconds": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "authOtpHelpText": "¿No recibiste el código? Revisa tu carpeta de spam o solicita uno nuevo.",
+  "authOtpEnterCode": "Ingresa el código",
+  "authOtpSentCodeTo": "Enviamos un código de 6 dígitos a:",
+  "authOtpCodeMustBe6Digits": "El código debe tener 6 dígitos",
+  "privacyConsentDialogPrivacyAvailable": "La política de privacidad completa está disponible en:",
+  "privacyConsentDialogPrivacyUrl": "https://chismes.app/privacy",
+  "privacyConsentDialogPrivacyFile": "O en el archivo PRIVACY_POLICY.md del proyecto.",
+  "privacyConsentDialogPrivacySummary": "Resumen:",
+  "privacyConsentDialogPrivacyItem1": "• Solo recopilamos datos necesarios",
+  "privacyConsentDialogPrivacyItem2": "• No vendemos tus datos",
+  "privacyConsentDialogPrivacyItem3": "• Puedes eliminar tu cuenta en cualquier momento",
+  "privacyConsentDialogTermsAvailable": "Los términos de uso completos están disponibles en:",
+  "privacyConsentDialogTermsUrl": "https://chismes.app/terms",
+  "privacyConsentDialogTermsFile": "O en el archivo TERMS_OF_SERVICE.md del proyecto.",
+  "privacyConsentDialogTermsSummary": "Resumen:",
+  "privacyConsentDialogTermsItem1": "• Edad mínima: 13 años",
+  "privacyConsentDialogTermsItem2": "• No publicar contenido inapropiado",
+  "privacyConsentDialogTermsItem3": "• Moderación automática + manual",
+  "privacyConsentDialogTermsItem4": "• Podemos suspender cuentas que violen normas",
+  "searchRecentSearches": "Búsquedas recientes",
+  "searchTryOtherWords": "Intenta con otras palabras",
+  "searchByTopic": "Busca chismes por tema",
+  "searchByKeyword": "o palabra clave",
+  "searchRecent": "Recientes",
+  "searchClearAll": "Borrar todo",
+  "searchResultsCount": "{count, plural, =0{Sin resultados} =1{1 resultado} other{{count} resultados}}",
+  "@searchResultsCount": {
+    "description": "Search results count with ICU plural",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeNewGossipsBanner": "{count, plural, =1{1 nuevo chisme · Toca aquí} other{{count} nuevos chismes · Toca aquí}}",
+  "@homeNewGossipsBanner": {
+    "description": "New gossips banner with ICU plural",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deepLinkOpeningGossip": "Abriendo chisme: {gossipId}",
+  "@deepLinkOpeningGossip": {
+    "description": "Opening gossip via deep link",
+    "placeholders": {
+      "gossipId": {
+        "type": "String"
+      }
+    }
+  },
+  "deepLinkOpeningProfile": "Abriendo perfil: {userId}",
+  "@deepLinkOpeningProfile": {
+    "description": "Opening profile via deep link",
+    "placeholders": {
+      "userId": {
+        "type": "String"
+      }
+    }
+  },
+  "deepLinkOpeningCityFeed": "Abriendo feed de ciudad: {cityId}",
+  "@deepLinkOpeningCityFeed": {
+    "description": "Opening city feed via deep link",
+    "placeholders": {
+      "cityId": {
+        "type": "String"
+      }
+    }
+  },
+  "locationErrorLoadCountries": "Error al cargar países",
+  "locationErrorLoadRegions": "Error al cargar regiones",
+  "locationErrorLoadCities": "Error al cargar ciudades",
+  "locationErrorUnexpected": "Error inesperado",
+  "locationErrorGpsPosition": "No se pudo detectar ubicación. Activa GPS e intenta de nuevo.",
+  "locationErrorGeocoding": "No se pudo identificar la ubicación",
+  "locationErrorCountryNotAvailable": "País \"{entityName}\" no disponible. Selecciona manualmente.",
+  "@locationErrorCountryNotAvailable": {
+    "description": "Error when detected country is not in database",
+    "placeholders": {
+      "entityName": {
+        "type": "String"
+      }
+    }
+  },
+  "locationErrorRegionNotAvailable": "Región \"{entityName}\" no disponible. Selecciona manualmente.",
+  "@locationErrorRegionNotAvailable": {
+    "description": "Error when detected region is not in database",
+    "placeholders": {
+      "entityName": {
+        "type": "String"
+      }
+    }
+  },
+  "locationErrorCityNotAvailable": "Ciudad \"{entityName}\" no disponible. Selecciona manualmente.",
+  "@locationErrorCityNotAvailable": {
+    "description": "Error when detected city is not in database",
+    "placeholders": {
+      "entityName": {
+        "type": "String"
+      }
+    }
+  },
+  "locationErrorDetection": "Error al detectar ubicación. Intenta de nuevo."
 }

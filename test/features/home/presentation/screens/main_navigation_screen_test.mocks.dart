@@ -8,6 +8,8 @@ import 'dart:ui' as _i14;
 
 import 'package:chismes/core/error/failure.dart' as _i11;
 import 'package:chismes/core/result/result.dart' as _i16;
+import 'package:chismes/core/services/location_service.dart' as _i31;
+import 'package:chismes/core/services/search_history_service.dart' as _i30;
 import 'package:chismes/features/auth/domain/entities/user.dart' as _i29;
 import 'package:chismes/features/auth/domain/repositories/auth_repository.dart'
     as _i28;
@@ -48,6 +50,7 @@ import 'package:chismes/features/profile/domain/entities/profile_settings.dart'
 import 'package:chismes/features/profile/presentation/controllers/profile_controller.dart'
     as _i26;
 import 'package:flutter/material.dart' as _i4;
+import 'package:geolocator/geolocator.dart' as _i32;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i18;
 
@@ -864,6 +867,14 @@ class MockProfileController extends _i1.Mock implements _i26.ProfileController {
           as bool);
 
   @override
+  String? getErrorMessage(_i4.BuildContext? context) =>
+      (super.noSuchMethod(
+            Invocation.method(#getErrorMessage, [context]),
+            returnValueForMissingStub: null,
+          )
+          as String?);
+
+  @override
   _i12.Future<void> loadProfile() =>
       (super.noSuchMethod(
             Invocation.method(#loadProfile, []),
@@ -1296,4 +1307,116 @@ class MockAuthRepository extends _i1.Mock implements _i28.AuthRepository {
                 ),
           )
           as _i12.Future<_i16.Result<_i11.Failure, bool>>);
+}
+
+/// A class which mocks [SearchHistoryService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSearchHistoryService extends _i1.Mock
+    implements _i30.SearchHistoryService {
+  @override
+  _i12.Future<void> addSearch(String? query) =>
+      (super.noSuchMethod(
+            Invocation.method(#addSearch, [query]),
+            returnValue: _i12.Future<void>.value(),
+            returnValueForMissingStub: _i12.Future<void>.value(),
+          )
+          as _i12.Future<void>);
+
+  @override
+  _i12.Future<List<String>> getHistory() =>
+      (super.noSuchMethod(
+            Invocation.method(#getHistory, []),
+            returnValue: _i12.Future<List<String>>.value(<String>[]),
+            returnValueForMissingStub: _i12.Future<List<String>>.value(
+              <String>[],
+            ),
+          )
+          as _i12.Future<List<String>>);
+
+  @override
+  _i12.Future<void> removeSearch(String? query) =>
+      (super.noSuchMethod(
+            Invocation.method(#removeSearch, [query]),
+            returnValue: _i12.Future<void>.value(),
+            returnValueForMissingStub: _i12.Future<void>.value(),
+          )
+          as _i12.Future<void>);
+
+  @override
+  _i12.Future<void> clearHistory() =>
+      (super.noSuchMethod(
+            Invocation.method(#clearHistory, []),
+            returnValue: _i12.Future<void>.value(),
+            returnValueForMissingStub: _i12.Future<void>.value(),
+          )
+          as _i12.Future<void>);
+}
+
+/// A class which mocks [LocationService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockLocationService extends _i1.Mock implements _i31.LocationService {
+  @override
+  _i12.Future<_i32.Position?> getCurrentPosition() =>
+      (super.noSuchMethod(
+            Invocation.method(#getCurrentPosition, []),
+            returnValue: _i12.Future<_i32.Position?>.value(),
+            returnValueForMissingStub: _i12.Future<_i32.Position?>.value(),
+          )
+          as _i12.Future<_i32.Position?>);
+
+  @override
+  _i12.Future<_i31.DetectedLocation?> getCityFromCoordinates(
+    double? latitude,
+    double? longitude,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#getCityFromCoordinates, [latitude, longitude]),
+            returnValue: _i12.Future<_i31.DetectedLocation?>.value(),
+            returnValueForMissingStub:
+                _i12.Future<_i31.DetectedLocation?>.value(),
+          )
+          as _i12.Future<_i31.DetectedLocation?>);
+
+  @override
+  _i12.Future<void> saveDefaultLocation({
+    required String? countryId,
+    required String? regionId,
+    required String? cityId,
+    required String? countryName,
+    required String? regionName,
+    required String? cityName,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveDefaultLocation, [], {
+              #countryId: countryId,
+              #regionId: regionId,
+              #cityId: cityId,
+              #countryName: countryName,
+              #regionName: regionName,
+              #cityName: cityName,
+            }),
+            returnValue: _i12.Future<void>.value(),
+            returnValueForMissingStub: _i12.Future<void>.value(),
+          )
+          as _i12.Future<void>);
+
+  @override
+  _i12.Future<_i31.SavedLocation?> getDefaultLocation() =>
+      (super.noSuchMethod(
+            Invocation.method(#getDefaultLocation, []),
+            returnValue: _i12.Future<_i31.SavedLocation?>.value(),
+            returnValueForMissingStub: _i12.Future<_i31.SavedLocation?>.value(),
+          )
+          as _i12.Future<_i31.SavedLocation?>);
+
+  @override
+  _i12.Future<void> clearDefaultLocation() =>
+      (super.noSuchMethod(
+            Invocation.method(#clearDefaultLocation, []),
+            returnValue: _i12.Future<void>.value(),
+            returnValueForMissingStub: _i12.Future<void>.value(),
+          )
+          as _i12.Future<void>);
 }

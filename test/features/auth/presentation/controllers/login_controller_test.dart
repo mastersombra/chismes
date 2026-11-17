@@ -142,7 +142,7 @@ void main() {
 
         expect(controller.state, isA<AuthError>());
         final errorState = controller.state as AuthError;
-        expect(errorState.failure, tFailure);
+        expect(errorState.errorCode, tFailure.code);
       });
     });
 

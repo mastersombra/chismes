@@ -79,6 +79,9 @@ void main() {
 
       // Assert
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+      // Cleanup: esperar a que termine el Future
+      await tester.pumpAndSettle();
     });
 
     testWidgets('debe cargar configuración en initState', (tester) async {
@@ -173,12 +176,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Confirmar
-      // Buscar el botón "Olvidar" en el dialog
-      final forgetButtons = find.ancestor(
-        of: find.byType(TextButton),
-        matching: find.byType(AlertDialog),
-      );
-      await tester.tap(forgetButtons.last);
+      // Buscar el botón "Olvidar" por texto
+      await tester.tap(find.text('Olvidar'));
       await tester.pumpAndSettle();
 
       // Assert
@@ -316,7 +315,11 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Act
+      // Act - Scroll hasta el botón
+      await tester.scrollUntilVisible(
+        find.byIcon(Icons.delete_forever),
+        500.0,
+      );
       await tester.tap(find.byIcon(Icons.delete_forever));
       await tester.pumpAndSettle();
 
@@ -334,16 +337,16 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Act - Primer dialog
+      // Act - Scroll y abrir primer dialog
+      await tester.scrollUntilVisible(
+        find.byIcon(Icons.delete_forever),
+        500.0,
+      );
       await tester.tap(find.byIcon(Icons.delete_forever));
       await tester.pumpAndSettle();
 
-      // Confirmar primer dialog
-      final deleteButtons = find.ancestor(
-        of: find.byType(TextButton),
-        matching: find.byType(AlertDialog),
-      );
-      await tester.tap(deleteButtons.last);
+      // Confirmar primer dialog buscando botón "Eliminar"
+      await tester.tap(find.text('Eliminar'));
       await tester.pumpAndSettle();
 
       // Assert - Segundo dialog con TextField
@@ -359,28 +362,24 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Act - Abrir primer dialog
+      // Act - Scroll y abrir primer dialog
+      await tester.scrollUntilVisible(
+        find.byIcon(Icons.delete_forever),
+        500.0,
+      );
       await tester.tap(find.byIcon(Icons.delete_forever));
       await tester.pumpAndSettle();
 
       // Confirmar primer dialog
-      final firstDialogButtons = find.ancestor(
-        of: find.byType(TextButton),
-        matching: find.byType(AlertDialog),
-      );
-      await tester.tap(firstDialogButtons.last);
+      await tester.tap(find.text('Eliminar'));
       await tester.pumpAndSettle();
 
       // Escribir texto incorrecto
       await tester.enterText(find.byType(TextField), 'incorrect');
-      await tester.pumpAndSettle();
+      await tester.pump();
 
-      // Intentar confirmar
-      final secondDialogButtons = find.ancestor(
-        of: find.byType(TextButton),
-        matching: find.byType(AlertDialog),
-      );
-      await tester.tap(secondDialogButtons.last);
+      // Intentar confirmar - buscar el botón "Eliminar permanentemente"
+      await tester.tap(find.text('Eliminar permanentemente'));
       await tester.pumpAndSettle();
 
       // Assert - Debe mostrar snackbar de cancelación

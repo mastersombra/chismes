@@ -70,13 +70,13 @@ class LocationService {
   /// - `null` si:
   ///   - GPS deshabilitado
   ///   - Permisos denegados
-  ///   - Error al obtener ubicación
+  ///   - Error obtener ubicación
   Future<Position?> getCurrentPosition() async {
     try {
       // 1. Verificar si el servicio de ubicación está habilitado
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        _logger.w('Servicio de ubicación deshabilitado');
+        _logger.w('Location service disabled');
         return null;
       }
 
@@ -87,20 +87,20 @@ class LocationService {
         // Solicitar permisos
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          _logger.w('Permisos de ubicación denegados');
+          _logger.w('Location permissions denied');
           return null;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        _logger.w('Permisos de ubicación denegados permanentemente');
+        _logger.w('Location permissions permanently denied');
         return null;
       }
 
       // 3. Obtener posición
       // ✅ MINIMIZACIÓN: Usar precisión LOW (suficiente para detectar ciudad)
       // No necesitamos alta precisión (calle exacta), solo nivel ciudad
-      _logger.d('📍 Obteniendo ubicación GPS...');
+      _logger.d('Getting GPS location');
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.low,
         timeLimit: const Duration(seconds: 10),
@@ -108,12 +108,12 @@ class LocationService {
 
       // ✅ PRIVACIDAD: NO loggear coordenadas exactas (nivel INFO)
       // Solo confirmamos que se obtuvo ubicación sin exponer datos sensibles
-      _logger.i('✅ Ubicación GPS obtenida');
+      _logger.i('GPS location obtained');
 
       // En DEBUG: Loggear coordenadas solo para troubleshooting
       // En RELEASE: Este log NO se ejecuta (kDebugMode = false)
       if (kDebugMode) {
-        _logger.d('🔍 DEBUG: Coordenadas obtenidas', context: {
+        _logger.d('DEBUG: Coordinates obtained', context: {
           'latitude': position.latitude,
           'longitude': position.longitude,
         });
@@ -122,7 +122,7 @@ class LocationService {
       return position;
 
     } catch (e) {
-      _logger.w('Error obteniendo ubicación GPS', context: {'error': e.toString()});
+      _logger.w('Error getting GPS location', context: {'error': e.toString()});
       return null;
     }
   }
@@ -151,12 +151,12 @@ class LocationService {
   ) async {
     try {
       // ✅ PRIVACIDAD: NO loggear coordenadas exactas
-      _logger.d('🔍 Ejecutando reverse geocoding...');
+      _logger.d('Executing reverse geocoding');
 
       // En DEBUG: Loggear coordenadas solo para troubleshooting
       // En RELEASE: Este log NO se ejecuta
       if (kDebugMode) {
-        _logger.d('🔍 DEBUG: Coordenadas para geocoding', context: {
+        _logger.d('DEBUG: Coordinates for geocoding', context: {
           'latitude': latitude,
           'longitude': longitude,
         });
@@ -165,7 +165,7 @@ class LocationService {
       final placemarks = await placemarkFromCoordinates(latitude, longitude);
 
       if (placemarks.isEmpty) {
-        _logger.w('No se encontró información de ubicación');
+        _logger.w('Location information not found');
         return null;
       }
 
@@ -177,7 +177,7 @@ class LocationService {
       final country = place.country;
 
       if (city == null || region == null || country == null) {
-        _logger.w('Información de ubicación incompleta');
+        _logger.w('Incomplete location information');
         return null;
       }
 
@@ -187,7 +187,7 @@ class LocationService {
         countryName: country,
       );
 
-      _logger.i('✅ Ubicación detectada', context: {
+      _logger.i('Location detected', context: {
         'city': city,
         'region': region,
         'country': country,
@@ -195,7 +195,7 @@ class LocationService {
       return location;
 
     } catch (e) {
-      _logger.w('Error en reverse geocoding', context: {'error': e.toString()});
+      _logger.w('Reverse geocoding error', context: {'error': e.toString()});
       return null;
     }
   }
@@ -226,7 +226,7 @@ class LocationService {
       // ✅ MODO ANÓNIMO: No guardar ubicación si está activado
       final anonymousMode = prefs.getBool('anonymous_mode') ?? false;
       if (anonymousMode) {
-        _logger.i('🔒 Modo anónimo activado: No se guarda ubicación');
+        _logger.i('Anonymous mode enabled: Not saving location');
         return;
       }
 
@@ -239,13 +239,13 @@ class LocationService {
         prefs.setString(_keyCityName, cityName),
       ]);
 
-      _logger.i('✅ Ubicación por defecto guardada', context: {
+      _logger.i('Default location saved', context: {
         'cityName': cityName,
         'regionName': regionName,
         'countryName': countryName,
       });
     } catch (e) {
-      _logger.w('Error guardando ubicación por defecto', context: {'error': e.toString()});
+      _logger.w('Error saving default location', context: {'error': e.toString()});
     }
   }
 
@@ -267,7 +267,7 @@ class LocationService {
 
       // Si no hay ubicación guardada (primera vez)
       if (countryId == null || regionId == null || cityId == null) {
-        _logger.d('No hay ubicación por defecto guardada (primera vez)');
+        _logger.d('No default location saved (first time)');
         return null;
       }
 
@@ -280,14 +280,14 @@ class LocationService {
         cityName: cityName ?? '',
       );
 
-      _logger.i('✅ Ubicación por defecto cargada', context: {
+      _logger.i('Default location loaded', context: {
         'cityName': location.cityName,
         'regionName': location.regionName,
       });
       return location;
 
     } catch (e) {
-      _logger.w('Error cargando ubicación por defecto', context: {'error': e.toString()});
+      _logger.w('Error loading default location', context: {'error': e.toString()});
       return null;
     }
   }
@@ -310,9 +310,9 @@ class LocationService {
         prefs.remove(_keyCityName),
       ]);
 
-      _logger.i('✅ Ubicación por defecto eliminada');
+      _logger.i('Default location removed');
     } catch (e) {
-      _logger.w('Error eliminando ubicación por defecto', context: {'error': e.toString()});
+      _logger.w('Error removing default location', context: {'error': e.toString()});
     }
   }
 }

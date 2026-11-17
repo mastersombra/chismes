@@ -35,9 +35,6 @@ class PopularTab extends StatelessWidget {
       builder: (context, _) {
         final state = controller.state;
 
-        // ⚠️ DEBUG: Log para verificar estado en UI
-        print('🔍 DEBUG PopularTab UI: status=${state.status}, gossips=${state.gossips.length}, isEmpty=${state.isEmpty}');
-
         // Loading inicial
         if (state.isLoadingInitial) {
           return const Center(

@@ -31,7 +31,12 @@ class LocaleNotifier extends ChangeNotifier {
   static Locale _loadInitialLocale(SharedPreferences prefs) {
     final savedLocale = prefs.getString(_localeKey);
     if (savedLocale != null) {
-      return Locale(savedLocale);
+      // Validar que el locale guardado está en supportedLocales
+      if (supportedLocales.any((l) => l.languageCode == savedLocale)) {
+        return Locale(savedLocale);
+      }
+      // Si el locale guardado no es válido, usar default
+      return const Locale('es');
     }
     // Default: español
     return const Locale('es');

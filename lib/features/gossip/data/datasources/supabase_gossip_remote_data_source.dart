@@ -170,7 +170,7 @@ class SupabaseGossipRemoteDataSource implements GossipRemoteDataSource {
       // ✅ SEGURO: Cuarentena privada, validación real
       // ✅ STORAGE_PATH: Fuente de verdad (URLs regenerables)
 
-      _logger.d('🔍 Creando gossip con imagen vía Edge Function');
+      _logger.d('Creating gossip with image via Edge Function');
 
       // Construir body del request
       final body = {
@@ -259,7 +259,7 @@ class SupabaseGossipRemoteDataSource implements GossipRemoteDataSource {
           'id': gossipData['id'],
         });
       } else {
-        _logger.i('✅ Gossip creado con imagen', context: {
+        _logger.i('Gossip created with image', context: {
           'id': gossipData['id'],
           'status': gossipData['status'],
           'hasImage': gossipData['image_url'] != null,
@@ -334,12 +334,12 @@ class SupabaseGossipRemoteDataSource implements GossipRemoteDataSource {
         throw Exception(errorMessage);
       }
 
-      _logger.i('✅ Gossip reportado exitosamente', context: {
+      _logger.i('Gossip reported successfully', context: {
         'gossipId': gossipId,
         'reason': reason.value,
       });
     } catch (e, stackTrace) {
-      _logger.e('Error al reportar gossip', error: e, stackTrace: stackTrace);
+      _logger.e('Error reportar gossip', error: e, stackTrace: stackTrace);
 
       // Manejar errores de autenticación
       final errorMessage = e.toString().toLowerCase();
