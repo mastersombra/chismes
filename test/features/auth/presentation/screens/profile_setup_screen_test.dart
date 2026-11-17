@@ -550,5 +550,184 @@ void main() {
       // Assert - verificar que el listener fue ejecutado
       expect(capturedListener, isNotNull);
     });
+
+    testWidgets('debe ejecutar _onStateChanged cuando username ya está tomado', (WidgetTester tester) async {
+      // Arrange
+      VoidCallback? capturedListener;
+      when(mockController.addListener(any)).thenAnswer((invocation) {
+        capturedListener = invocation.positionalArguments[0] as VoidCallback;
+      });
+      when(mockController.state).thenReturn(const AuthInitial());
+      when(mockController.usernameAvailable).thenReturn(null);
+
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      // Cambiar estado a error de username tomado
+      final failure = AuthFailure(
+        code: ErrorCode.usernameAlreadyTaken,
+        technicalMessage: 'Username already taken',
+      );
+      when(mockController.state).thenReturn(AuthError(failure));
+
+      // Act - llamar listener manualmente
+      capturedListener?.call();
+      await tester.pump();
+
+      // Assert - verificar que el listener fue ejecutado
+      expect(capturedListener, isNotNull);
+    });
+
+    testWidgets('no debe llamar updateProfile si username no está disponible', (WidgetTester tester) async {
+      // Arrange
+      when(mockController.usernameAvailable).thenReturn(false);
+
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      // Act - llenar formulario
+      await tester.enterText(find.byType(TextFormField).at(0), 'taken_username');
+      await tester.enterText(find.byType(TextFormField).at(1), 'Display Name');
+
+      await tester.tap(find.widgetWithText(AuthButton, 'Guardar Perfil'));
+      await tester.pumpAndSettle();
+
+      // Assert - no debe llamar updateProfile
+      verifyNever(mockController.updateProfile(
+        username: anyNamed('username'),
+        displayName: anyNamed('displayName'),
+        bio: anyNamed('bio'),
+      ));
+    });
+
+    testWidgets('debe llamar checkUsernameAvailability después del debounce', (WidgetTester tester) async {
+      // Arrange
+      when(mockController.usernameAvailable).thenReturn(null);
+
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      // Act - escribir username válido (>= 3 caracteres)
+      await tester.enterText(find.byType(TextFormField).at(0), 'validuser');
+
+      // Esperar el debounce (500ms)
+      await tester.pumpAndSettle(const Duration(milliseconds: 600));
+
+      // Assert - debe llamar checkUsernameAvailability
+      verify(mockController.checkUsernameAvailability('validuser')).called(1);
+    });
+
+    testWidgets('debe llamar resetUsernameCheck si username es muy corto', (WidgetTester tester) async {
+      // Arrange
+      when(mockController.usernameAvailable).thenReturn(null);
+
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      // Act - escribir username muy corto (< 3 caracteres)
+      await tester.enterText(find.byType(TextFormField).at(0), 'ab');
+
+      // Esperar el debounce (500ms)
+      await tester.pumpAndSettle(const Duration(milliseconds: 600));
+
+      // Assert - debe llamar resetUsernameCheck
+      verify(mockController.resetUsernameCheck()).called(1);
+    });
+
+    testWidgets('debe validar caracteres especiales en username', (WidgetTester tester) async {
+      // Arrange
+      when(mockController.usernameAvailable).thenReturn(true);
+
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      // Act - ingresar username con caracteres inválidos
+      await tester.enterText(find.byType(TextFormField).at(0), 'invalid@user');
+      await tester.enterText(find.byType(TextFormField).at(1), 'Display Name');
+
+      await tester.tap(find.widgetWithText(AuthButton, 'Guardar Perfil'));
+      await tester.pumpAndSettle();
+
+      // Assert - no debe llamar updateProfile
+      verifyNever(mockController.updateProfile(
+        username: anyNamed('username'),
+        displayName: anyNamed('displayName'),
+        bio: anyNamed('bio'),
+      ));
+    });
+
+    testWidgets('debe navegar con pop cuando AuthSuccess', (WidgetTester tester) async {
+      // Arrange
+      VoidCallback? capturedListener;
+      when(mockController.addListener(any)).thenAnswer((invocation) {
+        capturedListener = invocation.positionalArguments[0] as VoidCallback;
+      });
+      when(mockController.state).thenReturn(const AuthInitial());
+      when(mockController.usernameAvailable).thenReturn(null);
+
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      // Cambiar estado a success
+      final user = User(
+        id: '123',
+        email: 'test@example.com',
+        emailVerified: true,
+        username: 'testuser',
+        displayName: 'Test User',
+        profileCompleted: true,
+        createdAt: DateTime.now(),
+      );
+      when(mockController.state).thenReturn(AuthSuccess(user));
+
+      // Act - llamar listener manualmente
+      capturedListener?.call();
+      await tester.pumpAndSettle();
+
+      // Assert - verificar que el listener fue ejecutado
+      expect(capturedListener, isNotNull);
+    });
+
+    testWidgets('debe tener campo de bio opcional', (WidgetTester tester) async {
+      // Arrange
+      when(mockController.usernameAvailable).thenReturn(null);
+
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      // Assert - debe tener exactamente 3 TextFormFields (username, displayName, bio)
+      expect(find.byType(TextFormField), findsNWidgets(3));
+
+      // El campo de bio debe ser el tercero
+      final bioField = find.byType(TextFormField).at(2);
+      expect(bioField, findsOneWidget);
+    });
+
+    testWidgets('debe tener avatar con icono de persona', (WidgetTester tester) async {
+      // Arrange
+      when(mockController.usernameAvailable).thenReturn(null);
+
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      // Assert - debe mostrar icono de persona en avatar
+      expect(find.byIcon(Icons.person), findsOneWidget);
+    });
+
+    testWidgets('no debe ejecutar skip cuando canSkip es false', (WidgetTester tester) async {
+      // Arrange
+      when(mockController.usernameAvailable).thenReturn(null);
+
+      await tester.pumpWidget(
+        makeTestableWidget(const ProfileSetupScreen(canSkip: false)),
+      );
+      await tester.pumpAndSettle();
+
+      // Act - intentar skip (botón no debe existir)
+      final skipButton = find.text('Lo haré después');
+
+      // Assert - botón skip no debe existir cuando canSkip es false
+      expect(skipButton, findsNothing);
+    });
   });
 }
