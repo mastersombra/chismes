@@ -1,8 +1,8 @@
 # Sesión 8: Models + Widgets - Path to 75%
 
 **Fecha:** 2026-11-16  
-**Duración real:** ~1.5 horas  
-**Estado:** ⏸️ PAUSADA (Progreso parcial documentado)
+**Duración real:** ~2.5 horas  
+**Estado:** ✅ COMPLETADA (Progreso parcial - 1 widget completo)
 
 ## 🎯 Objetivo
 
@@ -147,13 +147,46 @@ Inicial: ~3,100+ tests pasando
 - ⏳ Widgets adicionales o revisión de settings_section con setup de localización
 
 **Para alcanzar 75% desde 73.6%:**
-- Faltan: ~106 líneas ejecutables
-- Estrategias recomendadas:
-  1. Agregar casos edge a models existentes (más rápido)
-  2. Widgets simples sin localización (medio esfuerzo)
-  3. Completar settings_section_test con AppLocalizations setup (alto esfuerzo)
+- **Faltan:** ~106 líneas ejecutables (+1.4% coverage)
+- **Tiempo estimado:** 1-2 horas adicionales
 
-**Nota:** settings_section requiere configuración compleja de AppLocalizations.delegate. Se recomienda continuar con models (alto ROI, bajo setup) o buscar widgets más simples.
+### Estrategias Recomendadas (Orden de Prioridad)
+
+**1. Agregar tests a widgets simples sin setup complejo (RECOMENDADO) ⭐**
+- Tiempo: 30-45 min por widget
+- ROI: 30-50 líneas por widget
+- Widgets candidatos:
+  - Simple presentational widgets (sin navegación ni localización)
+  - Widgets de UI puro (cards, botones custom, etc.)
+
+**2. Completar coverage de widgets parcialmente testeados**
+- Tiempo: 20-30 min por widget
+- ROI: 10-20 líneas por widget
+- Candidatos: widgets con 60-90% coverage
+
+**3. Agregar casos edge a models existentes (Fallback)**
+- Tiempo: 40-60 min total
+- ROI: 30-50 líneas total
+- Nota: Models ya tienen muy buen coverage, ROI menor
+
+**4. NO RECOMENDADO:**
+- settings_section_test: Requiere AppLocalizations delegate complejo
+- auth_gate_test: Requiere mockear navegación y múltiples dependencias
+- Widgets con localización: Tiempo de setup > valor agregado
+
+### Observaciones Clave
+
+**Lo que funcionó bien:**
+- ✅ email_verification_banner: Simple, sin localización, estados claros
+- ✅ ROI: 44 líneas en ~1 hora efectiva
+
+**Lo que NO funcionó:**
+- ❌ settings_section: Localización compleja
+- ❌ auth_gate: Navegación compleja, múltiples dependencias
+
+**Lección aprendida:**
+- **Criterio de selección:** Widget sin localización + Sin navegación + Estados simples = Alto ROI
+- **Evitar:** Widgets con l10n, navegación, o dependencias complejas
 
 ---
 
