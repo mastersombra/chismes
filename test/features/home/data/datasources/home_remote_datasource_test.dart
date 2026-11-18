@@ -1,353 +1,237 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:chismes/core/logging/logging.dart';
+import 'package:chismes/core/error/app_exception.dart';
+import 'package:chismes/core/error/error_codes.dart';
 import 'package:chismes/features/home/data/datasources/home_remote_datasource.dart';
-import 'package:chismes/features/home/data/models/paginated_gossips_model.dart';
 import 'package:chismes/features/home/domain/entities/feed_cursor.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../../helpers/fake_supabase_http.dart';
+import '../../../../helpers/mock_app_logger_helper.dart';
+
+Map<String, dynamic> _feedGossipJson(String id) => {
+      'id': id,
+      'subject': 'Subject $id',
+      'content': 'Content $id',
+      'city_id': 'MED',
+      'created_at': '2024-01-15T10:30:00.000Z',
+      'likes': 3,
+      'comments': 1,
+      'shares': 0,
+      'published_as': 'anonymous',
+      'created_by': null,
+      'image_url': null,
+      'score': 12.5,
+      'is_from_my_city': true,
+      'is_trending': false,
+    };
+
+TypeMatcher<ServerException> _serverException(ErrorCode code) =>
+    isA<ServerException>().having((e) => e.code, 'code', code);
 
 void main() {
-  late AppLogger logger;
+  late FakeSupabaseHttp fake;
+  late HomeRemoteDataSource dataSource;
 
   setUp(() {
-    // Logger mock simple para tests
-    final mockRemoteLogger = _MockRemoteLogger();
-    final mockDeviceInfo = _MockDeviceInfoProvider();
-    logger = AppLogger(mockRemoteLogger, mockDeviceInfo);
+    fake = FakeSupabaseHttp();
+    dataSource = HomeRemoteDataSource(fake.client, MockAppLogger());
   });
 
-  tearDown(() {
-    logger.close();
-  });
-
-  group('HomeRemoteDataSource - Constructor y estructura', () {
-    test('debe crear instancia con dependencias', () {
-      // Arrange
-      final supabase = _FakeSupabaseClient();
-
-      // Act
-      final dataSource = HomeRemoteDataSource(supabase, logger);
-
-      // Assert
-      expect(dataSource, isA<HomeRemoteDataSource>());
-    });
-  });
-
-  group('PaginatedGossipsModel - Deserialización', () {
-    test('debe deserializar lista vacía correctamente', () {
-      // Arrange
-      final json = {
-        'data': <Map<String, dynamic>>[],
-        'has_more': false,
-        'next_cursor': null,
-      };
-
-      // Act
-      final model = PaginatedGossipsModel.fromJson(json);
-
-      // Assert
-      expect(model.data, isEmpty);
-      expect(model.hasMore, false);
-      expect(model.nextCursor, isNull);
-    });
-
-    test('debe usar constructor empty correctamente', () {
-      // Arrange & Act
-      const model = PaginatedGossipsModel.empty();
-
-      // Assert
-      expect(model.data, isEmpty);
-      expect(model.hasMore, false);
-      expect(model.nextCursor, isNull);
-    });
-
-    test('debe lanzar FormatException cuando falta campo data', () {
-      // Arrange
-      final json = {
-        'has_more': false,
-        'next_cursor': null,
-      };
-
-      // Act & Assert
-      expect(
-        () => PaginatedGossipsModel.fromJson(json),
-        throwsA(isA<FormatException>()),
-      );
-    });
-
-    test('debe lanzar FormatException cuando falta campo has_more', () {
-      // Arrange
-      final json = {
-        'data': <Map<String, dynamic>>[],
-        'next_cursor': null,
-      };
-
-      // Act & Assert
-      expect(
-        () => PaginatedGossipsModel.fromJson(json),
-        throwsA(isA<FormatException>()),
-      );
-    });
-
-    test('debe manejar next_cursor null', () {
-      // Arrange
-      final json = {
-        'data': <Map<String, dynamic>>[],
-        'has_more': false,
-        'next_cursor': null,
-      };
-
-      // Act
-      final model = PaginatedGossipsModel.fromJson(json);
-
-      // Assert
-      expect(model.nextCursor, isNull);
-    });
-
-    test('debe manejar has_more true', () {
-      // Arrange
-      final json = {
-        'data': <Map<String, dynamic>>[],
+  group('getPopularFeed', () {
+    test('llama al RPC get_popular_feed y deserializa la página', () async {
+      fake.respondJson({
+        'data': [_feedGossipJson('g1'), _feedGossipJson('g2')],
         'has_more': true,
-        'next_cursor': {
-          'score': 50.0,
-          'id': 'gossip-10',
-        },
-      };
+        'next_cursor': {'score': 12.5, 'id': 'g2'},
+      });
 
-      // Act
-      final model = PaginatedGossipsModel.fromJson(json);
+      final result = await dataSource.getPopularFeed(userCityId: 'MED');
 
-      // Assert
-      expect(model.hasMore, true);
-      expect(model.nextCursor, isNotNull);
-    });
-  });
-
-  group('FeedCursor - Constructores y validación', () {
-    test('constructor popular debe crear cursor con score', () {
-      // Arrange & Act
-      const cursor = FeedCursor.popular(score: 123.45, id: 'gossip-123');
-
-      // Assert
-      expect(cursor.score, 123.45);
-      expect(cursor.id, 'gossip-123');
-      expect(cursor.createdAt, isNull);
+      expect(fake.lastRequest.method, 'POST');
+      expect(fake.lastRequest.url.path, '/rest/v1/rpc/get_popular_feed');
+      expect(result.data.map((g) => g.id), ['g1', 'g2']);
+      expect(result.hasMore, isTrue);
+      expect(result.nextCursor, {'score': 12.5, 'id': 'g2'});
     });
 
-    test('constructor following debe crear cursor con createdAt', () {
-      // Arrange
-      final createdAt = DateTime.parse('2024-01-15T10:30:00.000Z');
+    test('envía ciudad, pageSize y cursor como params del RPC', () async {
+      fake.respondJson({'data': [], 'has_more': false});
 
-      // Act
-      final cursor = FeedCursor.following(
-        createdAt: createdAt,
-        id: 'gossip-456',
+      await dataSource.getPopularFeed(
+        userCityId: 'MED',
+        pageSize: 50,
+        cursor: const FeedCursor.popular(score: 99.5, id: 'g9'),
       );
 
-      // Assert
-      expect(cursor.createdAt, createdAt);
-      expect(cursor.id, 'gossip-456');
-      expect(cursor.score, isNull);
-    });
-
-    test('debe permitir conversión a ISO8601 para createdAt', () {
-      // Arrange
-      final createdAt = DateTime.parse('2024-01-15T10:30:00.000Z');
-      final cursor = FeedCursor.following(
-        createdAt: createdAt,
-        id: 'gossip-456',
-      );
-
-      // Act
-      final iso8601 = cursor.createdAt!.toIso8601String();
-
-      // Assert
-      expect(iso8601, '2024-01-15T10:30:00.000Z');
-    });
-  });
-
-  group('HomeRemoteDataSource - Parámetros RPC esperados', () {
-    test('getPopularFeed debe usar nombres correctos de parámetros', () {
-      // Documentación de los nombres de parámetros esperados por la función RPC
-      const expectedParams = {
+      expect(fake.lastBody, {
         'user_city_id': 'MED',
+        'page_size': 50,
+        'cursor_score': 99.5,
+        'cursor_id': 'g9',
+      });
+    });
+
+    test('envía nulls cuando no hay ciudad ni cursor y usa pageSize 20', () async {
+      fake.respondJson({'data': [], 'has_more': false});
+
+      await dataSource.getPopularFeed(userCityId: null);
+
+      expect(fake.lastBody, {
+        'user_city_id': null,
         'page_size': 20,
-        'cursor_score': 123.45,
-        'cursor_id': 'gossip-123',
-      };
-
-      expect(expectedParams['user_city_id'], 'MED');
-      expect(expectedParams['page_size'], 20);
-      expect(expectedParams['cursor_score'], 123.45);
-      expect(expectedParams['cursor_id'], 'gossip-123');
+        'cursor_score': null,
+        'cursor_id': null,
+      });
     });
 
-    test('getPopularFeed debe aceptar userCityId null', () {
-      // El parámetro userCityId puede ser null cuando el usuario
-      // no tiene ciudad configurada
-      const String? nullCityId = null;
-      expect(nullCityId, isNull);
+    test('retorna página vacía cuando el RPC responde null', () async {
+      fake.respondRaw('null');
+
+      final result = await dataSource.getPopularFeed(userCityId: 'MED');
+
+      expect(result.data, isEmpty);
+      expect(result.hasMore, isFalse);
+      expect(result.nextCursor, isNull);
     });
 
-    test('getPopularFeed debe aceptar cursor null', () {
-      // El cursor es null en la primera página
-      const FeedCursor? nullCursor = null;
-      expect(nullCursor, isNull);
+    test('convierte PostgrestException en ServerException(serverError)', () async {
+      fake.respondError(400, message: 'function does not exist');
+
+      expect(
+        () => dataSource.getPopularFeed(userCityId: 'MED'),
+        throwsA(_serverException(ErrorCode.serverError).having(
+          (e) => e.technicalMessage,
+          'technicalMessage',
+          contains('function does not exist'),
+        )),
+      );
     });
 
-    test('getFollowingFeed debe usar nombres correctos de parámetros', () {
-      // Documentación de los nombres de parámetros para following feed
-      final expectedParams = {
-        'current_user_id': 'user-123',
-        'page_size': 20,
-        'cursor_created_at': DateTime.now().toIso8601String(),
-        'cursor_id': 'gossip-123',
-      };
+    test('convierte JSON malformado en ServerException(serverError)', () async {
+      fake.respondJson({'has_more': false});
 
-      expect(expectedParams['current_user_id'], 'user-123');
-      expect(expectedParams['page_size'], 20);
-      expect(expectedParams.containsKey('cursor_created_at'), true);
-      expect(expectedParams.containsKey('cursor_id'), true);
+      expect(
+        () => dataSource.getPopularFeed(userCityId: 'MED'),
+        throwsA(_serverException(ErrorCode.serverError).having(
+          (e) => e.technicalMessage,
+          'technicalMessage',
+          contains('formato'),
+        )),
+      );
     });
 
-    test('getFollowingFeed debe requerir userId no vacío', () {
-      // userId es requerido para following feed
-      const String userId = 'user-123';
-      expect(userId, isNotEmpty);
-      expect(userId, isNotNull);
+    test('convierte respuesta de tipo inesperado en ServerException(unknownError)',
+        () async {
+      fake.respondJson([1, 2, 3]);
+
+      expect(
+        () => dataSource.getPopularFeed(userCityId: 'MED'),
+        throwsA(_serverException(ErrorCode.unknownError)),
+      );
+    });
+  });
+
+  group('getFollowingFeed', () {
+    test('llama al RPC get_following_feed y deserializa la página', () async {
+      fake.respondJson({
+        'data': [_feedGossipJson('g1')],
+        'has_more': false,
+        'next_cursor': null,
+      });
+
+      final result = await dataSource.getFollowingFeed(userId: 'user-1');
+
+      expect(fake.lastRequest.url.path, '/rest/v1/rpc/get_following_feed');
+      expect(result.data.single.id, 'g1');
+      expect(result.hasMore, isFalse);
     });
 
-    test('checkNewGossips debe usar nombres correctos de parámetros', () {
-      // Documentación de los parámetros para check_new_gossips
-      final expectedParams = {
+    test('envía userId, pageSize y cursor por created_at en ISO8601', () async {
+      fake.respondJson({'data': [], 'has_more': false});
+
+      await dataSource.getFollowingFeed(
+        userId: 'user-1',
+        pageSize: 30,
+        cursor: FeedCursor.following(
+          createdAt: DateTime.utc(2024, 1, 15, 10, 30),
+          id: 'g7',
+        ),
+      );
+
+      expect(fake.lastBody, {
+        'current_user_id': 'user-1',
+        'page_size': 30,
+        'cursor_created_at': '2024-01-15T10:30:00.000Z',
+        'cursor_id': 'g7',
+      });
+    });
+
+    test('retorna página vacía cuando el RPC responde null', () async {
+      fake.respondRaw('null');
+
+      final result = await dataSource.getFollowingFeed(userId: 'user-1');
+
+      expect(result.data, isEmpty);
+      expect(result.hasMore, isFalse);
+    });
+
+    test('convierte PostgrestException en ServerException(serverError)', () async {
+      fake.respondError(401, message: 'JWT expired');
+
+      expect(
+        () => dataSource.getFollowingFeed(userId: 'user-1'),
+        throwsA(_serverException(ErrorCode.serverError).having(
+          (e) => e.technicalMessage,
+          'technicalMessage',
+          contains('JWT expired'),
+        )),
+      );
+    });
+
+    test('convierte JSON malformado en ServerException(unknownError)', () async {
+      fake.respondJson({'data': 'not-a-list', 'has_more': false});
+
+      expect(
+        () => dataSource.getFollowingFeed(userId: 'user-1'),
+        throwsA(_serverException(ErrorCode.unknownError)),
+      );
+    });
+  });
+
+  group('checkNewGossips', () {
+    test('retorna el conteo del RPC check_new_gossips', () async {
+      fake.respondJson(5);
+
+      final count = await dataSource.checkNewGossips(
+        userCityId: 'MED',
+        since: DateTime.utc(2024, 1, 15, 10),
+      );
+
+      expect(count, 5);
+      expect(fake.lastRequest.url.path, '/rest/v1/rpc/check_new_gossips');
+      expect(fake.lastBody, {
         'user_city_id': 'MED',
-        'since_timestamp': DateTime.now().toIso8601String(),
-      };
-
-      expect(expectedParams['user_city_id'], 'MED');
-      expect(expectedParams.containsKey('since_timestamp'), true);
+        'since_timestamp': '2024-01-15T10:00:00.000Z',
+      });
     });
 
-    test('checkNewGossips debe aceptar userCityId null', () {
-      // userCityId puede ser null
-      const String? nullCityId = null;
-      expect(nullCityId, isNull);
-    });
+    test('convierte PostgrestException en ServerException(serverError)', () async {
+      fake.respondError(400);
 
-    test('checkNewGossips debe retornar entero', () {
-      // La respuesta es un int representando el count
-      const int newGossipsCount = 5;
-      expect(newGossipsCount, isA<int>());
-      expect(newGossipsCount, greaterThanOrEqualTo(0));
-    });
-
-    test('checkNewGossips debe manejar respuesta cero', () {
-      // Cuando no hay chismes nuevos, debe retornar 0
-      const int noNewGossips = 0;
-      expect(noNewGossips, equals(0));
-    });
-  });
-
-  group('HomeRemoteDataSource - Page sizes personalizados', () {
-    test('debe aceptar diferentes page sizes', () {
-      // Debe aceptar diferentes page sizes (10, 20, 50, 100, etc.)
-      const validPageSizes = [10, 20, 30, 50, 100];
-      for (final size in validPageSizes) {
-        expect(size, greaterThan(0));
-        expect(size, lessThanOrEqualTo(100));
-      }
-    });
-
-    test('debe usar page size default de 20', () {
-      const int defaultPageSize = 20;
-      expect(defaultPageSize, 20);
-    });
-  });
-
-  group('HomeRemoteDataSource - Timestamps y formatos', () {
-    test('debe convertir DateTime a ISO8601 correctamente', () {
-      // DateTime debe convertirse correctamente a ISO8601
-      final timestamp = DateTime.parse('2024-01-15T10:30:00.000Z');
-      final iso8601 = timestamp.toIso8601String();
-
-      expect(iso8601, contains('2024-01-15'));
-      expect(iso8601, contains('T'));
-      expect(iso8601, contains('Z'));
-    });
-
-    test('debe manejar timestamps con milisegundos', () {
-      final timestamp = DateTime.parse('2024-01-15T10:30:00.123Z');
-      final iso8601 = timestamp.toIso8601String();
-
-      expect(iso8601, isNotEmpty);
-      expect(iso8601, contains('2024-01-15'));
-    });
-
-    test('debe manejar timestamps pasados', () {
-      final past = DateTime.parse('2020-01-01T00:00:00.000Z');
-      expect(past.isBefore(DateTime.now()), true);
-    });
-
-    test('debe manejar timestamps futuros', () {
-      final future = DateTime.now().add(const Duration(days: 1));
-      expect(future.isAfter(DateTime.now()), true);
-    });
-  });
-
-  group('HomeRemoteDataSource - Conversión de Entity', () {
-    test('debe convertir PaginatedGossipsModel a PaginatedGossips entity', () {
-      // Arrange
-      final model = const PaginatedGossipsModel(
-        data: [],
-        hasMore: false,
-        nextCursor: null,
+      expect(
+        () => dataSource.checkNewGossips(
+            userCityId: null, since: DateTime.utc(2024)),
+        throwsA(_serverException(ErrorCode.serverError)),
       );
-
-      // Act
-      final entity = model.toEntity();
-
-      // Assert
-      expect(entity.data, isEmpty);
-      expect(entity.hasMore, false);
-      expect(entity.nextCursor, isNull);
     });
 
-    test('debe convertir next_cursor Map a FeedCursor entity', () {
-      // Arrange
-      final model = PaginatedGossipsModel(
-        data: const [],
-        hasMore: true,
-        nextCursor: const {
-          'score': 100.5,
-          'id': 'gossip-1',
-        },
+    test('convierte respuesta no entera en ServerException(unknownError)', () async {
+      fake.respondJson({'count': 5});
+
+      expect(
+        () => dataSource.checkNewGossips(
+            userCityId: null, since: DateTime.utc(2024)),
+        throwsA(_serverException(ErrorCode.unknownError)),
       );
-
-      // Act
-      final entity = model.toEntity();
-
-      // Assert
-      expect(entity.nextCursor, isNotNull);
-      expect(entity.nextCursor!.id, 'gossip-1');
     });
   });
-}
-
-/// Mock simple de SupabaseClient para tests de constructor
-class _FakeSupabaseClient implements SupabaseClient {
-  @override
-  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
-}
-
-/// Mocks para testing del logger
-class _MockRemoteLogger implements RemoteLogger {
-  @override
-  Future<void> log(LogEntry entry) async {}
-}
-
-class _MockDeviceInfoProvider extends DeviceInfoProvider {
-  @override
-  Future<Map<String, dynamic>> getDeviceInfo() async {
-    return {'os': 'Test', 'device': 'TestDevice'};
-  }
 }
