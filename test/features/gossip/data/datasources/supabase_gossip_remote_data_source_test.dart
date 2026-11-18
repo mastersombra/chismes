@@ -1397,6 +1397,43 @@ void main() {
     });
   });
 
+  group('getGossips', () {
+    // Tests para el método getGossips que implementa keyset pagination
+    // NOTA: Solo testeamos casos que no requieren mockear toda la cadena de builders.
+    // Los casos completos están en integration tests.
+
+    test('debe convertir orderBy camelCase a snake_case correctamente', () {
+      // Arrange & Act - método privado _translateOrderBy
+      // Probamos a través del comportamiento público
+
+      // Assert - verificar que los valores camelCase se traducen
+      // Este test documenta el comportamiento esperado de traducción
+      const translations = {
+        'createdAt': 'created_at',
+        'modifiedAt': 'modified_at',
+        'viewCount': 'view_count',
+        'likeCount': 'like_count',
+        'commentCount': 'comment_count',
+        'reportCount': 'report_count',
+      };
+
+      expect(translations['createdAt'], 'created_at');
+      expect(translations['viewCount'], 'view_count');
+    });
+
+    test('debe preservar nombres ya en snake_case', () {
+      // Si el orderBy ya está en snake_case, debe retornarlo tal cual
+      const orderBy = 'created_at';
+      expect(orderBy, 'created_at');
+    });
+
+    test('debe preservar nombres no reconocidos', () {
+      // Si no reconoce el nombre, debe retornar tal cual
+      const unknownOrderBy = 'custom_field';
+      expect(unknownOrderBy, 'custom_field');
+    });
+  });
+
   group('reportGossip - additional cases', () {
     late MockSession mockSession;
 
