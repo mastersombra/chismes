@@ -6,10 +6,6 @@ import 'package:chismes/features/location/domain/entities/city.dart';
 import '../../../../helpers/fake_supabase_http.dart';
 import '../../../../helpers/mock_app_logger_helper.dart';
 
-// postgrest-dart: .order(col) es DESCENDENTE por defecto; el código usa
-// .order('name') esperando ASC. Pendiente decidir fix en producción.
-const _orderBug = 'BUG: .order(name) sin ascending:true ordena Z→A';
-
 void main() {
   late FakeSupabaseHttp fake;
   late SupabaseLocationRemoteDataSource dataSource;
@@ -45,31 +41,26 @@ void main() {
 
       expect(dataSource.getCountries(), throwsA(isA<PostgrestException>()));
     });
+
+    test('ordena por name ascendente', () async {
+      fake.respondJson([]);
+      await dataSource.getCountries();
+      expect(
+        fake.lastRequest.url.queryParameters['order'],
+        'name.asc.nullslast',
+      );
+    });
   });
-
-  test('getCountries ordena por name ascendente', () async {
-    fake.respondJson([]);
-    await dataSource.getCountries();
-    expect(fake.lastRequest.url.queryParameters['order'], 'name.asc');
-  }, skip: _orderBug);
-
-  test('getRegionsByCountry ordena por name ascendente', () async {
-    fake.respondJson([]);
-    await dataSource.getRegionsByCountry('CO');
-    expect(fake.lastRequest.url.queryParameters['order'], 'name.asc');
-  }, skip: _orderBug);
-
-  test('getCitiesByRegion desempata por name ascendente', () async {
-    fake.respondJson([]);
-    await dataSource.getCitiesByRegion('co-ant');
-    expect(fake.lastRequest.url.queryParameters['order'],
-        'population.desc.nullslast,name.asc');
-  }, skip: _orderBug);
 
   group('getRegionsByCountry', () {
     test('filtra por country_id y mapea a Region', () async {
       fake.respondJson([
-        {'id': 'co-ant', 'country_id': 'CO', 'name': 'Antioquia', 'type': 'department'},
+        {
+          'id': 'co-ant',
+          'country_id': 'CO',
+          'name': 'Antioquia',
+          'type': 'department',
+        },
       ]);
 
       final regions = await dataSource.getRegionsByCountry('CO');
@@ -84,8 +75,19 @@ void main() {
     test('propaga PostgrestException', () async {
       fake.respondError(400);
 
-      expect(dataSource.getRegionsByCountry('CO'),
-          throwsA(isA<PostgrestException>()));
+      expect(
+        dataSource.getRegionsByCountry('CO'),
+        throwsA(isA<PostgrestException>()),
+      );
+    });
+
+    test('ordena por name ascendente', () async {
+      fake.respondJson([]);
+      await dataSource.getRegionsByCountry('CO');
+      expect(
+        fake.lastRequest.url.queryParameters['order'],
+        'name.asc.nullslast',
+      );
     });
   });
 
@@ -108,8 +110,19 @@ void main() {
     test('propaga PostgrestException', () async {
       fake.respondError(400);
 
-      expect(dataSource.getCitiesByRegion('co-ant'),
-          throwsA(isA<PostgrestException>()));
+      expect(
+        dataSource.getCitiesByRegion('co-ant'),
+        throwsA(isA<PostgrestException>()),
+      );
+    });
+
+    test('desempata por name ascendente', () async {
+      fake.respondJson([]);
+      await dataSource.getCitiesByRegion('co-ant');
+      expect(
+        fake.lastRequest.url.queryParameters['order'],
+        'population.desc.nullslast,name.asc.nullslast',
+      );
     });
   });
 
@@ -119,7 +132,11 @@ void main() {
         {'id': 'MED', 'region_id': 'co-ant', 'name': 'Medellín'},
       ]);
 
-      final cities = await dataSource.searchCities('Med', 'co-ant', maxResults: 5);
+      final cities = await dataSource.searchCities(
+        'Med',
+        'co-ant',
+        maxResults: 5,
+      );
 
       expect(fake.lastRequest.url.path, '/rest/v1/rpc/search_cities');
       expect(fake.lastBody, {
@@ -148,38 +165,43 @@ void main() {
     test('propaga PostgrestException', () async {
       fake.respondError(400);
 
-      expect(dataSource.searchCities('x', null),
-          throwsA(isA<PostgrestException>()));
+      expect(
+        dataSource.searchCities('x', null),
+        throwsA(isA<PostgrestException>()),
+      );
     });
   });
 
   group('findNearestCity', () {
-    test('llama al RPC find_nearest_city y retorna ciudad con metadatos', () async {
-      fake.respondJson([
-        {
-          'id': 'MED',
-          'region_id': 'co-ant',
-          'name': 'Medellín',
-          'region_name': 'Antioquia',
-          'country_name': 'Colombia',
-          'distance_km': 0.02,
-        },
-      ]);
+    test(
+      'llama al RPC find_nearest_city y retorna ciudad con metadatos',
+      () async {
+        fake.respondJson([
+          {
+            'id': 'MED',
+            'region_id': 'co-ant',
+            'name': 'Medellín',
+            'region_name': 'Antioquia',
+            'country_name': 'Colombia',
+            'distance_km': 0.02,
+          },
+        ]);
 
-      final result = await dataSource.findNearestCity(6.2518, -75.5636);
+        final result = await dataSource.findNearestCity(6.2518, -75.5636);
 
-      expect(fake.lastRequest.url.path, '/rest/v1/rpc/find_nearest_city');
-      expect(fake.lastBody, {
-        'target_lat': 6.2518,
-        'target_lon': -75.5636,
-        'max_distance_km': 50,
-      });
-      expect(result, isNotNull);
-      expect((result!['city'] as City).id, 'MED');
-      expect(result['region_name'], 'Antioquia');
-      expect(result['country_name'], 'Colombia');
-      expect(result['distance_km'], 0.02);
-    });
+        expect(fake.lastRequest.url.path, '/rest/v1/rpc/find_nearest_city');
+        expect(fake.lastBody, {
+          'target_lat': 6.2518,
+          'target_lon': -75.5636,
+          'max_distance_km': 50,
+        });
+        expect(result, isNotNull);
+        expect((result!['city'] as City).id, 'MED');
+        expect(result['region_name'], 'Antioquia');
+        expect(result['country_name'], 'Colombia');
+        expect(result['distance_km'], 0.02);
+      },
+    );
 
     test('envía maxDistanceKm personalizado', () async {
       fake.respondJson([]);
@@ -210,8 +232,10 @@ void main() {
     test('propaga PostgrestException', () async {
       fake.respondError(400);
 
-      expect(dataSource.findNearestCity(0, 0),
-          throwsA(isA<PostgrestException>()));
+      expect(
+        dataSource.findNearestCity(0, 0),
+        throwsA(isA<PostgrestException>()),
+      );
     });
   });
 }

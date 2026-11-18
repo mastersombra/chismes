@@ -29,7 +29,7 @@ class SupabaseLocationRemoteDataSource {
       final response = await _supabase
           .from('countries')
           .select()
-          .order('name');
+          .order('name', ascending: true);
 
       return (response as List)
           .map((json) => Country.fromJson(json as Map<String, dynamic>))
@@ -54,7 +54,7 @@ class SupabaseLocationRemoteDataSource {
           .from('regions')
           .select()
           .eq('country_id', countryId)
-          .order('name');
+          .order('name', ascending: true);
 
       return (response as List)
           .map((json) => Region.fromJson(json as Map<String, dynamic>))
@@ -82,7 +82,7 @@ class SupabaseLocationRemoteDataSource {
           .select()
           .eq('region_id', regionId)
           .order('population', ascending: false)
-          .order('name');
+          .order('name', ascending: true);
 
       return (response as List)
           .map((json) => City.fromJson(json as Map<String, dynamic>))
