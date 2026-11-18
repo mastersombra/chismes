@@ -139,16 +139,6 @@ class _FakeGetClaimsResponse_19 extends _i1.SmartFake
     : super(parent, parentInvocation);
 }
 
-class _FakeUser_20 extends _i1.SmartFake implements _i2.User {
-  _FakeUser_20(Object parent, Invocation parentInvocation)
-    : super(parent, parentInvocation);
-}
-
-class _FakeSession_21 extends _i1.SmartFake implements _i2.Session {
-  _FakeSession_21(Object parent, Invocation parentInvocation)
-    : super(parent, parentInvocation);
-}
-
 /// A class which mocks [SupabaseClient].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -1100,107 +1090,6 @@ class MockUser extends _i1.Mock implements _i2.User {
             returnValue: <String, dynamic>{},
           )
           as Map<String, dynamic>);
-}
-
-/// A class which mocks [Session].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockSession extends _i1.Mock implements _i2.Session {
-  MockSession() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  String get accessToken =>
-      (super.noSuchMethod(
-            Invocation.getter(#accessToken),
-            returnValue: _i4.dummyValue<String>(
-              this,
-              Invocation.getter(#accessToken),
-            ),
-          )
-          as String);
-
-  @override
-  String get tokenType =>
-      (super.noSuchMethod(
-            Invocation.getter(#tokenType),
-            returnValue: _i4.dummyValue<String>(
-              this,
-              Invocation.getter(#tokenType),
-            ),
-          )
-          as String);
-
-  @override
-  _i2.User get user =>
-      (super.noSuchMethod(
-            Invocation.getter(#user),
-            returnValue: _FakeUser_20(this, Invocation.getter(#user)),
-          )
-          as _i2.User);
-
-  @override
-  bool get isExpired =>
-      (super.noSuchMethod(Invocation.getter(#isExpired), returnValue: false)
-          as bool);
-
-  @override
-  bool get isExpiredWithoutMargin =>
-      (super.noSuchMethod(
-            Invocation.getter(#isExpiredWithoutMargin),
-            returnValue: false,
-          )
-          as bool);
-
-  @override
-  set expiresAt(int? value) => super.noSuchMethod(
-    Invocation.setter(#expiresAt, value),
-    returnValueForMissingStub: null,
-  );
-
-  @override
-  Map<String, dynamic> toJson() =>
-      (super.noSuchMethod(
-            Invocation.method(#toJson, []),
-            returnValue: <String, dynamic>{},
-          )
-          as Map<String, dynamic>);
-
-  @override
-  _i2.Session copyWith({
-    String? accessToken,
-    int? expiresIn,
-    String? refreshToken,
-    String? tokenType,
-    String? providerToken,
-    String? providerRefreshToken,
-    _i2.User? user,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#copyWith, [], {
-              #accessToken: accessToken,
-              #expiresIn: expiresIn,
-              #refreshToken: refreshToken,
-              #tokenType: tokenType,
-              #providerToken: providerToken,
-              #providerRefreshToken: providerRefreshToken,
-              #user: user,
-            }),
-            returnValue: _FakeSession_21(
-              this,
-              Invocation.method(#copyWith, [], {
-                #accessToken: accessToken,
-                #expiresIn: expiresIn,
-                #refreshToken: refreshToken,
-                #tokenType: tokenType,
-                #providerToken: providerToken,
-                #providerRefreshToken: providerRefreshToken,
-                #user: user,
-              }),
-            ),
-          )
-          as _i2.Session);
 }
 
 /// A class which mocks [AppLogger].

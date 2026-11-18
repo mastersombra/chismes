@@ -163,7 +163,7 @@ Meta acumulada calculada sobre la base sin l10n (6,964 líneas; 85% = 5,919 cubi
 |---|---|---|---|---|
 | Base | 2026-11-18 | 81.53% | 3,965 / 10 / 10 | — |
 | 1 | 2026-11-18 | 80.27% | 3,835 / 0 / 13 | ✅ Arreglados 7 fallos media_attachment_section. ⏭️ 3 tests settings_section skipped (widget inaccessible). ✅ Borrados gossip_module_test.dart + supabase_config_test.dart. ✅ Eliminadas 62 aserciones `expect(true, isTrue)`. ✅ Eliminados grupos "documentation" de 4 usecases. Reducción esperada de tests falsos (~129 tests). |
-| 2 | | | | |
+| 2 | 2026-11-18 | 82.14% | ~3,938 / 0 / 13 | ✅ Auth repository: +15 tests (resendVerificationEmail, verifyOTP, resendOTP, checkEmailExistsAndConfirmed, edge cases _handleAuthException). ⚠️ Auth datasource: Solo +3 tests básicos de signInWithApple (luego eliminados por ser intesteables). **Intesteables sin refactor:** signInWithEmail, signInWithGoogle, signInWithApple (dependencias externas GoogleSignIn/OAuth), getCurrentUser, updateProfile, isUsernameAvailable, checkEmailExistsAndConfirmed, authStateChanges (Postgrest builders imposibles de mockear sin `http.Client` falso o refactor). +41 líneas cubiertas vs objetivo +120. |
 | 3 | | | | |
 | 4 | | | | |
 | 5 | | | | |

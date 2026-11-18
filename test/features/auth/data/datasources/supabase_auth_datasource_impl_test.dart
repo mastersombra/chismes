@@ -11,7 +11,6 @@ import 'supabase_auth_datasource_impl_test.mocks.dart';
   SupabaseClient,
   GoTrueClient,
   User,
-  Session,
   AppLogger,
 ])
 void main() {
@@ -20,14 +19,12 @@ void main() {
   late MockGoTrueClient mockAuth;
   late MockAppLogger mockLogger;
   late MockUser mockUser;
-  late MockSession mockSession;
 
   setUp(() {
     mockSupabase = MockSupabaseClient();
     mockAuth = MockGoTrueClient();
     mockLogger = MockAppLogger();
     mockUser = MockUser();
-    mockSession = MockSession();
 
     // Configurar auth mock básico
     when(mockSupabase.auth).thenReturn(mockAuth);
@@ -36,10 +33,13 @@ void main() {
   });
 
   group('SupabaseAuthDataSourceImpl', () {
-    // NOTA: Los tests de getCurrentUser, isUsernameAvailable, updateProfile, etc. son omitidos
+    // NOTA: Muchos tests (signInWithEmail, signInWithGoogle, signInWithApple, getCurrentUser,
+    // updateProfile, isUsernameAvailable, checkEmailExistsAndConfirmed, authStateChanges) son omitidos
     // debido a la complejidad de mockear la cadena de builders de Postgrest
-    // (SupabaseQueryBuilder -> PostgrestFilterBuilder -> PostgrestTransformBuilder).
+    // (SupabaseQueryBuilder -> PostgrestFilterBuilder -> PostgrestTransformBuilder) y
+    // las dependencias externas (GoogleSignIn, AppLinks).
     // Estos están cubiertos por integration tests o tests end-to-end.
+    // Este archivo se enfoca en los métodos de autenticación pura que se pueden mockear directamente.
 
     group('currentUser getter', () {
       test('debe retornar UserModel cuando hay usuario autenticado', () {
