@@ -54,11 +54,15 @@ class _SearchScreenState extends State<SearchScreen> {
     _loadSearchHistory();
     _loadUserLocation();
 
-    // Mostrar historial cuando el TextField recibe foco
+    // El historial se muestra solo mientras el campo (vacío) tiene foco
     _searchFocusNode.addListener(() {
       if (_searchFocusNode.hasFocus && _searchController.text.isEmpty) {
         setState(() {
           showHistory = true;
+        });
+      } else if (!_searchFocusNode.hasFocus && showHistory) {
+        setState(() {
+          showHistory = false;
         });
       }
     });
@@ -129,7 +133,7 @@ class _SearchScreenState extends State<SearchScreen> {
         results = [];
         currentQuery = '';
         errorMessage = null;
-        showHistory = true;
+        showHistory = _searchFocusNode.hasFocus;
       });
       return;
     }
@@ -211,6 +215,7 @@ class _SearchScreenState extends State<SearchScreen> {
               controller: _searchController,
               focusNode: _searchFocusNode,
               onChanged: searchGossip,
+              onTapOutside: (_) => _searchFocusNode.unfocus(),
               decoration: InputDecoration(
                 hintText: context.l10n.searchHint,
                 prefixIcon: const Icon(Icons.search),
@@ -238,10 +243,6 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ),
           ),
-
-          // Mostrar historial de búsquedas
-          if (showHistory && searchHistory.isNotEmpty)
-            _buildSearchHistory(context),
 
           // Filtro por ciudad (solo si usuario tiene ubicación)
           if (userLocation != null && !showHistory)
@@ -307,8 +308,12 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ),
 
+          // Con foco y campo vacío, el historial ocupa el lugar del contenido
+          // (evita overflow con teclado abierto en pantallas chicas)
           Expanded(
-            child: _buildContent(context),
+            child: showHistory && searchHistory.isNotEmpty
+                ? _buildSearchHistory(context)
+                : _buildContent(context),
           ),
         ],
       ),
@@ -324,9 +329,9 @@ class _SearchScreenState extends State<SearchScreen> {
     // Estado: Mostrando resultados de búsqueda
     if (hasSearched) {
       if (results.isEmpty) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+        return _buildScrollableCentered(
+          Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 Icons.search_off,
@@ -393,9 +398,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
     // Estado: Inicial - Mostrar recientes
     if (recentGossips.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      return _buildScrollableCentered(
+        Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               Icons.search,
@@ -462,7 +467,27 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
+  /// Centra [child] si cabe; si no, permite hacer scroll (teclado abierto).
+  Widget _buildScrollableCentered(Widget child) {
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: Center(child: child),
+        ),
+      ),
+    );
+  }
+
   Widget _buildSearchHistory(BuildContext context) {
+    return TextFieldTapRegion(
+      child: SingleChildScrollView(
+        child: _buildSearchHistoryPanel(context),
+      ),
+    );
+  }
+
+  Widget _buildSearchHistoryPanel(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       padding: const EdgeInsets.all(AppSpacing.sm),
@@ -480,21 +505,27 @@ class _SearchScreenState extends State<SearchScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.history,
-                    size: 20,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: AppSpacing.xs),
-                  Text(
-                    context.l10n.searchRecentSearches,
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                  ),
-                ],
+              Flexible(
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.history,
+                      size: 20,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    Flexible(
+                      child: Text(
+                        context.l10n.searchRecentSearches,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               TextButton(
                 onPressed: _clearHistory,

@@ -14,6 +14,7 @@ import 'package:chismes/features/search/presentation/screens/search_screen.dart'
 import 'package:chismes/features/gossip/domain/usecases/get_gossips.dart';
 import 'package:chismes/features/gossip/domain/usecases/search_gossips.dart';
 import 'package:chismes/features/gossip/domain/entities/gossip.dart';
+import 'package:chismes/features/gossip/presentation/widgets/gossip_card.dart';
 import 'package:chismes/core/services/search_history_service.dart';
 import 'package:chismes/core/services/location_service.dart';
 import '../../../../helpers/test_di_helper.dart';
@@ -556,17 +557,7 @@ void main() {
       when(mockSearchHistoryService.clearHistory()).thenAnswer((_) async {});
     });
 
-    /// Viewport alto: con el 800×600 por defecto el panel de historial + el
-    /// estado vacío no caben (overflow de 14px en search_screen.dart:397).
-    /// Ese layout no es scrollable; está reportado en docs/TEST_PLAN_85.md §6.
-    void usePhoneViewport(WidgetTester tester) {
-      tester.view.physicalSize = const Size(800, 1200);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.reset);
-    }
-
     Future<void> pumpAndFocus(WidgetTester tester) async {
-      usePhoneViewport(tester);
       await tester.pumpWidget(testableWidget(child: const SearchScreen()));
       await tester.pumpAndSettle();
       await tester.tap(find.byType(TextField));
@@ -747,10 +738,6 @@ void main() {
     testWidgets('el chip se oculta mientras se muestra el historial',
         (tester) async {
       when(mockSearchHistoryService.getHistory()).thenAnswer((_) async => ['algo']);
-      tester.view.physicalSize = const Size(800, 1200);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.reset);
-
       await tester.pumpWidget(testableWidget(child: const SearchScreen()));
       await tester.pumpAndSettle();
       expect(chip(), findsOneWidget);
@@ -760,6 +747,146 @@ void main() {
 
       expect(find.text(l10nOf(tester).searchRecentSearches), findsOneWidget);
       expect(chip(), findsNothing);
+    });
+  });
+  group('SearchScreen - Layout en pantallas chicas con teclado', () {
+    final recent = Gossip(
+      id: 'r1',
+      countryId: 'co',
+      regionId: 'ant',
+      cityId: 'med',
+      subject: 'Reciente',
+      content: 'Contenido',
+      publishedAs: PublishAs.anonymous,
+      status: GossipStatus.published,
+      moderationStatus: ModerationStatus.approved,
+      visibility: GossipVisibility.public,
+      createdAt: DateTime(2024, 1, 1),
+      createdBy: 'user1',
+    );
+
+    /// iPhone SE (375×667) con teclado de 300px abierto.
+    void useSmallPhoneWithKeyboard(WidgetTester tester) {
+      tester.view.physicalSize = const Size(375, 667);
+      tester.view.devicePixelRatio = 1.0;
+      tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+      addTearDown(tester.view.reset);
+    }
+
+    Future<void> pumpScreen(WidgetTester tester) async {
+      await tester.pumpWidget(
+        testableWidget(child: const SearchScreen(), useScaffold: false),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    setUp(() {
+      when(mockSearchHistoryService.addSearch(any)).thenAnswer((_) async {});
+    });
+
+    testWidgets('con foco el historial reemplaza a los recientes', (tester) async {
+      when(mockGetGossips()).thenAnswer((_) async => Result.success([recent]));
+      when(mockSearchHistoryService.getHistory()).thenAnswer((_) async => ['uno']);
+
+      await pumpScreen(tester);
+      expect(find.text(l10nOf(tester).searchRecent), findsOneWidget);
+
+      await tester.tap(find.byType(TextField));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10nOf(tester).searchRecentSearches), findsOneWidget);
+      expect(find.text(l10nOf(tester).searchRecent), findsNothing);
+      expect(find.byType(GossipCard), findsNothing);
+    });
+
+    // Sin recientes: GossipCard desborda en la grilla a 375 de ancho
+    // (bug aparte, gossip_card.dart:154 vs childAspectRatio 0.72).
+    testWidgets('historial de 5 items con teclado no desborda y es scrollable',
+        (tester) async {
+      useSmallPhoneWithKeyboard(tester);
+      when(mockSearchHistoryService.getHistory())
+          .thenAnswer((_) async => ['uno', 'dos', 'tres', 'cuatro', 'cinco']);
+
+      await pumpScreen(tester);
+      await tester.tap(find.byType(TextField));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10nOf(tester).searchRecentSearches), findsOneWidget);
+      expect(find.text(l10nOf(tester).searchByTopic), findsNothing);
+
+      // El último item es alcanzable con scroll
+      await tester.scrollUntilVisible(find.text('cinco'), 50,
+          scrollable: find.byType(Scrollable).last);
+      expect(find.text('cinco').hitTestable(), findsOneWidget);
+    });
+
+    testWidgets('estado vacío inicial con teclado no desborda', (tester) async {
+      useSmallPhoneWithKeyboard(tester);
+
+      await pumpScreen(tester);
+      await tester.tap(find.byType(TextField));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10nOf(tester).searchByTopic), findsOneWidget);
+    });
+
+    testWidgets('sin resultados con teclado no desborda', (tester) async {
+      useSmallPhoneWithKeyboard(tester);
+
+      await pumpScreen(tester);
+      await tester.enterText(find.byType(TextField), 'nada');
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10nOf(tester).searchNoResults), findsOneWidget);
+    });
+
+    testWidgets('tocar fuera del campo cierra el historial y vuelven los recientes',
+        (tester) async {
+      when(mockGetGossips()).thenAnswer((_) async => Result.success([recent]));
+      when(mockSearchHistoryService.getHistory()).thenAnswer((_) async => ['uno']);
+
+      await pumpScreen(tester);
+      await tester.tap(find.byType(TextField));
+      await tester.pumpAndSettle();
+      expect(find.text(l10nOf(tester).searchRecentSearches), findsOneWidget);
+
+      await tester.tap(find.byType(AppBar));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10nOf(tester).searchRecentSearches), findsNothing);
+      expect(find.text(l10nOf(tester).searchRecent), findsOneWidget);
+      expect(find.byType(GossipCard), findsOneWidget);
+    });
+
+    testWidgets('limpiar con la X sin foco vuelve a los recientes, no al historial',
+        (tester) async {
+      when(mockGetGossips()).thenAnswer((_) async => Result.success([recent]));
+      when(mockSearchHistoryService.getHistory()).thenAnswer((_) async => ['uno']);
+
+      await pumpScreen(tester);
+      await tester.enterText(find.byType(TextField), 'Test');
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(AppBar)); // quitar foco
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.clear));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10nOf(tester).searchRecentSearches), findsNothing);
+      expect(find.text(l10nOf(tester).searchRecent), findsOneWidget);
+    });
+
+    testWidgets('limpiar con la X con foco muestra el historial', (tester) async {
+      when(mockSearchHistoryService.getHistory()).thenAnswer((_) async => ['uno']);
+
+      await pumpScreen(tester);
+      await tester.enterText(find.byType(TextField), 'Test');
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.clear));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10nOf(tester).searchRecentSearches), findsOneWidget);
     });
   });
 }
