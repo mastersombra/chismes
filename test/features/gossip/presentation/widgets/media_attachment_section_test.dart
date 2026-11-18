@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:chismes/features/gossip/presentation/widgets/media_attachment_section.dart';
 import 'package:chismes/features/gossip/presentation/states/add_gossip_state.dart';
 import 'package:chismes/features/gossip/domain/entities/gossip.dart';
+import 'package:chismes/l10n/app_localizations.dart';
+import '../../../../helpers/fake_network_image.dart';
 import '../../../../helpers/widget_test_wrapper.dart';
 
 void main() {
@@ -227,6 +229,94 @@ void main() {
 
         // Assert - El widget no depende de publishedAs, debe renderizar normal
         expect(find.byWidgetPredicate((w) => w is OutlinedButton), findsNWidgets(2));
+      });
+    });
+
+    group('Con media adjunta', () {
+      AppLocalizations l10n(WidgetTester tester) =>
+          AppLocalizations.of(tester.element(find.byType(MediaAttachmentSection)))!;
+
+      testWidgets('con imageUrl muestra la imagen y no el botón de agregar',
+          (tester) async {
+        const state = AddGossipState(
+          idempotencyKey: testIdempotencyKey,
+          imageUrl: 'https://example.com/img.jpg',
+        );
+        useFakeNetworkImages(addTearDown);
+
+        await tester.pumpWidget(buildWidget(state));
+        await tester.pump();
+
+        final image = tester.widget<Image>(find.byType(Image));
+        expect(image.image, isA<NetworkImage>());
+        expect((image.image as NetworkImage).url, 'https://example.com/img.jpg');
+        expect(image.height, 200);
+        expect(image.fit, BoxFit.cover);
+        expect(find.byIcon(Icons.image), findsNothing);
+        expect(find.text(l10n(tester).gossipMediaAddImage), findsNothing);
+        // El botón de audio sigue disponible
+        expect(find.text(l10n(tester).gossipMediaAddAudio), findsOneWidget);
+      });
+
+      testWidgets('el botón cerrar de la imagen llama onRemoveImage',
+          (tester) async {
+        const state = AddGossipState(
+          idempotencyKey: testIdempotencyKey,
+          imageUrl: 'https://example.com/img.jpg',
+        );
+        useFakeNetworkImages(addTearDown);
+
+        await tester.pumpWidget(buildWidget(state));
+        await tester.pump();
+
+        final closeButton = find.ancestor(
+          of: find.byIcon(Icons.close),
+          matching: find.byType(IconButton),
+        );
+        await tester.ensureVisible(closeButton);
+        await tester.tap(closeButton);
+        await tester.pump();
+
+        expect(onRemoveImageCalled, isTrue);
+        expect(onRemoveAudioCalled, isFalse);
+        expect(onPickImageCalled, isFalse);
+      });
+
+      testWidgets('con audioUrl muestra la tarjeta de audio adjunto',
+          (tester) async {
+        const state = AddGossipState(
+          idempotencyKey: testIdempotencyKey,
+          audioUrl: 'https://example.com/a.m4a',
+        );
+
+        await tester.pumpWidget(buildWidget(state));
+        await tester.pumpAndSettle();
+
+        expect(find.byIcon(Icons.audiotrack), findsOneWidget);
+        expect(find.text(l10n(tester).gossipMediaAudioAttached), findsOneWidget);
+        expect(find.byIcon(Icons.mic), findsNothing);
+        expect(find.text(l10n(tester).gossipMediaAddAudio), findsNothing);
+      });
+
+      testWidgets('el botón cerrar del audio llama onRemoveAudio',
+          (tester) async {
+        const state = AddGossipState(
+          idempotencyKey: testIdempotencyKey,
+          audioUrl: 'https://example.com/a.m4a',
+        );
+
+        await tester.pumpWidget(buildWidget(state));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.ancestor(
+          of: find.byIcon(Icons.close),
+          matching: find.byType(IconButton),
+        ));
+        await tester.pump();
+
+        expect(onRemoveAudioCalled, isTrue);
+        expect(onRemoveImageCalled, isFalse);
+        expect(onPickAudioCalled, isFalse);
       });
     });
   });
