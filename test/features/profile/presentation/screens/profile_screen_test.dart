@@ -11,6 +11,8 @@ import 'package:chismes/features/profile/domain/entities/profile_settings.dart';
 import 'package:chismes/core/l10n/locale_notifier.dart';
 import 'package:chismes/core/di/injection_container.dart';
 
+import 'package:chismes/l10n/app_localizations.dart';
+
 import '../../../../helpers/widget_test_wrapper.dart';
 import 'profile_screen_test.mocks.dart';
 
@@ -256,6 +258,166 @@ void main() {
 
       // Assert
       expect(find.byType(Scaffold), findsOneWidget);
+    });
+  });
+
+  group('ProfileScreen - Reacción a cambios del controller', () {
+    /// Guarda TODOS los listeners (la screen + ListenableBuilder) y los llama todos.
+    List<VoidCallback> captureListeners() {
+      final listeners = <VoidCallback>[];
+      when(mockController.addListener(any)).thenAnswer((invocation) {
+        listeners.add(invocation.positionalArguments.first as VoidCallback);
+      });
+      return listeners;
+    }
+
+    Future<void> notifyAll(WidgetTester tester, List<VoidCallback> listeners) async {
+      for (final listener in List.of(listeners)) {
+        listener();
+      }
+      await tester.pump(); // rebuild + post-frame callbacks
+      await tester.pump();
+    }
+
+    testWidgets('sincroniza el idioma cuando settings difiere del LocaleNotifier',
+        (tester) async {
+      final listeners = captureListeners();
+      when(mockController.state).thenReturn(ProfileState.loaded);
+      when(mockController.currentUser).thenReturn(mockUser);
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+      expect(listeners, hasLength(2));
+
+      when(mockController.settings)
+          .thenReturn(mockSettings.copyWith(language: 'en'));
+      await notifyAll(tester, listeners);
+
+      verify(mockLocaleNotifier.setLocale(const Locale('en'))).called(1);
+      expect(find.byType(SnackBar), findsNothing);
+    });
+
+    testWidgets('no cambia el idioma si ya coincide', (tester) async {
+      final listeners = captureListeners();
+      when(mockController.state).thenReturn(ProfileState.loaded);
+      when(mockController.currentUser).thenReturn(mockUser);
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+
+      when(mockController.settings).thenReturn(mockSettings); // 'es'
+      await notifyAll(tester, listeners);
+
+      verifyNever(mockLocaleNotifier.setLocale(any));
+    });
+
+    testWidgets('no cambia el idioma si aún no hay settings', (tester) async {
+      final listeners = captureListeners();
+      when(mockController.state).thenReturn(ProfileState.loaded);
+      when(mockController.currentUser).thenReturn(mockUser);
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+
+      await notifyAll(tester, listeners);
+
+      verifyNever(mockLocaleNotifier.setLocale(any));
+    });
+
+    testWidgets('muestra snackbar de error cuando el controller reporta error',
+        (tester) async {
+      final listeners = captureListeners();
+      when(mockController.state).thenReturn(ProfileState.loaded);
+      when(mockController.currentUser).thenReturn(mockUser);
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+      expect(find.byType(SnackBar), findsNothing);
+
+      when(mockController.getErrorMessage(any)).thenReturn('Falló el guardado');
+      await notifyAll(tester, listeners);
+
+      final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
+      expect((snackBar.content as Text).data, 'Falló el guardado');
+      final theme = Theme.of(tester.element(find.byType(ProfileScreen)));
+      expect(snackBar.backgroundColor, theme.colorScheme.error);
+    });
+  });
+
+  group('ProfileScreen - Diálogo de cerrar sesión', () {
+    Future<AppLocalizations> pumpLoaded(WidgetTester tester) async {
+      when(mockController.state).thenReturn(ProfileState.loaded);
+      when(mockController.currentUser).thenReturn(mockUser);
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+      return AppLocalizations.of(tester.element(find.byType(ProfileScreen)))!;
+    }
+
+    Future<void> openDialog(WidgetTester tester, AppLocalizations l10n) async {
+      final button = find.text(l10n.profileScreenSignOutButton);
+      await tester.ensureVisible(button);
+      await tester.tap(button);
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsOneWidget);
+      // El título puede coincidir con el texto del botón: buscar dentro del diálogo
+      expect(
+        find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.text(l10n.profileScreenSignOutDialogTitle),
+        ),
+        findsWidgets,
+      );
+      expect(find.text(l10n.profileScreenSignOutDialogContent), findsOneWidget);
+    }
+
+    testWidgets('cancelar cierra el diálogo sin cerrar sesión', (tester) async {
+      final l10n = await pumpLoaded(tester);
+      await openDialog(tester, l10n);
+
+      await tester.tap(find.text(l10n.commonCancel));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+      verifyNever(mockController.signOut());
+    });
+
+    testWidgets('confirmar llama a signOut', (tester) async {
+      final l10n = await pumpLoaded(tester);
+      await openDialog(tester, l10n);
+
+      await tester.tap(find.descendant(
+        of: find.byType(AlertDialog),
+        matching: find.byType(ElevatedButton),
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+      verify(mockController.signOut()).called(1);
+    });
+
+    testWidgets('cerrando sesión: botón deshabilitado con spinner y texto',
+        (tester) async {
+      when(mockController.state).thenReturn(ProfileState.signingOut);
+      when(mockController.currentUser).thenReturn(mockUser);
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+      final l10n =
+          AppLocalizations.of(tester.element(find.byType(ProfileScreen)))!;
+
+      final label = find.text(l10n.profileScreenSigningOut);
+      await tester.ensureVisible(label);
+      expect(label, findsOneWidget);
+      expect(find.text(l10n.profileScreenSignOutButton), findsNothing);
+      expect(find.byIcon(Icons.logout), findsNothing);
+      final button = tester.widget<ButtonStyleButton>(find.ancestor(
+        of: label,
+        matching: find.byWidgetPredicate((w) => w is ButtonStyleButton),
+      ));
+      expect(button.onPressed, isNull);
+
+      await tester.tap(label, warnIfMissed: false);
+      await tester.pump();
+      expect(find.byType(AlertDialog), findsNothing);
     });
   });
 }
