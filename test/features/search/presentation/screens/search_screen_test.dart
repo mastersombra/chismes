@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -5,6 +7,8 @@ import 'package:mockito/mockito.dart';
 import 'package:chismes/core/result/result.dart';
 import 'package:chismes/core/error/failure.dart';
 import 'package:chismes/core/error/error_codes.dart';
+import 'package:chismes/core/error/error_messages.dart';
+import 'package:chismes/l10n/app_localizations.dart';
 import 'package:chismes/core/di/injection_container.dart';
 import 'package:chismes/features/search/presentation/screens/search_screen.dart';
 import 'package:chismes/features/gossip/domain/usecases/get_gossips.dart';
@@ -489,12 +493,10 @@ void main() {
 
     testWidgets('debe mostrar loading indicator mientras busca', (tester) async {
       // Arrange
-      // Mock SearchGossips con delay para capturar loading state
+      // Completer para controlar cuándo responde la búsqueda (sin tiempo real)
+      final completer = Completer<Result<Failure, List<Gossip>>>();
       when(mockSearchGossips(query: 'Test', cityId: null, limit: 20))
-          .thenAnswer((_) async {
-        await Future.delayed(const Duration(milliseconds: 100));
-        return Result.success([]);
-      });
+          .thenAnswer((_) => completer.future);
 
       await tester.pumpWidget(
         testableWidget(
@@ -508,10 +510,259 @@ void main() {
       await tester.pump(); // No pump and settle, para capturar el loading state
 
       // Assert - Debe mostrar loading indicator en el suffixIcon
-      expect(find.byType(CircularProgressIndicator), findsWidgets);
+      final textField = find.byType(TextField);
+      expect(
+        find.descendant(of: textField, matching: find.byType(CircularProgressIndicator)),
+        findsOneWidget,
+      );
+      expect(find.descendant(of: textField, matching: find.byIcon(Icons.clear)), findsNothing);
 
-      // Esperar a que termine
+      // Al responder desaparece el loading y queda el botón de limpiar
+      completer.complete(Result.success([]));
       await tester.pumpAndSettle();
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.descendant(of: textField, matching: find.byIcon(Icons.clear)), findsOneWidget);
+    });
+  });
+
+  group('SearchScreen - Carga de recientes con error', () {
+    testWidgets('muestra el mensaje del ErrorCode si GetGossips falla',
+        (tester) async {
+      when(mockGetGossips()).thenAnswer((_) async => Result.failure(
+          const NetworkFailure(code: ErrorCode.noInternetConnection)));
+
+      await tester.pumpWidget(testableWidget(child: const SearchScreen()));
+      await tester.pumpAndSettle();
+
+      final context = tester.element(find.byType(SearchScreen));
+      expect(find.byIcon(Icons.error_outline), findsOneWidget);
+      expect(
+        find.text(ErrorMessages.getMessage(context, ErrorCode.noInternetConnection)),
+        findsOneWidget,
+      );
+      // Ya no está cargando: muestra el estado vacío inicial
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.text(l10nOf(tester).searchByTopic), findsOneWidget);
+    });
+  });
+
+  group('SearchScreen - Historial de búsquedas', () {
+    final history = ['flutter', 'dart', 'supabase', 'riverpod', 'getit', 'sexto'];
+
+    setUp(() {
+      when(mockSearchHistoryService.getHistory()).thenAnswer((_) async => history);
+      when(mockSearchHistoryService.addSearch(any)).thenAnswer((_) async {});
+      when(mockSearchHistoryService.removeSearch(any)).thenAnswer((_) async {});
+      when(mockSearchHistoryService.clearHistory()).thenAnswer((_) async {});
+    });
+
+    /// Viewport alto: con el 800×600 por defecto el panel de historial + el
+    /// estado vacío no caben (overflow de 14px en search_screen.dart:397).
+    /// Ese layout no es scrollable; está reportado en docs/TEST_PLAN_85.md §6.
+    void usePhoneViewport(WidgetTester tester) {
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+    }
+
+    Future<void> pumpAndFocus(WidgetTester tester) async {
+      usePhoneViewport(tester);
+      await tester.pumpWidget(testableWidget(child: const SearchScreen()));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(TextField));
+      await tester.pumpAndSettle();
+    }
+
+    Finder historyItem(String query) => find.ancestor(
+          of: find.text(query),
+          matching: find.byType(InkWell),
+        );
+
+    testWidgets('sin foco no muestra el historial', (tester) async {
+      await tester.pumpWidget(testableWidget(child: const SearchScreen()));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10nOf(tester).searchRecentSearches), findsNothing);
+    });
+
+    testWidgets('al enfocar el campo vacío muestra máximo 5 búsquedas',
+        (tester) async {
+      await pumpAndFocus(tester);
+
+      expect(find.text(l10nOf(tester).searchRecentSearches), findsOneWidget);
+      expect(find.byIcon(Icons.history), findsOneWidget);
+      for (final q in history.take(5)) {
+        expect(find.text(q), findsOneWidget);
+      }
+      expect(find.text('sexto'), findsNothing);
+    });
+
+    testWidgets('historial vacío no muestra el panel aunque haya foco',
+        (tester) async {
+      when(mockSearchHistoryService.getHistory()).thenAnswer((_) async => []);
+
+      await pumpAndFocus(tester);
+
+      expect(find.text(l10nOf(tester).searchRecentSearches), findsNothing);
+    });
+
+    testWidgets('tocar un item busca ese texto y oculta el historial',
+        (tester) async {
+      await pumpAndFocus(tester);
+
+      await tester.tap(historyItem('dart'));
+      await tester.pumpAndSettle();
+
+      verify(mockSearchGossips(query: 'dart', cityId: null, limit: 20)).called(1);
+      expect(tester.widget<TextField>(find.byType(TextField)).controller!.text, 'dart');
+      expect(find.text(l10nOf(tester).searchRecentSearches), findsNothing);
+      expect(find.text(l10nOf(tester).searchNoResults), findsOneWidget);
+      verify(mockSearchHistoryService.addSearch('dart')).called(1);
+    });
+
+    testWidgets('la X de un item lo elimina y recarga el historial',
+        (tester) async {
+      await pumpAndFocus(tester);
+      clearInteractions(mockSearchHistoryService);
+      when(mockSearchHistoryService.getHistory())
+          .thenAnswer((_) async => ['flutter', 'supabase']);
+
+      await tester.tap(find.descendant(
+        of: historyItem('dart'),
+        matching: find.byIcon(Icons.close),
+      ));
+      await tester.pumpAndSettle();
+
+      verify(mockSearchHistoryService.removeSearch('dart')).called(1);
+      verify(mockSearchHistoryService.getHistory()).called(1);
+      expect(find.text('dart'), findsNothing);
+      expect(find.text('flutter'), findsOneWidget);
+      verifyNever(mockSearchGossips(
+          query: anyNamed('query'), cityId: anyNamed('cityId'), limit: anyNamed('limit')));
+    });
+
+    testWidgets('"Borrar todo" limpia el historial y oculta el panel',
+        (tester) async {
+      await pumpAndFocus(tester);
+      when(mockSearchHistoryService.getHistory()).thenAnswer((_) async => []);
+
+      await tester.tap(find.text(l10nOf(tester).searchClearAll));
+      await tester.pumpAndSettle();
+
+      verify(mockSearchHistoryService.clearHistory()).called(1);
+      expect(find.text(l10nOf(tester).searchRecentSearches), findsNothing);
+      expect(find.text('flutter'), findsNothing);
+    });
+  });
+
+  group('SearchScreen - Botón limpiar del campo', () {
+    testWidgets('limpia el texto y vuelve al estado inicial', (tester) async {
+      when(mockSearchGossips(query: 'Test', cityId: null, limit: 20))
+          .thenAnswer((_) async => Result.success([]));
+
+      await tester.pumpWidget(testableWidget(child: const SearchScreen()));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), 'Test');
+      await tester.pumpAndSettle();
+      expect(find.text(l10nOf(tester).searchNoResults), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.clear));
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<TextField>(find.byType(TextField)).controller!.text, isEmpty);
+      expect(find.byIcon(Icons.clear), findsNothing);
+      expect(find.text(l10nOf(tester).searchNoResults), findsNothing);
+      expect(find.text(l10nOf(tester).searchByTopic), findsOneWidget);
+    });
+  });
+
+  group('SearchScreen - Filtro por ciudad', () {
+    final location = SavedLocation(
+      countryId: 'co',
+      regionId: 'ant',
+      cityId: 'med',
+      countryName: 'Colombia',
+      regionName: 'Antioquia',
+      cityName: 'Medellín',
+    );
+
+    setUp(() {
+      when(mockLocationService.getDefaultLocation()).thenAnswer((_) async => location);
+      when(mockSearchHistoryService.addSearch(any)).thenAnswer((_) async {});
+    });
+
+    Finder chip() => find.byType(FilterChip);
+
+    testWidgets('sin ubicación guardada no muestra el filtro', (tester) async {
+      when(mockLocationService.getDefaultLocation()).thenAnswer((_) async => null);
+
+      await tester.pumpWidget(testableWidget(child: const SearchScreen()));
+      await tester.pumpAndSettle();
+
+      expect(chip(), findsNothing);
+    });
+
+    testWidgets('con ubicación muestra el chip con el nombre de la ciudad',
+        (tester) async {
+      await tester.pumpWidget(testableWidget(child: const SearchScreen()));
+      await tester.pumpAndSettle();
+
+      expect(chip(), findsOneWidget);
+      expect(find.text(l10nOf(tester).searchFilterOnlyCity('Medellín')), findsOneWidget);
+      expect(tester.widget<FilterChip>(chip()).selected, isFalse);
+    });
+
+    testWidgets('activar el filtro sin query no busca', (tester) async {
+      await tester.pumpWidget(testableWidget(child: const SearchScreen()));
+      await tester.pumpAndSettle();
+
+      await tester.tap(chip());
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<FilterChip>(chip()).selected, isTrue);
+      verifyNever(mockSearchGossips(
+          query: anyNamed('query'), cityId: anyNamed('cityId'), limit: anyNamed('limit')));
+    });
+
+    testWidgets('activar/desactivar con query activo repite la búsqueda con/sin cityId',
+        (tester) async {
+      await tester.pumpWidget(testableWidget(child: const SearchScreen()));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), 'chisme');
+      await tester.pumpAndSettle();
+      verify(mockSearchGossips(query: 'chisme', cityId: null, limit: 20)).called(1);
+
+      await tester.tap(chip());
+      await tester.pumpAndSettle();
+      verify(mockSearchGossips(query: 'chisme', cityId: 'med', limit: 20)).called(1);
+      expect(tester.widget<FilterChip>(chip()).selected, isTrue);
+
+      await tester.tap(chip());
+      await tester.pumpAndSettle();
+      verify(mockSearchGossips(query: 'chisme', cityId: null, limit: 20)).called(1);
+      expect(tester.widget<FilterChip>(chip()).selected, isFalse);
+    });
+
+    testWidgets('el chip se oculta mientras se muestra el historial',
+        (tester) async {
+      when(mockSearchHistoryService.getHistory()).thenAnswer((_) async => ['algo']);
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(testableWidget(child: const SearchScreen()));
+      await tester.pumpAndSettle();
+      expect(chip(), findsOneWidget);
+
+      await tester.tap(find.byType(TextField));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10nOf(tester).searchRecentSearches), findsOneWidget);
+      expect(chip(), findsNothing);
     });
   });
 }
+
+AppLocalizations l10nOf(WidgetTester tester) =>
+    AppLocalizations.of(tester.element(find.byType(SearchScreen)))!;
