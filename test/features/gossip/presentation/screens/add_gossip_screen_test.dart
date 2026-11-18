@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -9,7 +11,8 @@ import 'package:chismes/features/gossip/domain/entities/gossip.dart';
 import 'package:chismes/features/location/domain/entities/country.dart';
 import 'package:chismes/features/location/domain/entities/region.dart';
 import 'package:chismes/features/location/domain/entities/city.dart';
-import 'package:chismes/features/gossip/presentation/widgets/city_autocomplete.dart';
+import 'package:chismes/features/gossip/presentation/widgets/city_autocomplete_optimized.dart';
+import 'package:chismes/features/gossip/presentation/widgets/location_change_dialog.dart';
 import 'package:chismes/features/location/domain/usecases/search_cities.dart';
 import 'package:chismes/features/location/presentation/managers/location_manager.dart';
 import 'package:chismes/features/location/presentation/states/location_state.dart';
@@ -18,7 +21,10 @@ import 'package:chismes/features/auth/domain/entities/user.dart';
 import 'package:chismes/core/di/injection_container.dart';
 import 'package:chismes/core/error/failure.dart';
 import 'package:chismes/core/error/error_codes.dart';
+import 'package:chismes/core/error/error_messages.dart';
+import 'package:chismes/features/auth/presentation/widgets/email_verification_banner.dart';
 import 'package:chismes/core/result/result.dart';
+import 'package:chismes/l10n/app_localizations.dart';
 
 import '../../../../helpers/mock_add_gossip_controller_helper.dart';
 import '../../../../helpers/widget_test_wrapper.dart';
@@ -98,6 +104,18 @@ void main() {
       useScaffold: false,
     );
   }
+
+  AppLocalizations l10nOf(WidgetTester tester) =>
+      AppLocalizations.of(tester.element(find.byType(AddGossipScreen)))!;
+
+  Future<void> openLocationDialog(WidgetTester tester) async {
+    await tester.tap(find.text(l10nOf(tester).gossipLocationSelectorChangeButtonLabel));
+    await tester.pumpAndSettle();
+    expect(find.byType(LocationChangeDialog), findsOneWidget);
+  }
+
+  LocationChangeDialog locationDialog(WidgetTester tester) =>
+      tester.widget<LocationChangeDialog>(find.byType(LocationChangeDialog));
 
   group('AddGossipScreen - Construcción', () {
     testWidgets('debe construir el widget correctamente', (tester) async {
@@ -504,203 +522,162 @@ void main() {
 
       await tester.pumpWidget(createWidget());
       await tester.pumpAndSettle();
+      await openLocationDialog(tester);
 
-      await tester.tap(find.text('Cambiar'));
-      await tester.pumpAndSettle();
+      final l10n = l10nOf(tester);
+      await tester.tap(find.text(l10n.locationUseCurrentLocation));
+      await tester.pump();
 
-      // Buscar el botón de usar ubicación actual en el diálogo
-      final useCurrentButton = find.text('Usar mi ubicación actual').hitTestable();
-      if (useCurrentButton.evaluate().isNotEmpty) {
-        await tester.tap(useCurrentButton);
-        await tester.pump();
-
-        verify(mockController.autoDetectLocation()).called(1);
-      }
+      verify(mockController.autoDetectLocation()).called(1);
     });
 
     testWidgets('debe pasar callbacks correctos al LocationChangeDialog', (tester) async {
-      const country = Country(id: '1', name: 'Test Country', code: 'TC');
-      const region = Region(id: '1', name: 'Test Region', countryId: '1', type: 'state');
       const city = City(id: '1', name: 'Test City', regionId: '1');
-
-      when(mockController.selectCountry(any)).thenAnswer((_) async => {});
-      when(mockController.selectRegion(any)).thenAnswer((_) async => {});
-      when(mockController.selectCity(any)).thenReturn(null);
-      when(mockController.state).thenReturn(
-        const AddGossipState(
-          idempotencyKey: 'test-key',
-
-          countries: [country],
-          regions: [region],
-          cities: [city],
-        ),
-      );
+      final searchCities = getIt<SearchCities>();
 
       await tester.pumpWidget(createWidget());
       await tester.pumpAndSettle();
+      await openLocationDialog(tester);
 
-      await tester.tap(find.text('Cambiar'));
-      await tester.pumpAndSettle();
+      final dialog = locationDialog(tester);
+      expect(dialog.searchCities, same(searchCities));
+      expect(dialog.state, same(mockLocationManager.state));
+      expect(dialog.isLoadingGPS, isFalse);
 
-      // Verificar que el diálogo se abrió
-      expect(find.byType(Dialog), findsWidgets);
+      dialog.onCountryChanged('1');
+      dialog.onRegionChanged('2');
+      dialog.onCityChanged(city);
 
-      // Los callbacks están pasados correctamente al LocationChangeDialog
-      // y se prueban mediante la interacción con el controller
+      verify(mockController.selectCountry('1')).called(1);
+      verify(mockController.selectRegion('2')).called(1);
+      verify(mockController.selectCity('1')).called(1);
     });
 
     testWidgets('debe llamar selectCountry con countryId cuando se cambia país', (tester) async {
       const country = Country(id: 'country-1', name: 'Test Country', code: 'TC');
-
-      when(mockController.selectCountry('country-1')).thenAnswer((_) async => {});
-      when(mockController.state).thenReturn(
-        const AddGossipState(
-          idempotencyKey: 'test-key',
-
-          countries: [country],
-        ),
+      when(mockLocationManager.state).thenReturn(
+        LocationState.initial().copyWith(countries: const [country]),
       );
 
       await tester.pumpWidget(createWidget());
       await tester.pumpAndSettle();
+      await openLocationDialog(tester);
 
-      // Los callbacks onCountryChanged, onRegionChanged, onCityChanged son pasados
-      // al LocationChangeDialog. La prueba verifica que los callbacks están configurados
-      // correctamente en el widget.
+      await tester.tap(find.byType(DropdownButtonFormField<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Test Country').last);
+      await tester.pumpAndSettle();
+
+      verify(mockController.selectCountry('country-1')).called(1);
     });
 
     testWidgets('debe llamar selectRegion con regionId cuando se cambia región', (tester) async {
+      const country = Country(id: '1', name: 'Test Country', code: 'TC');
       const region = Region(id: 'region-1', name: 'Test Region', countryId: '1', type: 'state');
-
-      when(mockController.selectRegion('region-1')).thenAnswer((_) async => {});
-      when(mockController.state).thenReturn(
-        const AddGossipState(
-          idempotencyKey: 'test-key',
-
-          regions: [region],
+      when(mockLocationManager.state).thenReturn(
+        LocationState.initial().copyWith(
+          countries: const [country],
+          selectedCountry: country,
+          regions: const [region],
         ),
       );
 
       await tester.pumpWidget(createWidget());
       await tester.pumpAndSettle();
+      await openLocationDialog(tester);
 
-      // El callback onRegionChanged está configurado en el LocationChangeDialog
+      await tester.tap(find.byType(DropdownButtonFormField<String>).at(1));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Test Region').last);
+      await tester.pumpAndSettle();
+
+      verify(mockController.selectRegion('region-1')).called(1);
     });
 
     testWidgets('debe llamar selectCity con cityId cuando se cambia ciudad', (tester) async {
       const city = City(id: 'city-1', name: 'Test City', regionId: '1');
 
-      when(mockController.selectCity('city-1')).thenReturn(null);
-      when(mockController.state).thenReturn(
-        const AddGossipState(
-          idempotencyKey: 'test-key',
-
-          cities: [city],
-        ),
-      );
-
       await tester.pumpWidget(createWidget());
       await tester.pumpAndSettle();
+      await openLocationDialog(tester);
 
-      // El callback onCityChanged está configurado en el LocationChangeDialog
+      locationDialog(tester).onCityChanged(city);
+
+      verify(mockController.selectCity('city-1')).called(1);
     });
 
     testWidgets('debe manejar null en onCityChanged correctamente', (tester) async {
-      when(mockController.selectCity(null)).thenReturn(null);
-
       await tester.pumpWidget(createWidget());
       await tester.pumpAndSettle();
+      await openLocationDialog(tester);
 
-      await tester.tap(find.text('Cambiar'));
-      await tester.pumpAndSettle();
+      locationDialog(tester).onCityChanged(null);
 
-      // El callback onCityChanged maneja city?.id correctamente
-      // Si city es null, pasa null al selectCity
+      verify(mockController.selectCity(null)).called(1);
     });
 
     testWidgets('debe tener onConfirm configurado en el diálogo', (tester) async {
       await tester.pumpWidget(createWidget());
       await tester.pumpAndSettle();
+      await openLocationDialog(tester);
 
-      await tester.tap(find.text('Cambiar'));
-      await tester.pumpAndSettle();
+      // onConfirm está vacío: la ubicación ya se guarda en selectCity()
+      locationDialog(tester).onConfirm();
+      await tester.pump();
 
-      // El callback onConfirm está presente en el LocationChangeDialog
-      // Nota: onConfirm está vacío porque la ubicación ya se guarda
-      // automáticamente en selectCity()
+      verifyNever(mockController.selectCountry(any));
+      verifyNever(mockController.selectRegion(any));
+      verifyNever(mockController.selectCity(any));
+      expect(find.byType(LocationChangeDialog), findsOneWidget);
     });
 
     testWidgets('debe ejecutar callback onCountryChanged cuando cambia el país', (tester) async {
       const country1 = Country(id: 'co', name: 'Colombia', code: 'CO');
       const country2 = Country(id: 'br', name: 'Brasil', code: 'BR');
-
-      when(mockController.selectCountry('br')).thenAnswer((_) async => {});
-      when(mockController.state).thenReturn(
-        const AddGossipState(
-          idempotencyKey: 'test-key',
-          countries: [country1, country2],
+      when(mockLocationManager.state).thenReturn(
+        LocationState.initial().copyWith(
+          countries: const [country1, country2],
+          selectedCountry: country1,
         ),
       );
 
       await tester.pumpWidget(createWidget());
       await tester.pumpAndSettle();
+      await openLocationDialog(tester);
 
-      // Abrir el diálogo
-      await tester.tap(find.text('Cambiar'));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.tap(find.byType(DropdownButtonFormField<String>).first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Brasil').last);
+      await tester.pumpAndSettle();
 
-      // Verificar que hay un dropdown de países
-      final dropdown = find.byType(DropdownButtonFormField<String>);
-      expect(dropdown, findsAtLeastNWidgets(1));
-
-      // En lugar de interactuar con el dropdown (que es complejo en tests),
-      // llamamos directamente al método del controller como lo haría el widget
-      mockController.selectCountry('br');
-
-      // Verificar que se llamó selectCountry con el ID correcto
       verify(mockController.selectCountry('br')).called(1);
+      verifyNever(mockController.selectCountry('co'));
     });
 
     testWidgets('debe ejecutar callback onRegionChanged cuando cambia la región', (tester) async {
       const country = Country(id: 'co', name: 'Colombia', code: 'CO');
       const region1 = Region(id: 'antioquia', name: 'Antioquia', countryId: 'co', type: 'department');
       const region2 = Region(id: 'cundinamarca', name: 'Cundinamarca', countryId: 'co', type: 'department');
-
-      when(mockController.selectRegion('cundinamarca')).thenAnswer((_) async => {});
-      when(mockController.state).thenReturn(
-        const AddGossipState(
-          idempotencyKey: 'test-key',
-
-          countries: [country],
-          selectedCountryId: 'co',
-          regions: [region1, region2],
+      when(mockLocationManager.state).thenReturn(
+        LocationState.initial().copyWith(
+          countries: const [country],
+          selectedCountry: country,
+          regions: const [region1, region2],
         ),
       );
 
       await tester.pumpWidget(createWidget());
       await tester.pumpAndSettle();
+      await openLocationDialog(tester);
 
-      // Abrir el diálogo
-      await tester.tap(find.text('Cambiar'));
+      final dropdowns = find.byType(DropdownButtonFormField<String>);
+      expect(dropdowns, findsNWidgets(2));
+      await tester.tap(dropdowns.at(1));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cundinamarca').last);
       await tester.pumpAndSettle();
 
-      // Buscar el segundo dropdown (regiones)
-      final dropdowns = find.byType(DropdownButtonFormField<String>);
-      if (dropdowns.evaluate().length > 1) {
-        await tester.tap(dropdowns.at(1));
-        await tester.pumpAndSettle();
-
-        // Seleccionar Cundinamarca
-        final cundinamarcaOption = find.text('Cundinamarca').last;
-        if (cundinamarcaOption.evaluate().isNotEmpty) {
-          await tester.tap(cundinamarcaOption);
-          await tester.pumpAndSettle();
-
-          // Verificar que se llamó selectRegion con el ID correcto
-          verify(mockController.selectRegion('cundinamarca')).called(1);
-        }
-      }
+      verify(mockController.selectRegion('cundinamarca')).called(1);
     });
 
     testWidgets('debe ejecutar callback onCityChanged cuando cambia la ciudad', (tester) async {
@@ -708,194 +685,134 @@ void main() {
       const region = Region(id: 'antioquia', name: 'Antioquia', countryId: 'co', type: 'department');
       const city1 = City(id: 'medellin', name: 'Medellín', regionId: 'antioquia');
       const city2 = City(id: 'envigado', name: 'Envigado', regionId: 'antioquia');
-
-      when(mockController.selectCity('medellin')).thenReturn(null);
-      when(mockController.state).thenReturn(
-        const AddGossipState(
-          idempotencyKey: 'test-key',
-
-          countries: [country],
-          selectedCountryId: 'co',
-          regions: [region],
-          selectedRegionId: 'antioquia',
-          cities: [city1, city2],
+      when(mockLocationManager.state).thenReturn(
+        LocationState.initial().copyWith(
+          countries: const [country],
+          selectedCountry: country,
+          regions: const [region],
+          selectedRegion: region,
         ),
       );
+      when(mockSearchCities.call(
+        query: anyNamed('query'),
+        regionId: 'antioquia',
+        maxResults: anyNamed('maxResults'),
+      )).thenAnswer((_) async => Result.success(const [city1, city2]));
 
       await tester.pumpWidget(createWidget());
       await tester.pumpAndSettle();
+      await openLocationDialog(tester);
 
-      // Abrir el diálogo
-      await tester.tap(find.text('Cambiar'));
-      await tester.pumpAndSettle();
+      final cityField = find.descendant(
+        of: find.byType(CityAutocompleteOptimized),
+        matching: find.byType(TextFormField),
+      );
+      await tester.enterText(cityField, 'Envi');
+      await tester.pump(const Duration(milliseconds: 300)); // debounce
+      await tester.pump();
 
-      // El CityAutocomplete está presente y puede ser interactuado
-      // pero es complejo simular el autocomplete en tests
-      // Este test verifica que el callback está configurado correctamente
-      expect(find.byType(Dialog), findsOneWidget);
+      await tester.tap(find.text('Envigado'));
+      await tester.pump();
+
+      verify(mockController.selectCity('envigado')).called(1);
     });
 
     testWidgets('debe pasar null a selectCity si city es null en onCityChanged', (tester) async {
-      when(mockController.selectCity(null)).thenReturn(null);
-      when(mockController.state).thenReturn(const AddGossipState(idempotencyKey: 'test-key'));
-
       await tester.pumpWidget(createWidget());
       await tester.pumpAndSettle();
+      await openLocationDialog(tester);
 
-      await tester.tap(find.text('Cambiar'));
-      await tester.pumpAndSettle();
+      locationDialog(tester).onCityChanged(null);
 
-      // El callback onCityChanged maneja correctamente city?.id
-      // Si city es null, pasa null a selectCity
-      expect(find.byType(Dialog), findsOneWidget);
+      verify(mockController.selectCity(null)).called(1);
+      verifyNever(mockController.selectCity(argThat(isNotNull)));
     });
 
     testWidgets('no debe llamar selectCountry si el valor del dropdown es null', (tester) async {
-      when(mockController.state).thenReturn(
-        const AddGossipState(
-          idempotencyKey: 'test-key',
-
-          countries: [Country(id: 'co', name: 'Colombia', code: 'CO')],
-        ),
-      );
-
       await tester.pumpWidget(createWidget());
       await tester.pumpAndSettle();
+      await openLocationDialog(tester);
 
-      await tester.tap(find.text('Cambiar'));
-      await tester.pumpAndSettle();
+      locationDialog(tester).onCountryChanged(null);
 
-      // El callback onCountryChanged verifica if (value != null)
-      // Si value es null, no llama selectCountry
       verifyNever(mockController.selectCountry(any));
     });
 
     testWidgets('no debe llamar selectRegion si el valor del dropdown es null', (tester) async {
-      when(mockController.state).thenReturn(
-        const AddGossipState(
-          idempotencyKey: 'test-key',
-
-          selectedCountryId: 'co',
-          regions: [Region(id: 'antioquia', name: 'Antioquia', countryId: 'co', type: 'department')],
-        ),
-      );
-
       await tester.pumpWidget(createWidget());
       await tester.pumpAndSettle();
+      await openLocationDialog(tester);
 
-      await tester.tap(find.text('Cambiar'));
-      await tester.pumpAndSettle();
+      locationDialog(tester).onRegionChanged(null);
 
-      // El callback onRegionChanged verifica if (value != null)
-      // Si value es null, no llama selectRegion
       verifyNever(mockController.selectRegion(any));
     });
 
     testWidgets('debe llamar onConfirm aunque esté vacío', (tester) async {
-      when(mockController.state).thenReturn(
-        const AddGossipState(
-          idempotencyKey: 'test-key',
-
-          selectedCityId: 'medellin',
-        ),
-      );
-
       await tester.pumpWidget(createWidget());
       await tester.pumpAndSettle();
+      await openLocationDialog(tester);
 
-      await tester.tap(find.text('Cambiar'));
-      await tester.pumpAndSettle();
-
-      // onConfirm está definido pero vacío (comentario dice que
-      // la ubicación ya se guardó en selectCity)
-      // Este test verifica que el callback existe y puede ser llamado
-      expect(find.byType(Dialog), findsOneWidget);
+      // Llamarlo no debe lanzar ni tocar el controller
+      expect(() => locationDialog(tester).onConfirm(), returnsNormally);
+      verifyNever(mockController.selectCity(any));
     });
 
     testWidgets('debe ejecutar onConfirm al presionar botón Confirmar', (tester) async {
-      // Setup: Estado con ciudad seleccionada para habilitar botón
       const country = Country(id: 'co', name: 'Colombia', code: 'CO');
       const region = Region(id: 'antioquia', name: 'Antioquia', countryId: 'co', type: 'department');
       const city = City(id: 'medellin', name: 'Medellín', regionId: 'antioquia');
-
-      when(mockController.state).thenReturn(
-        const AddGossipState(
-          idempotencyKey: 'test-key',
-
-          countries: [country],
-          selectedCountryId: 'co',
-          regions: [region],
-          selectedRegionId: 'antioquia',
-          cities: [city],
-          selectedCityId: 'medellin',
+      when(mockLocationManager.state).thenReturn(
+        LocationState.initial().copyWith(
+          countries: const [country],
+          selectedCountry: country,
+          regions: const [region],
+          selectedRegion: region,
+          selectedCity: city,
         ),
       );
 
       await tester.pumpWidget(createWidget());
       await tester.pumpAndSettle();
+      await openLocationDialog(tester);
 
-      // Abrir diálogo
-      await tester.tap(find.text('Cambiar'));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 500));
-
-      // Verificar que el diálogo está abierto
-      expect(find.byType(Dialog), findsOneWidget);
-
-      // Verificar que el botón Confirmar existe y está habilitado
-      final confirmButton = find.text('Confirmar');
-      expect(confirmButton, findsOneWidget);
-
-      // Hacer tap en botón "Confirmar"
+      final confirmButton = find.text(l10nOf(tester).confirm);
+      await tester.ensureVisible(confirmButton);
       await tester.tap(confirmButton);
-      await tester.pump(); // Start animation
+      await tester.pumpAndSettle();
 
-      // Solo verificar que se inició el proceso de cierre (la animación está en progreso)
-      // No necesitamos esperar a que termine completamente
-      // El test solo verifica que el botón es presionable y ejecuta la acción
+      // Formulario válido → onConfirm + pop del diálogo
+      expect(find.byType(LocationChangeDialog), findsNothing);
+      expect(find.byType(AddGossipScreen), findsOneWidget);
     });
 
     testWidgets('debe pasar null a selectCity cuando se limpia CityAutocomplete', (tester) async {
       const country = Country(id: 'co', name: 'Colombia', code: 'CO');
       const region = Region(id: 'antioquia', name: 'Antioquia', countryId: 'co', type: 'department');
       const city = City(id: 'medellin', name: 'Medellín', regionId: 'antioquia');
-
-      when(mockController.selectCity(null)).thenReturn(null);
-      when(mockController.state).thenReturn(
-        const AddGossipState(
-          idempotencyKey: 'test-key',
-
-          countries: [country],
-          selectedCountryId: 'co',
-          regions: [region],
-          selectedRegionId: 'antioquia',
-          cities: [city],
-          selectedCityId: 'medellin',
+      when(mockLocationManager.state).thenReturn(
+        LocationState.initial().copyWith(
+          countries: const [country],
+          selectedCountry: country,
+          regions: const [region],
+          selectedRegion: region,
+          selectedCity: city,
         ),
       );
 
       await tester.pumpWidget(createWidget());
-      await tester.pump();
+      await tester.pumpAndSettle();
+      await openLocationDialog(tester);
 
-      // Abrir diálogo
-      await tester.tap(find.text('Cambiar'));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
-
-      // Buscar el botón clear del autocomplete (si existe)
       final clearButton = find.descendant(
-        of: find.byType(CityAutocomplete),
+        of: find.byType(CityAutocompleteOptimized),
         matching: find.byIcon(Icons.clear),
       );
+      expect(clearButton, findsOneWidget);
+      await tester.tap(clearButton);
+      await tester.pump();
 
-      if (clearButton.evaluate().isNotEmpty) {
-        // Hacer tap en clear button
-        await tester.tap(clearButton);
-        await tester.pump();
-
-        // Verificar que se llamó selectCity con null
-        verify(mockController.selectCity(null)).called(1);
-      }
+      verify(mockController.selectCity(null)).called(1);
     });
   });
 
@@ -1005,15 +922,12 @@ void main() {
         type: 'state',
       );
 
-      when(mockController.selectRegion(any)).thenAnswer((_) async => {});
-
       await tester.pumpWidget(createWidget());
       await tester.pump();
+      await openLocationDialog(tester);
 
-      // Act - Llamar directamente al callback (simulando el diálogo)
-      // El diálogo se prueba en sus propios tests, aquí verificamos que
-      // el callback está conectado correctamente
-      await mockController.selectRegion(region.id);
+      // Act - a través del callback que la screen pasa al diálogo
+      locationDialog(tester).onRegionChanged(region.id);
 
       // Assert
       verify(mockController.selectRegion(region.id)).called(1);
@@ -1027,13 +941,12 @@ void main() {
         name: 'Medellín',
       );
 
-      when(mockController.selectCity(any)).thenReturn(null);
-
       await tester.pumpWidget(createWidget());
       await tester.pump();
+      await openLocationDialog(tester);
 
-      // Act
-      mockController.selectCity(city.id);
+      // Act - a través del callback que la screen pasa al diálogo
+      locationDialog(tester).onCityChanged(city);
 
       // Assert
       verify(mockController.selectCity(city.id)).called(1);
@@ -1043,13 +956,180 @@ void main() {
       // Arrange
       await tester.pumpWidget(createWidget());
       await tester.pump();
+      await openLocationDialog(tester);
+      clearInteractions(mockController);
 
-      // Act - onConfirm es un callback vacío porque la ubicación
-      // ya se guarda automáticamente en selectCity()
-      // Este test documenta el comportamiento esperado
+      // Act
+      locationDialog(tester).onConfirm();
 
-      // Assert - No hay verificaciones porque el callback está vacío
-      // La ubicación se guarda en selectCity(), no en onConfirm
+      // Assert - no toca el controller: la ubicación se guarda en selectCity()
+      verifyNoMoreInteractions(mockController);
+    });
+  });
+
+  group('AddGossipScreen - Verificación de email', () {
+    setUp(() {
+      provideDummy<Result<Failure, void>>(Result.success(null));
+    });
+
+    User unverifiedUser() => User(
+          id: 'test-user-id',
+          email: 'test@example.com',
+          emailVerified: false,
+          profileCompleted: true,
+          createdAt: DateTime(2024, 1, 1),
+        );
+
+    Finder resendButton() => find.descendant(
+          of: find.byType(EmailVerificationBanner),
+          // OutlinedButton.icon crea una subclase: comparar con `is`
+          matching: find.byWidgetPredicate((w) => w is OutlinedButton),
+        );
+
+    testWidgets('con email verificado no muestra el banner', (tester) async {
+      await tester.pumpWidget(createWidget());
+      await tester.pump();
+
+      expect(find.byType(EmailVerificationBanner), findsNothing);
+    });
+
+    testWidgets('sin usuario no muestra el banner', (tester) async {
+      when(mockAuthRepository.currentUser).thenReturn(null);
+
+      await tester.pumpWidget(createWidget());
+      await tester.pump();
+
+      expect(find.byType(EmailVerificationBanner), findsNothing);
+    });
+
+    testWidgets('con email sin verificar muestra el banner habilitado',
+        (tester) async {
+      when(mockAuthRepository.currentUser).thenReturn(unverifiedUser());
+
+      await tester.pumpWidget(createWidget());
+      await tester.pump();
+
+      final banner = tester.widget<EmailVerificationBanner>(
+          find.byType(EmailVerificationBanner));
+      expect(banner.isLoading, isFalse);
+    });
+
+    testWidgets('reenviar: loading mientras espera y snackbar de éxito',
+        (tester) async {
+      when(mockAuthRepository.currentUser).thenReturn(unverifiedUser());
+      final completer = Completer<Result<Failure, void>>();
+      when(mockAuthRepository.resendVerificationEmail())
+          .thenAnswer((_) => completer.future);
+
+      await tester.pumpWidget(createWidget());
+      await tester.pump();
+
+      await tester.ensureVisible(resendButton());
+      await tester.tap(resendButton());
+      await tester.pump();
+
+      expect(
+        tester
+            .widget<EmailVerificationBanner>(find.byType(EmailVerificationBanner))
+            .isLoading,
+        isTrue,
+      );
+      verify(mockAuthRepository.resendVerificationEmail()).called(1);
+
+      completer.complete(Result.success(null));
+      await tester.pump();
+      await tester.pump();
+
+      expect(
+        tester
+            .widget<EmailVerificationBanner>(find.byType(EmailVerificationBanner))
+            .isLoading,
+        isFalse,
+      );
+      final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
+      expect((snackBar.content as Text).data,
+          l10nOf(tester).gossipAddScreenEmailVerificationResent);
+      expect(snackBar.backgroundColor, Colors.green);
+    });
+
+    testWidgets('reenviar con error muestra el mensaje del ErrorCode',
+        (tester) async {
+      when(mockAuthRepository.currentUser).thenReturn(unverifiedUser());
+      when(mockAuthRepository.resendVerificationEmail()).thenAnswer(
+        (_) async => Result.failure(
+            const NetworkFailure(code: ErrorCode.noInternetConnection)),
+      );
+
+      await tester.pumpWidget(createWidget());
+      await tester.pump();
+
+      await tester.ensureVisible(resendButton());
+      await tester.tap(resendButton());
+      await tester.pump();
+      await tester.pump();
+
+      final context = tester.element(find.byType(AddGossipScreen));
+      final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
+      expect((snackBar.content as Text).data,
+          ErrorMessages.getMessage(context, ErrorCode.noInternetConnection));
+      expect(snackBar.backgroundColor, Theme.of(context).colorScheme.error);
+      expect(
+        tester
+            .widget<EmailVerificationBanner>(find.byType(EmailVerificationBanner))
+            .isLoading,
+        isFalse,
+      );
+    });
+
+    testWidgets('si la screen se desmonta durante el reenvío no muestra snackbar',
+        (tester) async {
+      when(mockAuthRepository.currentUser).thenReturn(unverifiedUser());
+      final completer = Completer<Result<Failure, void>>();
+      when(mockAuthRepository.resendVerificationEmail())
+          .thenAnswer((_) => completer.future);
+
+      await tester.pumpWidget(createWidget());
+      await tester.pump();
+      await tester.ensureVisible(resendButton());
+      await tester.tap(resendButton());
+      await tester.pump();
+
+      await tester.pumpWidget(testableWidget(child: const SizedBox()));
+      completer.complete(Result.success(null));
+      await tester.pump();
+
+      expect(find.byType(SnackBar), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('AddGossipScreen - Botón de submit enviando', () {
+    testWidgets('mientras envía muestra spinner y deshabilita el botón',
+        (tester) async {
+      setupMockAddGossipController(mockController, isSubmitting: true);
+
+      await tester.pumpWidget(createWidget());
+      await tester.pump();
+
+      final button = find.ancestor(
+        of: find.byType(CircularProgressIndicator),
+        matching: find.byType(ElevatedButton),
+      );
+      expect(button, findsOneWidget);
+      expect(tester.widget<ElevatedButton>(button).onPressed, isNull);
+      expect(find.text(l10nOf(tester).gossipAddScreenSubmitButton), findsNothing);
+
+      final spinner = tester.widget<CircularProgressIndicator>(find.descendant(
+        of: button,
+        matching: find.byType(CircularProgressIndicator),
+      ));
+      final context = tester.element(find.byType(AddGossipScreen));
+      expect(spinner.color, Theme.of(context).colorScheme.onPrimary);
+
+      await tester.ensureVisible(button);
+      await tester.tap(button, warnIfMissed: false);
+      await tester.pump();
+      verifyNever(mockController.submit());
     });
   });
 }
