@@ -799,8 +799,18 @@ void main() {
       expect(find.byType(GossipCard), findsNothing);
     });
 
-    // Sin recientes: GossipCard desborda en la grilla a 375 de ancho
-    // (bug aparte, gossip_card.dart:154 vs childAspectRatio 0.72).
+    testWidgets('recientes en la grilla a 375 de ancho no desbordan',
+        (tester) async {
+      useSmallPhoneWithKeyboard(tester);
+      when(mockGetGossips())
+          .thenAnswer((_) async => Result.success([recent, recent, recent]));
+
+      await pumpScreen(tester);
+
+      expect(find.text(l10nOf(tester).searchRecent), findsOneWidget);
+      expect(find.byType(GossipCard), findsWidgets);
+    });
+
     testWidgets('historial de 5 items con teclado no desborda y es scrollable',
         (tester) async {
       useSmallPhoneWithKeyboard(tester);

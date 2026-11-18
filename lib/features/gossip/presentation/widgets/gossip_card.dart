@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -18,10 +17,7 @@ import 'report_gossip_dialog.dart';
 class GossipCard extends StatelessWidget {
   final Gossip gossip;
 
-  const GossipCard({
-    super.key,
-    required this.gossip,
-  });
+  const GossipCard({super.key, required this.gossip});
 
   /// Comparte el chisme usando deep link
   Future<void> _shareGossip(BuildContext context, Gossip gossip) async {
@@ -29,7 +25,8 @@ class GossipCard extends StatelessWidget {
     final deepLink = DeepLinkService.generateGossipLink(gossip.id);
 
     // Texto para compartir
-    final shareText = '''
+    final shareText =
+        '''
 🔥 Mira este chisme:
 
 "${gossip.subject}"
@@ -42,9 +39,7 @@ $deepLink
 ''';
 
     try {
-      await SharePlus.instance.share(
-        ShareParams(text: shareText),
-      );
+      await SharePlus.instance.share(ShareParams(text: shareText));
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -75,9 +70,7 @@ $deepLink
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => const Center(
-          child: CircularProgressIndicator(),
-        ),
+        builder: (context) => const Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -99,8 +92,10 @@ $deepLink
         onFailure: (failure) {
           // Obtener mensaje según tipo de Failure
           final message = switch (failure) {
-            ServerFailure(:final message) => message ?? context.l10n.gossipCardReportError,
-            RateLimitFailure(:final message) => message ?? context.l10n.gossipCardRateLimitError,
+            ServerFailure(:final message) =>
+              message ?? context.l10n.gossipCardReportError,
+            RateLimitFailure(:final message) =>
+              message ?? context.l10n.gossipCardRateLimitError,
             _ => failure.technicalMessage ?? context.l10n.gossipCardReportError,
           };
 
@@ -127,7 +122,10 @@ $deepLink
   Widget build(BuildContext context) {
     // ✅ Accesibilidad: Semantics para toda la card
     return Semantics(
-      label: context.l10n.gossipCardSemanticLabel(gossip.subject, gossip.content),
+      label: context.l10n.gossipCardSemanticLabel(
+        gossip.subject,
+        gossip.content,
+      ),
       hint: context.l10n.gossipCardSemanticHint,
       button: true,
       excludeSemantics: true, // No leer hijos (evitar duplicación)
@@ -136,117 +134,137 @@ $deepLink
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => GossipDetailScreen(
-                gossip: gossip,
-              ),
+              builder: (_) => GossipDetailScreen(gossip: gossip),
             ),
           );
         },
 
         child: Card(
-        elevation: 6,
-        shadowColor: Theme.of(context).shadowColor.withValues(alpha: 0.15),
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-        ),
+          elevation: 6,
+          shadowColor: Theme.of(context).shadowColor.withValues(alpha: 0.15),
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+          ),
 
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min, // ✅ Evita conflicto con unbounded height
-          children: [
-            // ✅ Usar AspectRatio en lugar de Expanded para imagen
-            // Evita error "RenderFlex children have non-zero flex but incoming height constraints are unbounded"
-            AspectRatio(
-              aspectRatio: 1.0, // Imagen cuadrada
-              child: Image.network(
-                // ✅ P6-4: Usar thumbnail primero (30 KB), fallback a imagen completa (150 KB)
-                gossip.thumbnailUrl ?? gossip.imageUrl ?? 'https://via.placeholder.com/150',
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                    child: Icon(
-                      Icons.image,
-                      size: 50,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  );
-                },
-              ),
-            ),
+          // El alto disponible depende del padre:
+          // - Lista (alto sin límite, Home): imagen cuadrada con AspectRatio.
+          // - Celda de grilla (alto fijo, Search): la imagen ocupa el espacio que
+          //   sobra (Expanded) para que el texto y los botones siempre quepan.
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final hasFixedHeight = constraints.hasBoundedHeight;
+              final image = _buildImage(context);
 
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.sm),
-
-              child: Column(
+              return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize:
+                    MainAxisSize.min, // ✅ Evita conflicto con unbounded height
                 children: [
-                  Text(
-                    gossip.subject,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+                  if (hasFixedHeight)
+                    Expanded(child: image)
+                  else
+                    AspectRatio(
+                      aspectRatio: 1.0, // Imagen cuadrada
+                      child: image,
                     ),
-                  ),
 
-                  const SizedBox(height: AppSpacing.xs),
+                  Padding(
+                    padding: const EdgeInsets.all(AppSpacing.sm),
 
-                  Text(
-                    gossip.content,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-
-                  const SizedBox(height: AppSpacing.xs),
-
-                  // ✅ Botones de acción (compartir y reportar)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      // Botón compartir
-                      Semantics(
-                        label: context.l10n.gossipCardShareSemanticLabel,
-                        hint: context.l10n.gossipCardShareSemanticHint,
-                        button: true,
-                        child: IconButton(
-                          icon: const Icon(Icons.share, size: 20),
-                          onPressed: () => _shareGossip(context, gossip),
-                          // ✅ Touch target mínimo 48×48dp
-                          constraints: const BoxConstraints(
-                            minWidth: 48,
-                            minHeight: 48,
-                          ),
-                          iconSize: 20,
-                          tooltip: context.l10n.gossipCardShareTooltip,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          gossip.subject,
+                          // En grilla el alto es fijo: una línea para no desbordar
+                          maxLines: hasFixedHeight ? 1 : null,
+                          overflow: hasFixedHeight
+                              ? TextOverflow.ellipsis
+                              : null,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                      ),
 
-                      // Botón reportar (menú)
-                      Semantics(
-                        label: context.l10n.gossipCardReportSemanticLabel,
-                        hint: context.l10n.gossipCardReportSemanticHint,
-                        button: true,
-                        child: IconButton(
-                          icon: const Icon(Icons.flag_outlined, size: 20),
-                          onPressed: () => _reportGossip(context, gossip),
-                          constraints: const BoxConstraints(
-                            minWidth: 48,
-                            minHeight: 48,
-                          ),
-                          iconSize: 20,
-                          tooltip: context.l10n.gossipCardReportTooltip,
+                        const SizedBox(height: AppSpacing.xs),
+
+                        Text(
+                          gossip.content,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                    ],
+
+                        const SizedBox(height: AppSpacing.xs),
+
+                        // ✅ Botones de acción (compartir y reportar)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            // Botón compartir
+                            Semantics(
+                              label: context.l10n.gossipCardShareSemanticLabel,
+                              hint: context.l10n.gossipCardShareSemanticHint,
+                              button: true,
+                              child: IconButton(
+                                icon: const Icon(Icons.share, size: 20),
+                                onPressed: () => _shareGossip(context, gossip),
+                                // ✅ Touch target mínimo 48×48dp
+                                constraints: const BoxConstraints(
+                                  minWidth: 48,
+                                  minHeight: 48,
+                                ),
+                                iconSize: 20,
+                                tooltip: context.l10n.gossipCardShareTooltip,
+                              ),
+                            ),
+
+                            // Botón reportar (menú)
+                            Semantics(
+                              label: context.l10n.gossipCardReportSemanticLabel,
+                              hint: context.l10n.gossipCardReportSemanticHint,
+                              button: true,
+                              child: IconButton(
+                                icon: const Icon(Icons.flag_outlined, size: 20),
+                                onPressed: () => _reportGossip(context, gossip),
+                                constraints: const BoxConstraints(
+                                  minWidth: 48,
+                                  minHeight: 48,
+                                ),
+                                iconSize: 20,
+                                tooltip: context.l10n.gossipCardReportTooltip,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ],
-              ),
-            ),
-          ],
-        ),
+              );
+            },
+          ),
         ),
       ),
+    );
+  }
+
+  /// Imagen del chisme: thumbnail (30 KB) primero, fallback a imagen completa (150 KB)
+  Widget _buildImage(BuildContext context) {
+    return Image.network(
+      gossip.thumbnailUrl ??
+          gossip.imageUrl ??
+          'https://via.placeholder.com/150',
+      width: double.infinity,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return Container(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          child: Icon(
+            Icons.image,
+            size: 50,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        );
+      },
     );
   }
 }

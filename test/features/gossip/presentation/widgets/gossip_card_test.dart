@@ -282,20 +282,22 @@ void main() {
     });
 
     testWidgets('debe tener imagen en AspectRatio para mantener proporción', (tester) async {
-      // Act
+      // Act - En lista (alto sin límite, como Home) la imagen es cuadrada.
+      // Con alto fijo (grilla) la imagen usa Expanded: ver grupo "Layout".
       await tester.pumpWidget(
         testableWidget(
-          child: SizedBox(
-            width: 350,
-            height: 550,
-            child: GossipCard(gossip: testGossip),
+          child: ListView(
+            children: [
+              SizedBox(width: 350, child: GossipCard(gossip: testGossip)),
+            ],
           ),
         ),
       );
       await tester.pumpAndSettle();
 
       // Assert
-      expect(find.byType(AspectRatio), findsOneWidget);
+      final aspectRatio = tester.widget<AspectRatio>(find.byType(AspectRatio));
+      expect(aspectRatio.aspectRatio, 1.0);
     });
 
     testWidgets('debe renderizar botón de compartir', (tester) async {
@@ -677,6 +679,94 @@ void main() {
         (col) => col.crossAxisAlignment == CrossAxisAlignment.start,
       );
       expect(hasStartAlignment, isTrue);
+    });
+
+    group('Layout según las restricciones del padre', () {
+      Gossip gossipWith({required String subject, required String content}) => Gossip(
+            id: 'test-123',
+            countryId: '1',
+            regionId: 'ant',
+            cityId: 'med',
+            subject: subject,
+            content: content,
+            audioUrl: null,
+            imageUrl: null,
+            publishedAs: PublishAs.anonymous,
+            status: GossipStatus.published,
+            moderationStatus: ModerationStatus.approved,
+            reportedCount: 0,
+            viewCount: 0,
+            deletedAt: null,
+            deletedBy: null,
+            visibility: GossipVisibility.public,
+            createdAt: DateTime(2024, 1, 1),
+            createdBy: 'user-123',
+            modifiedAt: null,
+            modifiedBy: null,
+          );
+
+      testWidgets('en una celda de grilla a 375 de ancho no desborda',
+          (tester) async {
+        // Celda real de search_screen en un iPhone SE (2 columnas, ratio 0.72)
+        await tester.pumpWidget(testableWidget(
+          child: Center(
+            child: SizedBox(
+              width: 161.5,
+              height: 224.3,
+              child: GossipCard(gossip: testGossip),
+            ),
+          ),
+        ));
+        await tester.pumpAndSettle();
+
+        expect(tester.takeException(), isNull);
+        final imageSize = tester.getSize(find.byType(Image));
+        expect(imageSize.height, lessThan(161.5)); // la imagen cede espacio
+        expect(imageSize.height, greaterThan(0));
+        expect(find.byIcon(Icons.share), findsOneWidget);
+        expect(find.byIcon(Icons.flag_outlined), findsOneWidget);
+      });
+
+      testWidgets('en celda de grilla un subject largo se corta y no desborda',
+          (tester) async {
+        final gossip = gossipWith(
+          subject: 'Un asunto larguísimo que ocupa muchas líneas ' * 4,
+          content: 'Contenido',
+        );
+        await tester.pumpWidget(testableWidget(
+          child: Center(
+            child: SizedBox(
+              width: 161.5,
+              height: 224.3,
+              child: GossipCard(gossip: gossip),
+            ),
+          ),
+        ));
+        await tester.pumpAndSettle();
+
+        expect(tester.takeException(), isNull);
+        final subject = tester.widget<Text>(find.text(gossip.subject));
+        expect(subject.maxLines, 1);
+        expect(subject.overflow, TextOverflow.ellipsis);
+      });
+
+      testWidgets('en una lista (alto sin límite) la imagen sigue cuadrada y el subject completo',
+          (tester) async {
+        final gossip = gossipWith(subject: 'Asunto', content: 'Contenido');
+        await tester.pumpWidget(testableWidget(
+          child: ListView(
+            children: [
+              SizedBox(width: 350, child: GossipCard(gossip: gossip)),
+            ],
+          ),
+        ));
+        await tester.pumpAndSettle();
+
+        final imageSize = tester.getSize(find.byType(Image));
+        expect(imageSize.height, moreOrLessEquals(imageSize.width));
+        expect(find.byType(AspectRatio), findsOneWidget);
+        expect(tester.widget<Text>(find.text('Asunto')).maxLines, isNull);
+      });
     });
 
     group('Compartir', () {
