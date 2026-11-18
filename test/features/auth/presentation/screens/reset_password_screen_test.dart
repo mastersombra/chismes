@@ -6,10 +6,16 @@ import 'package:chismes/features/auth/presentation/screens/reset_password_screen
 import 'package:chismes/features/auth/presentation/controllers/reset_password_controller.dart';
 import 'package:chismes/features/auth/presentation/state/auth_state.dart';
 import 'package:chismes/core/di/injection_container.dart';
+import 'package:chismes/core/error/error_codes.dart';
+import 'package:chismes/core/error/failure.dart';
+import 'package:chismes/core/l10n/l10n.dart';
+import 'package:chismes/features/auth/presentation/controllers/login_controller.dart';
+import 'package:chismes/features/auth/presentation/screens/login_screen.dart';
 
 import '../../../../helpers/widget_test_wrapper.dart';
 import '../../../../helpers/test_di_helper.dart';
 import 'reset_password_screen_test.mocks.dart';
+import 'login_screen_test.mocks.dart' as login_mocks;
 
 @GenerateNiceMocks([
   MockSpec<ResetPasswordController>(),
@@ -169,6 +175,103 @@ void main() {
       // Assert
       // NOTE: Se llama 2 veces: 1 manual + 1 automático por AnimatedBuilder
       verify(mockController.removeListener(any)).called(2);
+    });
+  });
+
+  group('ResetPasswordScreen - Estados y validación', () {
+    AppLocalizations l10nOf(WidgetTester tester) =>
+        AppLocalizations.of(tester.element(find.byType(ResetPasswordScreen)))!;
+
+    List<VoidCallback> captureListeners() {
+      final listeners = <VoidCallback>[];
+      when(mockController.addListener(any)).thenAnswer((inv) {
+        listeners.add(inv.positionalArguments[0] as VoidCallback);
+      });
+      return listeners;
+    }
+
+    testWidgets('contraseñas distintas muestran error y no envían', (tester) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextFormField).at(0), 'ValidPassword123!');
+      await tester.enterText(find.byType(TextFormField).at(1), 'OtherPassword123!');
+      await tester.tap(find.text('Cambiar contraseña'));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10nOf(tester).passwordsMustMatch), findsOneWidget);
+      verifyNever(mockController.updatePassword(newPassword: anyNamed('newPassword')));
+    });
+
+    testWidgets('AuthError muestra snackbar rojo con el mensaje traducido',
+        (tester) async {
+      final listeners = captureListeners();
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+      final failure =
+          AuthFailure(code: ErrorCode.networkError, technicalMessage: 'net');
+
+      when(mockController.state).thenReturn(AuthError(failure));
+      for (final l in listeners) {
+        l();
+      }
+      await tester.pump();
+
+      expect(tester.widget<SnackBar>(find.byType(SnackBar)).backgroundColor,
+          Colors.red);
+      expect(
+        find.descendant(
+          of: find.byType(SnackBar),
+          matching: find.text(AuthError(failure)
+              .getMessage(tester.element(find.byType(ResetPasswordScreen)))),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('AuthPasswordUpdated muestra diálogo y OK lleva a LoginScreen',
+        (tester) async {
+      final loginController = login_mocks.MockLoginController();
+      when(loginController.state).thenReturn(const AuthInitial());
+      getIt.registerSingleton<LoginController>(loginController);
+      addTearDown(() => getIt.unregister<LoginController>());
+
+      final listeners = captureListeners();
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+      final l10n = l10nOf(tester);
+
+      when(mockController.state).thenReturn(const AuthPasswordUpdated());
+      for (final l in listeners) {
+        l();
+      }
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.passwordUpdatedSuccessTitle), findsOneWidget);
+      expect(find.text(l10n.passwordUpdatedSuccessMessage), findsOneWidget);
+
+      await tester.tap(find.text(l10n.resetPasswordOkButton));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.byType(ResetPasswordScreen), findsNothing);
+      expect(find.byType(LoginScreen), findsOneWidget);
+    });
+
+    testWidgets('el diálogo de éxito no se cierra tocando fuera', (tester) async {
+      final listeners = captureListeners();
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      when(mockController.state).thenReturn(const AuthPasswordUpdated());
+      for (final l in listeners) {
+        l();
+      }
+      await tester.pumpAndSettle();
+      await tester.tapAt(const Offset(5, 5));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
     });
   });
 }

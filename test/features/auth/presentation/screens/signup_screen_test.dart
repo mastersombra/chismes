@@ -11,12 +11,20 @@ import 'package:chismes/features/auth/presentation/widgets/password_field.dart';
 import 'package:chismes/features/auth/presentation/widgets/password_strength_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:chismes/core/logging/app_logger.dart';
+import 'package:chismes/core/services/auth_service.dart';
+import 'package:chismes/features/auth/domain/repositories/auth_repository.dart';
+import 'package:chismes/features/auth/presentation/controllers/profile_setup_controller.dart';
+import 'package:chismes/features/auth/presentation/screens/otp_verification_screen.dart';
+import 'package:chismes/features/auth/presentation/screens/profile_setup_screen.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import '../../../../helpers/test_di_helper.dart';
 import '../../../../helpers/widget_test_wrapper.dart';
 import 'signup_screen_test.mocks.dart';
+import 'profile_setup_screen_test.mocks.dart' as setup_mocks;
+import '../../../../helpers/mock_app_logger_helper.dart' as logger_helper;
 
 @GenerateMocks([SignupController])
 void main() {
@@ -391,11 +399,23 @@ void main() {
       verify(mockController.removeListener(any)).called(greaterThan(0));
     });
 
-    testWidgets('debe ejecutar _onStateChanged cuando estado cambia a AuthSuccess', (WidgetTester tester) async {
+    testWidgets('AuthSuccess reemplaza la pantalla por ProfileSetupScreen', (WidgetTester tester) async {
       // Arrange
-      VoidCallback? capturedListener;
+      final setupController = setup_mocks.MockProfileSetupController();
+      final authService = setup_mocks.MockAuthService();
+      when(setupController.state).thenReturn(const AuthInitial());
+      when(setupController.checkingUsername).thenReturn(false);
+      when(setupController.usernameAvailable).thenReturn(null);
+      when(authService.currentUser).thenReturn(null);
+      getIt.registerSingleton<ProfileSetupController>(setupController);
+      getIt.registerSingleton<AuthService>(authService);
+      addTearDown(() async {
+        await getIt.unregister<ProfileSetupController>();
+        await getIt.unregister<AuthService>();
+      });
+      final listeners = <VoidCallback>[];
       when(mockController.addListener(any)).thenAnswer((invocation) {
-        capturedListener = invocation.positionalArguments[0] as VoidCallback;
+        listeners.add(invocation.positionalArguments[0] as VoidCallback);
       });
       when(mockController.state).thenReturn(const AuthInitial());
 
@@ -414,18 +434,21 @@ void main() {
       when(mockController.state).thenReturn(AuthSuccess(user));
 
       // Act - llamar listener manualmente
-      capturedListener?.call();
+      for (final listener in listeners) {
+        listener();
+      }
       await tester.pumpAndSettle();
 
       // Assert - verificar que el listener fue ejecutado
-      expect(capturedListener, isNotNull);
+      expect(find.byType(ProfileSetupScreen), findsOneWidget);
+      expect(find.byType(SignupScreen), findsNothing);
     });
 
-    testWidgets('debe ejecutar _showError cuando estado cambia a AuthError', (WidgetTester tester) async {
+    testWidgets('AuthError de red muestra snackbar rojo con el mensaje traducido', (WidgetTester tester) async {
       // Arrange
-      VoidCallback? capturedListener;
+      final listeners = <VoidCallback>[];
       when(mockController.addListener(any)).thenAnswer((invocation) {
-        capturedListener = invocation.positionalArguments[0] as VoidCallback;
+        listeners.add(invocation.positionalArguments[0] as VoidCallback);
       });
       when(mockController.state).thenReturn(const AuthInitial());
 
@@ -441,11 +464,21 @@ void main() {
       when(mockController.state).thenReturn(AuthError(failure));
 
       // Act - llamar listener manualmente
-      capturedListener?.call();
+      for (final listener in listeners) {
+        listener();
+      }
       await tester.pump();
 
       // Assert - verificar que el listener fue ejecutado
-      expect(capturedListener, isNotNull);
+      final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
+      expect(snackBar.backgroundColor, Colors.red);
+      expect(
+        find.descendant(
+            of: find.byType(SnackBar),
+            matching: find.text(AuthError(failure)
+                .getMessage(tester.element(find.byType(SignupScreen))))),
+        findsOneWidget,
+      );
     });
 
     testWidgets('debe validar que contraseña de confirmación coincida', (WidgetTester tester) async {
@@ -559,11 +592,11 @@ void main() {
       expect(indicator.password, 'TestPassword123');
     });
 
-    testWidgets('debe ejecutar _onStateChanged cuando email ya está en uso', (WidgetTester tester) async {
+    testWidgets('email en uso muestra snackbar con el mensaje traducido', (WidgetTester tester) async {
       // Arrange
-      VoidCallback? capturedListener;
+      final listeners = <VoidCallback>[];
       when(mockController.addListener(any)).thenAnswer((invocation) {
-        capturedListener = invocation.positionalArguments[0] as VoidCallback;
+        listeners.add(invocation.positionalArguments[0] as VoidCallback);
       });
       when(mockController.state).thenReturn(const AuthInitial());
 
@@ -578,19 +611,29 @@ void main() {
       when(mockController.state).thenReturn(AuthError(failure));
 
       // Act - llamar listener manualmente
-      capturedListener?.call();
+      for (final listener in listeners) {
+        listener();
+      }
       await tester.pump();
 
       // Assert - verifica que el listener fue capturado y ejecutado
       // (esto cubre _onStateChanged y _showError para error de email en uso)
-      expect(capturedListener, isNotNull);
+      final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
+      expect(snackBar.backgroundColor, Colors.red);
+      expect(
+        find.descendant(
+            of: find.byType(SnackBar),
+            matching: find.text(AuthError(failure)
+                .getMessage(tester.element(find.byType(SignupScreen))))),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('debe ejecutar _onStateChanged cuando contraseña es débil', (WidgetTester tester) async {
+    testWidgets('contraseña débil muestra snackbar con el mensaje traducido', (WidgetTester tester) async {
       // Arrange
-      VoidCallback? capturedListener;
+      final listeners = <VoidCallback>[];
       when(mockController.addListener(any)).thenAnswer((invocation) {
-        capturedListener = invocation.positionalArguments[0] as VoidCallback;
+        listeners.add(invocation.positionalArguments[0] as VoidCallback);
       });
       when(mockController.state).thenReturn(const AuthInitial());
 
@@ -605,12 +648,22 @@ void main() {
       when(mockController.state).thenReturn(AuthError(failure));
 
       // Act - llamar listener manualmente
-      capturedListener?.call();
+      for (final listener in listeners) {
+        listener();
+      }
       await tester.pump();
 
       // Assert - verifica que el listener fue capturado y ejecutado
       // (esto cubre _onStateChanged y _showError para error de contraseña débil)
-      expect(capturedListener, isNotNull);
+      final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
+      expect(snackBar.backgroundColor, Colors.red);
+      expect(
+        find.descendant(
+            of: find.byType(SnackBar),
+            matching: find.text(AuthError(failure)
+                .getMessage(tester.element(find.byType(SignupScreen))))),
+        findsOneWidget,
+      );
     });
 
     testWidgets('debe normalizar email antes de signup', (WidgetTester tester) async {
@@ -634,11 +687,11 @@ void main() {
       )).called(1);
     });
 
-    testWidgets('debe ejecutar _onStateChanged cuando no hay conexión', (WidgetTester tester) async {
+    testWidgets('sin conexión muestra snackbar con el mensaje traducido', (WidgetTester tester) async {
       // Arrange
-      VoidCallback? capturedListener;
+      final listeners = <VoidCallback>[];
       when(mockController.addListener(any)).thenAnswer((invocation) {
-        capturedListener = invocation.positionalArguments[0] as VoidCallback;
+        listeners.add(invocation.positionalArguments[0] as VoidCallback);
       });
       when(mockController.state).thenReturn(const AuthInitial());
 
@@ -653,12 +706,22 @@ void main() {
       when(mockController.state).thenReturn(AuthError(failure));
 
       // Act - llamar listener manualmente
-      capturedListener?.call();
+      for (final listener in listeners) {
+        listener();
+      }
       await tester.pump();
 
       // Assert - verifica que el listener fue capturado y ejecutado
       // (esto cubre _onStateChanged y _showError para error de red)
-      expect(capturedListener, isNotNull);
+      final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
+      expect(snackBar.backgroundColor, Colors.red);
+      expect(
+        find.descendant(
+            of: find.byType(SnackBar),
+            matching: find.text(AuthError(failure)
+                .getMessage(tester.element(find.byType(SignupScreen))))),
+        findsOneWidget,
+      );
     });
 
     testWidgets('no debe llamar signUpWithEmail con formato de email inválido', (WidgetTester tester) async {
@@ -682,4 +745,34 @@ void main() {
       ));
     });
   });
+
+  testWidgets('AuthOtpSent reemplaza la pantalla por OtpVerificationScreen',
+      (WidgetTester tester) async {
+    getIt.registerSingleton<AppLogger>(logger_helper.MockAppLogger());
+    getIt.registerSingleton<AuthRepository>(_MockAuthRepository());
+    addTearDown(() async {
+      await getIt.unregister<AppLogger>();
+      await getIt.unregister<AuthRepository>();
+    });
+    final listeners = <VoidCallback>[];
+    when(mockController.addListener(any)).thenAnswer((invocation) {
+      listeners.add(invocation.positionalArguments[0] as VoidCallback);
+    });
+    await tester.pumpWidget(makeTestableWidget(const SignupScreen()));
+    await tester.pumpAndSettle();
+
+    when(mockController.state).thenReturn(const AuthOtpSent('new@test.com'));
+    for (final listener in listeners) {
+      listener();
+    }
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SignupScreen), findsNothing);
+    final otp =
+        tester.widget<OtpVerificationScreen>(find.byType(OtpVerificationScreen));
+    expect(otp.controller.state.email, 'new@test.com');
+    expect(otp.onSuccess, isNull);
+  });
 }
+
+class _MockAuthRepository extends Mock implements AuthRepository {}
