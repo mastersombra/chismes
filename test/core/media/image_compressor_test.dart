@@ -159,7 +159,6 @@ void main() {
         // 3. Verificar tamaño con getFileSizeInKB
         // 4. Subir a Supabase
 
-        expect(true, isTrue); // Test de documentación
       });
 
       test('si compressGossipImage retorna null, upload debe fallar', () {
@@ -612,7 +611,6 @@ void main() {
 
       test('ambos métodos deben retornar File nullable', () {
         // Documenta que ambos pueden retornar null si falla
-        expect(true, isTrue); // Test de documentación
       });
 
       test('ambos métodos deben ser static', () {

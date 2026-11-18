@@ -146,14 +146,12 @@ void main() {
         // Documenta la advertencia del código
         // ⚠️ ADVERTENCIA: Solo usar para DESARROLLO y MOCKS
 
-        expect(true, isTrue);
       });
 
       test('puede tener colisiones si se genera en el mismo milisegundo', () {
         // Documenta el problema de colisiones
         // Dos clientes pueden generar IDs en momentos extremadamente cercanos
 
-        expect(true, isTrue);
       });
 
       test('el ID tiene relación con la hora', () {
@@ -173,7 +171,6 @@ void main() {
         // - Identificador generado por backend
         // - UUID v4 (si se necesita generación en cliente)
 
-        expect(true, isTrue);
       });
     });
 

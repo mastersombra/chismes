@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -2699,6 +2700,328 @@ void main() {
       // No debería haber llamado al validador porque falta información
       // Por lo tanto el failure sigue siendo null
       expect(controller.state.failure, isNull);
+    });
+  });
+
+  group('AddGossipController - Coverage Gaps', () {
+    test('_onLocationChanged debe sincronizar selectedCityIdNotifier cuando LocationManager cambia', () {
+      // Arrange
+      final countries = [const Country(id: '1', code: 'CO', name: 'Colombia')];
+      final regions = [const Region(id: 'ant', name: 'Antioquia', countryId: '1', type: 'department')];
+      final cities = [const City(id: 'med', name: 'Medellín', regionId: 'ant')];
+
+      // Capturar el listener registrado en addListener
+      VoidCallback? capturedListener;
+      when(mockLocationManager.addListener(any)).thenAnswer((invocation) {
+        capturedListener = invocation.positionalArguments[0] as VoidCallback;
+      });
+
+      // Recrear controller para capturar listener
+      controller.dispose();
+      controller = AddGossipController(
+        locationManager: mockLocationManager,
+        createGossip: mockCreateGossip,
+        logger: mockLogger,
+      );
+
+      // Verificar que el listener fue registrado
+      expect(capturedListener, isNotNull);
+
+      // Arrange - Actualizar state de LocationManager con ciudad seleccionada
+      when(mockLocationManager.state).thenReturn(
+        LocationState(
+          countries: countries,
+          regions: regions,
+          cities: cities,
+          selectedCountry: countries[0],
+          selectedRegion: regions[0],
+          selectedCity: cities[0],
+          isLoadingCountries: false,
+          isLoadingRegions: false,
+          isLoadingCities: false,
+          isDetectingLocation: false,
+        ),
+      );
+
+      // Act - Simular que LocationManager notifica cambios
+      capturedListener!();
+
+      // Assert - selectedCityIdNotifier debe actualizarse
+      expect(controller.selectedCityIdNotifier.value, 'med');
+    });
+
+    test('_onLocationChanged debe propagar cambios a listeners del controller', () {
+      // Arrange
+      VoidCallback? capturedListener;
+      when(mockLocationManager.addListener(any)).thenAnswer((invocation) {
+        capturedListener = invocation.positionalArguments[0] as VoidCallback;
+      });
+
+      controller.dispose();
+      controller = AddGossipController(
+        locationManager: mockLocationManager,
+        createGossip: mockCreateGossip,
+        logger: mockLogger,
+      );
+
+      var notificationCount = 0;
+      controller.addListener(() {
+        notificationCount++;
+      });
+
+      // Act - Simular notificación de LocationManager
+      capturedListener!();
+
+      // Assert - Controller debe notificar a sus listeners
+      expect(notificationCount, 1);
+    });
+
+    test('validateLocationHierarchy debe retornar false cuando ciudad no pertenece a región', () async {
+      // Arrange - Crear jerarquía INCONSISTENTE
+      final countries = [const Country(id: '1', code: 'CO', name: 'Colombia')];
+      final regions = [
+        const Region(id: 'ant', name: 'Antioquia', countryId: '1', type: 'department'),
+        const Region(id: 'cun', name: 'Cundinamarca', countryId: '1', type: 'department'),
+      ];
+      final cities = [
+        const City(id: 'med', name: 'Medellín', regionId: 'ant'),
+        const City(id: 'bog', name: 'Bogotá', regionId: 'cun'), // Pertenece a Cundinamarca
+      ];
+
+      when(mockLocationManager.loadCountries()).thenAnswer((_) async {
+        when(mockLocationManager.state).thenReturn(
+          LocationState(
+            countries: countries,
+            regions: const [],
+            cities: const [],
+            isLoadingCountries: false,
+            isLoadingRegions: false,
+            isLoadingCities: false,
+            isDetectingLocation: false,
+          ),
+        );
+      });
+
+      when(mockLocationManager.loadRegions(any)).thenAnswer((_) async {
+        when(mockLocationManager.state).thenReturn(
+          LocationState(
+            countries: countries,
+            regions: regions,
+            cities: const [],
+            selectedCountry: countries[0],
+            isLoadingCountries: false,
+            isLoadingRegions: false,
+            isLoadingCities: false,
+            isDetectingLocation: false,
+          ),
+        );
+      });
+
+      when(mockLocationManager.loadCities(any)).thenAnswer((_) async {
+        when(mockLocationManager.state).thenReturn(
+          LocationState(
+            countries: countries,
+            regions: regions,
+            cities: cities,
+            selectedCountry: countries[0],
+            selectedRegion: regions[0], // Antioquia
+            isLoadingCountries: false,
+            isLoadingRegions: false,
+            isLoadingCities: false,
+            isDetectingLocation: false,
+          ),
+        );
+      });
+
+      // INCONSISTENCIA: Seleccionar Bogotá (regionId: cun) pero región es Antioquia (ant)
+      when(mockLocationManager.selectCity(any)).thenAnswer((_) {
+        when(mockLocationManager.state).thenReturn(
+          LocationState(
+            countries: countries,
+            regions: regions,
+            cities: cities,
+            selectedCountry: countries[0],
+            selectedRegion: regions[0], // Antioquia (ant)
+            selectedCity: cities[1], // Bogotá (regionId: cun) ← INCONSISTENTE
+            isLoadingCountries: false,
+            isLoadingRegions: false,
+            isLoadingCities: false,
+            isDetectingLocation: false,
+          ),
+        );
+      });
+
+      await controller.initialize();
+      await controller.selectCountry('1');
+      await controller.selectRegion('ant');
+      controller.selectCity('bog'); // Seleccionar Bogotá (que pertenece a Cundinamarca, no Antioquia)
+
+      // Act
+      final result = controller.validateLocationHierarchy();
+
+      // Assert - Validación debe fallar
+      expect(result, isFalse);
+      expect(controller.state.failure, isNotNull);
+      expect(controller.state.failure?.code, ErrorCode.invalidLocation);
+    });
+
+    test('pickImageFromCamera debe actualizar estado cuando usuario cancela', () async {
+      // Arrange - El test actual no mockea ImagePicker porque es creado internamente
+      // Este test verifica que el estado se actualiza correctamente durante el flujo
+
+      // Act
+      await controller.pickImageFromCamera();
+
+      // Assert - Estado debe volver a normal después de la operación
+      // (ImagePicker retorna null en tests, simulando cancelación)
+      expect(controller.state.isUploadingImage, isFalse);
+    });
+
+    test('pickImageFromGallery debe actualizar estado cuando usuario cancela', () async {
+      // Arrange - Similar al test anterior
+
+      // Act
+      await controller.pickImageFromGallery();
+
+      // Assert - Estado debe volver a normal
+      expect(controller.state.isUploadingImage, isFalse);
+    });
+
+    test('ValueNotifiers deben sincronizarse con cambios de estado', () {
+      // Arrange
+      expect(controller.imageNotifier.value, isNull);
+      expect(controller.isUploadingImageNotifier.value, isFalse);
+      expect(controller.isSubmittingNotifier.value, isFalse);
+      expect(controller.failureNotifier.value, isNull);
+
+      // Act - Actualizar estado con diferentes valores
+      controller.setImageUrl('https://example.com/image.jpg');
+
+      // Assert - imageNotifier debe sincronizarse
+      expect(controller.imageNotifier.value, 'https://example.com/image.jpg');
+
+      // Act - Remover imagen
+      controller.removeImage();
+
+      // Assert - imageNotifier debe limpiarse
+      expect(controller.imageNotifier.value, isNull);
+    });
+
+    test('isSubmittingNotifier debe sincronizarse durante submit', () async {
+      // Arrange
+      final countries = [const Country(id: '1', code: 'CO', name: 'Colombia')];
+      final regions = [const Region(id: 'ant', name: 'Antioquia', countryId: '1', type: 'department')];
+      final cities = [const City(id: 'med', name: 'Medellín', regionId: 'ant')];
+
+      when(mockLocationManager.loadCountries()).thenAnswer((_) async {
+        when(mockLocationManager.state).thenReturn(
+          LocationState(
+            countries: countries,
+            regions: const [],
+            cities: const [],
+            isLoadingCountries: false,
+            isLoadingRegions: false,
+            isLoadingCities: false,
+            isDetectingLocation: false,
+          ),
+        );
+      });
+
+      when(mockLocationManager.loadRegions(any)).thenAnswer((_) async {
+        when(mockLocationManager.state).thenReturn(
+          LocationState(
+            countries: countries,
+            regions: regions,
+            cities: const [],
+            selectedCountry: countries[0],
+            isLoadingCountries: false,
+            isLoadingRegions: false,
+            isLoadingCities: false,
+            isDetectingLocation: false,
+          ),
+        );
+      });
+
+      when(mockLocationManager.loadCities(any)).thenAnswer((_) async {
+        when(mockLocationManager.state).thenReturn(
+          LocationState(
+            countries: countries,
+            regions: regions,
+            cities: cities,
+            selectedCountry: countries[0],
+            selectedRegion: regions[0],
+            isLoadingCountries: false,
+            isLoadingRegions: false,
+            isLoadingCities: false,
+            isDetectingLocation: false,
+          ),
+        );
+      });
+
+      when(mockLocationManager.selectCity(any)).thenAnswer((_) {
+        when(mockLocationManager.state).thenReturn(
+          LocationState(
+            countries: countries,
+            regions: regions,
+            cities: cities,
+            selectedCountry: countries[0],
+            selectedRegion: regions[0],
+            selectedCity: cities[0],
+            isLoadingCountries: false,
+            isLoadingRegions: false,
+            isLoadingCities: false,
+            isDetectingLocation: false,
+          ),
+        );
+      });
+
+      final mockGossip = Gossip(
+        id: 'test-123',
+        countryId: '1',
+        regionId: 'ant',
+        cityId: 'med',
+        subject: 'Test',
+        content: 'Test Content',
+        audioUrl: null,
+        imageUrl: null,
+        publishedAs: PublishAs.anonymous,
+        status: GossipStatus.published,
+        moderationStatus: ModerationStatus.approved,
+        reportedCount: 0,
+        viewCount: 0,
+        deletedAt: null,
+        deletedBy: null,
+        visibility: GossipVisibility.public,
+        createdAt: DateTime.now(),
+        createdBy: 'user-123',
+        modifiedAt: null,
+        modifiedBy: null,
+      );
+
+      await controller.initialize();
+      await controller.selectCountry('1');
+      await controller.selectRegion('ant');
+      controller.selectCity('med');
+      controller.updateSubject('Test');
+      controller.updateContent('Content');
+
+      var submittingStates = <bool>[];
+      controller.isSubmittingNotifier.addListener(() {
+        submittingStates.add(controller.isSubmittingNotifier.value);
+      });
+
+      when(mockCreateGossip(input: anyNamed('input'), imageFile: anyNamed('imageFile')))
+          .thenAnswer((_) async {
+        await Future.delayed(const Duration(milliseconds: 50));
+        return Result.success(mockGossip);
+      });
+
+      // Act
+      await controller.submit();
+
+      // Assert - isSubmittingNotifier debe cambiar de false → true → false
+      expect(submittingStates, contains(true));
+      expect(controller.isSubmittingNotifier.value, isFalse);
     });
   });
 }

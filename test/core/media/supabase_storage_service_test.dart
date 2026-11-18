@@ -351,7 +351,6 @@ void main() {
     test('deleteImage no debe lanzar error, solo loggear', () {
       // Documenta que catch no rethrow
       // Este comportamiento permite que el borrado falle sin afectar flujo
-      expect(true, isTrue); // Test de documentación
     });
   });
 
@@ -494,7 +493,6 @@ void main() {
     test('debe ser lazySingleton en DI', () {
       // Documenta que la anotación @lazySingleton está presente
       // Se crea solo cuando se necesita por primera vez
-      expect(true, isTrue);
     });
   });
 
@@ -1014,7 +1012,6 @@ void main() {
       test('debe propagar error si upload de imagen completa falla', () {
         // Si storage.upload() lanza excepción, debe propagarse
         // No hay try-catch en el método
-        expect(true, isTrue); // Documenta comportamiento
       });
 
       test('thumbnail fallo NO debe afectar el flujo', () {
@@ -1080,19 +1077,16 @@ void main() {
       test('debe pasar archivo original a compressGossipImage', () {
         // imageFile original (3MB, 3024x4032)
         // NO el archivo comprimido
-        expect(true, isTrue);
       });
 
       test('debe pasar archivo comprimido a getFileSizeInKB', () {
         // compressedFile (120KB, 800x1067)
         // NO el archivo original
-        expect(true, isTrue);
       });
 
       test('debe pasar archivo original a generateThumbnail', () {
         // imageFile original
         // ImageCompressor se encarga de la compresión interna
-        expect(true, isTrue);
       });
     });
 

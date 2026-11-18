@@ -597,7 +597,6 @@ void main() {
     testWidgets('debe ser singleton en DI', (tester) async {
       // Documenta que la anotación @singleton está presente
       // Se crea una sola instancia compartida
-      expect(true, isTrue);
     });
   });
 

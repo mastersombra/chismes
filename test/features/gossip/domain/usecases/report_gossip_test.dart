@@ -482,19 +482,16 @@ void main() {
       test('debe documentar que usuario solo puede reportar una vez', () {
         // Documenta: unique constraint en base de datos
         // Un usuario que ya reportó recibe DataFailure con duplicateEntry
-        expect(true, isTrue);
       });
 
       test('debe documentar que 3 reportes marcan el gossip como flagged', () {
         // Documenta: lógica en el Edge Function
         // Después de 3 reportes únicos, gossip.moderationStatus = 'flagged'
-        expect(true, isTrue);
       });
 
       test('debe documentar que reportes quedan registrados', () {
         // Documenta: tabla gossip_reports en base de datos
         // Todos los reportes se guardan para auditoría
-        expect(true, isTrue);
       });
     });
   });

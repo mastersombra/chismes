@@ -406,7 +406,6 @@ void main() {
       test('valores tienen nombres descriptivos', () {
         // Nombres siguen convención: xs, sm, md, lg, xl, xxl, full
         // Son cortos y fáciles de recordar
-        expect(true, isTrue);
       });
 
       test('full es semánticamente diferente del resto', () {

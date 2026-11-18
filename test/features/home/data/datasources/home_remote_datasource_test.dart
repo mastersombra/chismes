@@ -184,7 +184,6 @@ void main() {
         // - i (info): Estadísticas de éxito
         // - w (warning): Situaciones anormales pero manejables
         // - e (error): Errores que causan excepciones
-        expect(true, isTrue);
       });
 
       test('debe incluir contexto relevante en logs', () {
@@ -252,7 +251,6 @@ void main() {
         // Los cursores deben ser del tipo FeedCursor del dominio
         // - Popular feed usa score
         // - Following feed usa created_at
-        expect(true, isTrue); // Documented behavior
       });
     });
 

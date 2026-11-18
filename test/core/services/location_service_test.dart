@@ -938,7 +938,6 @@ void main() {
 
       // Assert - Verificar que se logueó (el mock captura las llamadas)
       // La verificación específica depende de cómo esté configurado el mock
-      expect(true, isTrue); // Test documenta el comportamiento
     });
   });
 

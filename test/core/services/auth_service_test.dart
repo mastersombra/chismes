@@ -47,7 +47,6 @@ void main() {
 
       test('debe ser singleton en DI', () {
         // Documenta que la anotación @singleton está presente
-        expect(true, isTrue);
       });
     });
 

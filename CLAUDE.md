@@ -683,6 +683,87 @@ class MyService {
 
 ---
 
+## 🎨 DESIGN SKILLS (Instalados)
+
+**Objetivo:** UI nivel profesional (Instagram/Facebook caliber)
+
+### Skills Disponibles
+
+| Skill | Uso | Cuándo Invocar |
+|-------|-----|----------------|
+| **frontend-design** | Dirección visual, paletas, tipografía, layouts | Diseñando nueva screen, definiendo identidad visual |
+| **emil-design-eng** | Animaciones, microinteracciones, timing, estados | Implementando animaciones, gesture handlers, transiciones |
+
+### Cómo Usarlos
+
+```bash
+# Dirección visual
+/frontend-design Diseñar screen de [nombre] para Chismes. 
+Target: usuarios 18-35 años, debe sentirse profesional.
+
+# Animaciones y polish
+/emil-design-eng Implementar animación de [acción]. 
+¿Qué timing y curve usar para que se sienta profesional?
+```
+
+### Traducción Web → Flutter
+
+**Los skills usan terminología web. Traduce así:**
+
+| Web (Skills) | Flutter |
+|--------------|---------|
+| `transition: 300ms ease-out` | `AnimationController(duration: 300ms)` + `Curves.easeOut` |
+| `transform: scale(0.97)` | `Transform.scale(scale: 0.97)` |
+| `transform-origin` | `alignment` en Transform/AnimatedContainer |
+| CSS color `#F4F1EA` | `Color(0xFFF4F1EA)` en AppColors |
+| Framer Motion spring | `Curves.elasticOut` o `SpringSimulation` |
+
+### Principios de Emil Kowalski
+
+**Para animaciones profesionales:**
+1. **Timing:** 200-300ms para interacciones, 400-600ms para transiciones
+2. **Curves:** `easeOut` para apertura, `easeIn` para cierre
+3. **Scale origin:** Popovers escalan desde trigger, modals desde centro
+4. **Press states:** Botones deben reaccionar (`scale: 0.97` on press)
+5. **Nothing from nothing:** No usar `scale(0)`, usar `scale(0.95) + opacity`
+
+### Anti-Patterns (Evitar)
+
+```dart
+// ❌ Genérico de IA
+- Paleta cream (#F4F1EA) + terracota (#D97757)
+- Todo con mismo border-radius
+- Labels en ALL CAPS
+- `transition: all` (especificar propiedades)
+- `ease-in` para aperturas (usar `ease-out`)
+
+// ✅ Profesional
+- Paleta específica para Chismes (identidad propia)
+- Border-radius según jerarquía
+- Sentence case para labels
+- Transiciones específicas (transform, opacity)
+- Curves apropiadas según contexto
+```
+
+### Integración con AppSpacing/AppColors
+
+**Los skills sugieren valores. Mapea a tu sistema:**
+
+```dart
+// Skill sugiere: "16px spacing"
+→ Usar: AppSpacing.lg  // Ya tienes sistema consistente
+
+// Skill sugiere: "#1E40AF"
+→ Agregar a: AppColors.primary // Mantener centralizado
+
+// Skill sugiere: "font-weight: 600"
+→ Usar: FontWeight.w600  // Directo en TextStyle
+```
+
+**Ver implementación:** → `.claude/skills/frontend-design/` y `.claude/skills/emil-design-eng/`
+
+---
+
 ## 📞 AYUDA
 
 ### Cuando Necesites Ayuda
@@ -702,8 +783,8 @@ class MyService {
 
 ---
 
-**Última actualización:** 2026-11-12  
-**Versión:** 3.1 (Agregado SOLID + Value Objects + Architecture Review)  
+**Última actualización:** 2026-11-17  
+**Versión:** 3.2 (Agregado Design Skills: frontend-design + emil-design-eng)  
 **Mantenedor:** Alejo
 
 ---

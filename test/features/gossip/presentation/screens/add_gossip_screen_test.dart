@@ -1050,7 +1050,6 @@ void main() {
 
       // Assert - No hay verificaciones porque el callback está vacío
       // La ubicación se guarda en selectCity(), no en onConfirm
-      expect(true, isTrue); // Test de documentación
     });
   });
 }
