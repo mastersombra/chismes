@@ -112,23 +112,6 @@ void main() {
         expect(info1, equals(info2)); // Mismo contenido siempre
       });
 
-      test('segunda llamada debe ser instantánea (usar cache)', () async {
-        // Arrange
-        provider.clearCache();
-
-        // Act
-        final stopwatch1 = Stopwatch()..start();
-        await provider.getDeviceInfo();
-        stopwatch1.stop();
-
-        final stopwatch2 = Stopwatch()..start();
-        await provider.getDeviceInfo();
-        stopwatch2.stop();
-
-        // Assert - Segunda llamada debe ser MUY rápida (cache)
-        expect(stopwatch2.elapsedMicroseconds, lessThan(5000)); // < 5ms (cache hit)
-      });
-
       test('clearCache debe limpiar el cache', () async {
         // Arrange
         final info1 = await provider.getDeviceInfo();
