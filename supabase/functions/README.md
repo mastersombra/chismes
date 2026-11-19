@@ -76,10 +76,28 @@ supabase functions deploy
 
 ### **Programar cleanup-idempotency**
 
-```bash
-# Diario a las 3 AM UTC
-supabase functions schedule cleanup-idempotency --cron "0 3 * * *"
+> La CLI **no** tiene `supabase functions schedule`. Hoy no hay cron para esta
+> función en las migraciones (el único es `error-logs-cleanup`, en `003_error_logs.sql`).
+> Además, el trigger `gossips_cleanup_old_idempotency_keys` (`001_gossips.sql`) ya
+> limpia las keys viejas, así que este cron es opcional/redundante: decidir uno de los dos.
+
+Opciones para programarla (diario a las 3 AM UTC, `0 3 * * *`):
+
+1. **Dashboard:** Integrations → Cron → nuevo job → tipo *Supabase Edge Function* → `cleanup-idempotency`.
+2. **SQL (pg_cron + pg_net)** en una migración:
+
+```sql
+SELECT cron.schedule(
+  'cleanup-idempotency',
+  '0 3 * * *',
+  $$ SELECT net.http_post(
+       url := 'https://<project-ref>.supabase.co/functions/v1/cleanup-idempotency',
+       headers := jsonb_build_object('Authorization', 'Bearer <service-role-o-anon-key>')
+     ) $$
+);
 ```
+
+No commitear keys reales: guardarlas en Vault (`vault.decrypted_secrets`) y leerlas desde el job.
 
 ### **Sintaxis cron**
 
@@ -128,10 +146,7 @@ supabase functions logs cleanup-idempotency --limit 50
 ### **Ejecutar manualmente (testing)**
 
 ```bash
-# Invocar desde CLI
-supabase functions invoke cleanup-idempotency
-
-# O con curl
+# La CLI no tiene `functions invoke`: usar curl
 curl -X POST https://<project>.supabase.co/functions/v1/cleanup-idempotency \
   -H "Authorization: Bearer <anon-key>"
 ```
@@ -187,8 +202,8 @@ LIMIT 10;
 # Verificar que está programada
 supabase functions list
 
-# Si no aparece cron, programar de nuevo
-supabase functions schedule cleanup-idempotency --cron "0 3 * * *"
+# El cron no aparece en la CLI: revisar en SQL
+# SELECT jobname, schedule, active FROM cron.job;
 ```
 
 ### **Ver errores en logs**
@@ -201,15 +216,16 @@ supabase functions logs cleanup-idempotency --tail | grep -i error
 ### **Ejecutar manualmente para testing**
 
 ```bash
-# Invocar y ver resultado inmediatamente
-supabase functions invoke cleanup-idempotency --debug
+# Invocar y ver resultado inmediatamente (respuesta: {"cleaned": N, "timestamp": ..., "duration_ms": ...})
+curl -X POST https://<project-ref>.supabase.co/functions/v1/cleanup-idempotency \
+  -H "Authorization: Bearer <anon-key>"
 ```
 
 ### **Desprogramar función (si necesario)**
 
 ```bash
-# Eliminar cron pero mantener función
-supabase functions unschedule cleanup-idempotency
+# Eliminar cron pero mantener función (SQL)
+# SELECT cron.unschedule('cleanup-idempotency');
 
 # Eliminar función completamente
 supabase functions delete cleanup-idempotency
