@@ -3,6 +3,25 @@
 **Fecha de creación:** 2026-10-22  
 **Objetivo:** Verificar que el proyecto está listo para producción  
 **Estado:** 📋 EN PROGRESO
+**Última revisión:** 2026-11-18
+
+---
+
+## 🎯 Próximos pasos priorizados (2026-11-18)
+
+Orden sugerido. El detalle de cada ítem está en su sección.
+
+| # | Pendiente | Prioridad | Tipo | Requiere |
+|---|---|---|---|---|
+| 1 | Programar `cleanup_orphaned_images()` y `cleanup_quarantine_files()` con pg_cron | 🔴 | Backend | Migración + aplicarla en Supabase |
+| 2 | Decidir la limpieza de idempotency keys: el trigger de `001_gossips.sql` y la Edge Function `cleanup-idempotency` hacen lo mismo; quedarse con uno | 🔴 | Backend | Decisión |
+| 3 | Configuración por entorno (dev/staging/prod) | 🔴 | Infra | Diseño (flavors o `--dart-define`) |
+| 4 | Signing iOS/Android, versión 1.0.0, beta (TestFlight / internal track) | 🔴 | Deploy | Cuentas de Apple/Google |
+| 5 | `MvpContentModerator`, `ContentModerator` y `MvpModerationPolicy` no se usan (la moderación real es la Edge Function `moderate-gossip`): conectarlos como respaldo local o borrarlos | 🟡 | Código | Decisión de producto |
+| 6 | Regla de `PATTERNS.md` "NO usar GetIt en widgets" contradice el patrón real (todas las screens usan `getIt<Controller>()`): ajustar la regla o refactorizar | 🟡 | Arquitectura | Decisión |
+| 7 | 11 `debugPrint` en `lib/` (`error_handler`, `remote_logger`, `device_info_provider`...) → `AppLogger` | 🟡 | Código | — |
+| 8 | ~20 docs de `docs/` citan migraciones con nombres viejos (`006_atomic_rate_limiting.sql`, etc.; hoy son `001`–`009`) | 🟡 | Docs | — |
+| 9 | Apple Sign-In: código listo, falta config externa (ver `docs/google_sign_in_setup.md`) | 🟡 | Externo | Apple Developer (USD 99/año) |
 
 ---
 
@@ -57,9 +76,9 @@
 - [x] ✅ `MockGossipLocalDataSource` NO registrado en DI
 - [x] ✅ `spike-user` solo en tests (no en código producción)
 - [x] ✅ Audio picker NO expuesto en UI (backend listo, UI oculta)
-- [ ] 🟡 Renombrar `MvpContentModerator` a `LocalFallbackContentModerator`
+- [ ] 🟡 `MvpContentModerator` / `ContentModerator` sin uso: conectar como respaldo o borrar (renombrar no aporta mientras no se use)
 - [ ] 🟡 Agregar comentarios de advertencia en mocks
-- [ ] 🟡 `MockLocationRepository` sigue registrado en DI (`@Named('mock') @Singleton`): borrarlo o dejarlo solo para tests
+- [x] ✅ `MockLocationRepository` eliminado de DI (2026-11-18)
 
 ### Logging y Debug
 
@@ -340,9 +359,9 @@
 **Estimación total:** 5-7 días
 
 1. **Mejoras de código** (2 días)
-   - Arreglar controller tests
-   - Eliminar debugPrint
-   - Renombrar MvpContentModerator
+   - ~~Arreglar controller tests~~ ✅ (suite 100% verde, coverage 97%)
+   - Eliminar debugPrint (11 en `lib/`)
+   - Decidir `MvpContentModerator` (conectar o borrar)
 
 2. **Performance** (2 días)
    - Benchmarks

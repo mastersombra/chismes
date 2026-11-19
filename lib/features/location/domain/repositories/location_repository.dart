@@ -8,7 +8,7 @@ import '../entities/city.dart';
 ///
 /// ⚠️ EVOLUCIÓN FUTURA PARA PRODUCCIÓN:
 ///
-/// Actualmente MockLocationRepository devuelve todo en memoria.
+/// Implementación actual: SupabaseLocationRepository (consulta Supabase).
 /// Para producción con millones de usuarios, no descargar países/regiones/ciudades
 /// cada vez que se abre "Agregar chisme".
 ///

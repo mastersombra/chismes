@@ -10,8 +10,6 @@ import '../datasources/supabase_location_remote_data_source.dart';
 
 /// Implementación de LocationRepository usando Supabase
 ///
-/// **Reemplaza:** MockLocationRepository
-///
 /// **Responsabilidades:**
 /// - Orquestar llamadas al datasource
 /// - Convertir excepciones a Failure
