@@ -14,35 +14,6 @@ void main() {
       capturedEmail = null;
     });
 
-    Widget buildWidget({
-      Function(String)? onCodeSent,
-    }) {
-      return MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(
-          body: Builder(
-            builder: (context) => ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (dialogContext) => ForgotPasswordDialog(
-                    onCodeSent: onCodeSent ?? (email) => capturedEmail = email,
-                  ),
-                );
-              },
-              child: const Text('Show Dialog'),
-            ),
-          ),
-        ),
-      );
-    }
-
     Future<void> openDialog(WidgetTester tester, {Function(String)? onCodeSent}) async {
       // Renderizar el dialog directamente sin showDialog
       await tester.pumpWidget(

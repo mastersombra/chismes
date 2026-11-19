@@ -18,18 +18,6 @@ void main() {
     createdAt: DateTime(2024, 1, 1),
   );
 
-  final mockUserWithAvatar = User(
-    id: 'user-2',
-    email: 'avatar@example.com',
-    emailVerified: false,
-    username: 'avataruser',
-    displayName: 'Avatar User',
-    avatarUrl: 'https://example.com/avatar.jpg',
-    bio: null,
-    profileCompleted: false,
-    createdAt: DateTime(2024, 1, 1),
-  );
-
   final mockUserMinimal = User(
     id: 'user-3',
     email: 'minimal@example.com',

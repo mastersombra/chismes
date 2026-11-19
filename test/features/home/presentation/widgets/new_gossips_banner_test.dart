@@ -7,15 +7,12 @@ import '../../../../helpers/widget_test_wrapper.dart';
 void main() {
   group('NewGossipsBanner', () {
     testWidgets('debe renderizar correctamente', (tester) async {
-      // Arrange
-      var tapped = false;
-
       // Act
       await pumpWidgetWithI18n(
         tester,
         NewGossipsBanner(
           count: 5,
-          onTap: () => tapped = true,
+          onTap: () {},
         ),
       );
 

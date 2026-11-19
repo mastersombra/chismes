@@ -131,7 +131,7 @@ void main() {
           id: 'user123',
           email: 'test@example.com',
         );
-        const other = 'not a user';
+        const Object other = 'not a user';
 
         // Assert
         expect(user == other, isFalse);

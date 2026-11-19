@@ -40,7 +40,7 @@ void main() {
     group('getMessage', () {
       late BuildContext context;
 
-      Future<BuildContext> _createContext(WidgetTester tester) async {
+      Future<BuildContext> createContext(WidgetTester tester) async {
         late BuildContext capturedContext;
 
         await tester.pumpWidget(
@@ -61,7 +61,7 @@ void main() {
 
       testWidgets('authEmailAlreadyInUseAction debe retornar mensaje', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
 
         // Act
         final message = CustomErrorKey.authEmailAlreadyInUseAction.getMessage(context);
@@ -73,7 +73,7 @@ void main() {
 
       testWidgets('authOtpCodeMustBe6Digits debe retornar mensaje', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
 
         // Act
         final message = CustomErrorKey.authOtpCodeMustBe6Digits.getMessage(context);
@@ -85,7 +85,7 @@ void main() {
 
       testWidgets('profileScreenErrorLoading debe retornar mensaje', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
 
         // Act
         final message = CustomErrorKey.profileScreenErrorLoading.getMessage(context);
@@ -97,7 +97,7 @@ void main() {
 
       testWidgets('profileSettingsUpdateError debe retornar mensaje', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
 
         // Act
         final message = CustomErrorKey.profileSettingsUpdateError.getMessage(context);
@@ -109,7 +109,7 @@ void main() {
 
       testWidgets('profileSignOutError debe retornar mensaje', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
 
         // Act
         final message = CustomErrorKey.profileSignOutError.getMessage(context);
@@ -121,7 +121,7 @@ void main() {
 
       testWidgets('todos los keys deben tener switch case implementado', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
 
         // Act & Assert - No debe lanzar error
         for (final key in CustomErrorKey.values) {

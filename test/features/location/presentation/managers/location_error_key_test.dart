@@ -45,7 +45,7 @@ void main() {
     group('LocationErrorKeyExtension.getMessage', () {
       late BuildContext context;
 
-      Future<BuildContext> _createContext(WidgetTester tester) async {
+      Future<BuildContext> createContext(WidgetTester tester) async {
         late BuildContext capturedContext;
 
         await tester.pumpWidget(
@@ -66,7 +66,7 @@ void main() {
 
       testWidgets('failedToLoadCountries debe retornar mensaje', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
 
         // Act
         final message = LocationErrorKey.failedToLoadCountries.getMessage(context);
@@ -78,7 +78,7 @@ void main() {
 
       testWidgets('failedToLoadRegions debe retornar mensaje', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
 
         // Act
         final message = LocationErrorKey.failedToLoadRegions.getMessage(context);
@@ -90,7 +90,7 @@ void main() {
 
       testWidgets('failedToLoadCities debe retornar mensaje', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
 
         // Act
         final message = LocationErrorKey.failedToLoadCities.getMessage(context);
@@ -102,7 +102,7 @@ void main() {
 
       testWidgets('unexpectedError debe retornar mensaje', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
 
         // Act
         final message = LocationErrorKey.unexpectedError.getMessage(context);
@@ -114,7 +114,7 @@ void main() {
 
       testWidgets('gpsPositionFailed debe retornar mensaje', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
 
         // Act
         final message = LocationErrorKey.gpsPositionFailed.getMessage(context);
@@ -126,7 +126,7 @@ void main() {
 
       testWidgets('geocodingFailed debe retornar mensaje', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
 
         // Act
         final message = LocationErrorKey.geocodingFailed.getMessage(context);
@@ -138,7 +138,7 @@ void main() {
 
       testWidgets('detectionFailed debe retornar mensaje', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
 
         // Act
         final message = LocationErrorKey.detectionFailed.getMessage(context);
@@ -150,7 +150,7 @@ void main() {
 
       testWidgets('countryNotAvailable debe retornar mensaje sin entityName', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
 
         // Act
         final message = LocationErrorKey.countryNotAvailable.getMessage(context);
@@ -162,7 +162,7 @@ void main() {
 
       testWidgets('countryNotAvailable debe incluir entityName si se proporciona', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
         const entityName = 'Colombia';
 
         // Act
@@ -179,7 +179,7 @@ void main() {
 
       testWidgets('regionNotAvailable debe retornar mensaje sin entityName', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
 
         // Act
         final message = LocationErrorKey.regionNotAvailable.getMessage(context);
@@ -191,7 +191,7 @@ void main() {
 
       testWidgets('regionNotAvailable debe incluir entityName si se proporciona', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
         const entityName = 'Antioquia';
 
         // Act
@@ -207,7 +207,7 @@ void main() {
 
       testWidgets('cityNotAvailable debe retornar mensaje sin entityName', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
 
         // Act
         final message = LocationErrorKey.cityNotAvailable.getMessage(context);
@@ -219,7 +219,7 @@ void main() {
 
       testWidgets('cityNotAvailable debe incluir entityName si se proporciona', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
         const entityName = 'Medellín';
 
         // Act
@@ -235,7 +235,7 @@ void main() {
 
       testWidgets('todos los keys deben tener switch case implementado', (tester) async {
         // Arrange
-        context = await _createContext(tester);
+        context = await createContext(tester);
 
         // Act & Assert - No debe lanzar error
         for (final key in LocationErrorKey.values) {
