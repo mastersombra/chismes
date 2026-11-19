@@ -57,8 +57,6 @@ import '../../features/gossip/data/repositories/gossip_repository_impl.dart'
 import '../../features/gossip/di/gossip_module.dart' as _i1060;
 import '../../features/gossip/domain/repositories/gossip_repository.dart'
     as _i865;
-import '../../features/gossip/domain/services/mvp_content_moderator.dart'
-    as _i110;
 import '../../features/gossip/domain/usecases/create_gossip.dart' as _i458;
 import '../../features/gossip/domain/usecases/get_gossips.dart' as _i821;
 import '../../features/gossip/domain/usecases/report_gossip.dart' as _i535;
@@ -128,7 +126,6 @@ _i174.GetIt $initGetIt(
   final gossipModule = _$GossipModule();
   gh.singleton<_i966.DeviceInfoProvider>(() => _i966.DeviceInfoProvider());
   gh.singleton<_i989.ProfileService>(() => _i989.ProfileService());
-  gh.singleton<_i110.MvpModerationPolicy>(() => gossipModule.moderationPolicy);
   gh.lazySingleton<_i454.SupabaseClient>(() => gossipModule.supabaseClient);
   gh.singleton<_i817.LocaleNotifier>(
     () => _i817.LocaleNotifier(gh<_i460.SharedPreferences>()),

@@ -4,6 +4,10 @@
 **Estado:** ✅ ANÁLISIS COMPLETADO  
 **Objetivo:** Eliminar/documentar elementos temporales antes de producción
 
+> **Actualización 2026-11-19:** `MvpContentModerator`, `MvpModerationPolicy` y
+> `ContentModerator` se eliminaron de `lib/` (la sección 3 y la Acción 1 quedan
+> como histórico). La moderación vive solo en la Edge Function `moderate-gossip`.
+
 ---
 
 ## 📋 ANÁLISIS DE ELEMENTOS

@@ -10,7 +10,7 @@ import 'package:chismes/features/gossip/domain/entities/create_gossip_input.dart
     as _i7;
 import 'package:chismes/features/gossip/domain/entities/moderation_decision.dart'
     as _i2;
-import 'package:chismes/features/gossip/domain/services/content_moderator.dart'
+import '../../../../fixtures/mocks/mock_gossip_data_source.dart'
     as _i5;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i4;

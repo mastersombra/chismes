@@ -216,7 +216,7 @@ Los tests unitarios de Storage no sustituyen una prueba real del bucket/RLS/Func
 | --- | --- | --- |
 | `MockGossipRemoteDataSource` | No está registrado para producción; conserva datos en memoria para tests/desarrollo. | Mantener sólo para tests. No usarlo como referencia de seguridad ni idempotencia real. |
 | `MockGossipLocalDataSource` | En memoria, sólo tests. | Mantener para tests. |
-| `MvpContentModerator` | Regla local; la implementación activa de producción usa la Edge Function. | Mantener como test/fallback explícito, sin confundirla con moderación de servidor. |
+| `MvpContentModerator` | ✅ Eliminado (2026-11-19): duplicaba las reglas de la Edge Function. | La moderación vive solo en `moderate-gossip`. |
 | `spike-user`, políticas permissivas y seed sample | Activos en Function/migración, no sólo documentación. | Eliminar con migración y exigir auth antes de beta externa. |
 | Selector imagen/audio | Imagen se muestra pero no selecciona; audio ni se presenta en la pantalla actual. | Ocultar hasta tener el flujo seguro y completo o implementar como P1. |
 | `.env` móvil con service role | Activo y empaquetado. | Rotar/remover inmediatamente; separar configuración móvil de secretos backend. |
