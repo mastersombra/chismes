@@ -50,7 +50,7 @@ class SignUpWithEmailUseCase {
 
     switch (checkResult) {
       case ResultFailure(error: final failure):
-        // Error al verificar (probablemente red)
+        // Error verificar (probablemente red)
         return Result.failure(failure);
       case Success(value: final exists):
         if (exists) {

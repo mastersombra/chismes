@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../gossip/domain/entities/gossip.dart';
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
 
 class GossipDetailScreen extends StatelessWidget {
@@ -15,7 +15,7 @@ class GossipDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.gossipDetailTitle),
+        title: Text(context.l10n.gossipDetailTitle),
       ),
 
       body: SingleChildScrollView(

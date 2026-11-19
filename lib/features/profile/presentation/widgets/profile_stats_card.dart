@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/user_stats.dart';
 
@@ -29,7 +29,7 @@ class ProfileStatsCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              AppLocalizations.profileStatsTitle,
+              context.l10n.profileStatsTitle,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -41,14 +41,14 @@ class ProfileStatsCard extends StatelessWidget {
                 _buildStatItem(
                   context,
                   icon: Icons.chat_bubble_outline,
-                  label: AppLocalizations.profileStatsGossips,
+                  label: context.l10n.profileStatsGossips,
                   value: stats.gossipsCount,
                   color: Colors.purple,
                 ),
                 _buildStatItem(
                   context,
                   icon: Icons.comment_outlined,
-                  label: AppLocalizations.profileStatsComments,
+                  label: context.l10n.profileStatsComments,
                   value: stats.commentsCount,
                   color: Colors.blue,
                 ),
@@ -61,14 +61,14 @@ class ProfileStatsCard extends StatelessWidget {
                 _buildStatItem(
                   context,
                   icon: Icons.people_outline,
-                  label: AppLocalizations.profileStatsFollowers,
+                  label: context.l10n.profileStatsFollowers,
                   value: stats.followersCount,
                   color: Colors.green,
                 ),
                 _buildStatItem(
                   context,
                   icon: Icons.person_add_outlined,
-                  label: AppLocalizations.profileStatsFollowing,
+                  label: context.l10n.profileStatsFollowing,
                   value: stats.followingCount,
                   color: Colors.orange,
                 ),

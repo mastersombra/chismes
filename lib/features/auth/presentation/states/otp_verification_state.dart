@@ -1,9 +1,16 @@
+import 'package:flutter/widgets.dart';
+
+import '../../../../core/error/custom_error_keys.dart';
+import '../../../../core/error/error_codes.dart';
+import '../../../../core/error/error_messages.dart';
+
 /// Estado para la verificación de OTP
 class OtpVerificationState {
   final String email;
   final bool isVerifying;
   final bool isResending;
-  final String? errorMessage;
+  final ErrorCode? errorCode;
+  final CustomErrorKey? customErrorKey;
   final int remainingSeconds;
   final bool canResend;
 
@@ -11,16 +18,33 @@ class OtpVerificationState {
     required this.email,
     this.isVerifying = false,
     this.isResending = false,
-    this.errorMessage,
+    this.errorCode,
+    this.customErrorKey,
     this.remainingSeconds = 0,
     this.canResend = true,
   });
+
+  /// Obtiene el mensaje de error traducido
+  ///
+  /// Debe llamarse desde la UI que tiene BuildContext.
+  String? getErrorMessage(BuildContext context) {
+    if (customErrorKey != null) {
+      return customErrorKey!.getMessage(context);
+    }
+
+    if (errorCode != null) {
+      return ErrorMessages.getMessage(context, errorCode!);
+    }
+
+    return null;
+  }
 
   OtpVerificationState copyWith({
     String? email,
     bool? isVerifying,
     bool? isResending,
-    String? errorMessage,
+    ErrorCode? errorCode,
+    CustomErrorKey? customErrorKey,
     int? remainingSeconds,
     bool? canResend,
   }) {
@@ -28,7 +52,8 @@ class OtpVerificationState {
       email: email ?? this.email,
       isVerifying: isVerifying ?? this.isVerifying,
       isResending: isResending ?? this.isResending,
-      errorMessage: errorMessage,
+      errorCode: errorCode,
+      customErrorKey: customErrorKey,
       remainingSeconds: remainingSeconds ?? this.remainingSeconds,
       canResend: canResend ?? this.canResend,
     );
@@ -36,6 +61,14 @@ class OtpVerificationState {
 
   /// Limpia el error
   OtpVerificationState clearError() {
-    return copyWith(errorMessage: '');
+    return OtpVerificationState(
+      email: email,
+      isVerifying: isVerifying,
+      isResending: isResending,
+      errorCode: null,
+      customErrorKey: null,
+      remainingSeconds: remainingSeconds,
+      canResend: canResend,
+    );
   }
 }

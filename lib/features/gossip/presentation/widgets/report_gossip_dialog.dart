@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/report_reason.dart';
 
@@ -28,14 +28,14 @@ class _ReportGossipDialogState extends State<ReportGossipDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(AppLocalizations.gossipReportTitle),
+      title: Text(context.l10n.gossipReportTitle),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              AppLocalizations.gossipReportReasonQuestion,
+              context.l10n.gossipReportReasonQuestion,
               style: const TextStyle(fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -43,7 +43,7 @@ class _ReportGossipDialogState extends State<ReportGossipDialog> {
             // Lista de razones
             ...ReportReason.values.map((reason) {
               return ListTile(
-                title: Text(reason.displayName),
+                title: Text(reason.getDisplayName(context)),
                 leading: Radio<ReportReason>(
                   value: reason,
                   // ignore: deprecated_member_use
@@ -71,8 +71,8 @@ class _ReportGossipDialogState extends State<ReportGossipDialog> {
             TextField(
               controller: _detailsController,
               decoration: InputDecoration(
-                labelText: AppLocalizations.gossipReportDetailsLabel,
-                hintText: AppLocalizations.gossipReportDetailsHint,
+                labelText: context.l10n.gossipReportDetailsLabel,
+                hintText: context.l10n.gossipReportDetailsHint,
                 border: const OutlineInputBorder(),
               ),
               maxLines: 3,
@@ -84,7 +84,7 @@ class _ReportGossipDialogState extends State<ReportGossipDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(AppLocalizations.cancel),
+          child: Text(context.l10n.cancel),
         ),
         FilledButton(
           onPressed: _selectedReason == null
@@ -97,7 +97,7 @@ class _ReportGossipDialogState extends State<ReportGossipDialog> {
                         : _detailsController.text.trim(),
                   });
                 },
-          child: Text(AppLocalizations.gossipReportButton),
+          child: Text(context.l10n.gossipReportButton),
         ),
       ],
     );

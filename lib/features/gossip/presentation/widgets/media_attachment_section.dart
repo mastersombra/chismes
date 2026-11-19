@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../states/add_gossip_state.dart';
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_radius.dart';
 
@@ -49,7 +49,7 @@ class MediaAttachmentSection extends StatelessWidget {
       children: [
         _buildImageAttachment(context),
         const SizedBox(height: AppSpacing.lg),
-        _buildAudioAttachment(),
+        _buildAudioAttachment(context),
       ],
     );
   }
@@ -88,7 +88,7 @@ class MediaAttachmentSection extends StatelessWidget {
     return OutlinedButton.icon(
       onPressed: onPickImage,
       icon: const Icon(Icons.image),
-      label: Text(AppLocalizations.gossipMediaAddImage),
+      label: Text(context.l10n.gossipMediaAddImage),
       style: OutlinedButton.styleFrom(
         minimumSize: const Size(double.infinity, 48),
         shape: RoundedRectangleBorder(
@@ -98,12 +98,12 @@ class MediaAttachmentSection extends StatelessWidget {
     );
   }
 
-  Widget _buildAudioAttachment() {
+  Widget _buildAudioAttachment(BuildContext context) {
     if (state.audioUrl != null) {
       return Card(
         child: ListTile(
           leading: const Icon(Icons.audiotrack),
-          title: Text(AppLocalizations.gossipMediaAudioAttached),
+          title: Text(context.l10n.gossipMediaAudioAttached),
           trailing: IconButton(
             icon: const Icon(Icons.close),
             onPressed: onRemoveAudio,
@@ -115,7 +115,7 @@ class MediaAttachmentSection extends StatelessWidget {
     return OutlinedButton.icon(
       onPressed: onPickAudio,
       icon: const Icon(Icons.mic),
-      label: Text(AppLocalizations.gossipMediaAddAudio),
+      label: Text(context.l10n.gossipMediaAddAudio),
       style: OutlinedButton.styleFrom(
         minimumSize: const Size(double.infinity, 48),
         shape: RoundedRectangleBorder(

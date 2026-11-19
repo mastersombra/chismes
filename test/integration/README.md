@@ -172,7 +172,7 @@ Estos tests verifican:
 - ✅ **Bloqueador #1:** Validación de schema (Item "Tests de contrato")
 - ✅ **Bloqueador #7:** Nomenclatura correcta (snake_case)
 
-## 🚀 Próximos Tests (TESTING_ROADMAP.md)
+## 🚀 Próximos Tests
 
 Tests implementados cubren **Fase 0** del roadmap.
 
@@ -183,11 +183,11 @@ Tests implementados cubren **Fase 0** del roadmap.
 - Media validation
 - E2E flows
 
-Ver `docs/TESTING_ROADMAP.md` para plan completo.
+Ver también `docs/PRE_PRODUCTION_CHECKLIST.md` (sección Tests).
 
 ## 🎓 Referencias
 
-- [TESTING_ROADMAP.md](../../docs/TESTING_ROADMAP.md) - Plan completo
+- [PRE_PRODUCTION_CHECKLIST.md](../../docs/PRE_PRODUCTION_CHECKLIST.md) - Tests pendientes antes de producción
 - [BLOCKERS_STATUS.md](../../docs/BLOCKERS_STATUS.md) - Estado de bloqueadores
 - [Flutter Testing](https://docs.flutter.dev/testing)
 - [Supabase Testing Guide](https://supabase.com/docs/guides/testing)

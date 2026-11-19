@@ -16,6 +16,51 @@
       "detail": "ChismesApp"
     },
     {
+      "id": "l10n.app_localizations",
+      "file": "l10n/app_localizations.dart",
+      "type": "other",
+      "layer": "shared",
+      "feature": "shared",
+      "evidence": [
+        "class AppLocalizations",
+        "extends LocalizationsDelegate",
+        "method:MaterialApp",
+        "method:commonMaxLength",
+        "method:commonMinLength"
+      ],
+      "detail": "AppLocalizations"
+    },
+    {
+      "id": "l10n.app_localizations_es",
+      "file": "l10n/app_localizations_es.dart",
+      "type": "other",
+      "layer": "shared",
+      "feature": "shared",
+      "evidence": [
+        "class AppLocalizationsEs",
+        "extends AppLocalizations",
+        "method:Castilian",
+        "method:commonMaxLength",
+        "method:commonMinLength"
+      ],
+      "detail": "AppLocalizationsEs"
+    },
+    {
+      "id": "l10n.app_localizations_en",
+      "file": "l10n/app_localizations_en.dart",
+      "type": "other",
+      "layer": "shared",
+      "feature": "shared",
+      "evidence": [
+        "class AppLocalizationsEn",
+        "extends AppLocalizations",
+        "method:English",
+        "method:commonMaxLength",
+        "method:commonMinLength"
+      ],
+      "detail": "AppLocalizationsEn"
+    },
+    {
       "id": "shared.data.gossip_mock_data",
       "file": "shared/data/gossip_mock_data.dart",
       "type": "other",
@@ -562,7 +607,10 @@
       "layer": "domain",
       "feature": "gossip",
       "evidence": [
-        "class GetGossips"
+        "class GetGossips",
+        "method:remote",
+        "method:cliente",
+        "method:búsqueda"
       ],
       "detail": "GetGossips"
     },
@@ -578,6 +626,20 @@
         "method:error"
       ],
       "detail": "ReportGossip"
+    },
+    {
+      "id": "features.gossip.domain.usecases.search_gossips",
+      "file": "features/gossip/domain/usecases/search_gossips.dart",
+      "type": "usecase",
+      "layer": "domain",
+      "feature": "gossip",
+      "evidence": [
+        "class SearchController",
+        "method:relevantes",
+        "method:volúmenes",
+        "method:servidor"
+      ],
+      "detail": "SearchController"
     },
     {
       "id": "features.gossip.domain.services.gossip_state_machine",
@@ -631,8 +693,7 @@
         "method:spam",
         "method:harassment",
         "method:violence",
-        "field:value",
-        "field:displayName"
+        "field:value"
       ],
       "detail": ""
     },
@@ -806,6 +867,17 @@
         "method:Entity"
       ],
       "detail": "GossipModel"
+    },
+    {
+      "id": "features.location.presentation.managers.location_error_key",
+      "file": "features/location/presentation/managers/location_error_key.dart",
+      "type": "other",
+      "layer": "presentation",
+      "feature": "location",
+      "evidence": [
+        "method:getMessage"
+      ],
+      "detail": ""
     },
     {
       "id": "features.location.presentation.managers.location_manager",
@@ -1881,6 +1953,30 @@
       "detail": "FeedGossipModel"
     },
     {
+      "id": "core.l10n.locale_notifier",
+      "file": "core/l10n/locale_notifier.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class LocaleNotifier",
+        "extends ChangeNotifier",
+        "method:Locale",
+        "method:if",
+        "method:Locale"
+      ],
+      "detail": "LocaleNotifier"
+    },
+    {
+      "id": "core.l10n.l10n",
+      "file": "core/l10n/l10n.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [],
+      "detail": ""
+    },
+    {
       "id": "core.result.result",
       "file": "core/result/result.dart",
       "type": "other",
@@ -2118,6 +2214,17 @@
       "detail": "ErrorHandler"
     },
     {
+      "id": "core.error.custom_error_keys",
+      "file": "core/error/custom_error_keys.dart",
+      "type": "other",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "method:getMessage"
+      ],
+      "detail": ""
+    },
+    {
       "id": "core.error.error_codes",
       "file": "core/error/error_codes.dart",
       "type": "other",
@@ -2154,8 +2261,9 @@
       "feature": "core",
       "evidence": [
         "class ErrorMessages",
-        "method:getMessage",
-        "method:getTitle"
+        "method:inglés",
+        "method:getMessageEnglish",
+        "method:getMessage"
       ],
       "detail": "ErrorMessages"
     },
@@ -2253,6 +2361,20 @@
       "detail": "LocationService"
     },
     {
+      "id": "core.services.search_history_service",
+      "file": "core/services/search_history_service.dart",
+      "type": "service",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class SearchController",
+        "method:search",
+        "method:addSearch",
+        "method:getHistory"
+      ],
+      "detail": "SearchController"
+    },
+    {
       "id": "core.services.deep_link_service",
       "file": "core/services/deep_link_service.dart",
       "type": "service",
@@ -2265,6 +2387,20 @@
         "method:usuarios"
       ],
       "detail": "DeepLinkService"
+    },
+    {
+      "id": "core.services.profile_service",
+      "file": "core/services/profile_service.dart",
+      "type": "service",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "class ProfileService",
+        "method:perfil",
+        "method:getFollowingCount",
+        "method:placeholder"
+      ],
+      "detail": "ProfileService"
     },
     {
       "id": "core.services.auth_service",
@@ -2308,20 +2444,6 @@
         "method:normalizeEmail"
       ],
       "detail": "FormValidators"
-    },
-    {
-      "id": "core.localization.app_localizations",
-      "file": "core/localization/app_localizations.dart",
-      "type": "other",
-      "layer": "core",
-      "feature": "core",
-      "evidence": [
-        "class para",
-        "method:otpResendTimer",
-        "method:select",
-        "method:minLength"
-      ],
-      "detail": "para"
     },
     {
       "id": "core.localization.locale_detector",
@@ -2394,7 +2516,22 @@
     },
     {
       "from": "main",
+      "to": "core.l10n.locale_notifier",
+      "relation": "imports"
+    },
+    {
+      "from": "main",
       "to": "features.auth.presentation.widgets.auth_gate",
+      "relation": "imports"
+    },
+    {
+      "from": "main",
+      "to": "core.l10n.l10n",
+      "relation": "imports"
+    },
+    {
+      "from": "l10n.app_localizations",
+      "to": "l10n.app_localizations",
       "relation": "imports"
     },
     {
@@ -2404,17 +2541,27 @@
     },
     {
       "from": "features.profile.presentation.screens.profile_screen",
+      "to": "core.l10n.locale_notifier",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.presentation.screens.profile_screen",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
     {
       "from": "features.profile.presentation.controllers.profile_controller",
-      "to": "core.error.error_messages",
+      "to": "core.error.custom_error_keys",
       "relation": "imports"
     },
     {
       "from": "features.profile.presentation.controllers.profile_controller",
-      "to": "core.localization.app_localizations",
+      "to": "core.error.error_codes",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.presentation.controllers.profile_controller",
+      "to": "core.error.error_messages",
       "relation": "imports"
     },
     {
@@ -2434,12 +2581,17 @@
     },
     {
       "from": "features.profile.presentation.widgets.profile_stats_card",
-      "to": "core.localization.app_localizations",
+      "to": "core.theme.app_spacing",
       "relation": "imports"
     },
     {
-      "from": "features.profile.presentation.widgets.profile_stats_card",
-      "to": "core.theme.app_spacing",
+      "from": "features.profile.presentation.widgets.settings_section",
+      "to": "core.di.injection_container",
+      "relation": "imports"
+    },
+    {
+      "from": "features.profile.presentation.widgets.settings_section",
+      "to": "core.l10n.locale_notifier",
       "relation": "imports"
     },
     {
@@ -2449,11 +2601,6 @@
     },
     {
       "from": "features.profile.presentation.widgets.profile_header",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.profile.presentation.widgets.profile_header",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
@@ -2505,11 +2652,6 @@
     {
       "from": "features.profile.domain.usecases.update_settings",
       "to": "core.result.result",
-      "relation": "imports"
-    },
-    {
-      "from": "features.profile.data.datasources.profile_remote_datasource",
-      "to": "core.config.supabase_config",
       "relation": "imports"
     },
     {
@@ -2563,6 +2705,16 @@
       "relation": "imports"
     },
     {
+      "from": "features.search.presentation.screens.search_screen",
+      "to": "core.services.search_history_service",
+      "relation": "imports"
+    },
+    {
+      "from": "features.search.presentation.screens.search_screen",
+      "to": "core.services.location_service",
+      "relation": "imports"
+    },
+    {
       "from": "features.gossip.presentation.screens.add_gossip_screen",
       "to": "core.error.error_messages",
       "relation": "imports"
@@ -2590,11 +2742,6 @@
     {
       "from": "features.gossip.presentation.screens.add_gossip_screen",
       "to": "core.di.injection_container",
-      "relation": "imports"
-    },
-    {
-      "from": "features.gossip.presentation.screens.gossip_detail_screen",
-      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -2643,16 +2790,6 @@
       "relation": "imports"
     },
     {
-      "from": "features.gossip.presentation.widgets.city_autocomplete_optimized",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.gossip.presentation.widgets.image_picker_widget",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
       "from": "features.gossip.presentation.widgets.image_picker_widget",
       "to": "core.theme.app_spacing",
       "relation": "imports"
@@ -2679,11 +2816,6 @@
     },
     {
       "from": "features.gossip.presentation.widgets.media_attachment_section",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.gossip.presentation.widgets.media_attachment_section",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
@@ -2705,11 +2837,6 @@
     {
       "from": "features.gossip.presentation.widgets.gossip_text_fields",
       "to": "core.validation.form_validators",
-      "relation": "imports"
-    },
-    {
-      "from": "features.gossip.presentation.widgets.gossip_card",
-      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -2754,11 +2881,6 @@
     },
     {
       "from": "features.gossip.presentation.widgets.report_gossip_dialog",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.gossip.presentation.widgets.report_gossip_dialog",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
@@ -2773,11 +2895,6 @@
       "relation": "imports"
     },
     {
-      "from": "features.gossip.presentation.widgets.city_autocomplete",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
       "from": "features.gossip.presentation.widgets.location_selector",
       "to": "core.theme.app_spacing",
       "relation": "imports"
@@ -2785,16 +2902,6 @@
     {
       "from": "features.gossip.presentation.widgets.location_selector",
       "to": "core.theme.app_radius",
-      "relation": "imports"
-    },
-    {
-      "from": "features.gossip.presentation.widgets.location_selector",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.gossip.presentation.widgets.location_change_dialog",
-      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -2865,6 +2972,21 @@
     {
       "from": "features.gossip.domain.usecases.report_gossip",
       "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.domain.usecases.search_gossips",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.domain.usecases.search_gossips",
+      "to": "core.error.failure",
+      "relation": "imports"
+    },
+    {
+      "from": "features.gossip.domain.entities.report_reason",
+      "to": "core.l10n.l10n",
       "relation": "imports"
     },
     {
@@ -2910,6 +3032,11 @@
     {
       "from": "features.gossip.data.repositories.gossip_repository_impl",
       "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.location.presentation.managers.location_error_key",
+      "to": "l10n.app_localizations",
       "relation": "imports"
     },
     {
@@ -3009,6 +3136,16 @@
     },
     {
       "from": "features.auth.presentation.state.auth_state",
+      "to": "core.error.custom_error_keys",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.state.auth_state",
+      "to": "core.error.error_codes",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.state.auth_state",
       "to": "core.error.error_messages",
       "relation": "imports"
     },
@@ -3018,8 +3155,8 @@
       "relation": "imports"
     },
     {
-      "from": "features.auth.presentation.screens.otp_verification_screen",
-      "to": "core.localization.app_localizations",
+      "from": "features.auth.presentation.state.auth_state",
+      "to": "core.l10n.l10n",
       "relation": "imports"
     },
     {
@@ -3030,11 +3167,6 @@
     {
       "from": "features.auth.presentation.screens.signup_screen",
       "to": "core.di.injection_container",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.screens.signup_screen",
-      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -3055,11 +3187,6 @@
     {
       "from": "features.auth.presentation.screens.signup_screen",
       "to": "core.widgets.language_selector",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.screens.privacy_settings_screen",
-      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -3079,11 +3206,6 @@
     },
     {
       "from": "features.auth.presentation.screens.profile_setup_screen",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.screens.profile_setup_screen",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
@@ -3095,11 +3217,6 @@
     {
       "from": "features.auth.presentation.screens.login_screen",
       "to": "core.di.injection_container",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.screens.login_screen",
-      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -3124,22 +3241,12 @@
     },
     {
       "from": "features.auth.presentation.screens.privacy_consent_screen",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.screens.privacy_consent_screen",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
     {
       "from": "features.auth.presentation.screens.reset_password_screen",
       "to": "core.di.injection_container",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.screens.reset_password_screen",
-      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -3158,73 +3265,88 @@
       "relation": "imports"
     },
     {
-      "from": "features.auth.presentation.controllers.signup_controller",
-      "to": "core.logging.logging",
+      "from": "features.auth.presentation.states.otp_verification_state",
+      "to": "core.error.custom_error_keys",
       "relation": "imports"
     },
     {
-      "from": "features.auth.presentation.controllers.signup_controller",
-      "to": "core.result.result",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.controllers.signup_controller",
+      "from": "features.auth.presentation.states.otp_verification_state",
       "to": "core.error.error_codes",
       "relation": "imports"
     },
     {
-      "from": "features.auth.presentation.controllers.login_controller",
-      "to": "core.error.error_codes",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.controllers.login_controller",
-      "to": "core.logging.logging",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.controllers.login_controller",
-      "to": "core.result.result",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.controllers.profile_setup_controller",
-      "to": "core.logging.logging",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.controllers.profile_setup_controller",
-      "to": "core.result.result",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.controllers.reset_password_controller",
-      "to": "core.logging.logging",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.controllers.reset_password_controller",
-      "to": "core.result.result",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.controllers.otp_verification_controller",
-      "to": "core.logging.logging",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.controllers.otp_verification_controller",
+      "from": "features.auth.presentation.states.otp_verification_state",
       "to": "core.error.error_messages",
       "relation": "imports"
     },
     {
-      "from": "features.auth.presentation.controllers.otp_verification_controller",
+      "from": "features.auth.presentation.controllers.signup_controller",
+      "to": "core.error.custom_error_keys",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.signup_controller",
+      "to": "core.error.error_codes",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.signup_controller",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.signup_controller",
       "to": "core.result.result",
       "relation": "imports"
     },
     {
-      "from": "features.auth.presentation.widgets.forgot_password_dialog",
-      "to": "core.localization.app_localizations",
+      "from": "features.auth.presentation.controllers.login_controller",
+      "to": "core.error.error_codes",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.login_controller",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.login_controller",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.profile_setup_controller",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.profile_setup_controller",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.reset_password_controller",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.reset_password_controller",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.otp_verification_controller",
+      "to": "core.error.custom_error_keys",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.otp_verification_controller",
+      "to": "core.logging.logging",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.controllers.otp_verification_controller",
+      "to": "core.result.result",
       "relation": "imports"
     },
     {
@@ -3249,11 +3371,6 @@
     },
     {
       "from": "features.auth.presentation.widgets.email_field",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.widgets.email_field",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
@@ -3264,17 +3381,7 @@
     },
     {
       "from": "features.auth.presentation.widgets.password_field",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.widgets.password_field",
       "to": "core.theme.app_spacing",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.presentation.widgets.social_login_buttons",
-      "to": "core.localization.app_localizations",
       "relation": "imports"
     },
     {
@@ -3323,11 +3430,6 @@
       "relation": "imports"
     },
     {
-      "from": "features.auth.domain.validators.auth_validator",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
       "from": "features.auth.domain.usecases.update_profile",
       "to": "core.error.failure",
       "relation": "imports"
@@ -3430,11 +3532,6 @@
     {
       "from": "features.auth.domain.usecases.update_password_usecase",
       "to": "core.result.result",
-      "relation": "imports"
-    },
-    {
-      "from": "features.auth.data.datasources.supabase_auth_datasource_impl",
-      "to": "core.config.supabase_config",
       "relation": "imports"
     },
     {
@@ -3469,11 +3566,6 @@
     },
     {
       "from": "features.home.presentation.screens.gossip_detail_screen",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.home.presentation.screens.gossip_detail_screen",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
@@ -3494,17 +3586,17 @@
     },
     {
       "from": "features.home.presentation.controllers.following_tab_controller",
-      "to": "core.localization.app_localizations",
-      "relation": "imports"
-    },
-    {
-      "from": "features.home.presentation.controllers.following_tab_controller",
       "to": "core.logging.logging",
       "relation": "imports"
     },
     {
       "from": "features.home.presentation.controllers.following_tab_controller",
       "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.home.presentation.controllers.following_tab_controller",
+      "to": "core.services.profile_service",
       "relation": "imports"
     },
     {
@@ -3524,12 +3616,12 @@
     },
     {
       "from": "features.home.presentation.widgets.popular_tab",
-      "to": "core.localization.app_localizations",
+      "to": "core.theme.app_spacing",
       "relation": "imports"
     },
     {
-      "from": "features.home.presentation.widgets.popular_tab",
-      "to": "core.theme.app_spacing",
+      "from": "features.home.presentation.widgets.new_gossips_banner",
+      "to": "core.l10n.l10n",
       "relation": "imports"
     },
     {
@@ -3589,11 +3681,6 @@
     },
     {
       "from": "features.home.data.datasources.home_remote_datasource",
-      "to": "core.config.supabase_config",
-      "relation": "imports"
-    },
-    {
-      "from": "features.home.data.datasources.home_remote_datasource",
       "to": "core.error.app_exception",
       "relation": "imports"
     },
@@ -3625,6 +3712,11 @@
     {
       "from": "features.home.data.repositories.home_repository_impl",
       "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "core.l10n.l10n",
+      "to": "l10n.app_localizations",
       "relation": "imports"
     },
     {
@@ -3779,6 +3871,11 @@
     },
     {
       "from": "core.di.injection_container.config",
+      "to": "features.gossip.domain.usecases.search_gossips",
+      "relation": "imports"
+    },
+    {
+      "from": "core.di.injection_container.config",
       "to": "features.gossip.presentation.controllers.add_gossip_controller",
       "relation": "imports"
     },
@@ -3924,8 +4021,8 @@
     }
   ],
   "stats": {
-    "total_nodes": 167,
-    "total_edges": 311,
-    "files_analyzed": 167
+    "total_nodes": 176,
+    "total_edges": 306,
+    "files_analyzed": 176
   }
 }

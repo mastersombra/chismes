@@ -1,4 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
+
 import 'package:flutter/material.dart';
 import '../../domain/entities/gossip.dart';
 import '../controllers/add_gossip_controller.dart';
@@ -18,6 +18,7 @@ import '../../../location/domain/entities/city.dart';
 import '../../../location/domain/usecases/search_cities.dart';
 import '../../../auth/presentation/widgets/email_verification_banner.dart';
 import '../../../auth/domain/repositories/auth_repository.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 class AddGossipScreen extends StatefulWidget {
   final AddGossipController controller;
@@ -79,7 +80,7 @@ class _AddGossipScreenState extends State<AddGossipScreen> {
         );
       },
       // ✅ child se construye UNA VEZ, no en cada rebuild
-      child: AppBar(title: Text('gossip.add_screen.title'.tr())),
+      child: AppBar(title: Text(context.l10n.gossipAddScreenTitle)),
     );
   }
 
@@ -116,9 +117,9 @@ class _AddGossipScreenState extends State<AddGossipScreen> {
                 // Usar mensaje personalizado del servidor si está disponible (ej: rate limiting)
                 String message;
                 if (failure is ServerFailure) {
-                  message = failure.message ?? ErrorMessages.getMessage(failure.code);
+                  message = failure.message ?? ErrorMessages.getMessage(context, failure.code);
                 } else {
-                  message = ErrorMessages.getMessage(failure.code);
+                  message = ErrorMessages.getMessage(context, failure.code);
                 }
 
                 return Column(
@@ -225,7 +226,7 @@ class _AddGossipScreenState extends State<AddGossipScreen> {
                             ),
                           )
                         : Text(
-                            'gossip.add_screen.submit_button'.tr(),
+                            context.l10n.gossipAddScreenSubmitButton,
                             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -259,15 +260,15 @@ class _AddGossipScreenState extends State<AddGossipScreen> {
             const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Text(isPendingReview
-                ? 'gossip.add_screen.success_dialog_title_pending'.tr()
-                : 'gossip.add_screen.success_dialog_title_published'.tr()),
+                ? context.l10n.gossipAddScreenSuccessDialogTitlePending
+                : context.l10n.gossipAddScreenSuccessDialogTitlePublished),
             ),
           ],
         ),
         content: Text(
           isPendingReview
-              ? 'gossip.add_screen.success_dialog_content_pending'.tr()
-              : 'gossip.add_screen.success_dialog_content_published'.tr(),
+              ? context.l10n.gossipAddScreenSuccessDialogContentPending
+              : context.l10n.gossipAddScreenSuccessDialogContentPublished,
         ),
         actions: [
           TextButton(
@@ -278,15 +279,20 @@ class _AddGossipScreenState extends State<AddGossipScreen> {
               _contentController.clear();
 
               // Cerrar diálogo
-              Navigator.of(context).pop();
-
-              // Retornar el chisme creado usando Navigator.pop
-              // Esto sigue el patrón estándar de Flutter para retornar resultados
               if (mounted) {
-                Navigator.of(context).pop(gossip);
+                Navigator.of(context).pop();
               }
+
+              // ✅ FIX: NO hacer Navigator.pop() aquí
+              // AddGossipScreen es una tab del BottomNavigationBar, no una pantalla modal.
+              // Hacer pop() causaría que toda la navegación se cierre (pantalla negra).
+              //
+              // El formulario ya está limpio y listo para un nuevo chisme.
+              // El usuario puede:
+              // - Crear otro chisme (quedarse en esta tab)
+              // - Cambiar a la tab Home para ver el chisme publicado
             },
-            child: Text('gossip.add_screen.success_dialog_button'.tr()),
+            child: Text(context.l10n.gossipAddScreenSuccessDialogButton),
           ),
         ],
       ),
@@ -312,14 +318,14 @@ class _AddGossipScreenState extends State<AddGossipScreen> {
       case Success():
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('gossip.add_screen.email_verification_resent'.tr()),
+            content: Text(context.l10n.gossipAddScreenEmailVerificationResent),
             backgroundColor: Colors.green,
           ),
         );
       case ResultFailure(error: final failure):
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(ErrorMessages.getMessage(failure.code)),
+            content: Text(ErrorMessages.getMessage(context, failure.code)),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );

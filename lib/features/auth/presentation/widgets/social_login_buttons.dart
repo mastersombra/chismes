@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
 
 /// Botones para login social (Google, Apple)
@@ -37,7 +37,7 @@ class SocialLoginButtons extends StatelessWidget {
                 return const Icon(Icons.g_mobiledata, size: 24);
               },
             ),
-            label: Text(AppLocalizations.continueWithGoogle),
+            label: Text(context.l10n.continueWithGoogle),
             style: OutlinedButton.styleFrom(
               side: BorderSide(color: Colors.grey[300]!),
               padding: const EdgeInsets.symmetric(
@@ -55,7 +55,7 @@ class SocialLoginButtons extends StatelessWidget {
           child: OutlinedButton.icon(
             onPressed: isLoading ? null : onApplePressed,
             icon: const Icon(Icons.apple, size: 24),
-            label: Text(AppLocalizations.continueWithApple),
+            label: Text(context.l10n.continueWithApple),
             style: OutlinedButton.styleFrom(
               side: BorderSide(color: Colors.grey[300]!),
               padding: const EdgeInsets.symmetric(
@@ -96,7 +96,7 @@ class GoogleSignInButton extends StatelessWidget {
             return const Icon(Icons.g_mobiledata, size: 24);
           },
         ),
-        label: Text(AppLocalizations.continueWithGoogle),
+        label: Text(context.l10n.continueWithGoogle),
         style: OutlinedButton.styleFrom(
           side: BorderSide(color: Colors.grey[300]!),
           padding: const EdgeInsets.symmetric(
@@ -128,7 +128,7 @@ class AppleSignInButton extends StatelessWidget {
       child: OutlinedButton.icon(
         onPressed: isLoading ? null : onPressed,
         icon: const Icon(Icons.apple, size: 24),
-        label: Text(AppLocalizations.continueWithApple),
+        label: Text(context.l10n.continueWithApple),
         style: OutlinedButton.styleFrom(
           side: BorderSide(color: Colors.grey[300]!),
           padding: const EdgeInsets.symmetric(

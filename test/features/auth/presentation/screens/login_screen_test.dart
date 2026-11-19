@@ -8,6 +8,7 @@ import 'package:chismes/features/auth/presentation/widgets/email_field.dart';
 import 'package:chismes/features/auth/presentation/widgets/password_field.dart';
 import 'package:chismes/features/auth/presentation/widgets/auth_button.dart';
 import 'package:chismes/features/auth/presentation/widgets/social_login_buttons.dart';
+import 'package:chismes/features/auth/presentation/widgets/forgot_password_dialog.dart';
 import 'package:chismes/features/gossip/presentation/controllers/add_gossip_controller.dart';
 import 'package:chismes/features/gossip/domain/usecases/get_gossips.dart';
 import 'package:chismes/features/gossip/domain/entities/gossip.dart';
@@ -17,9 +18,20 @@ import 'package:chismes/core/error/failure.dart';
 import 'package:chismes/core/error/error_codes.dart';
 import 'package:chismes/features/auth/presentation/state/auth_state.dart';
 import 'package:chismes/features/auth/domain/entities/user.dart';
+import 'package:chismes/features/auth/domain/repositories/auth_repository.dart';
+import 'package:chismes/features/auth/presentation/controllers/reset_password_controller.dart';
+import 'package:chismes/features/auth/presentation/controllers/signup_controller.dart';
+import 'package:chismes/features/auth/presentation/screens/otp_verification_screen.dart';
+import 'package:chismes/features/auth/presentation/screens/reset_password_screen.dart';
+import 'package:chismes/features/auth/presentation/screens/signup_screen.dart';
+import 'package:chismes/core/logging/app_logger.dart';
+import '../../../../helpers/mock_app_logger_helper.dart' as logger_helper;
 
+import '../../../../helpers/test_di_helper.dart';
 import '../../../../helpers/widget_test_wrapper.dart';
 import 'login_screen_test.mocks.dart';
+import 'reset_password_screen_test.mocks.dart' as reset_mocks;
+import 'signup_screen_test.mocks.dart' as signup_mocks;
 
 @GenerateMocks([AddGossipController, GetGossips, LoginController])
 void main() {
@@ -33,7 +45,10 @@ void main() {
     provideDummy<AuthState>(const AuthInitial());
   });
 
-  setUp(() {
+  setUp(() async {
+    // Inicializar DI para tests (LocaleNotifier, SharedPreferences, etc.)
+    await setupTestDI();
+
     mockLoginController = MockLoginController();
     when(mockLoginController.state).thenReturn(const AuthInitial());
     when(mockLoginController.addListener(any)).thenReturn(null);
@@ -46,10 +61,13 @@ void main() {
     getIt.registerSingleton<LoginController>(mockLoginController);
   });
 
-  tearDown(() {
+  tearDown(() async {
     if (getIt.isRegistered<LoginController>()) {
       getIt.unregister<LoginController>();
     }
+
+    // Limpiar DI después del test
+    await tearDownTestDI();
   });
 
   Widget createTestWidget() {
@@ -216,32 +234,31 @@ void main() {
       verify(mockLoginController.signInWithApple()).called(1);
     });
 
-    testWidgets('debe ejecutar _onSignUpPressed cuando se presiona Regístrate', (WidgetTester tester) async {
-      // Arrange
+    testWidgets('"Regístrate" navega a SignupScreen', (WidgetTester tester) async {
+      final signupController = signup_mocks.MockSignupController();
+      when(signupController.state).thenReturn(const AuthInitial());
+      getIt.registerSingleton<SignupController>(signupController);
+      addTearDown(() => getIt.unregister<SignupController>());
+
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
-
-      // Scroll para hacer visible el botón
       await tester.scrollUntilVisible(
         find.text('Regístrate'),
         100,
         scrollable: find.byType(Scrollable).first,
       );
 
-      // Act
       await tester.tap(find.text('Regístrate'));
       await tester.pumpAndSettle();
 
-      // Assert - verifica que _onSignUpPressed fue ejecutado (navegación ocurrió)
-      // La navegación es push (no replace), por lo que ambas pantallas están en la pila
-      expect(find.text('Regístrate'), findsWidgets);
-    }, skip: true); // Navegación a SignupScreen requiere registrar SignupController en GetIt
+      expect(find.byType(SignupScreen), findsOneWidget);
+    });
 
-    testWidgets('debe ejecutar _showError cuando hay error de autenticación', (WidgetTester tester) async {
+    testWidgets('error de autenticación muestra snackbar rojo con el mensaje traducido', (WidgetTester tester) async {
       // Arrange
-      VoidCallback? capturedListener;
+      final listeners = <VoidCallback>[];
       when(mockLoginController.addListener(any)).thenAnswer((invocation) {
-        capturedListener = invocation.positionalArguments[0] as VoidCallback;
+        listeners.add(invocation.positionalArguments[0] as VoidCallback);
       });
       when(mockLoginController.state).thenReturn(const AuthInitial());
 
@@ -256,19 +273,30 @@ void main() {
       when(mockLoginController.state).thenReturn(AuthError(failure));
 
       // Act - llamar listener manualmente (esto ejecuta _onStateChanged y _showError)
-      capturedListener?.call();
+      for (final listener in listeners) {
+        listener();
+      }
       await tester.pump();
 
       // Assert - verificar que el listener fue capturado y ejecutado
       // (esto cubre las líneas del método _onStateChanged y _showError)
-      expect(capturedListener, isNotNull);
+      expect(listeners, isNotEmpty);
+      final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
+      expect(snackBar.backgroundColor, Colors.red);
+      expect(
+        find.descendant(
+            of: find.byType(SnackBar),
+            matching: find.text(AuthError(failure)
+                .getMessage(tester.element(find.byType(LoginScreen))))),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('debe ejecutar _navigateToHome cuando login es exitoso', (WidgetTester tester) async {
+    testWidgets('login exitoso no muestra snackbar de error', (WidgetTester tester) async {
       // Arrange
-      VoidCallback? capturedListener;
+      final listeners = <VoidCallback>[];
       when(mockLoginController.addListener(any)).thenAnswer((invocation) {
-        capturedListener = invocation.positionalArguments[0] as VoidCallback;
+        listeners.add(invocation.positionalArguments[0] as VoidCallback);
       });
       when(mockLoginController.state).thenReturn(const AuthInitial());
 
@@ -286,12 +314,15 @@ void main() {
       when(mockLoginController.state).thenReturn(AuthSuccess(user));
 
       // Act - llamar listener manualmente (esto ejecuta _onStateChanged y _navigateToHome)
-      capturedListener?.call();
+      for (final listener in listeners) {
+        listener();
+      }
       await tester.pumpAndSettle();
 
       // Assert - verificar que el listener fue capturado y ejecutado
       // (esto cubre las líneas del método _onStateChanged y _navigateToHome)
-      expect(capturedListener, isNotNull);
+      expect(listeners, isNotEmpty);
+      expect(find.byType(SnackBar), findsNothing);
     });
 
     testWidgets('debe limpiar controllers en dispose', (WidgetTester tester) async {
@@ -351,5 +382,195 @@ void main() {
       // Assert - no debe causar error
       await tester.pump();
     });
+
+    testWidgets('error de timeout muestra snackbar con el mensaje traducido', (WidgetTester tester) async {
+      // Arrange
+      final listeners = <VoidCallback>[];
+      when(mockLoginController.addListener(any)).thenAnswer((invocation) {
+        listeners.add(invocation.positionalArguments[0] as VoidCallback);
+      });
+      when(mockLoginController.state).thenReturn(const AuthInitial());
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      // Cambiar estado a error de timeout
+      final failure = AuthFailure(
+        code: ErrorCode.timeoutError,
+        technicalMessage: 'Request timeout',
+      );
+      when(mockLoginController.state).thenReturn(AuthError(failure));
+
+      // Act - llamar listener manualmente
+      for (final listener in listeners) {
+        listener();
+      }
+      await tester.pump();
+
+      // Assert - verifica que el listener fue capturado y ejecutado
+      // (esto cubre _onStateChanged y _showError para errores de timeout)
+      expect(listeners, isNotEmpty);
+      final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
+      expect(snackBar.backgroundColor, Colors.red);
+      expect(
+        find.descendant(
+            of: find.byType(SnackBar),
+            matching: find.text(AuthError(failure)
+                .getMessage(tester.element(find.byType(LoginScreen))))),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('error unauthorized muestra snackbar con el mensaje traducido', (WidgetTester tester) async {
+      // Arrange
+      final listeners = <VoidCallback>[];
+      when(mockLoginController.addListener(any)).thenAnswer((invocation) {
+        listeners.add(invocation.positionalArguments[0] as VoidCallback);
+      });
+      when(mockLoginController.state).thenReturn(const AuthInitial());
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      // Cambiar estado a error de credenciales inválidas
+      final failure = AuthFailure(
+        code: ErrorCode.unauthorized,
+        technicalMessage: 'Invalid credentials',
+      );
+      when(mockLoginController.state).thenReturn(AuthError(failure));
+
+      // Act - llamar listener manualmente
+      for (final listener in listeners) {
+        listener();
+      }
+      await tester.pump();
+
+      // Assert - verifica que el listener fue capturado y ejecutado
+      // (esto cubre _onStateChanged y _showError para errores de autorización)
+      expect(listeners, isNotEmpty);
+      final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
+      expect(snackBar.backgroundColor, Colors.red);
+      expect(
+        find.descendant(
+            of: find.byType(SnackBar),
+            matching: find.text(AuthError(failure)
+                .getMessage(tester.element(find.byType(LoginScreen))))),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('debe normalizar email antes de login', (WidgetTester tester) async {
+      // Arrange
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      // Act - ingresar email con espacios y mayúsculas
+      await tester.enterText(find.byType(EmailField), '  Test@Example.COM  ');
+      await tester.enterText(find.byType(PasswordField), 'Password123!');
+
+      await tester.tap(find.widgetWithText(AuthButton, 'Iniciar Sesión'));
+      await tester.pumpAndSettle();
+
+      // Assert - debe normalizar email (trim + lowercase)
+      verify(mockLoginController.signInWithEmail(
+        email: 'test@example.com',
+        password: 'Password123!',
+      )).called(1);
+    });
+
+    testWidgets('debe abrir ForgotPasswordDialog al presionar "¿Olvidaste tu contraseña?"', (WidgetTester tester) async {
+      // Arrange
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      // Act - buscar y presionar el link de "Olvidaste tu contraseña"
+      final forgotPasswordButton = find.text('¿Olvidaste tu contraseña?');
+      expect(forgotPasswordButton, findsOneWidget);
+
+      await tester.tap(forgotPasswordButton);
+      await tester.pumpAndSettle();
+
+      // Assert - debe mostrar ForgotPasswordDialog
+      expect(find.byType(ForgotPasswordDialog), findsOneWidget);
+    });
+  });
+
+  group('LoginScreen - Recuperar contraseña', () {
+    setUp(() {
+      getIt.registerSingleton<AppLogger>(logger_helper.MockAppLogger());
+      getIt.registerSingleton<AuthRepository>(_MockAuthRepository());
+      final resetController = reset_mocks.MockResetPasswordController();
+      when(resetController.state).thenReturn(const AuthInitial());
+      getIt.registerSingleton<ResetPasswordController>(resetController);
+      when(mockLoginController.resetPassword(email: anyNamed('email')))
+          .thenAnswer((_) async {});
+    });
+
+    tearDown(() async {
+      await getIt.unregister<AppLogger>();
+      await getIt.unregister<AuthRepository>();
+      await getIt.unregister<ResetPasswordController>();
+    });
+
+    Future<void> sendCode(WidgetTester tester, String email) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('¿Olvidaste tu contraseña?'));
+      await tester.pumpAndSettle();
+      tester
+          .widget<ForgotPasswordDialog>(find.byType(ForgotPasswordDialog))
+          .onCodeSent(email);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pump();
+    }
+
+    testWidgets('enviar código cierra el diálogo, pide el reset y abre OTP',
+        (tester) async {
+      await sendCode(tester, 'user@test.com');
+
+      expect(find.byType(ForgotPasswordDialog), findsNothing);
+      verify(mockLoginController.resetPassword(email: 'user@test.com')).called(1);
+      expect(find.byType(OtpVerificationScreen), findsNothing);
+
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
+
+      final otp = tester.widget<OtpVerificationScreen>(
+          find.byType(OtpVerificationScreen));
+      expect(otp.controller.state.email, 'user@test.com');
+      expect(otp.onSuccess, isNotNull);
+    });
+
+    testWidgets('verificar el OTP reemplaza la pantalla por ResetPasswordScreen',
+        (tester) async {
+      await sendCode(tester, 'user@test.com');
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
+
+      tester
+          .widget<OtpVerificationScreen>(find.byType(OtpVerificationScreen))
+          .onSuccess!();
+      await tester.pumpAndSettle();
+
+      expect(find.byType(OtpVerificationScreen), findsNothing);
+      final reset =
+          tester.widget<ResetPasswordScreen>(find.byType(ResetPasswordScreen));
+      expect(reset.email, 'user@test.com');
+    });
+
+    testWidgets('si la pantalla se desmonta antes de 300ms no navega',
+        (tester) async {
+      await sendCode(tester, 'user@test.com');
+
+      await tester.pumpWidget(const MaterialApp(home: Text('OTRA')));
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(OtpVerificationScreen), findsNothing);
+      expect(find.text('OTRA'), findsOneWidget);
+    });
   });
 }
+
+class _MockAuthRepository extends Mock implements AuthRepository {}

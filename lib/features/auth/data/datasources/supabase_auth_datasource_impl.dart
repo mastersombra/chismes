@@ -4,7 +4,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
-import '../../../../core/config/supabase_config.dart';
 import '../../../../core/logging/logging.dart';
 import '../models/user_model.dart';
 import 'supabase_auth_datasource.dart';
@@ -16,8 +15,9 @@ class SupabaseAuthDataSourceImpl implements SupabaseAuthDataSource {
   final supabase.SupabaseClient _supabase;
 
   SupabaseAuthDataSourceImpl(
+    supabase.SupabaseClient supabaseClient,
     this._logger,
-  ) : _supabase = SupabaseConfig.client;
+  ) : _supabase = supabaseClient;
 
   @override
   UserModel? get currentUser {

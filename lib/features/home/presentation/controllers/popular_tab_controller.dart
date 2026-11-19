@@ -125,9 +125,11 @@ class PopularTabController extends ChangeNotifier {
       });
 
       // 2. Cargar feed
+      // ⚠️ TEMPORAL: Si no hay ciudad, cargar feed global (sin filtro de ciudad)
+      // TODO: Solicitar al usuario que configure su ciudad en onboarding
       final result = await _getPopularFeed(
         userId: null, // TODO: Get from AuthService when implemented
-        cityId: city?.id,
+        cityId: city?.id, // null = feed global (todos los chismes)
         pageSize: 20,
         cursor: null,
       );
@@ -144,6 +146,10 @@ class PopularTabController extends ChangeNotifier {
             'count': paginated.data.length,
             'hasMore': paginated.hasMore,
           });
+
+          // DEBUG: Log para verificar que los chismes lleguen al estado
+          _logger.d('DEBUG PopularTab: Loaded ${paginated.data.length} gossips');
+          _logger.d('DEBUG PopularTab: First gossip: ${paginated.data.isNotEmpty ? paginated.data.first.subject : "EMPTY"}');
 
           _updateState(_state.copyWith(
             status: PopularTabStatus.loaded,

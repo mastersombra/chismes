@@ -1,7 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../../core/config/supabase_config.dart';
 import '../../../../core/logging/logging.dart';
 import '../models/profile_settings_model.dart';
 import '../models/user_stats_model.dart';
@@ -9,12 +8,13 @@ import '../models/user_stats_model.dart';
 /// DataSource remoto para perfil usando Supabase
 @singleton
 class ProfileRemoteDataSource {
-  final AppLogger _logger;
   final SupabaseClient _supabase;
+  final AppLogger _logger;
 
   ProfileRemoteDataSource(
+    this._supabase,
     this._logger,
-  ) : _supabase = SupabaseConfig.client;
+  );
 
   /// Obtiene estadísticas del usuario desde Supabase
   Future<UserStatsModel> getUserStats(String userId) async {

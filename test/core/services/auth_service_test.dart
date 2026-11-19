@@ -1,6 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'dart:convert';
+
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase hide User;
+import 'package:supabase_flutter/supabase_flutter.dart' as sb show Session, User;
 import 'package:chismes/core/services/auth_service.dart';
 import 'package:chismes/core/logging/logging.dart';
 import 'package:chismes/features/auth/domain/repositories/auth_repository.dart';
@@ -8,16 +12,33 @@ import 'package:chismes/features/auth/domain/entities/user.dart';
 
 import 'auth_service_test.mocks.dart';
 
-@GenerateMocks([AuthRepository, AppLogger])
+@GenerateMocks([
+  AuthRepository,
+  AppLogger,
+  supabase.SupabaseClient,
+  supabase.GoTrueClient,
+])
 void main() {
   late AuthService authService;
   late MockAuthRepository mockAuthRepository;
+  late MockSupabaseClient mockSupabaseClient;
+  late MockGoTrueClient mockGoTrueClient;
   late MockAppLogger mockLogger;
 
   setUp(() {
     mockAuthRepository = MockAuthRepository();
+    mockSupabaseClient = MockSupabaseClient();
+    mockGoTrueClient = MockGoTrueClient();
     mockLogger = MockAppLogger();
-    authService = AuthService(mockAuthRepository, mockLogger);
+
+    // Setup mock para auth
+    when(mockSupabaseClient.auth).thenReturn(mockGoTrueClient);
+
+    authService = AuthService(
+      mockAuthRepository,
+      mockSupabaseClient,
+      mockLogger,
+    );
   });
 
   group('AuthService', () {
@@ -25,11 +46,6 @@ void main() {
       test('debe crear instancia con AuthRepository', () {
         expect(authService, isNotNull);
         expect(authService, isA<AuthService>());
-      });
-
-      test('debe ser singleton en DI', () {
-        // Documenta que la anotación @singleton está presente
-        expect(true, isTrue);
       });
     });
 
@@ -695,6 +711,157 @@ void main() {
 
         when(mockAuthRepository.currentUser).thenReturn(null);
         expect(authService.isAuthenticated, isFalse);
+      });
+    });
+
+    group('debugSessionStatus', () {
+      test('debe retornar estado sin sesión cuando no hay sesión activa', () {
+        // Arrange
+        when(mockGoTrueClient.currentSession).thenReturn(null);
+        when(mockGoTrueClient.currentUser).thenReturn(null);
+
+        // Act
+        final result = authService.debugSessionStatus();
+
+        // Assert
+        expect(result['hasSession'], isFalse);
+        expect(result['hasUser'], isFalse);
+        expect(result['isAuthenticated'], isFalse);
+        verify(mockLogger.w('debugSessionStatus: No active session or user'))
+            .called(1);
+      });
+
+      test('debe llamar a supabase auth correctamente', () {
+        // Arrange
+        when(mockGoTrueClient.currentSession).thenReturn(null);
+        when(mockGoTrueClient.currentUser).thenReturn(null);
+
+        // Act
+        authService.debugSessionStatus();
+
+        // Assert
+        verify(mockSupabaseClient.auth).called(greaterThan(0));
+        verify(mockGoTrueClient.currentSession).called(1);
+        verify(mockGoTrueClient.currentUser).called(1);
+      });
+    });
+
+    group('isSessionExpired', () {
+      test('debe retornar true cuando no hay sesión', () {
+        // Arrange
+        when(mockGoTrueClient.currentSession).thenReturn(null);
+
+        // Act
+        final result = authService.isSessionExpired();
+
+        // Assert
+        expect(result, isTrue);
+        verify(mockLogger.w('isSessionExpired: No session found')).called(1);
+      });
+
+      test('debe llamar a supabase auth correctamente', () {
+        // Arrange
+        when(mockGoTrueClient.currentSession).thenReturn(null);
+
+        // Act
+        authService.isSessionExpired();
+
+        // Assert
+        verify(mockSupabaseClient.auth).called(greaterThan(0));
+        verify(mockGoTrueClient.currentSession).called(1);
+      });
+    });
+    group('sesión activa (token con exp)', () {
+      late sb.User user;
+
+      // JWT sin firmar: GoTrue solo decodifica el payload para leer `exp`.
+      sb.Session sessionExpiringIn(Duration d) {
+        String b64(Map<String, dynamic> m) =>
+            base64Url.encode(utf8.encode(jsonEncode(m))).replaceAll('=', '');
+        final exp = DateTime.now().add(d).millisecondsSinceEpoch ~/ 1000;
+        return sb.Session(
+          accessToken: '${b64({'alg': 'none'})}.${b64({'exp': exp})}.sig',
+          tokenType: 'bearer',
+          user: user,
+        );
+      }
+
+      setUp(() {
+        user = sb.User(
+          id: 'user-123',
+          appMetadata: const {},
+          userMetadata: const {},
+          aud: 'authenticated',
+          email: 'test@example.com',
+          createdAt: '2024-01-01T00:00:00Z',
+        );
+        when(mockGoTrueClient.currentUser).thenReturn(user);
+      });
+
+      test('debugSessionStatus reporta sesión válida y loguea info', () {
+        when(mockGoTrueClient.currentSession)
+            .thenReturn(sessionExpiringIn(const Duration(hours: 1)));
+
+        final status = authService.debugSessionStatus();
+
+        expect(status['hasSession'], isTrue);
+        expect(status['hasUser'], isTrue);
+        expect(status['userId'], 'user-123');
+        expect(status['email'], 'test@example.com');
+        expect(status['isExpired'], isFalse);
+        expect(status['tokenType'], 'bearer');
+        expect(status['timeUntilExpiryMinutes'], inInclusiveRange(58, 60));
+        expect(DateTime.parse(status['expiresAt'] as String).isAfter(DateTime.now()),
+            isTrue);
+        verify(mockLogger.i('Session is VALID', context: status)).called(1);
+        verifyNever(mockLogger.w(any, context: anyNamed('context')));
+      });
+
+      test('debugSessionStatus reporta sesión expirada y loguea warning', () {
+        when(mockGoTrueClient.currentSession)
+            .thenReturn(sessionExpiringIn(const Duration(minutes: -30)));
+
+        final status = authService.debugSessionStatus();
+
+        expect(status['isExpired'], isTrue);
+        expect(status['timeUntilExpiryMinutes'], lessThan(0));
+        verify(mockLogger.w('Session is EXPIRED', context: status)).called(1);
+      });
+
+      test('debugSessionStatus sin user pero con sesión reporta hasUser false',
+          () {
+        when(mockGoTrueClient.currentSession)
+            .thenReturn(sessionExpiringIn(const Duration(hours: 1)));
+        when(mockGoTrueClient.currentUser).thenReturn(null);
+
+        final status = authService.debugSessionStatus();
+
+        expect(status, {
+          'hasSession': false,
+          'hasUser': false,
+          'isAuthenticated': false,
+        });
+      });
+
+      test('isSessionExpired retorna false sin warning si el token es válido',
+          () {
+        when(mockGoTrueClient.currentSession)
+            .thenReturn(sessionExpiringIn(const Duration(hours: 1)));
+
+        expect(authService.isSessionExpired(), isFalse);
+        verifyNever(mockLogger.w(any, context: anyNamed('context')));
+      });
+
+      test('isSessionExpired retorna true y loguea desde cuándo expiró', () {
+        when(mockGoTrueClient.currentSession)
+            .thenReturn(sessionExpiringIn(const Duration(minutes: -30)));
+
+        expect(authService.isSessionExpired(), isTrue);
+        final context = verify(mockLogger.w(
+          'isSessionExpired: YES - Session expired',
+          context: captureAnyNamed('context'),
+        )).captured.single as Map<String, dynamic>;
+        expect(context['expiredSince'], matches(RegExp(r'^(29|30) minutes ago$')));
       });
     });
   });

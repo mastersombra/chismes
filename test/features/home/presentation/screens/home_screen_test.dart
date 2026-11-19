@@ -10,6 +10,7 @@ import 'package:chismes/features/home/presentation/controllers/following_tab_con
 import 'package:chismes/features/home/presentation/states/popular_tab_state.dart';
 import 'package:chismes/features/home/presentation/states/following_tab_state.dart';
 import 'package:chismes/features/home/domain/entities/feed_gossip.dart';
+import 'package:chismes/features/home/presentation/widgets/popular_tab.dart';
 import 'package:chismes/core/result/result.dart';
 import 'package:chismes/core/error/failure.dart';
 import 'package:chismes/core/di/injection_container.dart';
@@ -232,6 +233,149 @@ void main() {
       expect(find.byType(TabBar), findsOneWidget);
       final tabBar = tester.widget<TabBar>(find.byType(TabBar));
       expect(tabBar.tabs.length, 2);
+    });
+
+    testWidgets('debe cargar feed de Following al cambiar a segunda tab', (tester) async {
+      // Arrange: Setup estado inicial para FollowingTab
+      when(mockFollowingTabController.state).thenReturn(
+        const FollowingTabState(status: FollowingTabStatus.initial),
+      );
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      // Verificar que solo se llamó loadFeed del PopularTab
+      verify(mockPopularTabController.loadFeed()).called(1);
+      verifyNever(mockFollowingTabController.loadFeed());
+
+      // Act: Cambiar a segunda tab (Following)
+      await tester.tap(find.text('Siguiendo'));
+      await tester.pumpAndSettle();
+
+      // Assert: Debe llamar loadFeed del FollowingTab
+      verify(mockFollowingTabController.loadFeed()).called(1);
+    });
+
+    testWidgets('NO debe cargar feed de Following si ya está cargado', (tester) async {
+      // Arrange: Setup estado como ya cargado (no initial)
+      when(mockFollowingTabController.state).thenReturn(
+        FollowingTabState(
+          status: FollowingTabStatus.loaded,
+          gossips: mockFeedGossips,
+        ),
+      );
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      // Resetear contador después de la carga inicial
+      clearInteractions(mockFollowingTabController);
+
+      // Act: Cambiar a segunda tab (Following)
+      await tester.tap(find.text('Siguiendo'));
+      await tester.pumpAndSettle();
+
+      // Assert: NO debe llamar loadFeed porque ya está cargado
+      verifyNever(mockFollowingTabController.loadFeed());
+    });
+
+    testWidgets('debe tener AppBar con título centrado', (WidgetTester tester) async {
+      // Act
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      // Assert
+      final appBar = tester.widget<AppBar>(find.byType(AppBar));
+      expect(appBar.centerTitle, isTrue);
+      expect(appBar.title, isNotNull);
+    });
+
+    testWidgets('debe tener exactamente 2 tabs en TabBar', (WidgetTester tester) async {
+      // Act
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      // Assert
+      expect(find.byType(Tab), findsNWidgets(2));
+      expect(find.byIcon(Icons.local_fire_department), findsOneWidget);
+      expect(find.byIcon(Icons.favorite), findsOneWidget);
+    });
+
+    testWidgets('debe tener TabBarView con 2 hijos', (WidgetTester tester) async {
+      // Act
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      // Assert
+      expect(find.byType(TabBarView), findsOneWidget);
+      expect(find.byType(PopularTab), findsOneWidget);
+      // FollowingTab no está visible inicialmente, solo PopularTab
+    });
+
+    testWidgets('debe disponer TabController cuando se desmonta', (WidgetTester tester) async {
+      // Arrange
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      // Act - desmontar widget
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(body: Container()),
+        ),
+      );
+
+      // Assert - widget se desmontó sin errores
+      expect(find.byType(HomeScreen), findsNothing);
+    });
+
+    testWidgets('debe disponer controllers cuando se desmonta', (WidgetTester tester) async {
+      // Arrange
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      // Verificar que controllers fueron creados
+      verify(mockPopularTabController.loadFeed()).called(1);
+
+      // Act - desmontar widget
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(body: Container()),
+        ),
+      );
+
+      // Assert - debe llamar dispose en controllers
+      verify(mockPopularTabController.dispose()).called(1);
+      verify(mockFollowingTabController.dispose()).called(1);
+    });
+
+    testWidgets('no debe cargar feed de Following si tab index no es 1', (WidgetTester tester) async {
+      // Arrange
+      when(mockPopularTabController.state).thenReturn(const PopularTabState());
+      when(mockFollowingTabController.state).thenReturn(
+        const FollowingTabState(status: FollowingTabStatus.initial),
+      );
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      // Limpiar interacciones del setup inicial
+      clearInteractions(mockFollowingTabController);
+
+      // Act - simular que indexIsChanging es false (no hay cambio de tab real)
+      // En este caso no podemos forzar indexIsChanging directamente,
+      // pero podemos verificar que solo se llama loadFeed cuando se cambia realmente
+
+      // Assert - Following no debe haberse cargado aún
+      verifyNever(mockFollowingTabController.loadFeed());
+    });
+
+    testWidgets('debe tener Scaffold como widget raíz', (WidgetTester tester) async {
+      // Act
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      // Assert
+      expect(find.byType(Scaffold), findsOneWidget);
     });
 
   });

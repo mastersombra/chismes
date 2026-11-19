@@ -89,7 +89,7 @@ class CreateGossip {
       );
 
       if (currentUser == null) {
-        _logger.w('⚠️ Usuario no autenticado intentando crear gossip');
+        _logger.w('Unauthenticated user attempting to create gossip');
         return Result.failure(const Failure(
           code: error_codes.ErrorCode.unauthorized,
           technicalMessage: 'Debes iniciar sesión para publicar chismes',
@@ -97,7 +97,7 @@ class CreateGossip {
       }
 
       if (!currentUser.emailVerified) {
-        _logger.w('⚠️ Usuario sin email verificado intentando crear gossip',
+        _logger.w('User without verified email attempting to create gossip',
           context: {'userId': currentUser.id});
         return Result.failure(const ValidationFailure(
           code: error_codes.ErrorCode.emailNotVerified,
@@ -123,7 +123,7 @@ class CreateGossip {
             'base64Length': imageBase64.length,
           });
         } catch (e) {
-          _logger.e('Error al leer imagen', error: e);
+          _logger.e('Error leer imagen', error: e);
           return Result.failure(const ValidationFailure(
             code: error_codes.ErrorCode.invalidInput,
             technicalMessage: 'Failed to read image file',
@@ -138,7 +138,7 @@ class CreateGossip {
       // - Moderar contenido
       // - Si aprueba: Mover a público + INSERT
       // - Si rechaza: Eliminar de cuarentena
-      _logger.i('Creando gossip', context: {
+      _logger.i('Creating gossip', context: {
         'hasImage': imageFile != null,
         'subject': input.subject,
       });
@@ -150,7 +150,7 @@ class CreateGossip {
 
       return createResult.when(
         onSuccess: (gossip) {
-          _logger.i('✅ Gossip creado exitosamente', context: {
+          _logger.i('Gossip created successfully', context: {
             'id': gossip.id,
             'status': gossip.status.value,
             'hasImage': gossip.imageUrl != null,
@@ -158,7 +158,7 @@ class CreateGossip {
           return Result.success(gossip);
         },
         onFailure: (error) {
-          _logger.w('❌ Error al crear gossip', context: {
+          _logger.w('Error creating gossip', context: {
             'error': error.toString(),
           });
           return Result.failure(error);
@@ -168,7 +168,7 @@ class CreateGossip {
       _logger.e('Error en CreateGossip', error: e, stackTrace: stackTrace);
       return Result.failure(Failure(
         code: error_codes.ErrorCode.unknownError,
-        technicalMessage: 'Error al crear el chisme: $e',
+        technicalMessage: 'Error crear el chisme: $e',
       ));
     }
   }

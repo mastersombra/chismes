@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../gossip/presentation/widgets/gossip_card.dart';
 import '../controllers/popular_tab_controller.dart';
@@ -51,7 +51,7 @@ class PopularTab extends StatelessWidget {
                 const Icon(Icons.error_outline, size: 64, color: Colors.grey),
                 const SizedBox(height: AppSpacing.md),
                 Text(
-                  state.errorMessage ?? AppLocalizations.homePopularLoadError,
+                  state.errorMessage ?? context.l10n.homePopularLoadError,
                   style: const TextStyle(color: Colors.grey),
                   textAlign: TextAlign.center,
                 ),
@@ -59,7 +59,7 @@ class PopularTab extends StatelessWidget {
                 ElevatedButton.icon(
                   onPressed: () => controller.loadFeed(),
                   icon: const Icon(Icons.refresh),
-                  label: Text(AppLocalizations.commonRetry),
+                  label: Text(context.l10n.commonRetry),
                 ),
               ],
             ),
@@ -81,7 +81,7 @@ class PopularTab extends StatelessWidget {
                       const Icon(Icons.mood_bad, size: 64, color: Colors.grey),
                       const SizedBox(height: AppSpacing.md),
                       Text(
-                        AppLocalizations.homePopularEmpty,
+                        context.l10n.homePopularEmpty,
                         style: const TextStyle(color: Colors.grey),
                       ),
                     ],
@@ -164,7 +164,7 @@ class PopularTab extends StatelessWidget {
                     padding: const EdgeInsets.all(AppSpacing.xl),
                     child: Center(
                       child: Text(
-                        AppLocalizations.homePopularNoMore,
+                        context.l10n.homePopularNoMore,
                         style: const TextStyle(color: Colors.grey),
                       ),
                     ),

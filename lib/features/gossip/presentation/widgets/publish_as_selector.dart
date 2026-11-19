@@ -1,8 +1,9 @@
-import 'package:easy_localization/easy_localization.dart';
+
 import 'package:flutter/material.dart';
 import '../../domain/entities/gossip.dart';
 import '../states/add_gossip_state.dart';
 import '../../../../core/theme/app_spacing.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 /// Widget para seleccionar cómo publicar (anónimo o con perfil)
 class PublishAsSelector extends StatelessWidget {
@@ -24,7 +25,7 @@ class PublishAsSelector extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'gossip.publish_as.title'.tr(),
+              context.l10n.gossipPublishAsTitle,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -41,13 +42,13 @@ class PublishAsSelector extends StatelessWidget {
                 children: [
                   _buildRadioOption(
                     value: PublishAs.anonymous,
-                    label: 'gossip.publish_as.anonymous'.tr(),
+                    label: context.l10n.gossipPublishAsAnonymous,
                     icon: Icons.person_off,
                   ),
                   const SizedBox(width: AppSpacing.xl),
                   _buildRadioOption(
                     value: PublishAs.profile,
-                    label: 'gossip.publish_as.with_profile'.tr(),
+                    label: context.l10n.gossipPublishAsWithProfile,
                     icon: Icons.person,
                   ),
                 ],

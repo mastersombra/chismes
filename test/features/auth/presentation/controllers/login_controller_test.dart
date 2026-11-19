@@ -129,7 +129,7 @@ void main() {
           code: ErrorCode.invalidCredentials,
           technicalMessage: 'Invalid credentials',
         );
-        
+
         when(mockSignInWithEmail(
           email: tEmail,
           password: tPassword,
@@ -142,11 +142,103 @@ void main() {
 
         expect(controller.state, isA<AuthError>());
         final errorState = controller.state as AuthError;
-        expect(errorState.failure, tFailure);
+        expect(errorState.errorCode, tFailure.code);
+      });
+
+      test('debe logear intento y éxito de login', () async {
+        when(mockSignInWithEmail(
+          email: tEmail,
+          password: tPassword,
+        )).thenAnswer((_) async => Result.success(tUser));
+
+        await controller.signInWithEmail(
+          email: tEmail,
+          password: tPassword,
+        );
+
+        verify(mockLogger.i(
+          'Login attempt with email',
+          context: {'email': tEmail},
+        )).called(1);
+        verify(mockLogger.i(
+          'Login successful',
+          context: {'userId': tUser.id, 'email': tUser.email},
+        )).called(1);
+      });
+
+      test('debe logear error cuando login falla', () async {
+        const tFailure = AuthFailure(
+          code: ErrorCode.invalidCredentials,
+          technicalMessage: 'Invalid credentials',
+        );
+        when(mockSignInWithEmail(
+          email: tEmail,
+          password: tPassword,
+        )).thenAnswer((_) async => Result.failure(tFailure));
+
+        await controller.signInWithEmail(
+          email: tEmail,
+          password: tPassword,
+        );
+
+        verify(mockLogger.w(
+          'Login failed',
+          error: tFailure,
+          context: {'email': tEmail, 'code': ErrorCode.invalidCredentials},
+        )).called(1);
+      });
+
+      test('debe manejar errores de red', () async {
+        const tFailure = NetworkFailure(
+          code: ErrorCode.networkError,
+          technicalMessage: 'No internet connection',
+        );
+        when(mockSignInWithEmail(
+          email: tEmail,
+          password: tPassword,
+        )).thenAnswer((_) async => Result.failure(tFailure));
+
+        await controller.signInWithEmail(
+          email: tEmail,
+          password: tPassword,
+        );
+
+        expect(controller.state, isA<AuthError>());
+        final errorState = controller.state as AuthError;
+        expect(errorState.errorCode, ErrorCode.networkError);
+      });
+
+      test('debe manejar errores de validación', () async {
+        const tFailure = ValidationFailure(
+          code: ErrorCode.invalidInput,
+          technicalMessage: 'Invalid email format',
+        );
+        when(mockSignInWithEmail(
+          email: 'invalid-email',
+          password: tPassword,
+        )).thenAnswer((_) async => Result.failure(tFailure));
+
+        await controller.signInWithEmail(
+          email: 'invalid-email',
+          password: tPassword,
+        );
+
+        expect(controller.state, isA<AuthError>());
+        final errorState = controller.state as AuthError;
+        expect(errorState.errorCode, ErrorCode.invalidInput);
       });
     });
 
     group('signInWithGoogle', () {
+      test('debe cambiar estado a loading al iniciar', () async {
+        when(mockSignInWithGoogle()).thenAnswer((_) async => Result.success(tUser));
+
+        final future = controller.signInWithGoogle();
+
+        expect(controller.state, isA<AuthLoading>());
+        await future;
+      });
+
       test('debe cambiar estado a authenticated cuando login es exitoso', () async {
         when(mockSignInWithGoogle()).thenAnswer((_) async => Result.success(tUser));
 
@@ -160,16 +252,78 @@ void main() {
           code: ErrorCode.unauthorized,
           technicalMessage: 'Google sign in failed',
         );
-        
+
         when(mockSignInWithGoogle()).thenAnswer((_) async => Result.failure(tFailure));
 
         await controller.signInWithGoogle();
 
         expect(controller.state, isA<AuthError>());
       });
+
+      test('debe volver a estado initial cuando usuario cancela OAuth', () async {
+        const tFailure = AuthFailure(
+          code: ErrorCode.oauthCancelled,
+          technicalMessage: 'User cancelled',
+        );
+
+        when(mockSignInWithGoogle()).thenAnswer((_) async => Result.failure(tFailure));
+
+        await controller.signInWithGoogle();
+
+        expect(controller.state, isA<AuthInitial>());
+      });
+
+      test('debe logear intento y éxito de Google login', () async {
+        when(mockSignInWithGoogle()).thenAnswer((_) async => Result.success(tUser));
+
+        await controller.signInWithGoogle();
+
+        verify(mockLogger.i('Google login attempt')).called(1);
+        verify(mockLogger.i(
+          'Google login successful',
+          context: {'userId': tUser.id, 'email': tUser.email},
+        )).called(1);
+      });
+
+      test('debe logear cuando usuario cancela Google login', () async {
+        const tFailure = AuthFailure(
+          code: ErrorCode.oauthCancelled,
+          technicalMessage: 'User cancelled',
+        );
+        when(mockSignInWithGoogle()).thenAnswer((_) async => Result.failure(tFailure));
+
+        await controller.signInWithGoogle();
+
+        verify(mockLogger.i('Google login cancelled by user')).called(1);
+      });
+
+      test('debe logear error cuando Google login falla', () async {
+        const tFailure = AuthFailure(
+          code: ErrorCode.unauthorized,
+          technicalMessage: 'Google sign in failed',
+        );
+        when(mockSignInWithGoogle()).thenAnswer((_) async => Result.failure(tFailure));
+
+        await controller.signInWithGoogle();
+
+        verify(mockLogger.w(
+          'Google login failed',
+          error: tFailure,
+          context: {'code': ErrorCode.unauthorized},
+        )).called(1);
+      });
     });
 
     group('signInWithApple', () {
+      test('debe cambiar estado a loading al iniciar', () async {
+        when(mockSignInWithApple()).thenAnswer((_) async => Result.success(tUser));
+
+        final future = controller.signInWithApple();
+
+        expect(controller.state, isA<AuthLoading>());
+        await future;
+      });
+
       test('debe cambiar estado a authenticated cuando login es exitoso', () async {
         when(mockSignInWithApple()).thenAnswer((_) async => Result.success(tUser));
 
@@ -183,12 +337,135 @@ void main() {
           code: ErrorCode.unauthorized,
           technicalMessage: 'Apple sign in failed',
         );
-        
+
         when(mockSignInWithApple()).thenAnswer((_) async => Result.failure(tFailure));
 
         await controller.signInWithApple();
 
         expect(controller.state, isA<AuthError>());
+      });
+
+      test('debe logear intento y éxito de Apple login', () async {
+        when(mockSignInWithApple()).thenAnswer((_) async => Result.success(tUser));
+
+        await controller.signInWithApple();
+
+        verify(mockLogger.i('Apple login attempt')).called(1);
+        verify(mockLogger.i(
+          'Apple login successful',
+          context: {'userId': tUser.id, 'email': tUser.email},
+        )).called(1);
+      });
+
+      test('debe logear error cuando Apple login falla', () async {
+        const tFailure = AuthFailure(
+          code: ErrorCode.unauthorized,
+          technicalMessage: 'Apple sign in failed',
+        );
+        when(mockSignInWithApple()).thenAnswer((_) async => Result.failure(tFailure));
+
+        await controller.signInWithApple();
+
+        verify(mockLogger.w(
+          'Apple login failed',
+          error: tFailure,
+          context: {'code': ErrorCode.unauthorized},
+        )).called(1);
+      });
+    });
+
+    group('resetPassword', () {
+      test('debe cambiar estado a loading al iniciar', () async {
+        when(mockResetPassword(email: tEmail))
+            .thenAnswer((_) async => Result.success(null));
+
+        final future = controller.resetPassword(email: tEmail);
+
+        expect(controller.state, isA<AuthLoading>());
+        await future;
+      });
+
+      test('debe cambiar estado a AuthOtpSent cuando es exitoso', () async {
+        when(mockResetPassword(email: tEmail))
+            .thenAnswer((_) async => Result.success(null));
+
+        await controller.resetPassword(email: tEmail);
+
+        expect(controller.state, isA<AuthOtpSent>());
+        final otpState = controller.state as AuthOtpSent;
+        expect(otpState.email, tEmail);
+      });
+
+      test('debe cambiar estado a error cuando falla', () async {
+        const tFailure = AuthFailure(
+          code: ErrorCode.userNotFound,
+          technicalMessage: 'User not found',
+        );
+        when(mockResetPassword(email: tEmail))
+            .thenAnswer((_) async => Result.failure(tFailure));
+
+        await controller.resetPassword(email: tEmail);
+
+        expect(controller.state, isA<AuthError>());
+        final errorState = controller.state as AuthError;
+        expect(errorState.errorCode, ErrorCode.userNotFound);
+      });
+
+      test('debe logear intento y éxito de reset password', () async {
+        when(mockResetPassword(email: tEmail))
+            .thenAnswer((_) async => Result.success(null));
+
+        await controller.resetPassword(email: tEmail);
+
+        verify(mockLogger.i(
+          'Reset password request',
+          context: {'email': tEmail},
+        )).called(1);
+        verify(mockLogger.i(
+          'Reset password OTP sent',
+          context: {'email': tEmail},
+        )).called(1);
+      });
+
+      test('debe logear error cuando reset password falla', () async {
+        const tFailure = AuthFailure(
+          code: ErrorCode.userNotFound,
+          technicalMessage: 'User not found',
+        );
+        when(mockResetPassword(email: tEmail))
+            .thenAnswer((_) async => Result.failure(tFailure));
+
+        await controller.resetPassword(email: tEmail);
+
+        verify(mockLogger.w(
+          'Reset password failed',
+          error: tFailure,
+          context: {'email': tEmail, 'code': ErrorCode.userNotFound},
+        )).called(1);
+      });
+
+      test('debe manejar errores de red', () async {
+        const tFailure = NetworkFailure(
+          code: ErrorCode.networkError,
+          technicalMessage: 'No internet connection',
+        );
+        when(mockResetPassword(email: tEmail))
+            .thenAnswer((_) async => Result.failure(tFailure));
+
+        await controller.resetPassword(email: tEmail);
+
+        expect(controller.state, isA<AuthError>());
+        final errorState = controller.state as AuthError;
+        expect(errorState.errorCode, ErrorCode.networkError);
+      });
+
+      test('debe llamar al usecase con email correcto', () async {
+        when(mockResetPassword(email: tEmail))
+            .thenAnswer((_) async => Result.success(null));
+
+        await controller.resetPassword(email: tEmail);
+
+        verify(mockResetPassword(email: tEmail)).called(1);
       });
     });
 
@@ -212,6 +489,17 @@ void main() {
         controller.resetState();
 
         expect(controller.state, isA<AuthInitial>());
+      });
+
+      test('debe notificar listeners al resetear', () {
+        var notificationCount = 0;
+        controller.addListener(() {
+          notificationCount++;
+        });
+
+        controller.resetState();
+
+        expect(notificationCount, 1);
       });
     });
   });

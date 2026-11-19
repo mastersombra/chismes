@@ -1,8 +1,9 @@
-import 'package:easy_localization/easy_localization.dart';
+
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/validation/form_validators.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 /// Widget para los campos de texto del gossip (subject y content)
 class GossipTextFields extends StatelessWidget {
@@ -23,19 +24,19 @@ class GossipTextFields extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _buildSubjectField(),
+        _buildSubjectField(context),
         const SizedBox(height: AppSpacing.lg),
-        _buildContentField(),
+        _buildContentField(context),
       ],
     );
   }
 
-  Widget _buildSubjectField() {
+  Widget _buildSubjectField(BuildContext context) {
     return TextFormField(
       controller: subjectController,
       decoration: InputDecoration(
-        labelText: 'gossip.text_fields.subject_label'.tr(),
-        hintText: 'gossip.text_fields.subject_hint'.tr(),
+        labelText: context.l10n.gossipTextFieldsSubjectLabel,
+        hintText: context.l10n.gossipTextFieldsSubjectHint,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
         prefixIcon: const Icon(Icons.person),
       ),
@@ -43,17 +44,17 @@ class GossipTextFields extends StatelessWidget {
       maxLength: 200,
       validator: (value) => FormValidators.requiredWithMessage(
         value,
-        'gossip.text_fields.subject_validation'.tr(),
+        context.l10n.gossipTextFieldsSubjectValidation,
       ),
     );
   }
 
-  Widget _buildContentField() {
+  Widget _buildContentField(BuildContext context) {
     return TextFormField(
       controller: contentController,
       decoration: InputDecoration(
-        labelText: 'gossip.text_fields.content_label'.tr(),
-        hintText: 'gossip.text_fields.content_hint'.tr(),
+        labelText: context.l10n.gossipTextFieldsContentLabel,
+        hintText: context.l10n.gossipTextFieldsContentHint,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
         prefixIcon: const Icon(Icons.chat_bubble),
       ),
@@ -62,7 +63,7 @@ class GossipTextFields extends StatelessWidget {
       maxLength: 1000,
       validator: (value) => FormValidators.requiredWithMessage(
         value,
-        'gossip.text_fields.content_validation'.tr(),
+        context.l10n.gossipTextFieldsContentValidation,
       ),
     );
   }

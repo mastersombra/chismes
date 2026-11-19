@@ -216,16 +216,27 @@ GRANT SELECT ON gossips TO authenticated;
 -- =====================================================
 
 -- Trigger: Auto-asignar created_by y created_at en INSERT
+-- Soporta dos flujos:
+-- 1. Edge Functions con service_role: Pasan created_by explícitamente
+-- 2. Clientes directos: Fuerza created_by desde auth.uid() (requiere autenticación)
 CREATE OR REPLACE FUNCTION auto_set_audit_fields_on_insert()
 RETURNS TRIGGER AS $$
 BEGIN
-  -- Validar que hay usuario autenticado
+  -- CASO 1: created_by ya está establecido (Edge Function con service_role)
+  -- No validar auth.uid(), simplemente usar el valor pasado
+  IF NEW.created_by IS NOT NULL THEN
+    -- Edge Function ya pasó el user_id, usar ese valor
+    NEW.created_at = NOW();
+    RETURN NEW;
+  END IF;
+
+  -- CASO 2: created_by es NULL (cliente directo intentando INSERT)
+  -- Validar que hay usuario autenticado y forzar created_by desde auth.uid()
   IF auth.uid() IS NULL THEN
     RAISE EXCEPTION 'Authentication required to create gossips'
       USING HINT = 'User must be logged in';
   END IF;
 
-  -- Forzar created_by desde auth.uid()
   NEW.created_by = auth.uid();
   NEW.created_at = NOW();
 

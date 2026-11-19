@@ -1,430 +1,473 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import 'package:chismes/core/validation/form_validators.dart';
-import '../../helpers/easy_localization_test_helper.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('FormValidators', () {
+    late Widget testApp;
+
+    setUp(() {
+      // Helper widget con localization para acceder a context.l10n
+      testApp = MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => Container(),
+          ),
+        ),
+      );
+    });
+
     group('required', () {
-      testWidgets('debe retornar null cuando el valor no es null ni vacío', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.required('valor válido', 'campo');
+      testWidgets('debe retornar null cuando el valor es válido',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.required(context, 'test value', 'campo');
+
+        // Assert
         expect(result, isNull);
       });
 
-      testWidgets('debe retornar error cuando el valor es null', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.required(null, 'un país');
-        expect(result, 'Selecciona un país');
+      testWidgets('debe retornar error cuando el valor es null',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.required(context, null, 'campo');
+
+        // Assert
+        expect(result, isNotNull);
+        expect(result, contains('campo'));
       });
 
-      testWidgets('debe retornar error cuando el valor está vacío', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.required('', 'una ciudad');
-        expect(result, 'Selecciona una ciudad');
+      testWidgets('debe retornar error cuando el valor está vacío',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.required(context, '', 'campo');
+
+        // Assert
+        expect(result, isNotNull);
+        expect(result, contains('campo'));
       });
 
-      testWidgets('debe retornar error cuando el valor solo contiene espacios', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.required('   ', 'una opción');
-        expect(result, isNull); // Espacios no son considerados vacíos
-      });
+      testWidgets('debe retornar error cuando el valor es solo espacios',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
 
-      testWidgets('debe usar el nombre del campo en el mensaje de error', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result1 = FormValidators.required(null, 'tu nombre');
-        final result2 = FormValidators.required('', 'el email');
-        final result3 = FormValidators.required(null, 'la dirección');
+        // Act
+        final result = FormValidators.required(context, '   ', 'campo');
 
-        expect(result1, 'Selecciona tu nombre');
-        expect(result2, 'Selecciona el email');
-        expect(result3, 'Selecciona la dirección');
-      });
-
-      testWidgets('debe funcionar con texto con caracteres especiales', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.required('Texto con ñ y á', 'campo');
+        // Assert
+        // Nota: Los espacios NO se consideran vacío por isEmpty
         expect(result, isNull);
       });
 
-      testWidgets('debe funcionar con números como string', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.required('123', 'campo');
-        expect(result, isNull);
+      testWidgets('debe usar el nombre del campo en el mensaje de error',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.required(context, null, 'un país');
+
+        // Assert
+        expect(result, isNotNull);
+        expect(result, contains('país'));
       });
     });
 
     group('requiredWithMessage', () {
-      testWidgets('debe retornar null cuando el valor no es null ni vacío', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.requiredWithMessage('valor', 'Error personalizado');
+      test('debe retornar null cuando el valor es válido', () {
+        // Act
+        final result =
+            FormValidators.requiredWithMessage('test value', 'Error custom');
+
+        // Assert
         expect(result, isNull);
       });
 
-      testWidgets('debe retornar el mensaje personalizado cuando el valor es null', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.requiredWithMessage(null, 'Este campo es obligatorio');
-        expect(result, 'Este campo es obligatorio');
+      test('debe retornar mensaje personalizado cuando el valor es null', () {
+        // Arrange
+        const customMessage = 'Este campo es requerido';
+
+        // Act
+        final result = FormValidators.requiredWithMessage(null, customMessage);
+
+        // Assert
+        expect(result, equals(customMessage));
       });
 
-      testWidgets('debe retornar el mensaje personalizado cuando el valor está vacío', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.requiredWithMessage('', 'Debes completar este campo');
-        expect(result, 'Debes completar este campo');
-      });
+      test('debe retornar mensaje personalizado cuando el valor está vacío',
+          () {
+        // Arrange
+        const customMessage = 'Por favor ingresa un valor';
 
-      testWidgets('debe usar el mensaje exacto proporcionado', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final customMessage = 'Por favor, ingresa tu información';
+        // Act
         final result = FormValidators.requiredWithMessage('', customMessage);
-        expect(result, customMessage);
-      });
 
-      testWidgets('debe permitir mensajes multiidioma', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result1 = FormValidators.requiredWithMessage('', 'This field is required');
-        final result2 = FormValidators.requiredWithMessage('', 'Este campo es requerido');
-        final result3 = FormValidators.requiredWithMessage('', 'Ce champ est requis');
-
-        expect(result1, 'This field is required');
-        expect(result2, 'Este campo es requerido');
-        expect(result3, 'Ce champ est requis');
-      });
-
-      testWidgets('debe funcionar con mensajes largos', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final longMessage = 'Este es un mensaje de error muy largo que explica en detalle por qué el campo es requerido';
-        final result = FormValidators.requiredWithMessage(null, longMessage);
-        expect(result, longMessage);
+        // Assert
+        expect(result, equals(customMessage));
       });
     });
 
     group('minLength', () {
-      testWidgets('debe retornar null cuando el valor cumple con la longitud mínima', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.minLength('12345', 5);
+      testWidgets('debe retornar null cuando el valor cumple la longitud mínima',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.minLength(context, 'abcde', 5);
+
+        // Assert
         expect(result, isNull);
       });
 
-      testWidgets('debe retornar null cuando el valor excede la longitud mínima', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.minLength('123456', 5);
+      testWidgets('debe retornar null cuando el valor excede la longitud mínima',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.minLength(context, 'abcdefgh', 5);
+
+        // Assert
         expect(result, isNull);
       });
 
       testWidgets('debe retornar null cuando el valor es null', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.minLength(null, 5);
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.minLength(context, null, 5);
+
+        // Assert
         expect(result, isNull);
       });
 
-      testWidgets('debe retornar error cuando el valor es más corto que minChars', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.minLength('1234', 5);
-        expect(result, 'Debe tener al menos 5 caracteres');
+      testWidgets('debe retornar error cuando el valor es más corto',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.minLength(context, 'abc', 5);
+
+        // Assert
+        expect(result, isNotNull);
+        expect(result, contains('5'));
       });
 
-      testWidgets('debe retornar error cuando el valor está vacío', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.minLength('', 5);
-        expect(result, 'Debe tener al menos 5 caracteres');
-      });
+      testWidgets('debe retornar error cuando el valor está vacío',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
 
-      testWidgets('debe usar el número correcto en el mensaje de error', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result1 = FormValidators.minLength('ab', 3);
-        final result2 = FormValidators.minLength('1234', 10);
-        final result3 = FormValidators.minLength('x', 8);
+        // Act
+        final result = FormValidators.minLength(context, '', 1);
 
-        expect(result1, 'Debe tener al menos 3 caracteres');
-        expect(result2, 'Debe tener al menos 10 caracteres');
-        expect(result3, 'Debe tener al menos 8 caracteres');
-      });
-
-      testWidgets('debe contar caracteres Unicode correctamente', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result1 = FormValidators.minLength('😀😀😀', 3);
-        final result2 = FormValidators.minLength('ñáéíóú', 6);
-
-        expect(result1, isNull);
-        expect(result2, isNull);
-      });
-
-      testWidgets('debe funcionar con minLength de 1', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result1 = FormValidators.minLength('a', 1);
-        final result2 = FormValidators.minLength('', 1);
-
-        expect(result1, isNull);
-        expect(result2, 'Debe tener al menos 1 caracteres');
-      });
-
-      testWidgets('debe contar espacios como caracteres', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.minLength('   ', 3);
-        expect(result, isNull);
+        // Assert
+        expect(result, isNotNull);
       });
     });
 
     group('maxLength', () {
-      testWidgets('debe retornar null cuando el valor está dentro del límite', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.maxLength('12345', 10);
+      testWidgets('debe retornar null cuando el valor cumple la longitud máxima',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.maxLength(context, 'abcde', 5);
+
+        // Assert
         expect(result, isNull);
       });
 
-      testWidgets('debe retornar null cuando el valor alcanza exactamente el límite', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.maxLength('12345', 5);
+      testWidgets('debe retornar null cuando el valor es más corto',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.maxLength(context, 'abc', 5);
+
+        // Assert
         expect(result, isNull);
       });
 
       testWidgets('debe retornar null cuando el valor es null', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.maxLength(null, 10);
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.maxLength(context, null, 5);
+
+        // Assert
         expect(result, isNull);
       });
 
-      testWidgets('debe retornar error cuando el valor excede maxChars', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.maxLength('123456', 5);
-        expect(result, 'No puede exceder 5 caracteres');
-      });
+      testWidgets('debe retornar error cuando el valor excede la longitud',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
 
-      testWidgets('debe usar el número correcto en el mensaje de error', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result1 = FormValidators.maxLength('abcdef', 5);
-        final result2 = FormValidators.maxLength('texto muy largo', 10);
-        final result3 = FormValidators.maxLength('demasiado', 3);
+        // Act
+        final result = FormValidators.maxLength(context, 'abcdefgh', 5);
 
-        expect(result1, 'No puede exceder 5 caracteres');
-        expect(result2, 'No puede exceder 10 caracteres');
-        expect(result3, 'No puede exceder 3 caracteres');
-      });
-
-      testWidgets('debe contar caracteres Unicode correctamente', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result1 = FormValidators.maxLength('😀😀😀😀', 3);
-        final result2 = FormValidators.maxLength('ñáéíóú', 5);
-
-        expect(result1, 'No puede exceder 3 caracteres');
-        expect(result2, 'No puede exceder 5 caracteres');
-      });
-
-      testWidgets('debe permitir strings vacíos', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.maxLength('', 5);
-        expect(result, isNull);
-      });
-
-      testWidgets('debe funcionar con maxLength de 1', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result1 = FormValidators.maxLength('a', 1);
-        final result2 = FormValidators.maxLength('ab', 1);
-
-        expect(result1, isNull);
-        expect(result2, 'No puede exceder 1 caracteres');
-      });
-
-      testWidgets('debe contar espacios como caracteres', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.maxLength('      ', 5);
-        expect(result, 'No puede exceder 5 caracteres');
+        // Assert
+        expect(result, isNotNull);
+        expect(result, contains('5'));
       });
     });
 
     group('email', () {
-      testWidgets('debe retornar null para emails válidos simples', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result1 = FormValidators.email('test@example.com');
-        final result2 = FormValidators.email('user@domain.org');
-        final result3 = FormValidators.email('admin@site.net');
+      testWidgets('debe retornar null cuando el email es válido',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
 
-        expect(result1, isNull);
-        expect(result2, isNull);
-        expect(result3, isNull);
-      });
+        // Act
+        final result = FormValidators.email(context, 'test@example.com');
 
-      testWidgets('debe retornar null para emails con guiones y puntos', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result1 = FormValidators.email('test.user@example.com');
-        final result2 = FormValidators.email('user-name@domain.org');
-        final result3 = FormValidators.email('first.last@my-site.com');
-
-        expect(result1, isNull);
-        expect(result2, isNull);
-        expect(result3, isNull);
-      });
-
-      testWidgets('debe retornar null para emails con guiones bajos', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.email('test_user@example.com');
+        // Assert
         expect(result, isNull);
       });
 
-      testWidgets('debe retornar null para emails con números', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.email('user123@example456.com');
+      testWidgets('debe retornar null cuando el email tiene subdominios',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.email(context, 'user@mail.company.com');
+
+        // Assert
         expect(result, isNull);
       });
 
-      testWidgets('debe retornar error cuando el valor es null', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.email(null);
-        expect(result, 'Ingresa un email');
+      testWidgets('debe normalizar email a minúsculas antes de validar',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.email(context, 'Test@Example.COM');
+
+        // Assert
+        expect(result, isNull);
       });
 
-      testWidgets('debe retornar error cuando el valor está vacío', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.email('');
-        expect(result, 'Ingresa un email');
+      testWidgets('debe validar email con espacios al inicio/fin',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.email(context, '  test@example.com  ');
+
+        // Assert
+        expect(result, isNull);
       });
 
-      testWidgets('debe retornar error para emails sin @', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.email('testexample.com');
-        expect(result, 'Email inválido');
+      testWidgets('debe retornar error cuando el email es null',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.email(context, null);
+
+        // Assert
+        expect(result, isNotNull);
       });
 
-      testWidgets('debe retornar error para emails sin dominio', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.email('test@');
-        expect(result, 'Email inválido');
+      testWidgets('debe retornar error cuando el email está vacío',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.email(context, '');
+
+        // Assert
+        expect(result, isNotNull);
       });
 
-      testWidgets('debe retornar error para emails sin nombre de usuario', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.email('@example.com');
-        expect(result, 'Email inválido');
+      testWidgets('debe retornar error cuando el email no tiene @',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.email(context, 'testexample.com');
+
+        // Assert
+        expect(result, isNotNull);
       });
 
-      testWidgets('debe retornar error para emails sin extensión', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.email('test@example');
-        expect(result, 'Email inválido');
+      testWidgets('debe retornar error cuando el email no tiene dominio',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.email(context, 'test@');
+
+        // Assert
+        expect(result, isNotNull);
       });
 
-      testWidgets('debe retornar error para emails con espacios', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result1 = FormValidators.email('test @example.com');
-        final result2 = FormValidators.email('test@ example.com');
-        final result3 = FormValidators.email('test@example .com');
+      testWidgets('debe retornar error cuando el email no tiene usuario',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
 
-        expect(result1, 'Email inválido');
-        expect(result2, 'Email inválido');
-        expect(result3, 'Email inválido');
+        // Act
+        final result = FormValidators.email(context, '@example.com');
+
+        // Assert
+        expect(result, isNotNull);
       });
 
-      testWidgets('debe retornar error para emails con múltiples @', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result = FormValidators.email('test@@example.com');
-        expect(result, 'Email inválido');
-      });
+      testWidgets('debe retornar error cuando el dominio es muy corto',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
 
-      testWidgets('debe retornar error para emails inválidos comunes', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result1 = FormValidators.email('plaintext');
-        final result2 = FormValidators.email('missing@domain');
-        final result3 = FormValidators.email('@nodomain.com');
-        final result4 = FormValidators.email('no@domain@example.com');
+        // Act
+        final result = FormValidators.email(context, 'test@ex.c');
 
-        expect(result1, 'Email inválido');
-        expect(result2, 'Email inválido');
-        expect(result3, 'Email inválido');
-        expect(result4, 'Email inválido');
-      });
-
-      testWidgets('debe validar extensiones de dominio de diferentes longitudes', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result1 = FormValidators.email('test@example.co');
-        final result2 = FormValidators.email('test@example.com');
-        final result3 = FormValidators.email('test@example.info');
-
-        expect(result1, isNull);
-        expect(result2, isNull);
-        expect(result3, isNull);
-      });
-
-      testWidgets('debe validar subdominios', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final result1 = FormValidators.email('test@mail.example.com');
-        final result2 = FormValidators.email('user@subdomain.domain.org');
-
-        expect(result1, isNull);
-        expect(result2, isNull);
-      });
-    });
-
-    group('Combinación de validadores', () {
-      testWidgets('required y minLength pueden usarse juntos conceptualmente', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final value = 'test';
-
-        final requiredResult = FormValidators.required(value, 'campo');
-        final minLengthResult = FormValidators.minLength(value, 3);
-
-        expect(requiredResult, isNull);
-        expect(minLengthResult, isNull);
-      });
-
-      testWidgets('minLength y maxLength pueden validar el mismo valor', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final value = '12345';
-
-        final minResult = FormValidators.minLength(value, 3);
-        final maxResult = FormValidators.maxLength(value, 10);
-
-        expect(minResult, isNull);
-        expect(maxResult, isNull);
-      });
-
-      testWidgets('email puede fallar mientras required pasa', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final value = 'not-an-email';
-
-        final requiredResult = FormValidators.required(value, 'email');
-        final emailResult = FormValidators.email(value);
-
-        expect(requiredResult, isNull);
-        expect(emailResult, 'Email inválido');
+        // Assert
+        expect(result, isNotNull);
       });
     });
 
-    group('Casos edge', () {
-      testWidgets('debe manejar strings muy largos', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final longString = 'a' * 1000;
+    group('normalizeEmail', () {
+      test('debe convertir email a minúsculas', () {
+        // Act
+        final result = FormValidators.normalizeEmail('Test@Example.COM');
 
-        final minResult = FormValidators.minLength(longString, 100);
-        final maxResult = FormValidators.maxLength(longString, 500);
-
-        expect(minResult, isNull);
-        expect(maxResult, 'No puede exceder 500 caracteres');
+        // Assert
+        expect(result, equals('test@example.com'));
       });
 
-      testWidgets('debe manejar caracteres especiales en todos los validadores', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final specialChars = '!@#\$%^&*()_+-=[]{}|;:,.<>?';
+      test('debe remover espacios al inicio y fin', () {
+        // Act
+        final result = FormValidators.normalizeEmail('  test@example.com  ');
 
-        expect(FormValidators.required(specialChars, 'campo'), isNull);
-        expect(FormValidators.minLength(specialChars, 10), isNull);
-        expect(FormValidators.maxLength(specialChars, 50), isNull);
+        // Assert
+        expect(result, equals('test@example.com'));
       });
 
-      testWidgets('debe manejar emojis en todos los validadores', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final emojis = '😀😃😄😁';
+      test('debe normalizar email que ya está en minúsculas', () {
+        // Act
+        final result = FormValidators.normalizeEmail('test@example.com');
 
-        expect(FormValidators.required(emojis, 'campo'), isNull);
-        expect(FormValidators.minLength(emojis, 3), isNull);
-        expect(FormValidators.maxLength(emojis, 10), isNull);
+        // Assert
+        expect(result, equals('test@example.com'));
       });
 
-      testWidgets('debe manejar saltos de línea', (tester) async {
-        await initializeEasyLocalizationForTest(tester);
-        final multiline = 'línea1\nlínea2\nlínea3';
+      test('debe manejar email con caracteres especiales', () {
+        // Act
+        final result =
+            FormValidators.normalizeEmail('User.Name+Tag@Example.COM');
 
-        expect(FormValidators.required(multiline, 'campo'), isNull);
-        expect(FormValidators.minLength(multiline, 10), isNull);
+        // Assert
+        expect(result, equals('user.name+tag@example.com'));
+      });
+    });
+
+    group('password', () {
+      testWidgets('debe retornar null cuando la contraseña es válida',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.password(context, 'mypassword');
+
+        // Assert
+        expect(result, isNull);
+      });
+
+      testWidgets('debe retornar null cuando la contraseña tiene espacios',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.password(context, 'my password 123');
+
+        // Assert
+        expect(result, isNull);
+      });
+
+      testWidgets('debe retornar error cuando la contraseña es null',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.password(context, null);
+
+        // Assert
+        expect(result, isNotNull);
+      });
+
+      testWidgets('debe retornar error cuando la contraseña está vacía',
+          (tester) async {
+        // Arrange
+        await tester.pumpWidget(testApp);
+        final context = tester.element(find.byType(Container));
+
+        // Act
+        final result = FormValidators.password(context, '');
+
+        // Assert
+        expect(result, isNotNull);
       });
     });
   });

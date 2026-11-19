@@ -57,9 +57,21 @@ class SupabaseRemoteLogger implements RemoteLogger {
       // - Sanitiza datos sensibles (allowlist de context)
       // - Valida rate limiting
       // - Inserta con service_role (bypasa RLS)
+
+      // Obtener JWT del usuario autenticado (si existe)
+      final session = _client.auth.currentSession;
+      if (session == null) {
+        // Usuario no autenticado - no podemos enviar logs
+        debugPrint('⚠️ No se puede enviar log remoto: usuario no autenticado');
+        return;
+      }
+
       final response = await _client.functions.invoke(
         'log-error',
         body: entry.toJson(),
+        headers: {
+          'Authorization': 'Bearer ${session.accessToken}',
+        },
       );
 
       if (response.status == 200) {

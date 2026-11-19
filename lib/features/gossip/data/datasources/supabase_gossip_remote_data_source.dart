@@ -150,7 +150,6 @@ class SupabaseGossipRemoteDataSource implements GossipRemoteDataSource {
     }
   }
 
-
   @override
   Future<GossipModel> createWithImage(
     CreateGossipInput input,
@@ -171,7 +170,7 @@ class SupabaseGossipRemoteDataSource implements GossipRemoteDataSource {
       // ✅ SEGURO: Cuarentena privada, validación real
       // ✅ STORAGE_PATH: Fuente de verdad (URLs regenerables)
 
-      _logger.d('🔍 Creando gossip con imagen vía Edge Function');
+      _logger.d('Creating gossip with image via Edge Function');
 
       // Construir body del request
       final body = {
@@ -186,10 +185,22 @@ class SupabaseGossipRemoteDataSource implements GossipRemoteDataSource {
         'idempotency_key': input.idempotencyKey,
       };
 
-      // Llamar Edge Function
+      // Obtener JWT del usuario autenticado
+      final session = _supabase.auth.currentSession;
+      if (session == null) {
+        throw const AuthFailure(
+          code: error_codes.ErrorCode.unauthorized,
+          technicalMessage: 'No active session - user must be logged in',
+        );
+      }
+
+      // Llamar Edge Function con JWT explícito
       final response = await _supabase.functions.invoke(
         'moderate-gossip',
         body: body,
+        headers: {
+          'Authorization': 'Bearer ${session.accessToken}',
+        },
       );
 
       // Verificar respuesta
@@ -248,7 +259,7 @@ class SupabaseGossipRemoteDataSource implements GossipRemoteDataSource {
           'id': gossipData['id'],
         });
       } else {
-        _logger.i('✅ Gossip creado con imagen', context: {
+        _logger.i('Gossip created with image', context: {
           'id': gossipData['id'],
           'status': gossipData['status'],
           'hasImage': gossipData['image_url'] != null,
@@ -294,13 +305,25 @@ class SupabaseGossipRemoteDataSource implements GossipRemoteDataSource {
         'reason': reason.value,
       });
 
-      // Llamar al Edge Function report-gossip
+      // Obtener JWT del usuario autenticado
+      final session = _supabase.auth.currentSession;
+      if (session == null) {
+        throw const AuthFailure(
+          code: error_codes.ErrorCode.unauthorized,
+          technicalMessage: 'No active session - user must be logged in to report',
+        );
+      }
+
+      // Llamar al Edge Function report-gossip con JWT explícito
       final response = await _supabase.functions.invoke(
         'report-gossip',
         body: {
           'gossip_id': gossipId,
           'reason': reason.value,
           if (details != null) 'details': details,
+        },
+        headers: {
+          'Authorization': 'Bearer ${session.accessToken}',
         },
       );
 
@@ -311,12 +334,12 @@ class SupabaseGossipRemoteDataSource implements GossipRemoteDataSource {
         throw Exception(errorMessage);
       }
 
-      _logger.i('✅ Gossip reportado exitosamente', context: {
+      _logger.i('Gossip reported successfully', context: {
         'gossipId': gossipId,
         'reason': reason.value,
       });
     } catch (e, stackTrace) {
-      _logger.e('Error al reportar gossip', error: e, stackTrace: stackTrace);
+      _logger.e('Error reportar gossip', error: e, stackTrace: stackTrace);
 
       // Manejar errores de autenticación
       final errorMessage = e.toString().toLowerCase();
@@ -342,6 +365,54 @@ class SupabaseGossipRemoteDataSource implements GossipRemoteDataSource {
       throw ServerFailure(
         code: error_codes.ErrorCode.serverError,
         technicalMessage: 'Failed to report gossip: $e',
+      );
+    }
+  }
+
+  @override
+  Future<List<GossipModel>> searchGossips({
+    required String query,
+    String? cityId,
+    int limit = 20,
+  }) async {
+    try {
+      _logger.d(
+        'Searching gossips via RPC',
+        context: {'query': query, 'cityId': cityId, 'limit': limit},
+      );
+
+      // Llamar a función RPC search_gossips
+      final response = await _supabase.rpc(
+        'search_gossips',
+        params: {
+          'search_query': query.trim(),
+          'city_filter': cityId,
+          'result_limit': limit,
+        },
+      );
+
+      final results = response as List;
+
+      _logger.i(
+        'Search completed',
+        context: {'results': results.length},
+      );
+
+      // Convertir respuesta a GossipModel
+      return results
+          .map((json) => GossipModel.fromJson(json as Map<String, dynamic>))
+          .toList();
+    } catch (e, stackTrace) {
+      _logger.e(
+        'Failed to search gossips',
+        error: e,
+        stackTrace: stackTrace,
+        context: {'query': query},
+      );
+
+      throw ServerFailure(
+        code: error_codes.ErrorCode.serverError,
+        technicalMessage: 'Failed to search gossips: $e',
       );
     }
   }

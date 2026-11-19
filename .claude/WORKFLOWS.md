@@ -11,9 +11,10 @@
 1. [Agregar un Nuevo Feature](#agregar-un-nuevo-feature)
 2. [Agregar Migración de Base de Datos](#agregar-migración-de-base-de-datos)
 3. [Agregar Logging](#agregar-logging)
-4. [Testing Workflow](#testing-workflow)
-5. [Deployment](#deployment)
-6. [Comandos Útiles](#comandos-útiles)
+4. [Auditar Arquitectura](#auditar-arquitectura)
+5. [Testing Workflow](#testing-workflow)
+6. [Deployment](#deployment)
+7. [Comandos Útiles](#comandos-útiles)
 
 ---
 
@@ -686,6 +687,54 @@ open ios/Runner.xcworkspace
 # 1. Product → Archive
 # 2. Upload to App Store Connect
 ```
+
+---
+
+## Auditar Arquitectura
+
+### Verificar Dependency Rule
+
+**Propósito:** Verificar que NO hay violaciones de la Dependency Rule.
+
+```bash
+# Ejecutar auditoría
+./tools/audit_dependencies.sh
+
+# Verbose (muestra todos los archivos)
+./tools/audit_dependencies.sh --verbose
+
+# JSON output (para CI/CD)
+./tools/audit_dependencies.sh --json
+```
+
+**Qué verifica:**
+
+```
+✅ PERMITIDO:
+   - Presentation → Domain
+   - Data → Domain
+   - Cualquiera → Core
+
+❌ VIOLACIONES:
+   - Domain → Presentation
+   - Domain → Data
+   - Presentation → Data
+   - Feature A → Feature B
+```
+
+**Output esperado:**
+
+```
+Files checked:     169
+Violations:        0
+Warnings:          0
+
+✅ PASS: No dependency violations found!
+Clean Architecture Dependency Rule: 100% compliant
+Score: 10/10
+```
+
+**Ver más:** → `tools/README.md`
 
 ---
 

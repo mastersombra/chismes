@@ -1,0 +1,578 @@
+{
+  "@@locale": "en",
+  "@@context": "chismes_app",
+  "appTagline": "Share stories, discover secrets",
+  "commonBack": "Back",
+  "commonCancel": "Cancel",
+  "commonEmailInvalid": "Invalid email",
+  "commonEnterEmail": "Enter an email",
+  "commonEnterPassword": "Enter your password",
+  "commonMaxLength": "Cannot exceed {count} characters",
+  "@commonMaxLength": {
+    "description": "Translated from: common.max_length",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "COUNT"
+      }
+    }
+  },
+  "commonMinLength": "Must be at least {count} characters",
+  "@commonMinLength": {
+    "description": "Translated from: common.min_length",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "COUNT"
+      }
+    }
+  },
+  "commonRetry": "Retry",
+  "commonSelect": "Select {field}",
+  "@commonSelect": {
+    "description": "Translated from: common.select",
+    "placeholders": {
+      "field": {
+        "type": "String",
+        "example": "FIELD"
+      }
+    }
+  },
+  "errorsAuthEmailAlreadyInUse": "This email is already registered.",
+  "authEmailAlreadyInUseAction": "This email is already registered. Sign in instead.",
+  "errorsAuthEmailNotVerified": "You must verify your email to continue.",
+  "errorsAuthExpiredToken": "Invalid or expired code. Request a new one.",
+  "errorsAuthInvalidCredentials": "Incorrect email or password. Please check your data and try again.",
+  "errorsAuthInvalidToken": "Invalid or expired code. Request a new one.",
+  "errorsAuthNotAuthenticated": "You must sign in to continue.",
+  "errorsAuthOauthCancelled": "Sign in cancelled.",
+  "errorsAuthOauthProviderError": "Error signing in with provider.",
+  "errorsAuthSessionExpired": "Your session has expired. Sign in again.",
+  "errorsAuthTooManyAttempts": "Too many attempts. Try again later.",
+  "errorsAuthUnauthorized": "You are not authorized to perform this action.",
+  "errorsAuthUserNotFound": "User not found.",
+  "errorsAuthUsernameTaken": "This username is already taken.",
+  "errorsAuthWeakPassword": "The password is too weak.",
+  "errorsBusinessGossipNotFound": "The gossip does not exist or was deleted.",
+  "errorsBusinessInvalidGossipContent": "The gossip content is invalid.",
+  "errorsBusinessInvalidLocation": "Invalid location. Select a valid location.",
+  "errorsBusinessMediaUploadFailed": "Could not upload the image. Please try again or try another image.",
+  "errorsBusinessModerationRejected": "The content does not meet our community standards. Please review the content and try again.",
+  "errorsBusinessRateLimitExceeded": "You've reached the request limit. Wait a moment and try again.",
+  "errorsDataAlreadyExists": "The resource already exists.",
+  "errorsDataConflict": "Data conflict. Try again.",
+  "errorsDataNotFound": "The requested resource does not exist.",
+  "errorsNetworkConnectionError": "Connection error. Please check your internet.",
+  "errorsNetworkNoInternet": "You have no internet connection. Check your network.",
+  "errorsNetworkTimeout": "The request took too long. Try again.",
+  "errorsPermissionsForbidden": "You don't have permission to perform this action.",
+  "errorsPermissionsInsufficient": "Insufficient permissions for this action.",
+  "errorsServerBadRequest": "Invalid request. Check the data sent.",
+  "errorsServerError": "Server error. Try again later.",
+  "errorsServerMaintenance": "The server is under maintenance. Try again later.",
+  "errorsServerTooManyRequests": "You've reached the request limit. Wait a moment and try again.",
+  "errorsServerUnavailable": "The service is temporarily unavailable.",
+  "errorsTitlesAuth": "Authentication Error",
+  "errorsTitlesConnection": "Connection Error",
+  "errorsTitlesData": "Data Error",
+  "errorsTitlesGeneral": "Error",
+  "errorsTitlesPermissions": "Permission Error",
+  "errorsTitlesServer": "Server Error",
+  "errorsTitlesUnexpected": "Unexpected Error",
+  "errorsTitlesValidation": "Validation Error",
+  "errorsUnknown": "An unexpected error occurred. Try again.",
+  "errorsValidationError": "Validation error. Check the entered data.",
+  "errorsValidationInvalidInput": "Invalid data. Check the format.",
+  "errorsValidationMissingField": "A required field is missing.",
+  "gossipAddScreenEmailVerificationResent": "Verification email resent. Check your inbox.",
+  "gossipAddScreenSubmitButton": "Publish gossip",
+  "gossipAddScreenSuccessDialogButton": "OK",
+  "gossipAddScreenSuccessDialogContentPending": "Your gossip is pending moderation. We'll notify you when its status changes.",
+  "gossipAddScreenSuccessDialogContentPublished": "Your gossip passed automatic checks and is now published.",
+  "gossipAddScreenSuccessDialogTitlePending": "Gossip sent!",
+  "gossipAddScreenSuccessDialogTitlePublished": "Gossip published!",
+  "gossipAddScreenTitle": "New Gossip 📝",
+  "gossipCardRateLimitError": "Rate limit reached",
+  "gossipCardReportError": "Error reporting",
+  "gossipCardReportSemanticHint": "Opens options to report inappropriate content",
+  "gossipCardReportSemanticLabel": "Report this gossip",
+  "gossipCardReportSuccess": "Thanks for your report. We'll review it soon.",
+  "gossipCardReportTooltip": "Report gossip",
+  "gossipCardSemanticHint": "Tap to view full details",
+  "gossipCardSemanticLabel": "Gossip: {subject}. {content}",
+  "@gossipCardSemanticLabel": {
+    "description": "Translated from: gossip.card.semantic_label",
+    "placeholders": {
+      "subject": {
+        "type": "String",
+        "example": "SUBJECT"
+      },
+      "content": {
+        "type": "String",
+        "example": "CONTENT"
+      }
+    }
+  },
+  "gossipCardShareError": "Error sharing",
+  "gossipCardShareSemanticHint": "Opens options to share with others",
+  "gossipCardShareSemanticLabel": "Share this gossip",
+  "gossipCardShareTooltip": "Share gossip",
+  "gossipLocationSelectorChangeButtonLabel": "Change",
+  "gossipLocationSelectorChangeButtonSemanticHint": "Opens the location selector",
+  "gossipLocationSelectorChangeButtonSemanticLabel": "Change location",
+  "gossipLocationSelectorDetectingText": "Detecting location...",
+  "gossipLocationSelectorIconSemanticLabel": "Location icon",
+  "gossipLocationSelectorPlaceholderText": "Select location",
+  "gossipLocationSelectorSemanticHint": "Tap the change button to select another location",
+  "gossipLocationSelectorSemanticLabelDetecting": "Automatically detecting location",
+  "gossipLocationSelectorSemanticLabelEmpty": "No location selected",
+  "gossipLocationSelectorSemanticLabelSelected": "Current location: {location}",
+  "@gossipLocationSelectorSemanticLabelSelected": {
+    "description": "Translated from: gossip.location_selector.semantic_label_selected",
+    "placeholders": {
+      "location": {
+        "type": "String",
+        "example": "LOCATION"
+      }
+    }
+  },
+  "gossipMediaAddAudio": "Add audio",
+  "gossipMediaAddImage": "Add image",
+  "gossipMediaAddPhotoOptional": "Add a photo (optional)",
+  "gossipMediaAudioAttached": "Audio attached",
+  "gossipMediaCamera": "Camera",
+  "gossipMediaCameraSemanticHint": "Opens the camera to take a photo",
+  "gossipMediaCameraSemanticLabel": "Take photo with camera",
+  "gossipMediaGallery": "Gallery",
+  "gossipMediaGallerySemanticHint": "Opens the photo gallery",
+  "gossipMediaGallerySemanticLabel": "Select photo from gallery",
+  "gossipMediaImageSelected": "Image selected",
+  "gossipMediaImageSemanticLabel": "Selected gossip image",
+  "gossipMediaLoadingSemantic": "Loading image",
+  "gossipMediaRemoveImageSemanticHint": "Removes the selected image",
+  "gossipMediaRemoveImageSemanticLabel": "Remove image",
+  "gossipMediaRemoveImageTooltip": "Remove image",
+  "gossipMediaSelectingImage": "Selecting image...",
+  "gossipMediaSelectingSemanticLabel": "Selecting image, please wait",
+  "gossipPublishAsAnonymous": "Anonymous",
+  "gossipPublishAsTitle": "Publish as",
+  "gossipPublishAsWithProfile": "With my profile",
+  "gossipReportButton": "Report",
+  "gossipReportDetailsHint": "Describe the problem...",
+  "gossipReportDetailsLabel": "Additional details (optional)",
+  "gossipReportReasonQuestion": "Why are you reporting this gossip?",
+  "gossipReportTitle": "Report gossip",
+  "gossipReportReasonSpam": "Spam",
+  "gossipReportReasonHarassment": "Harassment or bullying",
+  "gossipReportReasonViolence": "Violence or threats",
+  "gossipReportReasonSexualContent": "Sexual content",
+  "gossipReportReasonMisinformation": "Misinformation",
+  "gossipReportReasonOther": "Other reason",
+  "gossipTextFieldsContentHint": "Tell us what you know...",
+  "gossipTextFieldsContentLabel": "The gossip",
+  "gossipTextFieldsContentValidation": "Tell the gossip",
+  "gossipTextFieldsSubjectHint": "E.g.: John, the office, the gym...",
+  "gossipTextFieldsSubjectLabel": "About who or where?",
+  "gossipTextFieldsSubjectValidation": "Write about who or where the gossip is",
+  "homeDiscoverHeader": "Discover 👀",
+  "homeErrorLoadFailed": "Error loading feed",
+  "homeErrorRetry": "Retry",
+  "homeFollowingEmptyStateMessage": "Discover interesting people and follow their stories",
+  "homeFollowingEmptyStateTitle": "You're not following anyone yet",
+  "homeFollowingExploreUsersButton": "Explore users",
+  "homeFollowingFeatureNotImplemented": "Feature not implemented yet",
+  "homeFollowingNoPostsMessage": "💬 People you follow haven't posted yet",
+  "homeFollowingRecommendedBadge": "💡 Recommended for you",
+  "homeFollowingUsePopularTabHint": "Use the Popular tab above",
+  "homeFollowingViewPopularLink": "View Popular",
+  "homePopularEmpty": "No gossips available",
+  "homePopularNoMore": "No more gossips for now 🌙",
+  "homeTabsFollowing": "Following",
+  "homeTabsPopular": "Popular",
+  "navigationCreate": "Create",
+  "navigationExplore": "Explore",
+  "navigationHome": "Home",
+  "navigationProfile": "Profile",
+  "profileHeaderCompleteness": "Profile completeness",
+  "profileHeaderEmailVerified": "Email verified",
+  "profileHeaderNoName": "No name",
+  "profilePrivacySettingsAccountDeleteSubtitle": "Delete your account and all your data",
+  "profilePrivacySettingsAccountDeleteTitle": "Delete account",
+  "profilePrivacySettingsDialogsDeleteAccountConfirmPlaceholder": "DELETE",
+  "profilePrivacySettingsDialogsDeleteAccountConfirmPrompt": "To confirm, type DELETE",
+  "profilePrivacySettingsDialogsDeleteAccountMessage": "This will delete:\n• Your account\n• All your gossips\n• All your interactions\n\n⚠️ This action CANNOT be undone.",
+  "profilePrivacySettingsDialogsDeleteAccountTitle": "⚠️ Delete Account",
+  "profilePrivacySettingsDialogsDeleteAllDataMessage": "ALL locally stored data will be erased:\n• Saved location\n• Preferences\n• Cache\n\nAre you sure?",
+  "profilePrivacySettingsDialogsDeleteAllDataTitle": "⚠️ Erase All Data",
+  "profilePrivacySettingsDialogsForgetLocationMessage": "Your saved city will be deleted. Next time you create a gossip, location will be requested again.",
+  "profilePrivacySettingsDialogsForgetLocationTitle": "Forget location?",
+  "profilePrivacySettingsDialogsPrivacyPolicyContent": "The complete privacy policy is available at:\n\nhttps://chismes.app/privacy\n\nOr in the PRIVACY_POLICY.md file of the project.",
+  "profilePrivacySettingsDialogsTermsOfUseContent": "The complete terms of use are available at:\n\nhttps://chismes.app/terms\n\nOr in the TERMS_OF_SERVICE.md file of the project.",
+  "profilePrivacySettingsExportComingSoon": "Export coming soon",
+  "profilePrivacySettingsExportDataTooltip": "Export data",
+  "profilePrivacySettingsLocalDataInfoMessage": "This data is stored only on your phone (SharedPreferences). It is NOT sent to the server.",
+  "profilePrivacySettingsLocalDataInfoTitle": "ℹ️ Local Data",
+  "profilePrivacySettingsLocationAnonymousModeDescription": "With anonymous mode on, location will be requested each time you create a gossip.",
+  "profilePrivacySettingsLocationAnonymousModeSubtitle": "Don't save location by default",
+  "profilePrivacySettingsLocationForgetTooltip": "Forget location",
+  "profilePrivacySettingsLocationNotSaved": "Not saved",
+  "profilePrivacySettingsNoLocalData": "No local data saved",
+  "profilePrivacySettingsSectionsAccount": "🔒 Account",
+  "profilePrivacySettingsSectionsLocation": "📍 Location",
+  "profilePrivacySettingsSectionsPolicies": "📄 Policies",
+  "profilePrivacySettingsSectionsStoredData": "💾 Stored Data",
+  "profilePrivacySettingsSnackbarsAnonymousModeOff": "✅ Anonymous mode off",
+  "profilePrivacySettingsSnackbarsAnonymousModeOn": "✅ Anonymous mode on",
+  "profilePrivacySettingsSnackbarsDataErased": "✅ Data erased",
+  "profilePrivacySettingsSnackbarsLocationForgotten": "✅ Location forgotten",
+  "profileScreenErrorLoading": "Error loading profile",
+  "profileScreenNoUser": "No authenticated user",
+  "profileScreenRefreshTooltip": "Refresh",
+  "profileScreenSignOutButton": "Sign out",
+  "profileScreenSignOutDialogContent": "Are you sure you want to sign out?",
+  "profileScreenSignOutDialogTitle": "Sign out",
+  "profileScreenSigningOut": "Signing out...",
+  "profileSignOutError": "Error signing out",
+  "profileSettingsComments": "Comments",
+  "profileSettingsCommentsSubtitle": "Notify when someone comments on your gossips",
+  "profileSettingsDailySummarySubtitle": "Receive daily summary by email",
+  "profileSettingsDarkMode": "Dark mode",
+  "profileSettingsDarkModeSubtitle": "Use dark theme in the app",
+  "profileSettingsEmailNotifications": "Email notifications",
+  "profileSettingsGeneralNotifications": "General notifications",
+  "profileSettingsGeneralNotificationsSubtitle": "Enable or disable all notifications",
+  "profileSettingsLanguage": "Language",
+  "profileSettingsLanguageEnglish": "English",
+  "profileSettingsLanguageSpanish": "Español",
+  "profileSettingsNewFollowers": "New followers",
+  "profileSettingsNewFollowersSubtitle": "Notify when someone follows you",
+  "profileSettingsPrivacyDialogTitle": "Privacy level",
+  "profileSettingsPrivacyFriends": "Friends",
+  "profileSettingsPrivacyFriendsSubtitle": "Only your friends can see",
+  "profileSettingsPrivacyLevel": "Privacy level",
+  "profileSettingsPrivacyPrivate": "Private",
+  "profileSettingsPrivacyPrivateSubtitle": "Only you can see",
+  "profileSettingsPrivacyPublic": "Public",
+  "profileSettingsPrivacyPublicSubtitle": "Everyone can see your profile",
+  "profileSettingsPushNotifications": "Push notifications",
+  "profileSettingsPushNotificationsSubtitle": "Receive push notifications on device",
+  "profileSettingsSectionAppearance": "Appearance",
+  "profileSettingsSectionNotifications": "Notifications",
+  "profileSettingsSectionPrivacy": "Privacy",
+  "profileSettingsShowActivity": "Show activity",
+  "profileSettingsShowActivitySubtitle": "Show your last activity on profile",
+  "profileSettingsShowEmail": "Show email",
+  "profileSettingsShowEmailSubtitle": "Allow other users to see your email",
+  "profileSettingsTitle": "Settings",
+  "profileSettingsUpdateError": "Error updating settings",
+  "profileStatsComments": "Comments",
+  "profileStatsFollowers": "Followers",
+  "profileStatsFollowing": "Following",
+  "profileStatsGossips": "Gossips",
+  "profileStatsTitle": "Stats",
+  "searchFilterOnlyCity": "Only {cityName}",
+  "@searchFilterOnlyCity": {
+    "description": "Filter chip label to show only gossips from user's city",
+    "placeholders": {
+      "cityName": {
+        "type": "String",
+        "example": "Bogotá"
+      }
+    }
+  },
+  "searchHint": "Search gossips...",
+  "searchNoResults": "No gossips found 😢",
+  "searchTitle": "Search 🔎",
+  "authPasswordStrengthWeak": "Weak",
+  "authPasswordStrengthMedium": "Medium",
+  "authPasswordStrengthStrong": "Strong",
+  "authPasswordStrengthHintMinLength": "min 8 characters",
+  "authPasswordStrengthHintUppercase": "one uppercase",
+  "authPasswordStrengthHintLowercase": "one lowercase",
+  "authPasswordStrengthHintNumber": "one number",
+  "authPasswordStrengthHintSymbol": "one symbol",
+  "authPasswordStrengthHintAdd": "Add: {hints}",
+  "@authPasswordStrengthHintAdd": {
+    "description": "Password strength hint with requirements",
+    "placeholders": {
+      "hints": {
+        "type": "String",
+        "example": "one uppercase, one number"
+      }
+    }
+  },
+  "forgotPassword": "Forgot your password?",
+  "signInButton": "Sign In",
+  "orContinueWith": "Or continue with",
+  "noAccount": "Don't have an account?",
+  "signUpLink": "Sign up",
+  "forgotPasswordTitle": "Forgot your password?",
+  "forgotPasswordMessage": "We'll send you a 6-digit code to recover your password",
+  "alreadyHaveAccount": "Already have an account?",
+  "emailHint": "Email",
+  "confirmPasswordHint": "Confirm password",
+  "changePasswordButton": "Change password",
+  "newPasswordHint": "New password",
+  "otpVerifyEmailTitle": "Verify Email",
+  "laterButton": "Later",
+  "doItLater": "I'll do it later",
+  "displayNameHint": "John Smith",
+  "bioHint": "Tell us about yourself...",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "close": "Close",
+  "delete": "Delete",
+  "forget": "Forget",
+  "emailHintPlaceholder": "you@email.com",
+  "continueWithApple": "Continue with Apple",
+  "continueWithGoogle": "Continue with Google",
+  "privacyConsentTitle": "Privacy Settings",
+  "privacyConsentDeclineButton": "Decline",
+  "privacySettingsPrivacyPolicy": "Privacy Policy",
+  "privacySettingsTermsOfUse": "Terms of Use",
+  "privacySettingsTitle": "Privacy",
+  "privacySettingsSavedCity": "Saved city",
+  "privacySettingsAnonymousMode": "Anonymous mode",
+  "privacySettingsViewMyData": "View my data",
+  "privacySettingsViewMyDataSubtitle": "Download your personal data",
+  "locationChangeDialogTitle": "Change Location",
+  "locationCityHint": "City",
+  "locationCityLabel": "City",
+  "locationCityRequired": "City is required",
+  "locationCountryLabel": "Country",
+  "locationCountryRequired": "Country is required",
+  "locationGpsDetectSubtitle": "Detect my current location",
+  "locationOrSelectManually": "or select manually",
+  "locationRegionLabel": "Region",
+  "homePopularLoadError": "Error loading popular gossips",
+  "gossipDetailTitle": "Gossip Detail",
+  "profileSetupTitle": "Set Up Your Profile",
+  "profileSetupSubtitle": "Complete your profile to start sharing gossip",
+  "profileSetupWelcome": "Welcome!",
+  "profileSetupInfoMessage": "You need a username to publish gossip",
+  "profileSetupUsernameLabel": "Username",
+  "profileSetupUsernameHelper": "Only lowercase letters, numbers and _",
+  "profileSetupUsernameAvailabilityCheck": "Verify that the username is available",
+  "profileSetupUsernameTaken": "This username is already taken",
+  "profileSetupDisplayNameLabel": "Display name",
+  "profileSetupBioLabel": "Bio (optional)",
+  "profileSetupSaveButton": "Save Profile",
+  "profileSetupAvatarUploadSoon": "Coming soon: upload avatar",
+  "usernameHint": "johnsmith",
+  "usernameRequired": "Username is required",
+  "usernameTooShort": "Username is too short (min 3 characters)",
+  "usernameTooLong": "Username is too long (max 30 characters)",
+  "usernameInvalidChars": "Username can only contain lowercase letters, numbers and underscores",
+  "passwordHint": "Password",
+  "passwordFieldLabel": "Password",
+  "passwordFieldShow": "Show password",
+  "passwordFieldHide": "Hide password",
+  "passwordsMustMatch": "Passwords must match",
+  "passwordUpdatedSuccessTitle": "Password updated",
+  "passwordUpdatedSuccessMessage": "Your password has been successfully updated. You can now sign in with your new password",
+  "permanentlyDelete": "Permanently delete",
+  "locationRegionRequired": "Region is required",
+  "locationSearchError": "Error searching location",
+  "locationUnexpectedError": "Unexpected location error",
+  "locationUseCurrentLocation": "Use current location",
+  "privacySettingsAccountDeleted": "Account deleted",
+  "privacySettingsConfirmDeletion": "Do you confirm that you want to delete your account?",
+  "privacySettingsDeletionCancelled": "Deletion cancelled",
+  "privacySettingsEraseButton": "Delete account",
+  "privacySettingsMyData": "My data",
+  "resetPasswordSubtitle": "Create your new password",
+  "resetPasswordDescription": "Must be at least 8 characters",
+  "resetPasswordConfirmHint": "Confirm password",
+  "resetPasswordOkButton": "OK",
+  "sendCodeButton": "Send code",
+  "signUpButton": "Create Account",
+  "signupSubtitle": "Join Chismes",
+  "signupDescription": "Create your account in seconds",
+  "signupTermsMessage": "By creating an account, you agree to our Terms and Conditions and Privacy Policy",
+  "signupPasswordRequired": "Enter a password",
+  "signupPasswordMinLength": "Minimum 8 characters",
+  "signupPasswordsMustMatch": "Passwords must match",
+  "signupConfirmPasswordRequired": "Confirm your password",
+  "signInLink": "Sign in",
+  "locationNoResults": "No results for '{query}'",
+  "locationCitySearchHint": "Search city (min. {minChars} characters)",
+  "locationMinCharsMessage": "Type at least {minChars} characters to search",
+  "@locationNoResults": {
+    "description": "No results for search query",
+    "placeholders": {
+      "query": {
+        "type": "String",
+        "example": "Buenos"
+      }
+    }
+  },
+  "@locationCitySearchHint": {
+    "description": "Search city hint with min chars",
+    "placeholders": {
+      "minChars": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "@locationMinCharsMessage": {
+    "description": "Minimum characters message",
+    "placeholders": {
+      "minChars": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "privacyConsentHeader": "🔒 Your privacy matters",
+  "privacyConsentSubheader": "Before we begin, we want you to know how we handle your data.",
+  "privacyConsentDataCollectedTitle": "📊 What data do we collect?",
+  "privacyConsentDataCollectedItem1": "Your email and password (encrypted)",
+  "privacyConsentDataCollectedItem2": "Only your city (NOT exact coordinates)",
+  "privacyConsentDataCollectedItem3": "Content of your gossip (text, image, audio)",
+  "privacyConsentDataCollectedItem4": "Usage statistics (to improve the app)",
+  "privacyConsentDataUsageTitle": "🎯 How do we use it?",
+  "privacyConsentDataUsageItem1": "Provide the service (publish gossip)",
+  "privacyConsentDataUsageItem2": "Moderate content (keep community safe)",
+  "privacyConsentDataUsageItem3": "Improve the app (analyze usage)",
+  "privacyConsentModerationTitle": "🤖 Content moderation",
+  "privacyConsentModerationItem1": "We use OpenAI to analyze text",
+  "privacyConsentModerationItem2": "Only the gossip text is sent",
+  "privacyConsentModerationItem3": "We do NOT send your name, location or other data",
+  "privacyConsentModerationItem4": "OpenAI retains text for 30 days, then deletes it",
+  "privacyConsentModerationItem5": "NOT used to train AI models",
+  "privacyConsentLocationTitle": "📍 Your location",
+  "privacyConsentLocationItem1": "We only detect your city (e.g. \"Bogotá\")",
+  "privacyConsentLocationItem2": "GPS coordinates are discarded immediately",
+  "privacyConsentLocationItem3": "We NEVER store or send exact coordinates",
+  "privacyConsentLocationItem4": "You can manually choose the city",
+  "privacyConsentRightsTitle": "✅ Your rights",
+  "privacyConsentRightsItem1": "Access your data at any time",
+  "privacyConsentRightsItem2": "Delete your account and data",
+  "privacyConsentRightsItem3": "Forget your saved location",
+  "privacyConsentRightsItem4": "Export your data (portability)",
+  "privacyConsentCheckboxPrivacy": "I have read and accept the ",
+  "privacyConsentCheckboxPrivacyLink": "Privacy Policy",
+  "privacyConsentCheckboxTerms": "I have read and accept the ",
+  "privacyConsentCheckboxTermsLink": "Terms of Use",
+  "privacyConsentCheckboxModeration": "I accept that my gossip text will be sent to ",
+  "privacyConsentCheckboxModerationBold": "OpenAI",
+  "privacyConsentCheckboxModerationSuffix": " for content moderation (30 days retention)",
+  "privacyConsentAcceptButton": "Accept and Continue",
+  "privacyConsentDisclaimer": "By continuing, you accept our policies",
+  "authOtpResendCode": "Resend code",
+  "authOtpResendIn": "Resend in {seconds}s",
+  "@authOtpResendIn": {
+    "description": "Resend countdown timer",
+    "placeholders": {
+      "seconds": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "authOtpHelpText": "Didn't receive the code? Check your spam folder or request a new one.",
+  "authOtpEnterCode": "Enter the code",
+  "authOtpSentCodeTo": "We sent a 6-digit code to:",
+  "authOtpCodeMustBe6Digits": "Code must be 6 digits",
+  "privacyConsentDialogPrivacyAvailable": "The complete privacy policy is available at:",
+  "privacyConsentDialogPrivacyUrl": "https://chismes.app/privacy",
+  "privacyConsentDialogPrivacyFile": "Or in the PRIVACY_POLICY.md file of the project.",
+  "privacyConsentDialogPrivacySummary": "Summary:",
+  "privacyConsentDialogPrivacyItem1": "• We only collect necessary data",
+  "privacyConsentDialogPrivacyItem2": "• We don't sell your data",
+  "privacyConsentDialogPrivacyItem3": "• You can delete your account at any time",
+  "privacyConsentDialogTermsAvailable": "The complete terms of use are available at:",
+  "privacyConsentDialogTermsUrl": "https://chismes.app/terms",
+  "privacyConsentDialogTermsFile": "Or in the TERMS_OF_SERVICE.md file of the project.",
+  "privacyConsentDialogTermsSummary": "Summary:",
+  "privacyConsentDialogTermsItem1": "• Minimum age: 13 years",
+  "privacyConsentDialogTermsItem2": "• Do not post inappropriate content",
+  "privacyConsentDialogTermsItem3": "• Automatic + manual moderation",
+  "privacyConsentDialogTermsItem4": "• We may suspend accounts that violate rules",
+  "searchRecentSearches": "Recent searches",
+  "searchTryOtherWords": "Try other words",
+  "searchByTopic": "Search gossip by topic",
+  "searchByKeyword": "or keyword",
+  "searchRecent": "Recent",
+  "searchClearAll": "Clear all",
+  "searchResultsCount": "{count, plural, =0{No results} =1{1 result} other{{count} results}}",
+  "@searchResultsCount": {
+    "description": "Search results count with ICU plural",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeNewGossipsBanner": "{count, plural, =1{1 new gossip · Tap here} other{{count} new gossips · Tap here}}",
+  "@homeNewGossipsBanner": {
+    "description": "New gossips banner with ICU plural",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deepLinkOpeningGossip": "Opening gossip: {gossipId}",
+  "@deepLinkOpeningGossip": {
+    "description": "Opening gossip via deep link",
+    "placeholders": {
+      "gossipId": {
+        "type": "String"
+      }
+    }
+  },
+  "deepLinkOpeningProfile": "Opening profile: {userId}",
+  "@deepLinkOpeningProfile": {
+    "description": "Opening profile via deep link",
+    "placeholders": {
+      "userId": {
+        "type": "String"
+      }
+    }
+  },
+  "deepLinkOpeningCityFeed": "Opening city feed: {cityId}",
+  "@deepLinkOpeningCityFeed": {
+    "description": "Opening city feed via deep link",
+    "placeholders": {
+      "cityId": {
+        "type": "String"
+      }
+    }
+  },
+  "locationErrorLoadCountries": "Failed to load countries",
+  "locationErrorLoadRegions": "Failed to load regions",
+  "locationErrorLoadCities": "Failed to load cities",
+  "locationErrorUnexpected": "Unexpected error occurred",
+  "locationErrorGpsPosition": "Could not detect location. Enable GPS and try again.",
+  "locationErrorGeocoding": "Could not identify the location",
+  "locationErrorCountryNotAvailable": "Country \"{entityName}\" not available. Select manually.",
+  "@locationErrorCountryNotAvailable": {
+    "description": "Error when detected country is not in database",
+    "placeholders": {
+      "entityName": {
+        "type": "String"
+      }
+    }
+  },
+  "locationErrorRegionNotAvailable": "Region \"{entityName}\" not available. Select manually.",
+  "@locationErrorRegionNotAvailable": {
+    "description": "Error when detected region is not in database",
+    "placeholders": {
+      "entityName": {
+        "type": "String"
+      }
+    }
+  },
+  "locationErrorCityNotAvailable": "City \"{entityName}\" not available. Select manually.",
+  "@locationErrorCityNotAvailable": {
+    "description": "Error when detected city is not in database",
+    "placeholders": {
+      "entityName": {
+        "type": "String"
+      }
+    }
+  },
+  "locationErrorDetection": "Error detecting location. Try again."
+}

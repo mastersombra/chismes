@@ -1,18 +1,21 @@
-import 'package:easy_localization/easy_localization.dart';
+
 import 'package:flutter/material.dart';
 
 import '../localization/locale_detector.dart';
+import '../l10n/locale_notifier.dart';
+import '../di/injection_container.dart';
 
 /// Selector de idioma para la aplicación
 ///
 /// Muestra un PopupMenu con los idiomas disponibles.
-/// El idioma seleccionado se guarda automáticamente con easy_localization.
+/// El idioma seleccionado se guarda automáticamente con LocaleNotifier + SharedPreferences.
 class LanguageSelector extends StatelessWidget {
   const LanguageSelector({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final currentLocale = context.locale;
+    final localeNotifier = getIt<LocaleNotifier>();
+    final currentLocale = localeNotifier.locale;
 
     return PopupMenuButton<Locale>(
       icon: Text(
@@ -21,7 +24,7 @@ class LanguageSelector extends StatelessWidget {
       ),
       tooltip: 'Cambiar idioma',
       onSelected: (locale) {
-        context.setLocale(locale);
+        localeNotifier.setLocale(locale);
       },
       itemBuilder: (context) => [
         _buildMenuItem(

@@ -12,6 +12,7 @@
 import 'package:flutter/material.dart' as _i409;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
+import 'package:shared_preferences/shared_preferences.dart' as _i460;
 import 'package:supabase_flutter/supabase_flutter.dart' as _i454;
 
 import '../../features/auth/data/datasources/supabase_auth_datasource.dart'
@@ -61,6 +62,7 @@ import '../../features/gossip/domain/services/mvp_content_moderator.dart'
 import '../../features/gossip/domain/usecases/create_gossip.dart' as _i458;
 import '../../features/gossip/domain/usecases/get_gossips.dart' as _i821;
 import '../../features/gossip/domain/usecases/report_gossip.dart' as _i535;
+import '../../features/gossip/domain/usecases/search_gossips.dart' as _i473;
 import '../../features/gossip/presentation/controllers/add_gossip_controller.dart'
     as _i541;
 import '../../features/home/data/datasources/home_remote_datasource.dart'
@@ -106,6 +108,7 @@ import '../../features/profile/presentation/controllers/profile_controller.dart'
     as _i658;
 import '../id/id_generator.dart' as _i1000;
 import '../id/timestamp_id_generator.dart' as _i458;
+import '../l10n/locale_notifier.dart' as _i817;
 import '../logging/app_logger.dart' as _i354;
 import '../logging/device_info_provider.dart' as _i966;
 import '../logging/logging.dart' as _i482;
@@ -114,6 +117,8 @@ import '../media/supabase_storage_service.dart' as _i710;
 import '../services/auth_service.dart' as _i745;
 import '../services/deep_link_service.dart' as _i391;
 import '../services/location_service.dart' as _i669;
+import '../services/profile_service.dart' as _i989;
+import '../services/search_history_service.dart' as _i283;
 
 // initializes the registration of main-scope dependencies inside of GetIt
 _i174.GetIt $initGetIt(
@@ -124,8 +129,12 @@ _i174.GetIt $initGetIt(
   final gh = _i526.GetItHelper(getIt, environment, environmentFilter);
   final gossipModule = _$GossipModule();
   gh.singleton<_i966.DeviceInfoProvider>(() => _i966.DeviceInfoProvider());
+  gh.singleton<_i989.ProfileService>(() => _i989.ProfileService());
   gh.singleton<_i110.MvpModerationPolicy>(() => gossipModule.moderationPolicy);
   gh.lazySingleton<_i454.SupabaseClient>(() => gossipModule.supabaseClient);
+  gh.singleton<_i817.LocaleNotifier>(
+    () => _i817.LocaleNotifier(gh<_i460.SharedPreferences>()),
+  );
   gh.singleton<_i1000.IdGenerator>(() => _i458.TimestampIdGenerator());
   gh.singleton<_i332.LocationRepository>(
     () => _i42.MockLocationRepository(),
@@ -152,8 +161,20 @@ _i174.GetIt $initGetIt(
       gh<_i482.AppLogger>(),
     ),
   );
+  gh.singleton<_i278.HomeRemoteDataSource>(
+    () => _i278.HomeRemoteDataSource(
+      gh<_i454.SupabaseClient>(),
+      gh<_i482.AppLogger>(),
+    ),
+  );
   gh.singleton<_i852.SupabaseLocationRemoteDataSource>(
     () => _i852.SupabaseLocationRemoteDataSource(
+      gh<_i454.SupabaseClient>(),
+      gh<_i482.AppLogger>(),
+    ),
+  );
+  gh.singleton<_i327.ProfileRemoteDataSource>(
+    () => _i327.ProfileRemoteDataSource(
       gh<_i454.SupabaseClient>(),
       gh<_i482.AppLogger>(),
     ),
@@ -167,12 +188,6 @@ _i174.GetIt $initGetIt(
   gh.singleton<_i669.LocationService>(
     () => _i669.LocationService(gh<_i482.AppLogger>()),
   );
-  gh.singleton<_i278.HomeRemoteDataSource>(
-    () => _i278.HomeRemoteDataSource(gh<_i482.AppLogger>()),
-  );
-  gh.singleton<_i327.ProfileRemoteDataSource>(
-    () => _i327.ProfileRemoteDataSource(gh<_i482.AppLogger>()),
-  );
   gh.singleton<_i0.HomeRepository>(
     () => _i76.HomeRepositoryImpl(
       gh<_i278.HomeRemoteDataSource>(),
@@ -180,10 +195,19 @@ _i174.GetIt $initGetIt(
     ),
   );
   gh.singleton<_i76.SupabaseAuthDataSource>(
-    () => _i743.SupabaseAuthDataSourceImpl(gh<_i482.AppLogger>()),
+    () => _i743.SupabaseAuthDataSourceImpl(
+      gh<_i454.SupabaseClient>(),
+      gh<_i482.AppLogger>(),
+    ),
   );
   gh.singleton<_i302.GossipLocalDataSource>(
     () => _i837.SharedPrefsGossipLocalDataSource(gh<_i482.AppLogger>()),
+  );
+  gh.singleton<_i283.SearchHistoryService>(
+    () => _i283.SearchHistoryService(
+      gh<_i460.SharedPreferences>(),
+      gh<_i482.AppLogger>(),
+    ),
   );
   gh.singleton<_i894.ProfileRepository>(
     () => _i334.ProfileRepositoryImpl(
@@ -241,6 +265,13 @@ _i174.GetIt $initGetIt(
   gh.factory<_i108.SearchCities>(
     () => _i108.SearchCities(gh<_i332.LocationRepository>()),
   );
+  gh.singleton<_i745.AuthService>(
+    () => _i745.AuthService(
+      gh<_i787.AuthRepository>(),
+      gh<_i454.SupabaseClient>(),
+      gh<_i482.AppLogger>(),
+    ),
+  );
   gh.factory<_i913.GetCitiesByRegion>(
     () => _i913.GetCitiesByRegion(repository: gh<_i332.LocationRepository>()),
   );
@@ -252,6 +283,9 @@ _i174.GetIt $initGetIt(
   );
   gh.factory<_i821.GetGossips>(
     () => _i821.GetGossips(repository: gh<_i865.GossipRepository>()),
+  );
+  gh.factory<_i473.SearchGossips>(
+    () => _i473.SearchGossips(repository: gh<_i865.GossipRepository>()),
   );
   gh.factory<_i111.GetCurrentUserUseCase>(
     () => _i111.GetCurrentUserUseCase(gh<_i787.AuthRepository>()),
@@ -293,6 +327,16 @@ _i174.GetIt $initGetIt(
       gh<_i482.AppLogger>(),
     ),
   );
+  gh.factory<_i658.ProfileController>(
+    () => _i658.ProfileController(
+      gh<_i669.GetUserStats>(),
+      gh<_i729.GetSettings>(),
+      gh<_i862.UpdateSettings>(),
+      gh<_i487.SignOut>(),
+      gh<_i745.AuthService>(),
+      gh<_i482.AppLogger>(),
+    ),
+  );
   gh.factory<_i166.SignupController>(
     () => _i166.SignupController(
       gh<_i460.SignUpWithEmailUseCase>(),
@@ -305,9 +349,6 @@ _i174.GetIt $initGetIt(
       logger: gh<_i482.AppLogger>(),
       email: gh<String>(),
     ),
-  );
-  gh.singleton<_i745.AuthService>(
-    () => _i745.AuthService(gh<_i787.AuthRepository>(), gh<_i482.AppLogger>()),
   );
   gh.factory<_i491.LocationManager>(
     () => _i491.LocationManager(
@@ -323,14 +364,6 @@ _i174.GetIt $initGetIt(
       createGossip: gh<_i458.CreateGossip>(),
       locationManager: gh<_i491.LocationManager>(),
       logger: gh<_i482.AppLogger>(),
-    ),
-  );
-  gh.factory<_i527.FollowingTabController>(
-    () => _i527.FollowingTabController(
-      gh<_i760.GetFollowingFeed>(),
-      gh<_i890.GetRecommendedFeed>(),
-      gh<_i491.LocationManager>(),
-      gh<_i482.AppLogger>(),
     ),
   );
   gh.factory<_i840.PopularTabController>(
@@ -356,13 +389,12 @@ _i174.GetIt $initGetIt(
       gh<_i482.AppLogger>(),
     ),
   );
-  gh.factory<_i658.ProfileController>(
-    () => _i658.ProfileController(
-      gh<_i669.GetUserStats>(),
-      gh<_i729.GetSettings>(),
-      gh<_i862.UpdateSettings>(),
-      gh<_i487.SignOut>(),
-      gh<_i745.AuthService>(),
+  gh.factory<_i527.FollowingTabController>(
+    () => _i527.FollowingTabController(
+      gh<_i760.GetFollowingFeed>(),
+      gh<_i890.GetRecommendedFeed>(),
+      gh<_i491.LocationManager>(),
+      gh<_i989.ProfileService>(),
       gh<_i482.AppLogger>(),
     ),
   );

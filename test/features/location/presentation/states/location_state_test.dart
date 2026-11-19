@@ -390,7 +390,7 @@ void main() {
         final props = state.props;
 
         // Assert
-        expect(props.length, 11); // 11 campos
+        expect(props.length, 13); // 13 campos
         expect(props, contains(state.countries));
         expect(props, contains(state.regions));
         expect(props, contains(state.cities));
@@ -402,6 +402,8 @@ void main() {
         expect(props, contains(state.isLoadingCities));
         expect(props, contains(state.isDetectingLocation));
         expect(props, contains(state.error));
+        expect(props, contains(state.errorKey));
+        expect(props, contains(state.errorEntityName));
       });
     });
 

@@ -1,4 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
+
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_spacing.dart';
@@ -6,6 +6,7 @@ import '../../../gossip/presentation/widgets/gossip_card.dart';
 import '../controllers/following_tab_controller.dart';
 import '../states/following_tab_state.dart';
 import 'feed_gossip_adapter.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 /// Widget del tab Siguiendo.
 ///
@@ -46,7 +47,7 @@ class FollowingTab extends StatelessWidget {
                 const Icon(Icons.error_outline, size: 64, color: Colors.grey),
                 const SizedBox(height: AppSpacing.md),
                 Text(
-                  state.errorMessage ?? 'home.error.load_failed'.tr(),
+                  state.errorMessage ?? context.l10n.homeErrorLoadFailed,
                   style: const TextStyle(color: Colors.grey),
                   textAlign: TextAlign.center,
                 ),
@@ -54,7 +55,7 @@ class FollowingTab extends StatelessWidget {
                 ElevatedButton.icon(
                   onPressed: () => controller.loadFeed(),
                   icon: const Icon(Icons.refresh),
-                  label: Text('home.error.retry'.tr()),
+                  label: Text(context.l10n.homeErrorRetry),
                 ),
               ],
             ),
@@ -83,13 +84,13 @@ class FollowingTab extends StatelessWidget {
             const Icon(Icons.people_outline, size: 80, color: Colors.grey),
             const SizedBox(height: AppSpacing.xl),
             Text(
-              'home.following.empty_state_title'.tr(),
+              context.l10n.homeFollowingEmptyStateTitle,
               style: Theme.of(context).textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
-              'home.following.empty_state_message'.tr(),
+              context.l10n.homeFollowingEmptyStateMessage,
               textAlign: TextAlign.center,
               style: const TextStyle(color: Colors.grey),
             ),
@@ -99,12 +100,12 @@ class FollowingTab extends StatelessWidget {
                 // TODO: Navegar a pantalla de explorar usuarios
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('home.following.feature_not_implemented'.tr()),
+                    content: Text(context.l10n.homeFollowingFeatureNotImplemented),
                   ),
                 );
               },
               icon: const Icon(Icons.search),
-              label: Text('home.following.explore_users_button'.tr()),
+              label: Text(context.l10n.homeFollowingExploreUsersButton),
             ),
             const SizedBox(height: AppSpacing.lg),
             TextButton(
@@ -112,11 +113,11 @@ class FollowingTab extends StatelessWidget {
                 // TODO: Cambiar a tab Populares
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('home.following.use_popular_tab_hint'.tr()),
+                    content: Text(context.l10n.homeFollowingUsePopularTabHint),
                   ),
                 );
               },
-              child: Text('home.following.view_popular_link'.tr()),
+              child: Text(context.l10n.homeFollowingViewPopularLink),
             ),
           ],
         ),
@@ -145,7 +146,7 @@ class FollowingTab extends StatelessWidget {
                     Icon(Icons.lightbulb_outline, color: Colors.blue.shade700),
                     const SizedBox(width: AppSpacing.md),
                     Text(
-                      'home.following.recommended_badge'.tr(),
+                      context.l10n.homeFollowingRecommendedBadge,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: Colors.blue.shade900,
@@ -201,7 +202,7 @@ class FollowingTab extends StatelessWidget {
                 padding: const EdgeInsets.all(AppSpacing.xl),
                 child: Center(
                   child: Text(
-                    'home.popular.no_more'.tr(),
+                    context.l10n.homePopularNoMore,
                     style: const TextStyle(color: Colors.grey),
                   ),
                 ),
@@ -215,7 +216,7 @@ class FollowingTab extends StatelessWidget {
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Center(
                   child: Text(
-                    'home.following.no_posts_message'.tr(),
+                    context.l10n.homeFollowingNoPostsMessage,
                     textAlign: TextAlign.center,
                     style: const TextStyle(color: Colors.grey),
                   ),

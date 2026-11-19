@@ -907,6 +907,394 @@ void main() {
           onSuccess: (_) => fail('Should not succeed'),
         );
       });
+
+      test('debe retornar invalidToken para "invalid token"', () async {
+        // Arrange
+        when(mockDataSource.checkEmailExistsAndConfirmed(tEmail))
+            .thenAnswer((_) async => true);
+        when(mockDataSource.signInWithEmail(
+          email: tEmail,
+          password: tPassword,
+        )).thenThrow(
+          supabase.AuthException('Token invalid'),
+        );
+
+        // Act
+        final result = await repository.signInWithEmail(
+          email: tEmail,
+          password: tPassword,
+        );
+
+        // Assert
+        result.when(
+          onFailure: (failure) {
+            expect(failure.code, ErrorCode.invalidToken);
+          },
+          onSuccess: (_) => fail('Should not succeed'),
+        );
+      });
+
+      test('debe retornar expiredToken para código "otp_expired"', () async {
+        // Arrange
+        when(mockDataSource.signUpWithEmailOTP(
+          email: tEmail,
+          password: tPassword,
+        )).thenThrow(
+          supabase.AuthException('OTP expired', code: 'otp_expired'),
+        );
+
+        // Act
+        final result = await repository.signUpWithEmail(
+          email: tEmail,
+          password: tPassword,
+        );
+
+        // Assert
+        result.when(
+          onFailure: (failure) {
+            expect(failure.code, ErrorCode.expiredToken);
+          },
+          onSuccess: (_) => fail('Should not succeed'),
+        );
+      });
+
+      test('debe retornar invalidToken para "invalid code"', () async {
+        // Arrange
+        when(mockDataSource.signUpWithEmailOTP(
+          email: tEmail,
+          password: tPassword,
+        )).thenThrow(
+          supabase.AuthException('Invalid code'),
+        );
+
+        // Act
+        final result = await repository.signUpWithEmail(
+          email: tEmail,
+          password: tPassword,
+        );
+
+        // Assert
+        result.when(
+          onFailure: (failure) {
+            expect(failure.code, ErrorCode.invalidToken);
+          },
+          onSuccess: (_) => fail('Should not succeed'),
+        );
+      });
+
+      test('debe retornar expiredToken para "expired code"', () async {
+        // Arrange
+        when(mockDataSource.signUpWithEmailOTP(
+          email: tEmail,
+          password: tPassword,
+        )).thenThrow(
+          supabase.AuthException('Expired code'),
+        );
+
+        // Act
+        final result = await repository.signUpWithEmail(
+          email: tEmail,
+          password: tPassword,
+        );
+
+        // Assert
+        result.when(
+          onFailure: (failure) {
+            expect(failure.code, ErrorCode.expiredToken);
+          },
+          onSuccess: (_) => fail('Should not succeed'),
+        );
+      });
+    });
+
+    group('resendVerificationEmail', () {
+      test('debe retornar success cuando email es reenviado', () async {
+        // Arrange
+        when(mockDataSource.resendVerificationEmail())
+            .thenAnswer((_) async => Future.value());
+
+        // Act
+        final result = await repository.resendVerificationEmail();
+
+        // Assert
+        expect(result.isSuccess, isTrue);
+        verify(mockDataSource.resendVerificationEmail()).called(1);
+      });
+
+      test('debe manejar AuthException', () async {
+        // Arrange
+        when(mockDataSource.resendVerificationEmail())
+            .thenThrow(supabase.AuthException('Email already verified'));
+
+        // Act
+        final result = await repository.resendVerificationEmail();
+
+        // Assert
+        expect(result.isFailure, isTrue);
+      });
+
+      test('debe manejar excepción genérica', () async {
+        // Arrange
+        when(mockDataSource.resendVerificationEmail())
+            .thenThrow(Exception('Network error'));
+
+        // Act
+        final result = await repository.resendVerificationEmail();
+
+        // Assert
+        expect(result.isFailure, isTrue);
+      });
+    });
+
+    group('verifyOTP', () {
+      const tToken = '123456';
+
+      test('debe retornar usuario cuando OTP es verificado (signup)', () async {
+        // Arrange
+        when(mockDataSource.verifyOTP(
+          email: tEmail,
+          token: tToken,
+          isPasswordReset: false,
+        )).thenAnswer((_) async => tUserModel);
+
+        // Act
+        final result = await repository.verifyOTP(
+          email: tEmail,
+          token: tToken,
+          isPasswordReset: false,
+        );
+
+        // Assert
+        expect(result.isSuccess, isTrue);
+        result.when(
+          onFailure: (_) => fail('Should not fail'),
+          onSuccess: (user) {
+            expect(user, isA<User>());
+            expect(user.email, tEmail);
+          },
+        );
+      });
+
+      test('debe retornar usuario cuando OTP es verificado (password reset)',
+          () async {
+        // Arrange
+        when(mockDataSource.verifyOTP(
+          email: tEmail,
+          token: tToken,
+          isPasswordReset: true,
+        )).thenAnswer((_) async => tUserModel);
+
+        // Act
+        final result = await repository.verifyOTP(
+          email: tEmail,
+          token: tToken,
+          isPasswordReset: true,
+        );
+
+        // Assert
+        expect(result.isSuccess, isTrue);
+      });
+
+      test('debe retornar invalidToken cuando código es inválido', () async {
+        // Arrange
+        when(mockDataSource.verifyOTP(
+          email: tEmail,
+          token: tToken,
+        )).thenThrow(supabase.AuthException('Invalid code'));
+
+        // Act
+        final result = await repository.verifyOTP(
+          email: tEmail,
+          token: tToken,
+        );
+
+        // Assert
+        expect(result.isFailure, isTrue);
+        result.when(
+          onFailure: (failure) {
+            expect(failure, isA<AuthFailure>());
+            expect(failure.code, ErrorCode.invalidToken);
+          },
+          onSuccess: (_) => fail('Should not succeed'),
+        );
+      });
+
+      test('debe retornar expiredToken cuando código está expirado', () async {
+        // Arrange
+        when(mockDataSource.verifyOTP(
+          email: tEmail,
+          token: tToken,
+        )).thenThrow(supabase.AuthException('Expired code'));
+
+        // Act
+        final result = await repository.verifyOTP(
+          email: tEmail,
+          token: tToken,
+        );
+
+        // Assert
+        expect(result.isFailure, isTrue);
+        result.when(
+          onFailure: (failure) {
+            expect(failure.code, ErrorCode.expiredToken);
+          },
+          onSuccess: (_) => fail('Should not succeed'),
+        );
+      });
+
+      test('debe manejar excepción genérica', () async {
+        // Arrange
+        when(mockDataSource.verifyOTP(
+          email: tEmail,
+          token: tToken,
+        )).thenThrow(Exception('Network error'));
+
+        // Act
+        final result = await repository.verifyOTP(
+          email: tEmail,
+          token: tToken,
+        );
+
+        // Assert
+        expect(result.isFailure, isTrue);
+      });
+    });
+
+    group('resendOTP', () {
+      test('debe retornar success cuando OTP es reenviado', () async {
+        // Arrange
+        when(mockDataSource.resendOTP(email: tEmail))
+            .thenAnswer((_) async => Future.value());
+
+        // Act
+        final result = await repository.resendOTP(email: tEmail);
+
+        // Assert
+        expect(result.isSuccess, isTrue);
+        verify(mockDataSource.resendOTP(email: tEmail)).called(1);
+      });
+
+      test('debe retornar tooManyRequests cuando hay rate limiting', () async {
+        // Arrange
+        when(mockDataSource.resendOTP(email: tEmail))
+            .thenThrow(supabase.AuthException('Too many requests'));
+
+        // Act
+        final result = await repository.resendOTP(email: tEmail);
+
+        // Assert
+        expect(result.isFailure, isTrue);
+        result.when(
+          onFailure: (failure) {
+            expect(failure, isA<AuthFailure>());
+            expect(failure.code, ErrorCode.tooManyRequests);
+          },
+          onSuccess: (_) => fail('Should not succeed'),
+        );
+      });
+
+      test('debe manejar AuthException', () async {
+        // Arrange
+        when(mockDataSource.resendOTP(email: tEmail))
+            .thenThrow(supabase.AuthException('Invalid request'));
+
+        // Act
+        final result = await repository.resendOTP(email: tEmail);
+
+        // Assert
+        expect(result.isFailure, isTrue);
+      });
+
+      test('debe manejar excepción genérica', () async {
+        // Arrange
+        when(mockDataSource.resendOTP(email: tEmail))
+            .thenThrow(Exception('Network error'));
+
+        // Act
+        final result = await repository.resendOTP(email: tEmail);
+
+        // Assert
+        expect(result.isFailure, isTrue);
+      });
+    });
+
+    group('checkEmailExistsAndConfirmed', () {
+      test('debe retornar true cuando email existe y está confirmado',
+          () async {
+        // Arrange
+        when(mockDataSource.checkEmailExistsAndConfirmed(tEmail))
+            .thenAnswer((_) async => true);
+
+        // Act
+        final result = await repository.checkEmailExistsAndConfirmed(tEmail);
+
+        // Assert
+        expect(result.isSuccess, isTrue);
+        result.when(
+          onFailure: (_) => fail('Should not fail'),
+          onSuccess: (exists) {
+            expect(exists, isTrue);
+          },
+        );
+      });
+
+      test('debe retornar false cuando email no existe', () async {
+        // Arrange
+        when(mockDataSource.checkEmailExistsAndConfirmed(tEmail))
+            .thenAnswer((_) async => false);
+
+        // Act
+        final result = await repository.checkEmailExistsAndConfirmed(tEmail);
+
+        // Assert
+        expect(result.isSuccess, isTrue);
+        result.when(
+          onFailure: (_) => fail('Should not fail'),
+          onSuccess: (exists) {
+            expect(exists, isFalse);
+          },
+        );
+      });
+
+      test('debe manejar excepción', () async {
+        // Arrange
+        when(mockDataSource.checkEmailExistsAndConfirmed(tEmail))
+            .thenThrow(Exception('Database error'));
+
+        // Act
+        final result = await repository.checkEmailExistsAndConfirmed(tEmail);
+
+        // Assert
+        expect(result.isFailure, isTrue);
+      });
+    });
+
+    group('signInWithEmail - email no confirmado', () {
+      test('debe retornar userNotFound cuando email no existe', () async {
+        // Arrange
+        when(mockDataSource.checkEmailExistsAndConfirmed(tEmail))
+            .thenAnswer((_) async => false);
+
+        // Act
+        final result = await repository.signInWithEmail(
+          email: tEmail,
+          password: tPassword,
+        );
+
+        // Assert
+        expect(result.isFailure, isTrue);
+        result.when(
+          onFailure: (failure) {
+            expect(failure, isA<AuthFailure>());
+            expect(failure.code, ErrorCode.userNotFound);
+          },
+          onSuccess: (_) => fail('Should not succeed'),
+        );
+        verifyNever(mockDataSource.signInWithEmail(
+          email: tEmail,
+          password: tPassword,
+        ));
+      });
     });
   });
 }

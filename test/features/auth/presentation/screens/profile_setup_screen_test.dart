@@ -8,6 +8,7 @@ import 'package:chismes/features/auth/presentation/screens/profile_setup_screen.
 import 'package:chismes/features/auth/presentation/state/auth_state.dart';
 import 'package:chismes/features/auth/presentation/widgets/auth_button.dart';
 import 'package:flutter/material.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -248,12 +249,19 @@ void main() {
       );
       await tester.pumpAndSettle();
       // Act
+      await tester.ensureVisible(find.widgetWithText(AuthButton, 'Guardar Perfil'));
       await tester.tap(find.widgetWithText(AuthButton, 'Guardar Perfil'));
       await tester.pump();
 
       // Assert
-      expect(find.text('El nombre de usuario es requerido'), findsOneWidget);
-    }, skip: true); // Skip: validación es difícil de testear en unit tests
+      final l10n = AppLocalizations.of(
+          tester.element(find.byType(ProfileSetupScreen)))!;
+      expect(find.text(l10n.usernameRequired), findsOneWidget);
+      verifyNever(mockController.updateProfile(
+          username: anyNamed('username'),
+          displayName: anyNamed('displayName'),
+          bio: anyNamed('bio')));
+    });
 
     testWidgets('debe validar username muy corto', (WidgetTester tester) async {
       // Arrange
@@ -266,12 +274,19 @@ void main() {
         find.widgetWithText(TextFormField, 'Nombre de usuario'),
         'ab',
       );
+      await tester.ensureVisible(find.widgetWithText(AuthButton, 'Guardar Perfil'));
       await tester.tap(find.widgetWithText(AuthButton, 'Guardar Perfil'));
       await tester.pump();
 
       // Assert
-      expect(find.text('Mínimo 3 caracteres'), findsOneWidget);
-    }, skip: true); // Skip: validación es difícil de testear en unit tests
+      final l10n = AppLocalizations.of(
+          tester.element(find.byType(ProfileSetupScreen)))!;
+      expect(find.text(l10n.usernameTooShort), findsOneWidget);
+      verifyNever(mockController.updateProfile(
+          username: anyNamed('username'),
+          displayName: anyNamed('displayName'),
+          bio: anyNamed('bio')));
+    });
 
     testWidgets('debe validar username muy largo', (WidgetTester tester) async {
       // Arrange
@@ -284,12 +299,19 @@ void main() {
         find.widgetWithText(TextFormField, 'Nombre de usuario'),
         'a' * 31,
       );
+      await tester.ensureVisible(find.widgetWithText(AuthButton, 'Guardar Perfil'));
       await tester.tap(find.widgetWithText(AuthButton, 'Guardar Perfil'));
       await tester.pump();
 
       // Assert
-      expect(find.text('Máximo 30 caracteres'), findsOneWidget);
-    }, skip: true); // Skip: validación es difícil de testear en unit tests
+      final l10n = AppLocalizations.of(
+          tester.element(find.byType(ProfileSetupScreen)))!;
+      expect(find.text(l10n.usernameTooLong), findsOneWidget);
+      verifyNever(mockController.updateProfile(
+          username: anyNamed('username'),
+          displayName: anyNamed('displayName'),
+          bio: anyNamed('bio')));
+    });
 
     testWidgets('debe validar formato de username inválido', (WidgetTester tester) async {
       // Arrange
@@ -302,12 +324,19 @@ void main() {
         find.widgetWithText(TextFormField, 'Nombre de usuario'),
         'Test User!',
       );
+      await tester.ensureVisible(find.widgetWithText(AuthButton, 'Guardar Perfil'));
       await tester.tap(find.widgetWithText(AuthButton, 'Guardar Perfil'));
       await tester.pump();
 
       // Assert
-      expect(find.text('Solo letras minúsculas, números y _'), findsOneWidget);
-    }, skip: true); // Skip: validación es difícil de testear en unit tests
+      final l10n = AppLocalizations.of(
+          tester.element(find.byType(ProfileSetupScreen)))!;
+      expect(find.text(l10n.usernameInvalidChars), findsOneWidget);
+      verifyNever(mockController.updateProfile(
+          username: anyNamed('username'),
+          displayName: anyNamed('displayName'),
+          bio: anyNamed('bio')));
+    });
 
     testWidgets('debe validar username no disponible', (WidgetTester tester) async {
       // Arrange
@@ -322,12 +351,19 @@ void main() {
         find.widgetWithText(TextFormField, 'Nombre de usuario'),
         'taken_username',
       );
+      await tester.ensureVisible(find.widgetWithText(AuthButton, 'Guardar Perfil'));
       await tester.tap(find.widgetWithText(AuthButton, 'Guardar Perfil'));
       await tester.pump();
 
       // Assert
-      expect(find.text('Este nombre de usuario ya está en uso'), findsOneWidget);
-    }, skip: true); // Skip: validación es difícil de testear en unit tests
+      final l10n = AppLocalizations.of(
+          tester.element(find.byType(ProfileSetupScreen)))!;
+      expect(find.text(l10n.profileSetupUsernameTaken), findsOneWidget);
+      verifyNever(mockController.updateProfile(
+          username: anyNamed('username'),
+          displayName: anyNamed('displayName'),
+          bio: anyNamed('bio')));
+    });
 
     testWidgets('debe mostrar CircularProgressIndicator cuando está verificando username', (WidgetTester tester) async {
       // Arrange
@@ -420,8 +456,11 @@ void main() {
       );
       await tester.pumpAndSettle();
       // Assert
-      expect(find.byType(SafeArea), findsOneWidget);
-    }, skip: true); // Skip: problemas de layout en tests
+      expect(
+        find.ancestor(of: find.byType(Form), matching: find.byType(SafeArea)),
+        findsOneWidget,
+      );
+    });
 
     testWidgets('debe tener Form', (WidgetTester tester) async {
       // Act
@@ -549,6 +588,369 @@ void main() {
 
       // Assert - verificar que el listener fue ejecutado
       expect(capturedListener, isNotNull);
+    });
+
+    testWidgets('debe ejecutar _onStateChanged cuando username ya está tomado', (WidgetTester tester) async {
+      // Arrange
+      VoidCallback? capturedListener;
+      when(mockController.addListener(any)).thenAnswer((invocation) {
+        capturedListener = invocation.positionalArguments[0] as VoidCallback;
+      });
+      when(mockController.state).thenReturn(const AuthInitial());
+      when(mockController.usernameAvailable).thenReturn(null);
+
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      // Cambiar estado a error de username tomado
+      final failure = AuthFailure(
+        code: ErrorCode.usernameAlreadyTaken,
+        technicalMessage: 'Username already taken',
+      );
+      when(mockController.state).thenReturn(AuthError(failure));
+
+      // Act - llamar listener manualmente
+      capturedListener?.call();
+      await tester.pump();
+
+      // Assert - verificar que el listener fue ejecutado
+      expect(capturedListener, isNotNull);
+    });
+
+    testWidgets('no debe llamar updateProfile si username no está disponible', (WidgetTester tester) async {
+      // Arrange
+      when(mockController.usernameAvailable).thenReturn(false);
+
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      // Act - llenar formulario
+      await tester.enterText(find.byType(TextFormField).at(0), 'taken_username');
+      await tester.enterText(find.byType(TextFormField).at(1), 'Display Name');
+
+      await tester.ensureVisible(find.widgetWithText(AuthButton, 'Guardar Perfil'));
+      await tester.tap(find.widgetWithText(AuthButton, 'Guardar Perfil'));
+      await tester.pumpAndSettle();
+
+      // Assert - no debe llamar updateProfile
+      verifyNever(mockController.updateProfile(
+        username: anyNamed('username'),
+        displayName: anyNamed('displayName'),
+        bio: anyNamed('bio'),
+      ));
+    });
+
+    testWidgets('debe llamar checkUsernameAvailability después del debounce', (WidgetTester tester) async {
+      // Arrange
+      when(mockController.usernameAvailable).thenReturn(null);
+
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      // Act - escribir username válido (>= 3 caracteres)
+      await tester.enterText(find.byType(TextFormField).at(0), 'validuser');
+
+      // Esperar el debounce (500ms)
+      await tester.pumpAndSettle(const Duration(milliseconds: 600));
+
+      // Assert - debe llamar checkUsernameAvailability
+      verify(mockController.checkUsernameAvailability('validuser')).called(1);
+    });
+
+    testWidgets('debe llamar resetUsernameCheck si username es muy corto', (WidgetTester tester) async {
+      // Arrange
+      when(mockController.usernameAvailable).thenReturn(null);
+
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      // Act - escribir username muy corto (< 3 caracteres)
+      await tester.enterText(find.byType(TextFormField).at(0), 'ab');
+
+      // Esperar el debounce (500ms)
+      await tester.pumpAndSettle(const Duration(milliseconds: 600));
+
+      // Assert - debe llamar resetUsernameCheck
+      verify(mockController.resetUsernameCheck()).called(1);
+    });
+
+    testWidgets('debe validar caracteres especiales en username', (WidgetTester tester) async {
+      // Arrange
+      when(mockController.usernameAvailable).thenReturn(true);
+
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      // Act - ingresar username con caracteres inválidos
+      await tester.enterText(find.byType(TextFormField).at(0), 'invalid@user');
+      await tester.enterText(find.byType(TextFormField).at(1), 'Display Name');
+
+      await tester.ensureVisible(find.widgetWithText(AuthButton, 'Guardar Perfil'));
+      await tester.tap(find.widgetWithText(AuthButton, 'Guardar Perfil'));
+      await tester.pumpAndSettle();
+
+      // Assert - no debe llamar updateProfile
+      verifyNever(mockController.updateProfile(
+        username: anyNamed('username'),
+        displayName: anyNamed('displayName'),
+        bio: anyNamed('bio'),
+      ));
+    });
+
+    testWidgets('debe navegar con pop cuando AuthSuccess', (WidgetTester tester) async {
+      // Arrange
+      VoidCallback? capturedListener;
+      when(mockController.addListener(any)).thenAnswer((invocation) {
+        capturedListener = invocation.positionalArguments[0] as VoidCallback;
+      });
+      when(mockController.state).thenReturn(const AuthInitial());
+      when(mockController.usernameAvailable).thenReturn(null);
+
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      // Cambiar estado a success
+      final user = User(
+        id: '123',
+        email: 'test@example.com',
+        emailVerified: true,
+        username: 'testuser',
+        displayName: 'Test User',
+        profileCompleted: true,
+        createdAt: DateTime.now(),
+      );
+      when(mockController.state).thenReturn(AuthSuccess(user));
+
+      // Act - llamar listener manualmente
+      capturedListener?.call();
+      await tester.pumpAndSettle();
+
+      // Assert - verificar que el listener fue ejecutado
+      expect(capturedListener, isNotNull);
+    });
+
+    testWidgets('debe tener campo de bio opcional', (WidgetTester tester) async {
+      // Arrange
+      when(mockController.usernameAvailable).thenReturn(null);
+
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      // Assert - debe tener exactamente 3 TextFormFields (username, displayName, bio)
+      expect(find.byType(TextFormField), findsNWidgets(3));
+
+      // El campo de bio debe ser el tercero
+      final bioField = find.byType(TextFormField).at(2);
+      expect(bioField, findsOneWidget);
+    });
+
+    testWidgets('debe tener avatar con icono de persona', (WidgetTester tester) async {
+      // Arrange
+      when(mockController.usernameAvailable).thenReturn(null);
+
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      // Assert - debe mostrar icono de persona en avatar
+      expect(find.byIcon(Icons.person), findsOneWidget);
+    });
+
+    testWidgets('no debe ejecutar skip cuando canSkip es false', (WidgetTester tester) async {
+      // Arrange
+      when(mockController.usernameAvailable).thenReturn(null);
+
+      await tester.pumpWidget(
+        makeTestableWidget(const ProfileSetupScreen(canSkip: false)),
+      );
+      await tester.pumpAndSettle();
+
+      // Act - intentar skip (botón no debe existir)
+      final skipButton = find.text('Lo haré después');
+
+      // Assert - botón skip no debe existir cuando canSkip es false
+      expect(skipButton, findsNothing);
+    });
+  });
+
+  group('ProfileSetupScreen - Flujo', () {
+    final user = User(
+      id: 'u1',
+      email: 'u@test.com',
+      emailVerified: true,
+      profileCompleted: true,
+      createdAt: DateTime(2024),
+    );
+
+    AppLocalizations l10nOf(WidgetTester tester) =>
+        AppLocalizations.of(tester.element(find.byType(ProfileSetupScreen)))!;
+
+    Future<void> pushSetup(WidgetTester tester) async {
+      await tester.pumpWidget(testableWidget(
+        child: Builder(
+          builder: (context) => ElevatedButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const ProfileSetupScreen()),
+            ),
+            child: const Text('HOST'),
+          ),
+        ),
+      ));
+      await tester.tap(find.text('HOST'));
+      await tester.pumpAndSettle();
+    }
+
+    List<VoidCallback> captureListeners() {
+      final listeners = <VoidCallback>[];
+      when(mockController.addListener(any)).thenAnswer((inv) {
+        listeners.add(inv.positionalArguments[0] as VoidCallback);
+      });
+      return listeners;
+    }
+
+    Future<void> fillForm(WidgetTester tester,
+        {String username = 'new_user', String name = 'Nuevo', String bio = ''}) async {
+      await tester.enterText(find.byType(TextFormField).at(0), username);
+      await tester.enterText(find.byType(TextFormField).at(1), name);
+      await tester.enterText(find.byType(TextFormField).at(2), bio);
+      await tester.pump(const Duration(milliseconds: 600));
+    }
+
+    Future<void> tapSave(WidgetTester tester) async {
+      final save = find.widgetWithText(AuthButton, 'Guardar Perfil');
+      await tester.ensureVisible(save);
+      await tester.tap(save);
+      await tester.pump();
+    }
+
+    testWidgets('AuthSuccess cierra la pantalla cuando hay ruta previa',
+        (tester) async {
+      final listeners = captureListeners();
+      await pushSetup(tester);
+
+      when(mockController.state).thenReturn(AuthSuccess(user));
+      for (final l in listeners) {
+        l();
+      }
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ProfileSetupScreen), findsNothing);
+      expect(find.text('HOST'), findsOneWidget);
+    });
+
+    testWidgets('AuthSuccess como raíz no hace pop', (tester) async {
+      final listeners = captureListeners();
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      when(mockController.state).thenReturn(AuthSuccess(user));
+      for (final l in listeners) {
+        l();
+      }
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ProfileSetupScreen), findsOneWidget);
+    });
+
+    testWidgets('AuthError muestra snackbar rojo con el mensaje traducido',
+        (tester) async {
+      final listeners = captureListeners();
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+      final failure =
+          AuthFailure(code: ErrorCode.networkError, technicalMessage: 'net');
+
+      when(mockController.state).thenReturn(AuthError(failure));
+      for (final l in listeners) {
+        l();
+      }
+      await tester.pump();
+
+      final snack = tester.widget<SnackBar>(find.byType(SnackBar));
+      expect(snack.backgroundColor, Colors.red);
+      expect(
+        find.descendant(
+          of: find.byType(SnackBar),
+          matching: find.text(AuthError(failure)
+              .getMessage(tester.element(find.byType(ProfileSetupScreen)))),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('guardar sin disponibilidad confirmada pide verificar username',
+        (tester) async {
+      when(mockController.usernameAvailable).thenReturn(null);
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      await fillForm(tester);
+      await tapSave(tester);
+
+      expect(find.text(l10nOf(tester).profileSetupUsernameAvailabilityCheck),
+          findsOneWidget);
+      verifyNever(mockController.updateProfile(
+          username: anyNamed('username'),
+          displayName: anyNamed('displayName'),
+          bio: anyNamed('bio')));
+    });
+
+    testWidgets('guardar válido envía datos recortados y bio null si está vacía',
+        (tester) async {
+      when(mockController.usernameAvailable).thenReturn(true);
+      when(mockController.updateProfile(
+              username: anyNamed('username'),
+              displayName: anyNamed('displayName'),
+              bio: anyNamed('bio')))
+          .thenAnswer((_) async {});
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      await fillForm(tester, username: 'new_user', name: '  Nuevo  ', bio: '   ');
+      await tapSave(tester);
+
+      verify(mockController.updateProfile(
+              username: 'new_user', displayName: 'Nuevo', bio: null))
+          .called(1);
+    });
+
+    testWidgets('guardar válido con bio la envía recortada', (tester) async {
+      when(mockController.usernameAvailable).thenReturn(true);
+      when(mockController.updateProfile(
+              username: anyNamed('username'),
+              displayName: anyNamed('displayName'),
+              bio: anyNamed('bio')))
+          .thenAnswer((_) async {});
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+
+      await fillForm(tester, bio: '  Hola mundo  ');
+      await tapSave(tester);
+
+      verify(mockController.updateProfile(
+              username: 'new_user', displayName: 'Nuevo', bio: 'Hola mundo'))
+          .called(1);
+    });
+
+    testWidgets('"Después" en el AppBar cierra la pantalla', (tester) async {
+      await pushSetup(tester);
+
+      await tester.tap(find.text(l10nOf(tester).laterButton));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ProfileSetupScreen), findsNothing);
+      expect(find.text('HOST'), findsOneWidget);
+    });
+
+    testWidgets('"Lo haré después" como raíz no hace pop', (tester) async {
+      await tester.pumpWidget(makeTestableWidget(const ProfileSetupScreen()));
+      await tester.pumpAndSettle();
+      final later = find.text(l10nOf(tester).doItLater);
+
+      await tester.ensureVisible(later);
+      await tester.tap(later);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ProfileSetupScreen), findsOneWidget);
     });
   });
 }

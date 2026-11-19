@@ -1,5 +1,10 @@
+import 'package:flutter/widgets.dart';
+
+import '../../../../core/error/custom_error_keys.dart';
+import '../../../../core/error/error_codes.dart';
 import '../../../../core/error/error_messages.dart';
 import '../../../../core/error/failure.dart';
+import '../../../../core/l10n/l10n.dart';
 import '../../domain/entities/user.dart';
 
 /// Estado de autenticación para controllers de UI
@@ -40,22 +45,39 @@ class AuthPasswordUpdated extends AuthState {
 }
 
 /// Estado de error
+///
+/// Guarda el ErrorCode en lugar del mensaje traducido.
+/// El mensaje se obtiene en tiempo de renderizado con BuildContext.
 class AuthError extends AuthState {
-  final Failure? failure;
-  final String? customMessage;
+  final ErrorCode? errorCode;
+  final CustomErrorKey? customMessageKey;
 
-  const AuthError(this.failure) : customMessage = null;
+  /// Constructor desde Failure
+  AuthError(Failure failure)
+      : errorCode = failure.code,
+        customMessageKey = null;
 
-  /// Constructor para mensaje personalizado
-  const AuthError.custom(String message)
-      : failure = null,
-        customMessage = message;
+  /// Constructor para mensaje personalizado con key de l10n
+  const AuthError.withMessageKey(CustomErrorKey messageKey)
+      : errorCode = null,
+        customMessageKey = messageKey;
 
-  /// Obtiene mensaje para mostrar al usuario
-  String get message {
-    if (customMessage != null) return customMessage!;
-    if (failure != null) return ErrorMessages.getMessage(failure!.code);
-    return 'Error desconocido';
+  /// Obtiene mensaje traducido para mostrar al usuario
+  ///
+  /// Este método debe llamarse desde la UI que tiene BuildContext.
+  String getMessage(BuildContext context) {
+    // Mensaje personalizado con key
+    if (customMessageKey != null) {
+      return customMessageKey!.getMessage(context);
+    }
+
+    // Mensaje desde ErrorCode
+    if (errorCode != null) {
+      return ErrorMessages.getMessage(context, errorCode!);
+    }
+
+    // Fallback
+    return context.l10n.errorsUnknown;
   }
 }
 

@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_radius.dart';
 
@@ -48,7 +48,7 @@ class ImagePickerWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          AppLocalizations.gossipMediaImageSelected,
+          context.l10n.gossipMediaImageSelected,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w500,
           ),
@@ -58,7 +58,7 @@ class ImagePickerWidget extends StatelessWidget {
           children: [
             // ✅ Accesibilidad: Semantics para imagen
             Semantics(
-              label: AppLocalizations.gossipMediaImageSemanticLabel,
+              label: context.l10n.gossipMediaImageSemanticLabel,
               image: true,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -77,8 +77,8 @@ class ImagePickerWidget extends StatelessWidget {
                 top: 8,
                 right: 8,
                 child: Semantics(
-                  label: AppLocalizations.gossipMediaRemoveImageSemanticLabel,
-                  hint: AppLocalizations.gossipMediaRemoveImageSemanticHint,
+                  label: context.l10n.gossipMediaRemoveImageSemanticLabel,
+                  hint: context.l10n.gossipMediaRemoveImageSemanticHint,
                   button: true,
                   child: Builder(
                     builder: (context) => IconButton(
@@ -91,7 +91,7 @@ class ImagePickerWidget extends StatelessWidget {
                         backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
                         minimumSize: const Size(48, 48), // ✅ Touch target
                       ),
-                      tooltip: AppLocalizations.gossipMediaRemoveImageTooltip,
+                      tooltip: context.l10n.gossipMediaRemoveImageTooltip,
                     ),
                   ),
                 ),
@@ -116,18 +116,18 @@ class ImagePickerWidget extends StatelessWidget {
         ),
         // ✅ Accesibilidad: Live region para cambios de estado
         child: Semantics(
-          label: AppLocalizations.gossipMediaSelectingSemanticLabel,
+          label: context.l10n.gossipMediaSelectingSemanticLabel,
           liveRegion: true, // Anuncia cambios de estado
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircularProgressIndicator(
-                  semanticsLabel: AppLocalizations.gossipMediaLoadingSemantic,
+                  semanticsLabel: context.l10n.gossipMediaLoadingSemantic,
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Text(
-                  AppLocalizations.gossipMediaSelectingImage,
+                  context.l10n.gossipMediaSelectingImage,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -162,7 +162,7 @@ class ImagePickerWidget extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
-              AppLocalizations.gossipMediaAddPhotoOptional,
+              context.l10n.gossipMediaAddPhotoOptional,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
@@ -175,13 +175,13 @@ class ImagePickerWidget extends StatelessWidget {
             children: [
               // Botón cámara
               Semantics(
-                label: AppLocalizations.gossipMediaCameraSemanticLabel,
-                hint: AppLocalizations.gossipMediaCameraSemanticHint,
+                label: context.l10n.gossipMediaCameraSemanticLabel,
+                hint: context.l10n.gossipMediaCameraSemanticHint,
                 button: true,
                 child: OutlinedButton.icon(
                   onPressed: onPickFromCamera,
                   icon: const Icon(Icons.camera_alt),
-                  label: Text(AppLocalizations.gossipMediaCamera),
+                  label: Text(context.l10n.gossipMediaCamera),
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size(120, 48), // ✅ Touch target
                   ),
@@ -192,13 +192,13 @@ class ImagePickerWidget extends StatelessWidget {
 
               // Botón galería
               Semantics(
-                label: AppLocalizations.gossipMediaGallerySemanticLabel,
-                hint: AppLocalizations.gossipMediaGallerySemanticHint,
+                label: context.l10n.gossipMediaGallerySemanticLabel,
+                hint: context.l10n.gossipMediaGallerySemanticHint,
                 button: true,
                 child: OutlinedButton.icon(
                   onPressed: onPickFromGallery,
                   icon: const Icon(Icons.photo_library),
-                  label: Text(AppLocalizations.gossipMediaGallery),
+                  label: Text(context.l10n.gossipMediaGallery),
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size(120, 48), // ✅ Touch target
                   ),

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
+import '../l10n/l10n.dart';
 import '../logging/logging.dart';
 
 /// Servicio para manejar deep links en la aplicación
@@ -42,11 +43,11 @@ class DeepLinkService {
     // Manejar link cuando app YA está abierta
     _linkSubscription = _appLinks.uriLinkStream.listen(
       (uri) {
-        _logger.i('📥 Deep link recibido (app abierta)', context: {'uri': uri.toString()});
+        _logger.i('Deep link received (app open)', context: {'uri': uri.toString()});
         _handleDeepLink(uri);
       },
       onError: (error) {
-        _logger.e('Error recibiendo deep link', error: error);
+        _logger.e('Error receiving deep link', error: error);
       },
     );
 
@@ -54,19 +55,19 @@ class DeepLinkService {
     try {
       final initialUri = await _appLinks.getInitialLink();
       if (initialUri != null) {
-        _logger.i('📥 Deep link inicial (app cerrada)', context: {'uri': initialUri.toString()});
+        _logger.i('Initial deep link (app closed)', context: {'uri': initialUri.toString()});
         // Pequeño delay para que la app termine de inicializar
         await Future.delayed(const Duration(milliseconds: 500));
         _handleDeepLink(initialUri);
       }
     } catch (error) {
-      _logger.e('Error obteniendo deep link inicial', error: error);
+      _logger.e('Error getting initial deep link', error: error);
     }
   }
 
   /// Maneja el deep link y navega a la pantalla correspondiente
   void _handleDeepLink(Uri uri) {
-    _logger.d('🔗 Procesando deep link', context: {
+    _logger.d('Processing deep link', context: {
       'uri': uri.toString(),
       'scheme': uri.scheme,
       'host': uri.host,
@@ -76,31 +77,38 @@ class DeepLinkService {
 
     // Validar esquema
     if (uri.scheme != 'chismes') {
-      _logger.w('Esquema no soportado', context: {'scheme': uri.scheme});
+      _logger.w('Unsupported scheme', context: {'scheme': uri.scheme});
       return;
     }
 
-    // Validar que hay segmentos de path
-    if (uri.pathSegments.isEmpty) {
-      _logger.w('Deep link sin path', context: {'uri': uri.toString()});
+    // En chismes://gossip/abc123 el tipo es el host ("gossip") y el ID es el
+    // primer segmento del path. También se acepta chismes:///gossip/abc123.
+    final segments = [
+      if (uri.host.isNotEmpty) uri.host,
+      ...uri.pathSegments,
+    ];
+
+    // Validar que hay tipo de link
+    if (segments.isEmpty) {
+      _logger.w('Deep link without path', context: {'uri': uri.toString()});
       return;
     }
 
-    final type = uri.pathSegments.first; // "gossip", "profile", "auth", etc.
+    final type = segments.first; // "gossip", "profile", "auth", etc.
 
     switch (type) {
       case 'auth':
         // Deep link de autenticación (OAuth)
         // Supabase lo maneja automáticamente, no hacer nada
-        _logger.i('✅ Deep link de auth (manejado por Supabase)', context: {'uri': uri.toString()});
+        _logger.i('Auth deep link (handled by Supabase)', context: {'uri': uri.toString()});
         break;
 
       case 'gossip':
-        _handleGossipLink(uri);
+        _handleGossipLink(uri, segments);
         break;
 
       case 'profile':
-        _handleProfileLink(uri);
+        _handleProfileLink(uri, segments);
         break;
 
       case 'feed':
@@ -108,19 +116,19 @@ class DeepLinkService {
         break;
 
       default:
-        _logger.w('Tipo de deep link no soportado', context: {'type': type});
+        _logger.w('Unsupported deep link type', context: {'type': type});
     }
   }
 
   /// Maneja deep link de chisme: chismes://gossip/{id}
-  void _handleGossipLink(Uri uri) {
-    if (uri.pathSegments.length < 2) {
-      _logger.w('Deep link de gossip sin ID', context: {'uri': uri.toString()});
+  void _handleGossipLink(Uri uri, List<String> segments) {
+    if (segments.length < 2) {
+      _logger.w('Gossip deep link without ID', context: {'uri': uri.toString()});
       return;
     }
 
-    final gossipId = uri.pathSegments[1]; // "abc123"
-    _logger.i('✅ Navegando a chisme', context: {'gossipId': gossipId});
+    final gossipId = segments[1]; // "abc123"
+    _logger.i('Navigating to gossip', context: {'gossipId': gossipId});
 
     // Navegar a pantalla de detalle de chisme
     // TODO: Cuando implementes GossipDetailScreen, descomentar esto:
@@ -133,23 +141,29 @@ class DeepLinkService {
     */
 
     // Por ahora, solo mostrar un mensaje
-    _logger.d('📍 Debería abrir chisme con ID: $gossipId');
-    _showSnackBar('Abriendo chisme: $gossipId');
+    _logger.d('Should open gossip with ID: $gossipId');
+    final context = _navigatorKey.currentContext;
+    if (context != null) {
+      _showSnackBar(context.l10n.deepLinkOpeningGossip(gossipId));
+    }
   }
 
   /// Maneja deep link de perfil: chismes://profile/{id}
-  void _handleProfileLink(Uri uri) {
-    if (uri.pathSegments.length < 2) {
-      _logger.w('Deep link de profile sin ID', context: {'uri': uri.toString()});
+  void _handleProfileLink(Uri uri, List<String> segments) {
+    if (segments.length < 2) {
+      _logger.w('Profile deep link without ID', context: {'uri': uri.toString()});
       return;
     }
 
-    final userId = uri.pathSegments[1];
-    _logger.i('✅ Navegando a perfil', context: {'userId': userId});
+    final userId = segments[1];
+    _logger.i('Navigating to profile', context: {'userId': userId});
 
     // TODO: Implementar cuando tengas ProfileScreen
-    _logger.d('📍 Debería abrir perfil con ID: $userId');
-    _showSnackBar('Abriendo perfil: $userId');
+    _logger.d('Should open profile with ID: $userId');
+    final context = _navigatorKey.currentContext;
+    if (context != null) {
+      _showSnackBar(context.l10n.deepLinkOpeningProfile(userId));
+    }
   }
 
   /// Maneja deep link de feed: chismes://feed?city={id}
@@ -157,11 +171,14 @@ class DeepLinkService {
     final cityId = uri.queryParameters['city'];
 
     if (cityId != null) {
-      _logger.i('✅ Navegando a feed filtrado', context: {'cityId': cityId});
+      _logger.i('Navigating to filtered feed', context: {'cityId': cityId});
       // TODO: Implementar filtro de feed
-      _showSnackBar('Abriendo feed de ciudad: $cityId');
+      final context = _navigatorKey.currentContext;
+      if (context != null) {
+        _showSnackBar(context.l10n.deepLinkOpeningCityFeed(cityId));
+      }
     } else {
-      _logger.i('✅ Navegando a feed general');
+      _logger.i('Navigating to general feed');
       // Navegar a home
       _navigatorKey.currentState?.popUntil((route) => route.isFirst);
     }

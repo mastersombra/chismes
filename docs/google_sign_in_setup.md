@@ -188,11 +188,39 @@ flutter run
 
 ---
 
+## Deep link de retorno (OAuth)
+
+- La app usa `redirectTo: 'chismes://auth/callback'`
+  (`SupabaseAuthDataSourceImpl.signInWithApple`). En Supabase → Authentication →
+  URL Configuration, `chismes://auth/callback` debe estar en *Redirect URLs*.
+- El esquema `chismes` está declarado en `ios/Runner/Info.plist` y
+  `android/app/src/main/AndroidManifest.xml`.
+- Probar que el deep link abre la app:
+
+```bash
+# Android
+adb shell am start -W -a android.intent.action.VIEW -d "chismes://auth/callback"
+# iOS (simulador)
+xcrun simctl openurl booted "chismes://auth/callback"
+```
+
+> ⚠️ Nunca pegar el Client ID/Secret reales en docs: viven solo en Google Cloud
+> Console y en Supabase → Authentication → Providers.
+
+## Apple Sign-In (pendiente)
+
+El código ya está (botón, `LoginController.signInWithApple()`,
+`SignInWithAppleUseCase`, `SupabaseAuthDataSource.signInWithApple()`). Falta la
+configuración externa, que requiere Apple Developer Account (USD 99/año):
+
+1. Apple Developer: App ID con "Sign in with Apple" + Services ID con redirect
+   `https://[TU-PROYECTO].supabase.co/auth/v1/callback`.
+2. Supabase → Authentication → Providers → Apple: cargar Services ID, Team ID, Key ID y la key `.p8`.
+
 ## Próximos pasos
 
 1. ✅ google_sign_in configurado
-2. 🔜 Agregar Apple Sign-In (similar)
-3. 🔜 Traducir mensajes a español (i18n)
+2. 🔜 Configurar Apple Sign-In (ver arriba)
 
 ---
 

@@ -57,7 +57,7 @@ class SharedPrefsGossipLocalDataSource implements GossipLocalDataSource {
   /// - Lista vacía si:
   ///   - No hay cache (primera vez)
   ///   - Cache está corrupto (limpia automáticamente)
-  ///   - Error al leer (limpia automáticamente)
+  ///   - Error leer (limpia automáticamente)
   ///
   /// **Performance:**
   /// - ~10-50ms para 100 gossips

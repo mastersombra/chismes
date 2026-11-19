@@ -293,6 +293,40 @@ class MockGossipRemoteDataSource implements GossipRemoteDataSource {
       _remoteData[index]['reported_count'] = (_remoteData[index]['reported_count'] as int) + 1;
     }
   }
+
+  @override
+  Future<List<GossipModel>> searchGossips({
+    required String query,
+    String? cityId,
+    int limit = 20,
+  }) async {
+    // Simular delay de red
+    await Future.delayed(const Duration(milliseconds: 400));
+
+    var models = _remoteData
+        .map((json) => GossipModel.fromJson(json))
+        .toList();
+
+    // Filtrar por query (case-insensitive)
+    final queryLower = query.toLowerCase();
+    models = models.where((model) {
+      final subjectLower = model.subject.toLowerCase();
+      final contentLower = model.content.toLowerCase();
+      return subjectLower.contains(queryLower) || contentLower.contains(queryLower);
+    }).toList();
+
+    // Filtrar por ciudad si se especifica
+    if (cityId != null) {
+      models = models.where((model) => model.cityId == cityId).toList();
+    }
+
+    // Limitar resultados
+    if (models.length > limit) {
+      models = models.sublist(0, limit);
+    }
+
+    return models;
+  }
 }
 
 /// Implementación mock de GossipLocalDataSource

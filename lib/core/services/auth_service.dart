@@ -1,8 +1,8 @@
 import 'package:injectable/injectable.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 
 import '../../features/auth/domain/entities/user.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
-import '../config/supabase_config.dart';
 import '../logging/logging.dart';
 
 /// Servicio global de autenticación
@@ -40,9 +40,14 @@ import '../logging/logging.dart';
 @singleton
 class AuthService {
   final AuthRepository _authRepository;
+  final SupabaseClient _supabase;
   final AppLogger _logger;
 
-  AuthService(this._authRepository, this._logger);
+  AuthService(
+    this._authRepository,
+    this._supabase,
+    this._logger,
+  );
 
   /// Usuario actualmente autenticado
   ///
@@ -92,12 +97,11 @@ class AuthService {
   /// Útil para debugging de problemas de expiración de token.
   /// Retorna información sobre el token y su expiración.
   Map<String, dynamic> debugSessionStatus() {
-    final supabase = SupabaseConfig.client;
-    final session = supabase.auth.currentSession;
-    final user = supabase.auth.currentUser;
+    final session = _supabase.auth.currentSession;
+    final user = _supabase.auth.currentUser;
 
     if (session == null || user == null) {
-      _logger.w('🚨 debugSessionStatus: No active session or user');
+      _logger.w('debugSessionStatus: No active session or user');
       return {
         'hasSession': false,
         'hasUser': user != null,
@@ -124,9 +128,9 @@ class AuthService {
     };
 
     if (isExpired) {
-      _logger.w('🚨 Session is EXPIRED!', context: status);
+      _logger.w('Session is EXPIRED', context: status);
     } else {
-      _logger.i('✅ Session is VALID', context: status);
+      _logger.i('Session is VALID', context: status);
     }
 
     return status;
@@ -134,11 +138,10 @@ class AuthService {
 
   /// 🔍 DEBUG: Verifica si la sesión está expirada manualmente
   bool isSessionExpired() {
-    final supabase = SupabaseConfig.client;
-    final session = supabase.auth.currentSession;
+    final session = _supabase.auth.currentSession;
 
     if (session == null) {
-      _logger.w('⚠️ isSessionExpired: No session found');
+      _logger.w('isSessionExpired: No session found');
       return true;
     }
 
@@ -147,7 +150,7 @@ class AuthService {
     final isExpired = expiresAt.isBefore(now);
 
     if (isExpired) {
-      _logger.w('🚨 isSessionExpired: YES - Session expired!', context: {
+      _logger.w('isSessionExpired: YES - Session expired', context: {
         'expiresAt': expiresAt.toIso8601String(),
         'currentTime': now.toIso8601String(),
         'expiredSince': '${now.difference(expiresAt).inMinutes} minutes ago',

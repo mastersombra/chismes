@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 import '../../../../core/theme/app_spacing.dart';
 import '../../domain/validators/auth_validator.dart';
@@ -44,7 +45,7 @@ class PasswordStrengthIndicator extends StatelessWidget {
             ),
             const SizedBox(width: AppSpacing.sm),
             Text(
-              _getStrengthText(strength),
+              _getStrengthText(context, strength),
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
@@ -56,7 +57,7 @@ class PasswordStrengthIndicator extends StatelessWidget {
         if (strength != PasswordStrength.strong) ...[
           const SizedBox(height: AppSpacing.xs),
           Text(
-            _getHintText(password),
+            _getHintText(context, password),
             style: TextStyle(
               fontSize: 11,
               color: Colors.grey[600],
@@ -78,38 +79,38 @@ class PasswordStrengthIndicator extends StatelessWidget {
     }
   }
 
-  String _getStrengthText(PasswordStrength strength) {
+  String _getStrengthText(BuildContext context, PasswordStrength strength) {
     switch (strength) {
       case PasswordStrength.weak:
-        return 'Débil';
+        return context.l10n.authPasswordStrengthWeak;
       case PasswordStrength.medium:
-        return 'Media';
+        return context.l10n.authPasswordStrengthMedium;
       case PasswordStrength.strong:
-        return 'Fuerte';
+        return context.l10n.authPasswordStrengthStrong;
     }
   }
 
-  String _getHintText(String password) {
+  String _getHintText(BuildContext context, String password) {
     final hints = <String>[];
 
     if (password.length < 8) {
-      hints.add('mínimo 8 caracteres');
+      hints.add(context.l10n.authPasswordStrengthHintMinLength);
     }
     if (!password.contains(RegExp(r'[A-Z]'))) {
-      hints.add('una mayúscula');
+      hints.add(context.l10n.authPasswordStrengthHintUppercase);
     }
     if (!password.contains(RegExp(r'[a-z]'))) {
-      hints.add('una minúscula');
+      hints.add(context.l10n.authPasswordStrengthHintLowercase);
     }
     if (!password.contains(RegExp(r'[0-9]'))) {
-      hints.add('un número');
+      hints.add(context.l10n.authPasswordStrengthHintNumber);
     }
     if (!password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/;~`]'))) {
-      hints.add('un símbolo');
+      hints.add(context.l10n.authPasswordStrengthHintSymbol);
     }
 
     if (hints.isEmpty) return '';
 
-    return 'Agrega: ${hints.join(', ')}';
+    return context.l10n.authPasswordStrengthHintAdd(hints.join(', '));
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/validation/form_validators.dart';
 
@@ -42,8 +42,8 @@ class EmailField extends StatelessWidget {
         LowercaseTextInputFormatter(),
       ],
       decoration: InputDecoration(
-        labelText: AppLocalizations.emailHint,
-        hintText: hintText ?? AppLocalizations.emailHintPlaceholder,
+        labelText: context.l10n.emailHint,
+        hintText: hintText ?? context.l10n.emailHintPlaceholder,
         prefixIcon: prefixIcon ?? const Icon(Icons.email_outlined),
         border: const OutlineInputBorder(),
         contentPadding: const EdgeInsets.symmetric(
@@ -51,7 +51,7 @@ class EmailField extends StatelessWidget {
           vertical: AppSpacing.md,
         ),
       ),
-      validator: validator ?? FormValidators.email,
+      validator: validator ?? (v) => FormValidators.email(context, v),
     );
   }
 }

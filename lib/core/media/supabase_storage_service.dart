@@ -29,7 +29,7 @@ import '../logging/logging.dart';
 /// **Desventaja:**
 /// - ⚠️ Ligeramente más lento (CREATE + UPDATE)
 ///
-/// Ver: audio_imagen.md sección "Estrategia 1"
+/// Ver: CLAUDE.md MEDIA STRATEGY y docs/ANALYSIS_P1_01_MEDIA.md
 @lazySingleton
 class SupabaseStorageService {
   final SupabaseClient _supabase;
@@ -64,7 +64,7 @@ class SupabaseStorageService {
     // 1. Comprimir imagen
     final compressedFile = await ImageCompressor.compressGossipImage(imageFile);
     if (compressedFile == null) {
-      throw Exception('Error al comprimir imagen');
+      throw Exception('Error comprimir imagen');
     }
 
     // 2. Verificar tamaño
@@ -125,9 +125,9 @@ class SupabaseStorageService {
       final thumbPath = storagePath.replaceFirst('full/', 'thumb/');
       await _supabase.storage.from('images').remove([thumbPath]);
 
-      _logger.i('🗑️ Imagen eliminada: $storagePath');
+      _logger.i('Image deleted: $storagePath');
     } catch (e) {
-      _logger.w('⚠️ Error eliminando imagen', context: {'error': e.toString()});
+      _logger.w('Error removing image', context: {'error': e.toString()});
       // No lanzar error, solo loggear
     }
   }

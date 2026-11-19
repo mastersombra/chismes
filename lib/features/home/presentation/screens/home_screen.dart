@@ -1,4 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
+
 import 'package:flutter/material.dart';
 
 import '../../../../core/di/injection_container.dart';
@@ -7,6 +7,7 @@ import '../controllers/following_tab_controller.dart';
 import '../states/following_tab_state.dart';
 import '../widgets/popular_tab.dart';
 import '../widgets/following_tab.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 /// Pantalla principal del Home con 2 tabs: Populares y Siguiendo.
 ///
@@ -81,18 +82,18 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('home.discover_header'.tr()),
+        title: Text(context.l10n.homeDiscoverHeader),
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
           tabs: [
             Tab(
               icon: const Icon(Icons.local_fire_department),
-              text: 'home.tabs.popular'.tr(),
+              text: context.l10n.homeTabsPopular,
             ),
             Tab(
               icon: const Icon(Icons.favorite),
-              text: 'home.tabs.following'.tr(),
+              text: context.l10n.homeTabsFollowing,
             ),
           ],
         ),

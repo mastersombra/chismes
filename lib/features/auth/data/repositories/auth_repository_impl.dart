@@ -389,6 +389,20 @@ class AuthRepositoryImpl implements AuthRepository {
       );
     }
 
+    // Invalid or expired OTP code (específico para verificación OTP)
+    if (message.contains('invalid') && message.contains('code')) {
+      return const AuthFailure(
+        code: ErrorCode.invalidToken,
+        technicalMessage: 'Invalid or expired OTP code',
+      );
+    }
+    if (message.contains('expired') && message.contains('code')) {
+      return const AuthFailure(
+        code: ErrorCode.expiredToken,
+        technicalMessage: 'Invalid or expired OTP code',
+      );
+    }
+
     // Token/OTP invalid: verificar mensaje
     if (message.contains('token') && message.contains('invalid')) {
       return const AuthFailure(

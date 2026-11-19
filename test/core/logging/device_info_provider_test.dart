@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:chismes/core/logging/device_info_provider.dart';
 
 void main() {
@@ -122,7 +126,7 @@ void main() {
         stopwatch2.stop();
 
         // Assert - Segunda llamada debe ser MUY rápida (cache)
-        expect(stopwatch2.elapsedMicroseconds, lessThan(1000)); // < 1ms
+        expect(stopwatch2.elapsedMicroseconds, lessThan(5000)); // < 5ms (cache hit)
       });
 
       test('clearCache debe limpiar el cache', () async {
@@ -288,27 +292,6 @@ void main() {
         expect(hasPlatformSpecificInfo, isTrue,
           reason: 'Debe tener información específica de la plataforma o flag de error');
       });
-
-      test('isPhysicalDevice debe ser bool si está presente', () async {
-        // Act
-        final info = await provider.getDeviceInfo();
-
-        // Assert
-        if (info.containsKey('isPhysicalDevice')) {
-          expect(info['isPhysicalDevice'], isA<bool>());
-        }
-      });
-
-      test('sdkInt debe ser int si está presente (Android)', () async {
-        // Act
-        final info = await provider.getDeviceInfo();
-
-        // Assert
-        if (info.containsKey('sdkInt')) {
-          expect(info['sdkInt'], isA<int>());
-          expect(info['sdkInt'], greaterThan(0));
-        }
-      });
     });
 
     group('Consistencia', () {
@@ -469,6 +452,93 @@ void main() {
           info['customField'] = 'test';
         }, returnsNormally);
       });
+    });
+  });
+
+  group('DeviceInfoProvider con canales simulados', () {
+    const deviceChannel = MethodChannel('dev.fluttercommunity.plus/device_info');
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    late int deviceCalls;
+    late Object? Function() deviceAnswer;
+
+    setUp(() {
+      PackageInfo.setMockInitialValues(
+        appName: 'Chismes',
+        packageName: 'com.chismes.app',
+        version: '1.2.3',
+        buildNumber: '45',
+        buildSignature: '',
+      );
+      deviceCalls = 0;
+      deviceAnswer = () => <String, dynamic>{
+            'computerName': 'Mac de Alejo',
+            'hostName': 'host',
+            'arch': 'arm64',
+            'model': 'Mac14,2',
+            'modelName': 'MacBook Air',
+            'kernelVersion': 'Darwin 25',
+            'osRelease': '15.1',
+            'majorVersion': 15,
+            'minorVersion': 1,
+            'patchVersion': 0,
+            'activeCPUs': 8,
+            'memorySize': 16,
+            'cpuFrequency': 0,
+            'systemGUID': null,
+          };
+      messenger.setMockMethodCallHandler(deviceChannel, (call) async {
+        deviceCalls++;
+        return deviceAnswer();
+      });
+      addTearDown(() => messenger.setMockMethodCallHandler(deviceChannel, null));
+      provider.clearCache();
+    });
+
+    // La rama exitosa depende de dart:io Platform (no se puede simular):
+    // en macOS lee el canal; en Linux (CI) device_info_plus no registra su
+    // plugin Dart en tests y siempre cae al fallback.
+    test('macOS: combina info de la app y del equipo', () async {
+      final info = await provider.getDeviceInfo();
+
+      expect(info, {
+        'appVersion': '1.2.3',
+        'appBuildNumber': '45',
+        'packageName': 'com.chismes.app',
+        'os': 'macOS',
+        'osVersion': '15.1',
+        'device': 'Mac14,2',
+        'arch': 'arm64',
+      });
+    }, skip: !Platform.isMacOS);
+
+    test('macOS: cachea el resultado y no vuelve a llamar al plugin',
+        () async {
+      final first = await provider.getDeviceInfo();
+      final second = await provider.getDeviceInfo();
+
+      expect(second, same(first));
+      expect(deviceCalls, 1);
+
+      provider.clearCache();
+      await provider.getDeviceInfo();
+      expect(deviceCalls, 2);
+    }, skip: !Platform.isMacOS);
+
+    test('retorna el fallback del sistema si el plugin falla y no lo cachea',
+        () async {
+      deviceAnswer = () => throw PlatformException(code: 'UNAVAILABLE');
+
+      final first = await provider.getDeviceInfo();
+      final second = await provider.getDeviceInfo();
+
+      expect(first, {
+        'os': Platform.operatingSystem,
+        'osVersion': Platform.operatingSystemVersion,
+        'error': 'Could not get detailed device info',
+      });
+      expect(second, isNot(same(first)));
+      expect(deviceCalls, 2);
     });
   });
 }

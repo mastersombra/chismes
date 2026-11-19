@@ -28,7 +28,7 @@ Reset completo de la base de datos con importación de datos.
 - Testing: antes de tests de integración
 - Setup inicial del proyecto
 
-**Documentación completa:** `../SETUP_DATABASE.md`
+**Verificación y troubleshooting:** ver secciones abajo.
 
 ---
 
@@ -162,14 +162,43 @@ chmod +x scripts/reset-database.sh
 pip3 install python-dotenv
 ```
 
+### **Proyecto no linkeado**
+
+```bash
+supabase link --project-ref <your-project-id>
+```
+
+### **Falla el deploy de una Edge Function**
+
+```bash
+supabase functions list
+supabase functions logs <nombre-funcion>
+```
+
+---
+
+## 🔍 **Verificación post-reset**
+
+```sql
+SELECT * FROM location_countries;           -- 1 país (Colombia)
+SELECT COUNT(*) FROM location_regions;      -- ~32 departamentos
+SELECT COUNT(*) FROM location_cities;       -- depende de la población mínima
+SELECT name, population FROM location_cities ORDER BY population DESC LIMIT 5;
+-- Esperado arriba: Bogotá, Medellín, Cali, Barranquilla, Cartagena
+```
+
+```bash
+supabase functions list   # deben aparecer las funciones de supabase/functions/
+```
+
 ---
 
 ## 📚 **Documentación**
 
-- **Setup completo:** `../SETUP_DATABASE.md`
+- **Migraciones:** `../supabase/migrations/README.md`
 - **Refactor P6:** `../docs/REFACTOR_P6_FEED_PAGINATION_MEDIA.md`
 - **Edge Functions:** `../supabase/functions/README.md`
 
 ---
 
-**¿Dudas?** Lee `../SETUP_DATABASE.md` para documentación completa.
+**¿Dudas?** Ver `../.claude/SUPABASE.md`.

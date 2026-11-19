@@ -74,4 +74,27 @@ abstract class GossipRepository {
     required ReportReason reason,
     String? details,
   });
+
+  /// Busca gossips por texto usando búsqueda en servidor.
+  ///
+  /// Ejecuta la búsqueda en el servidor (Supabase RPC) en lugar de
+  /// descargar todo y filtrar en cliente. Más eficiente con grandes volúmenes.
+  ///
+  /// **Parámetros:**
+  /// - query: Texto a buscar en subject y content
+  /// - cityId: Filtro opcional por ciudad
+  /// - limit: Máximo resultados (default: 20)
+  ///
+  /// **Retorna:** Lista de gossips coincidentes
+  ///
+  /// **Ventajas sobre búsqueda cliente:**
+  /// - ✅ Solo descarga resultados relevantes
+  /// - ✅ Gasta menos data/batería
+  /// - ✅ Más rápido con >1000 gossips
+  /// - ✅ Búsqueda case-insensitive en servidor
+  Future<Result<Failure, List<Gossip>>> searchGossips({
+    required String query,
+    String? cityId,
+    int limit = 20,
+  });
 }

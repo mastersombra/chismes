@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/logging/logging.dart';
 import '../../../../core/result/result.dart';
+import '../../../../core/services/profile_service.dart';
 import '../../../location/presentation/managers/location_manager.dart';
 import '../../domain/entities/feed_gossip.dart';
 import '../../domain/usecases/get_following_feed.dart';
@@ -69,6 +69,7 @@ class FollowingTabController extends ChangeNotifier {
   final GetFollowingFeed _getFollowingFeed;
   final GetRecommendedFeed _getRecommendedFeed;
   final LocationManager _locationManager;
+  final ProfileService _profileService;
   final AppLogger _logger;
 
   FollowingTabState _state = const FollowingTabState();
@@ -77,6 +78,7 @@ class FollowingTabController extends ChangeNotifier {
     this._getFollowingFeed,
     this._getRecommendedFeed,
     this._locationManager,
+    this._profileService,
     this._logger,
   );
 
@@ -104,9 +106,9 @@ class FollowingTabController extends ChangeNotifier {
     ));
 
     try {
-      // TODO: Obtener followingCount de ProfileService cuando esté implementado
-      // Por ahora, usamos placeholder
-      final followingCount = 5; // Placeholder
+      // Obtener followingCount de ProfileService
+      final userId = 'user-id'; // TODO: Get from AuthService when implemented
+      final followingCount = await _profileService.getFollowingCount(userId);
 
       _logger.d('Following count obtained', context: {
         'count': followingCount,
@@ -123,8 +125,6 @@ class FollowingTabController extends ChangeNotifier {
       }
 
       // Caso 2: Cargar feed de quienes sigue
-      final userId = 'user-id'; // TODO: Get from AuthService when implemented
-
       final result = await _getFollowingFeed(
         userId: userId,
         pageSize: 20,
@@ -167,7 +167,7 @@ class FollowingTabController extends ChangeNotifier {
       );
       _updateState(_state.copyWith(
         status: FollowingTabStatus.error,
-        errorMessage: AppLocalizations.homeFollowingUnexpectedError,
+        errorMessage: 'Unexpected error loading following feed',
       ));
     }
   }
@@ -217,7 +217,7 @@ class FollowingTabController extends ChangeNotifier {
       );
       _updateState(_state.copyWith(
         status: FollowingTabStatus.error,
-        errorMessage: AppLocalizations.homeFollowingRecommendedError,
+        errorMessage: 'Error loading recommended feed',
       ));
     }
   }
@@ -256,13 +256,17 @@ class FollowingTabController extends ChangeNotifier {
       'cursor': _state.nextCursor?.toString(),
     });
 
+    // Guardar estado anterior ANTES de cambiar a loadingMore
+    // (isShowingRecommended depende del status)
+    final wasShowingRecommended = _state.isShowingRecommended;
+
     _updateState(_state.copyWith(
       status: FollowingTabStatus.loadingMore,
     ));
 
     try {
-      // Decidir qué use case usar según el estado actual
-      if (_state.isShowingRecommended) {
+      // Decidir qué use case usar según el estado anterior
+      if (wasShowingRecommended) {
         // Cargar más recomendados
         await _loadMoreRecommended();
       } else {
@@ -277,7 +281,7 @@ class FollowingTabController extends ChangeNotifier {
       );
       // Volver al estado anterior
       _updateState(_state.copyWith(
-        status: _state.isShowingRecommended
+        status: wasShowingRecommended
             ? FollowingTabStatus.loadedRecommended
             : FollowingTabStatus.loaded,
       ));

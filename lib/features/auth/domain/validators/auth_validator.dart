@@ -1,6 +1,5 @@
 import '../../../../core/error/error_codes.dart';
 import '../../../../core/error/failure.dart';
-import '../../../../core/localization/app_localizations.dart';
 
 /// Validador de reglas de negocio para autenticación
 ///
@@ -24,9 +23,9 @@ class AuthValidator {
   /// Valida formato de email según RFC 5322 (simplificado)
   static ValidationFailure? validateEmail(String? email) {
     if (email == null || email.isEmpty) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.missingRequiredField,
-        technicalMessage: AppLocalizations.emailRequired,
+        technicalMessage: 'Email is required',
       );
     }
 
@@ -36,16 +35,16 @@ class AuthValidator {
     );
 
     if (!emailRegex.hasMatch(email)) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.invalidInput,
-        technicalMessage: AppLocalizations.emailInvalid,
+        technicalMessage: 'Invalid email format',
       );
     }
 
     if (email.length > 254) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.invalidInput,
-        technicalMessage: AppLocalizations.emailTooLong,
+        technicalMessage: 'Email exceeds 254 characters',
       );
     }
 
@@ -67,55 +66,55 @@ class AuthValidator {
   /// - Al menos un carácter especial
   static ValidationFailure? validatePassword(String? password) {
     if (password == null || password.isEmpty) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.missingRequiredField,
-        technicalMessage: AppLocalizations.passwordRequired,
+        technicalMessage: 'Password is required',
       );
     }
 
     if (password.length < 8) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.weakPassword,
-        technicalMessage: AppLocalizations.passwordTooShort,
+        technicalMessage: 'Password too short (min 8 characters)',
       );
     }
 
     if (password.length > 128) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.invalidInput,
-        technicalMessage: AppLocalizations.passwordTooLong,
+        technicalMessage: 'Password too long (max 128 characters)',
       );
     }
 
     // Al menos una minúscula
     if (!password.contains(RegExp(r'[a-z]'))) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.weakPassword,
-        technicalMessage: AppLocalizations.passwordNeedsLowercase,
+        technicalMessage: 'Password needs at least one lowercase letter',
       );
     }
 
     // Al menos una mayúscula
     if (!password.contains(RegExp(r'[A-Z]'))) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.weakPassword,
-        technicalMessage: AppLocalizations.passwordNeedsUppercase,
+        technicalMessage: 'Password needs at least one uppercase letter',
       );
     }
 
     // Al menos un número
     if (!password.contains(RegExp(r'[0-9]'))) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.weakPassword,
-        technicalMessage: AppLocalizations.passwordNeedsNumber,
+        technicalMessage: 'Password needs at least one number',
       );
     }
 
     // Al menos un carácter especial
     if (!password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/;~`]'))) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.weakPassword,
-        technicalMessage: AppLocalizations.passwordNeedsSpecial,
+        technicalMessage: 'Password needs at least one special character',
       );
     }
 
@@ -178,47 +177,47 @@ class AuthValidator {
   /// - No puede empezar o terminar con guión bajo
   static ValidationFailure? validateUsername(String? username) {
     if (username == null || username.isEmpty) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.missingRequiredField,
-        technicalMessage: AppLocalizations.usernameRequired,
+        technicalMessage: 'Username is required',
       );
     }
 
     if (username.length < 3) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.invalidInput,
-        technicalMessage: AppLocalizations.usernameTooShort,
+        technicalMessage: 'Username too short (min 3 characters)',
       );
     }
 
     if (username.length > 30) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.invalidInput,
-        technicalMessage: AppLocalizations.usernameTooLong,
+        technicalMessage: 'Username too long (max 30 characters)',
       );
     }
 
     // Solo minúsculas, números y guión bajo
     if (!RegExp(r'^[a-z0-9_]+$').hasMatch(username)) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.invalidInput,
-        technicalMessage: AppLocalizations.usernameInvalidChars,
+        technicalMessage: 'Username contains invalid characters',
       );
     }
 
     // No puede empezar con número
     if (RegExp(r'^[0-9]').hasMatch(username)) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.invalidInput,
-        technicalMessage: AppLocalizations.usernameStartsWithNumber,
+        technicalMessage: 'Username cannot start with a number',
       );
     }
 
     // No puede empezar o terminar con guión bajo
     if (username.startsWith('_') || username.endsWith('_')) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.invalidInput,
-        technicalMessage: AppLocalizations.usernameInvalidUnderscore,
+        technicalMessage: 'Username cannot start or end with underscore',
       );
     }
 
@@ -236,9 +235,9 @@ class AuthValidator {
     ];
 
     if (reservedWords.contains(username.toLowerCase())) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.invalidInput,
-        technicalMessage: AppLocalizations.usernameReserved,
+        technicalMessage: 'Username is reserved',
       );
     }
 
@@ -256,25 +255,25 @@ class AuthValidator {
   /// - Máximo 50 caracteres
   static ValidationFailure? validateDisplayName(String? displayName) {
     if (displayName == null || displayName.isEmpty) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.missingRequiredField,
-        technicalMessage: AppLocalizations.displayNameRequired,
+        technicalMessage: 'Display name is required',
       );
     }
 
     final trimmed = displayName.trim();
 
     if (trimmed.isEmpty) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.invalidInput,
-        technicalMessage: AppLocalizations.displayNameEmpty,
+        technicalMessage: 'Display name cannot be empty',
       );
     }
 
     if (trimmed.length > 50) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.invalidInput,
-        technicalMessage: AppLocalizations.displayNameTooLong,
+        technicalMessage: 'Display name too long (max 50 characters)',
       );
     }
 
@@ -295,9 +294,9 @@ class AuthValidator {
     }
 
     if (bio.length > 160) {
-      return ValidationFailure(
+      return const ValidationFailure(
         code: ErrorCode.invalidInput,
-        technicalMessage: AppLocalizations.bioTooLong,
+        technicalMessage: 'Bio too long (max 160 characters)',
       );
     }
 

@@ -103,7 +103,7 @@ class _AuthGateState extends State<AuthGate> {
           return const MainNavigationScreen();
         } else {
           // ❌ No hay usuario → LoginScreen
-          _logger.d('AuthGate: No hay usuario autenticado, mostrando login');
+          _logger.d('AuthGate: No authenticated user, showing login');
           return const LoginScreen();
         }
       },

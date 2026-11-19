@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 
+import '../../../../core/error/custom_error_keys.dart';
+import '../../../../core/error/error_codes.dart';
 import '../../../../core/logging/logging.dart';
 import '../../../../core/result/result.dart';
-import '../../../../core/error/error_codes.dart';
 import '../../domain/usecases/sign_up_with_email.dart';
 import '../state/auth_state.dart';
 
@@ -52,9 +53,8 @@ class SignupController extends ChangeNotifier {
 
         // Personalizar mensaje si el email ya está en uso
         if (failure.code == ErrorCode.emailAlreadyInUse) {
-          _setState(const AuthError.custom(
-            'Este email ya está registrado. Inicia sesión en su lugar.',
-          ));
+          _setState(const AuthError.withMessageKey(
+              CustomErrorKey.authEmailAlreadyInUseAction));
         } else {
           _setState(AuthError(failure));
         }

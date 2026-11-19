@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/validation/form_validators.dart';
 import 'email_field.dart';
@@ -46,7 +46,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(AppLocalizations.forgotPasswordTitle),
+      title: Text(context.l10n.forgotPasswordTitle),
       content: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -64,7 +64,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
 
               // Mensaje
               Text(
-                AppLocalizations.forgotPasswordMessage,
+                context.l10n.forgotPasswordMessage,
                 style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
@@ -83,7 +83,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
         // Botón cancelar
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.pop(context),
-          child: Text(AppLocalizations.cancel),
+          child: Text(context.l10n.cancel),
         ),
 
         // Botón enviar
@@ -95,7 +95,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : Text(AppLocalizations.sendCodeButton),
+              : Text(context.l10n.sendCodeButton),
         ),
       ],
     );

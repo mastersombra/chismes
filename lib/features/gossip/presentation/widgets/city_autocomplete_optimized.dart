@@ -5,7 +5,7 @@ import '../../../location/domain/usecases/search_cities.dart';
 import '../../../../core/result/result.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_radius.dart';
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 /// TextField con autocomplete para búsqueda de ciudades (OPTIMIZADO)
 ///
@@ -204,7 +204,7 @@ class _CityAutocompleteOptimizedState extends State<CityAutocompleteOptimized> {
           setState(() {
             _searchResults = [];
             _isSearching = false;
-            _errorMessage = AppLocalizations.locationSearchError;
+            _errorMessage = context.l10n.locationSearchError;
           });
         },
       );
@@ -217,7 +217,7 @@ class _CityAutocompleteOptimizedState extends State<CityAutocompleteOptimized> {
       setState(() {
         _searchResults = [];
         _isSearching = false;
-        _errorMessage = AppLocalizations.locationUnexpectedError;
+        _errorMessage = context.l10n.locationUnexpectedError;
       });
     }
   }
@@ -238,8 +238,8 @@ class _CityAutocompleteOptimizedState extends State<CityAutocompleteOptimized> {
           controller: _controller,
           focusNode: _focusNode,
           decoration: InputDecoration(
-            labelText: AppLocalizations.locationCityLabel,
-            hintText: AppLocalizations.locationCitySearchHint(_minChars),
+            labelText: context.l10n.locationCityLabel,
+            hintText: context.l10n.locationCitySearchHint(_minChars),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
             prefixIcon: const Icon(Icons.location_on),
             suffixIcon: _isSearching
@@ -335,7 +335,7 @@ class _CityAutocompleteOptimizedState extends State<CityAutocompleteOptimized> {
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
-                    AppLocalizations.locationMinCharsMessage(_minChars),
+                    context.l10n.locationMinCharsMessage(_minChars),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.secondary,
                         ),
@@ -367,7 +367,7 @@ class _CityAutocompleteOptimizedState extends State<CityAutocompleteOptimized> {
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
-                    AppLocalizations.locationNoResults(_controller.text),
+                    context.l10n.locationNoResults(_controller.text),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.secondary,
                         ),

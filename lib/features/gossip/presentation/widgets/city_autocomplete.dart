@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../location/domain/entities/city.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_radius.dart';
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 /// TextField con autocomplete para búsqueda de ciudades
 ///
@@ -107,8 +107,8 @@ class _CityAutocompleteState extends State<CityAutocomplete> {
           controller: _controller,
           focusNode: _focusNode,
           decoration: InputDecoration(
-            labelText: AppLocalizations.locationCityLabel,
-            hintText: AppLocalizations.locationCityHint,
+            labelText: context.l10n.locationCityLabel,
+            hintText: context.l10n.locationCityHint,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
             prefixIcon: const Icon(Icons.location_on),
             suffixIcon: _controller.text.isNotEmpty
@@ -193,7 +193,7 @@ class _CityAutocompleteState extends State<CityAutocomplete> {
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
-                    AppLocalizations.locationNoResults(_controller.text),
+                    context.l10n.locationNoResults(_controller.text),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.secondary,
                         ),

@@ -7,6 +7,8 @@ import 'dart:async' as _i4;
 
 import 'package:chismes/core/error/failure.dart' as _i6;
 import 'package:chismes/core/result/result.dart' as _i5;
+import 'package:chismes/core/services/location_service.dart' as _i12;
+import 'package:chismes/core/services/search_history_service.dart' as _i11;
 import 'package:chismes/features/gossip/domain/entities/gossip.dart' as _i7;
 import 'package:chismes/features/gossip/domain/entities/gossip_query.dart'
     as _i8;
@@ -14,6 +16,9 @@ import 'package:chismes/features/gossip/domain/repositories/gossip_repository.da
     as _i2;
 import 'package:chismes/features/gossip/domain/usecases/get_gossips.dart'
     as _i3;
+import 'package:chismes/features/gossip/domain/usecases/search_gossips.dart'
+    as _i10;
+import 'package:geolocator/geolocator.dart' as _i13;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i9;
 
@@ -72,4 +77,163 @@ class MockGetGossips extends _i1.Mock implements _i3.GetGossips {
                 ),
           )
           as _i4.Future<_i5.Result<_i6.Failure, List<_i7.Gossip>>>);
+}
+
+/// A class which mocks [SearchGossips].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSearchGossips extends _i1.Mock implements _i10.SearchGossips {
+  MockSearchGossips() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.GossipRepository get repository =>
+      (super.noSuchMethod(
+            Invocation.getter(#repository),
+            returnValue: _FakeGossipRepository_0(
+              this,
+              Invocation.getter(#repository),
+            ),
+          )
+          as _i2.GossipRepository);
+
+  @override
+  _i4.Future<_i5.Result<_i6.Failure, List<_i7.Gossip>>> call({
+    required String? query,
+    String? cityId,
+    int? limit = 20,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#call, [], {
+              #query: query,
+              #cityId: cityId,
+              #limit: limit,
+            }),
+            returnValue:
+                _i4.Future<_i5.Result<_i6.Failure, List<_i7.Gossip>>>.value(
+                  _i9.dummyValue<_i5.Result<_i6.Failure, List<_i7.Gossip>>>(
+                    this,
+                    Invocation.method(#call, [], {
+                      #query: query,
+                      #cityId: cityId,
+                      #limit: limit,
+                    }),
+                  ),
+                ),
+          )
+          as _i4.Future<_i5.Result<_i6.Failure, List<_i7.Gossip>>>);
+}
+
+/// A class which mocks [SearchHistoryService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSearchHistoryService extends _i1.Mock
+    implements _i11.SearchHistoryService {
+  MockSearchHistoryService() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Future<void> addSearch(String? query) =>
+      (super.noSuchMethod(
+            Invocation.method(#addSearch, [query]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<List<String>> getHistory() =>
+      (super.noSuchMethod(
+            Invocation.method(#getHistory, []),
+            returnValue: _i4.Future<List<String>>.value(<String>[]),
+          )
+          as _i4.Future<List<String>>);
+
+  @override
+  _i4.Future<void> removeSearch(String? query) =>
+      (super.noSuchMethod(
+            Invocation.method(#removeSearch, [query]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> clearHistory() =>
+      (super.noSuchMethod(
+            Invocation.method(#clearHistory, []),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+}
+
+/// A class which mocks [LocationService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockLocationService extends _i1.Mock implements _i12.LocationService {
+  MockLocationService() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Future<_i13.Position?> getCurrentPosition() =>
+      (super.noSuchMethod(
+            Invocation.method(#getCurrentPosition, []),
+            returnValue: _i4.Future<_i13.Position?>.value(),
+          )
+          as _i4.Future<_i13.Position?>);
+
+  @override
+  _i4.Future<_i12.DetectedLocation?> getCityFromCoordinates(
+    double? latitude,
+    double? longitude,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#getCityFromCoordinates, [latitude, longitude]),
+            returnValue: _i4.Future<_i12.DetectedLocation?>.value(),
+          )
+          as _i4.Future<_i12.DetectedLocation?>);
+
+  @override
+  _i4.Future<void> saveDefaultLocation({
+    required String? countryId,
+    required String? regionId,
+    required String? cityId,
+    required String? countryName,
+    required String? regionName,
+    required String? cityName,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveDefaultLocation, [], {
+              #countryId: countryId,
+              #regionId: regionId,
+              #cityId: cityId,
+              #countryName: countryName,
+              #regionName: regionName,
+              #cityName: cityName,
+            }),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<_i12.SavedLocation?> getDefaultLocation() =>
+      (super.noSuchMethod(
+            Invocation.method(#getDefaultLocation, []),
+            returnValue: _i4.Future<_i12.SavedLocation?>.value(),
+          )
+          as _i4.Future<_i12.SavedLocation?>);
+
+  @override
+  _i4.Future<void> clearDefaultLocation() =>
+      (super.noSuchMethod(
+            Invocation.method(#clearDefaultLocation, []),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 }

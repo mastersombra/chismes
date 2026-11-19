@@ -1096,6 +1096,251 @@ void main() {
       )).called(reasons.length);
     });
   });
+
+  group('GossipRepositoryImpl.searchGossips', () {
+    final mockModels = [
+      GossipModel(
+        id: '1',
+        countryId: '1',
+        regionId: '1',
+        cityId: '1',
+        subject: 'Search Result 1',
+        content: 'Content matching search query',
+        publishedAs: 'anonymous',
+        status: 'published',
+        moderationStatus: 'approved',
+        visibility: 'public',
+        createdAt: '2024-01-15T10:30:00.000Z',
+        createdBy: 'user-1',
+      ),
+      GossipModel(
+        id: '2',
+        countryId: '1',
+        regionId: '1',
+        cityId: '1',
+        subject: 'Search Result 2',
+        content: 'Another matching result',
+        publishedAs: 'profile',
+        status: 'published',
+        moderationStatus: 'approved',
+        visibility: 'public',
+        createdAt: '2024-01-15T11:30:00.000Z',
+        createdBy: 'user-2',
+      ),
+    ];
+
+    test('debe buscar gossips exitosamente con query y cityId', () async {
+      // Arrange
+      const query = 'search term';
+      const cityId = 'city-123';
+      const limit = 20;
+
+      when(mockRemoteDataSource.searchGossips(
+        query: query,
+        cityId: cityId,
+        limit: limit,
+      )).thenAnswer((_) async => mockModels);
+
+      // Act
+      final result = await repository.searchGossips(
+        query: query,
+        cityId: cityId,
+        limit: limit,
+      );
+
+      // Assert
+      expect(result.isSuccess, isTrue);
+      final gossips = result.successValue!;
+      expect(gossips.length, 2);
+      expect(gossips[0].id, '1');
+      expect(gossips[0].subject, 'Search Result 1');
+      expect(gossips[1].id, '2');
+
+      verify(mockRemoteDataSource.searchGossips(
+        query: query,
+        cityId: cityId,
+        limit: limit,
+      )).called(1);
+    });
+
+    test('debe buscar gossips exitosamente sin cityId', () async {
+      // Arrange
+      const query = 'search term';
+      const limit = 20;
+
+      when(mockRemoteDataSource.searchGossips(
+        query: query,
+        cityId: null,
+        limit: limit,
+      )).thenAnswer((_) async => mockModels);
+
+      // Act
+      final result = await repository.searchGossips(
+        query: query,
+        limit: limit,
+      );
+
+      // Assert
+      expect(result.isSuccess, isTrue);
+      final gossips = result.successValue!;
+      expect(gossips.length, 2);
+
+      verify(mockRemoteDataSource.searchGossips(
+        query: query,
+        cityId: null,
+        limit: limit,
+      )).called(1);
+    });
+
+    test('debe buscar con límite custom', () async {
+      // Arrange
+      const query = 'search term';
+      const cityId = 'city-123';
+      const limit = 10;
+
+      when(mockRemoteDataSource.searchGossips(
+        query: query,
+        cityId: cityId,
+        limit: limit,
+      )).thenAnswer((_) async => mockModels);
+
+      // Act
+      final result = await repository.searchGossips(
+        query: query,
+        cityId: cityId,
+        limit: limit,
+      );
+
+      // Assert
+      expect(result.isSuccess, isTrue);
+      verify(mockRemoteDataSource.searchGossips(
+        query: query,
+        cityId: cityId,
+        limit: limit,
+      )).called(1);
+    });
+
+    test('debe retornar lista vacía cuando no hay resultados', () async {
+      // Arrange
+      const query = 'nonexistent';
+      const cityId = 'city-123';
+
+      when(mockRemoteDataSource.searchGossips(
+        query: query,
+        cityId: cityId,
+        limit: 20,
+      )).thenAnswer((_) async => []);
+
+      // Act
+      final result = await repository.searchGossips(
+        query: query,
+        cityId: cityId,
+      );
+
+      // Assert
+      expect(result.isSuccess, isTrue);
+      final gossips = result.successValue!;
+      expect(gossips, isEmpty);
+    });
+
+    test('debe convertir models a entities correctamente', () async {
+      // Arrange
+      const query = 'search term';
+
+      when(mockRemoteDataSource.searchGossips(
+        query: query,
+        cityId: null,
+        limit: 20,
+      )).thenAnswer((_) async => mockModels);
+
+      // Act
+      final result = await repository.searchGossips(query: query);
+
+      // Assert
+      expect(result.isSuccess, isTrue);
+      final gossips = result.successValue!;
+
+      expect(gossips[0], isA<Gossip>());
+      expect(gossips[0].publishedAs, PublishAs.anonymous);
+      expect(gossips[0].status, GossipStatus.published);
+      expect(gossips[0].moderationStatus, ModerationStatus.approved);
+      expect(gossips[0].visibility, GossipVisibility.public);
+      expect(gossips[0].createdAt, isA<DateTime>());
+
+      expect(gossips[1], isA<Gossip>());
+      expect(gossips[1].publishedAs, PublishAs.profile);
+    });
+
+    test('debe retornar failure cuando remoto falla', () async {
+      // Arrange
+      const query = 'search term';
+      const cityId = 'city-123';
+
+      when(mockRemoteDataSource.searchGossips(
+        query: query,
+        cityId: cityId,
+        limit: 20,
+      )).thenThrow(Exception('Network error'));
+
+      // Act
+      final result = await repository.searchGossips(
+        query: query,
+        cityId: cityId,
+      );
+
+      // Assert
+      expect(result.isFailure, isTrue);
+      verify(mockRemoteDataSource.searchGossips(
+        query: query,
+        cityId: cityId,
+        limit: 20,
+      )).called(1);
+    });
+
+    test('debe manejar errores de Supabase', () async {
+      // Arrange
+      const query = 'search term';
+
+      when(mockRemoteDataSource.searchGossips(
+        query: query,
+        cityId: null,
+        limit: 20,
+      )).thenThrow(Exception('RPC function not found'));
+
+      // Act
+      final result = await repository.searchGossips(query: query);
+
+      // Assert
+      expect(result.isFailure, isTrue);
+    });
+
+    test('debe propagar todos los parámetros al datasource', () async {
+      // Arrange
+      const query = 'test query';
+      const cityId = 'test-city';
+      const limit = 15;
+
+      when(mockRemoteDataSource.searchGossips(
+        query: query,
+        cityId: cityId,
+        limit: limit,
+      )).thenAnswer((_) async => mockModels);
+
+      // Act
+      await repository.searchGossips(
+        query: query,
+        cityId: cityId,
+        limit: limit,
+      );
+
+      // Assert
+      verify(mockRemoteDataSource.searchGossips(
+        query: query,
+        cityId: cityId,
+        limit: limit,
+      )).called(1);
+    });
+  });
 }
 
 /// Mocks para testing del logger

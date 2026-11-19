@@ -8,9 +8,11 @@ import 'dart:ui' as _i14;
 
 import 'package:chismes/core/error/failure.dart' as _i11;
 import 'package:chismes/core/result/result.dart' as _i16;
-import 'package:chismes/features/auth/domain/entities/user.dart' as _i28;
+import 'package:chismes/core/services/location_service.dart' as _i31;
+import 'package:chismes/core/services/search_history_service.dart' as _i30;
+import 'package:chismes/features/auth/domain/entities/user.dart' as _i29;
 import 'package:chismes/features/auth/domain/repositories/auth_repository.dart'
-    as _i27;
+    as _i28;
 import 'package:chismes/features/gossip/domain/entities/gossip.dart' as _i13;
 import 'package:chismes/features/gossip/domain/entities/gossip_query.dart'
     as _i17;
@@ -20,32 +22,35 @@ import 'package:chismes/features/gossip/domain/usecases/create_gossip.dart'
     as _i2;
 import 'package:chismes/features/gossip/domain/usecases/get_gossips.dart'
     as _i15;
+import 'package:chismes/features/gossip/domain/usecases/search_gossips.dart'
+    as _i19;
 import 'package:chismes/features/gossip/presentation/controllers/add_gossip_controller.dart'
     as _i10;
 import 'package:chismes/features/gossip/presentation/states/add_gossip_state.dart'
     as _i5;
 import 'package:chismes/features/home/presentation/controllers/following_tab_controller.dart'
-    as _i24;
+    as _i25;
 import 'package:chismes/features/home/presentation/controllers/popular_tab_controller.dart'
-    as _i23;
+    as _i24;
 import 'package:chismes/features/home/presentation/states/following_tab_state.dart'
     as _i9;
 import 'package:chismes/features/home/presentation/states/popular_tab_state.dart'
     as _i8;
-import 'package:chismes/features/location/domain/entities/city.dart' as _i20;
-import 'package:chismes/features/location/domain/entities/country.dart' as _i21;
-import 'package:chismes/features/location/domain/entities/region.dart' as _i22;
+import 'package:chismes/features/location/domain/entities/city.dart' as _i21;
+import 'package:chismes/features/location/domain/entities/country.dart' as _i22;
+import 'package:chismes/features/location/domain/entities/region.dart' as _i23;
 import 'package:chismes/features/location/domain/usecases/search_cities.dart'
-    as _i19;
+    as _i20;
 import 'package:chismes/features/location/presentation/managers/location_manager.dart'
     as _i3;
 import 'package:chismes/features/location/presentation/states/location_state.dart'
     as _i7;
 import 'package:chismes/features/profile/domain/entities/profile_settings.dart'
-    as _i26;
+    as _i27;
 import 'package:chismes/features/profile/presentation/controllers/profile_controller.dart'
-    as _i25;
+    as _i26;
 import 'package:flutter/material.dart' as _i4;
+import 'package:geolocator/geolocator.dart' as _i32;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i18;
 
@@ -444,12 +449,69 @@ class MockGetGossips extends _i1.Mock implements _i15.GetGossips {
           as _i12.Future<_i16.Result<_i11.Failure, List<_i13.Gossip>>>);
 }
 
+/// A class which mocks [SearchGossips].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSearchGossips extends _i1.Mock implements _i19.SearchGossips {
+  @override
+  _i6.GossipRepository get repository =>
+      (super.noSuchMethod(
+            Invocation.getter(#repository),
+            returnValue: _FakeGossipRepository_4(
+              this,
+              Invocation.getter(#repository),
+            ),
+            returnValueForMissingStub: _FakeGossipRepository_4(
+              this,
+              Invocation.getter(#repository),
+            ),
+          )
+          as _i6.GossipRepository);
+
+  @override
+  _i12.Future<_i16.Result<_i11.Failure, List<_i13.Gossip>>> call({
+    required String? query,
+    String? cityId,
+    int? limit = 20,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#call, [], {
+              #query: query,
+              #cityId: cityId,
+              #limit: limit,
+            }),
+            returnValue:
+                _i12.Future<_i16.Result<_i11.Failure, List<_i13.Gossip>>>.value(
+                  _i18.dummyValue<_i16.Result<_i11.Failure, List<_i13.Gossip>>>(
+                    this,
+                    Invocation.method(#call, [], {
+                      #query: query,
+                      #cityId: cityId,
+                      #limit: limit,
+                    }),
+                  ),
+                ),
+            returnValueForMissingStub:
+                _i12.Future<_i16.Result<_i11.Failure, List<_i13.Gossip>>>.value(
+                  _i18.dummyValue<_i16.Result<_i11.Failure, List<_i13.Gossip>>>(
+                    this,
+                    Invocation.method(#call, [], {
+                      #query: query,
+                      #cityId: cityId,
+                      #limit: limit,
+                    }),
+                  ),
+                ),
+          )
+          as _i12.Future<_i16.Result<_i11.Failure, List<_i13.Gossip>>>);
+}
+
 /// A class which mocks [SearchCities].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSearchCities extends _i1.Mock implements _i19.SearchCities {
+class MockSearchCities extends _i1.Mock implements _i20.SearchCities {
   @override
-  _i12.Future<_i16.Result<_i11.Failure, List<_i20.City>>> call({
+  _i12.Future<_i16.Result<_i11.Failure, List<_i21.City>>> call({
     required String? query,
     String? regionId,
     int? maxResults = 20,
@@ -461,8 +523,8 @@ class MockSearchCities extends _i1.Mock implements _i19.SearchCities {
               #maxResults: maxResults,
             }),
             returnValue:
-                _i12.Future<_i16.Result<_i11.Failure, List<_i20.City>>>.value(
-                  _i18.dummyValue<_i16.Result<_i11.Failure, List<_i20.City>>>(
+                _i12.Future<_i16.Result<_i11.Failure, List<_i21.City>>>.value(
+                  _i18.dummyValue<_i16.Result<_i11.Failure, List<_i21.City>>>(
                     this,
                     Invocation.method(#call, [], {
                       #query: query,
@@ -472,8 +534,8 @@ class MockSearchCities extends _i1.Mock implements _i19.SearchCities {
                   ),
                 ),
             returnValueForMissingStub:
-                _i12.Future<_i16.Result<_i11.Failure, List<_i20.City>>>.value(
-                  _i18.dummyValue<_i16.Result<_i11.Failure, List<_i20.City>>>(
+                _i12.Future<_i16.Result<_i11.Failure, List<_i21.City>>>.value(
+                  _i18.dummyValue<_i16.Result<_i11.Failure, List<_i21.City>>>(
                     this,
                     Invocation.method(#call, [], {
                       #query: query,
@@ -483,7 +545,7 @@ class MockSearchCities extends _i1.Mock implements _i19.SearchCities {
                   ),
                 ),
           )
-          as _i12.Future<_i16.Result<_i11.Failure, List<_i20.City>>>);
+          as _i12.Future<_i16.Result<_i11.Failure, List<_i21.City>>>);
 }
 
 /// A class which mocks [LocationManager].
@@ -521,7 +583,7 @@ class MockLocationManager extends _i1.Mock implements _i3.LocationManager {
           as _i12.Future<void>);
 
   @override
-  _i12.Future<void> loadRegions(_i21.Country? country) =>
+  _i12.Future<void> loadRegions(_i22.Country? country) =>
       (super.noSuchMethod(
             Invocation.method(#loadRegions, [country]),
             returnValue: _i12.Future<void>.value(),
@@ -530,7 +592,7 @@ class MockLocationManager extends _i1.Mock implements _i3.LocationManager {
           as _i12.Future<void>);
 
   @override
-  _i12.Future<void> loadCities(_i22.Region? region) =>
+  _i12.Future<void> loadCities(_i23.Region? region) =>
       (super.noSuchMethod(
             Invocation.method(#loadCities, [region]),
             returnValue: _i12.Future<void>.value(),
@@ -539,7 +601,7 @@ class MockLocationManager extends _i1.Mock implements _i3.LocationManager {
           as _i12.Future<void>);
 
   @override
-  void selectCity(_i20.City? city) => super.noSuchMethod(
+  void selectCity(_i21.City? city) => super.noSuchMethod(
     Invocation.method(#selectCity, [city]),
     returnValueForMissingStub: null,
   );
@@ -615,7 +677,7 @@ class MockLocationManager extends _i1.Mock implements _i3.LocationManager {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockPopularTabController extends _i1.Mock
-    implements _i23.PopularTabController {
+    implements _i24.PopularTabController {
   @override
   _i8.PopularTabState get state =>
       (super.noSuchMethod(
@@ -705,7 +767,7 @@ class MockPopularTabController extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockFollowingTabController extends _i1.Mock
-    implements _i24.FollowingTabController {
+    implements _i25.FollowingTabController {
   @override
   _i9.FollowingTabState get state =>
       (super.noSuchMethod(
@@ -785,15 +847,15 @@ class MockFollowingTabController extends _i1.Mock
 /// A class which mocks [ProfileController].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockProfileController extends _i1.Mock implements _i25.ProfileController {
+class MockProfileController extends _i1.Mock implements _i26.ProfileController {
   @override
-  _i25.ProfileState get state =>
+  _i26.ProfileState get state =>
       (super.noSuchMethod(
             Invocation.getter(#state),
-            returnValue: _i25.ProfileState.initial,
-            returnValueForMissingStub: _i25.ProfileState.initial,
+            returnValue: _i26.ProfileState.initial,
+            returnValueForMissingStub: _i26.ProfileState.initial,
           )
-          as _i25.ProfileState);
+          as _i26.ProfileState);
 
   @override
   bool get hasListeners =>
@@ -805,6 +867,14 @@ class MockProfileController extends _i1.Mock implements _i25.ProfileController {
           as bool);
 
   @override
+  String? getErrorMessage(_i4.BuildContext? context) =>
+      (super.noSuchMethod(
+            Invocation.method(#getErrorMessage, [context]),
+            returnValueForMissingStub: null,
+          )
+          as String?);
+
+  @override
   _i12.Future<void> loadProfile() =>
       (super.noSuchMethod(
             Invocation.method(#loadProfile, []),
@@ -814,7 +884,7 @@ class MockProfileController extends _i1.Mock implements _i25.ProfileController {
           as _i12.Future<void>);
 
   @override
-  _i12.Future<bool> updateSetting(_i26.ProfileSettings? newSettings) =>
+  _i12.Future<bool> updateSetting(_i27.ProfileSettings? newSettings) =>
       (super.noSuchMethod(
             Invocation.method(#updateSetting, [newSettings]),
             returnValue: _i12.Future<bool>.value(false),
@@ -868,18 +938,18 @@ class MockProfileController extends _i1.Mock implements _i25.ProfileController {
 /// A class which mocks [AuthRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAuthRepository extends _i1.Mock implements _i27.AuthRepository {
+class MockAuthRepository extends _i1.Mock implements _i28.AuthRepository {
   @override
-  _i12.Stream<_i28.User?> get authStateChanges =>
+  _i12.Stream<_i29.User?> get authStateChanges =>
       (super.noSuchMethod(
             Invocation.getter(#authStateChanges),
-            returnValue: _i12.Stream<_i28.User?>.empty(),
-            returnValueForMissingStub: _i12.Stream<_i28.User?>.empty(),
+            returnValue: _i12.Stream<_i29.User?>.empty(),
+            returnValueForMissingStub: _i12.Stream<_i29.User?>.empty(),
           )
-          as _i12.Stream<_i28.User?>);
+          as _i12.Stream<_i29.User?>);
 
   @override
-  _i12.Future<_i16.Result<_i11.Failure, _i28.User>> signInWithEmail({
+  _i12.Future<_i16.Result<_i11.Failure, _i29.User>> signInWithEmail({
     required String? email,
     required String? password,
   }) =>
@@ -889,8 +959,8 @@ class MockAuthRepository extends _i1.Mock implements _i27.AuthRepository {
               #password: password,
             }),
             returnValue:
-                _i12.Future<_i16.Result<_i11.Failure, _i28.User>>.value(
-                  _i18.dummyValue<_i16.Result<_i11.Failure, _i28.User>>(
+                _i12.Future<_i16.Result<_i11.Failure, _i29.User>>.value(
+                  _i18.dummyValue<_i16.Result<_i11.Failure, _i29.User>>(
                     this,
                     Invocation.method(#signInWithEmail, [], {
                       #email: email,
@@ -899,8 +969,8 @@ class MockAuthRepository extends _i1.Mock implements _i27.AuthRepository {
                   ),
                 ),
             returnValueForMissingStub:
-                _i12.Future<_i16.Result<_i11.Failure, _i28.User>>.value(
-                  _i18.dummyValue<_i16.Result<_i11.Failure, _i28.User>>(
+                _i12.Future<_i16.Result<_i11.Failure, _i29.User>>.value(
+                  _i18.dummyValue<_i16.Result<_i11.Failure, _i29.User>>(
                     this,
                     Invocation.method(#signInWithEmail, [], {
                       #email: email,
@@ -909,7 +979,7 @@ class MockAuthRepository extends _i1.Mock implements _i27.AuthRepository {
                   ),
                 ),
           )
-          as _i12.Future<_i16.Result<_i11.Failure, _i28.User>>);
+          as _i12.Future<_i16.Result<_i11.Failure, _i29.User>>);
 
   @override
   _i12.Future<_i16.Result<_i11.Failure, void>> signUpWithEmail({
@@ -944,7 +1014,7 @@ class MockAuthRepository extends _i1.Mock implements _i27.AuthRepository {
           as _i12.Future<_i16.Result<_i11.Failure, void>>);
 
   @override
-  _i12.Future<_i16.Result<_i11.Failure, _i28.User>> verifyOTP({
+  _i12.Future<_i16.Result<_i11.Failure, _i29.User>> verifyOTP({
     required String? email,
     required String? token,
     bool? isPasswordReset = false,
@@ -956,8 +1026,8 @@ class MockAuthRepository extends _i1.Mock implements _i27.AuthRepository {
               #isPasswordReset: isPasswordReset,
             }),
             returnValue:
-                _i12.Future<_i16.Result<_i11.Failure, _i28.User>>.value(
-                  _i18.dummyValue<_i16.Result<_i11.Failure, _i28.User>>(
+                _i12.Future<_i16.Result<_i11.Failure, _i29.User>>.value(
+                  _i18.dummyValue<_i16.Result<_i11.Failure, _i29.User>>(
                     this,
                     Invocation.method(#verifyOTP, [], {
                       #email: email,
@@ -967,8 +1037,8 @@ class MockAuthRepository extends _i1.Mock implements _i27.AuthRepository {
                   ),
                 ),
             returnValueForMissingStub:
-                _i12.Future<_i16.Result<_i11.Failure, _i28.User>>.value(
-                  _i18.dummyValue<_i16.Result<_i11.Failure, _i28.User>>(
+                _i12.Future<_i16.Result<_i11.Failure, _i29.User>>.value(
+                  _i18.dummyValue<_i16.Result<_i11.Failure, _i29.User>>(
                     this,
                     Invocation.method(#verifyOTP, [], {
                       #email: email,
@@ -978,7 +1048,7 @@ class MockAuthRepository extends _i1.Mock implements _i27.AuthRepository {
                   ),
                 ),
           )
-          as _i12.Future<_i16.Result<_i11.Failure, _i28.User>>);
+          as _i12.Future<_i16.Result<_i11.Failure, _i29.User>>);
 
   @override
   _i12.Future<_i16.Result<_i11.Failure, void>> resendOTP({
@@ -1003,46 +1073,46 @@ class MockAuthRepository extends _i1.Mock implements _i27.AuthRepository {
           as _i12.Future<_i16.Result<_i11.Failure, void>>);
 
   @override
-  _i12.Future<_i16.Result<_i11.Failure, _i28.User>> signInWithGoogle() =>
+  _i12.Future<_i16.Result<_i11.Failure, _i29.User>> signInWithGoogle() =>
       (super.noSuchMethod(
             Invocation.method(#signInWithGoogle, []),
             returnValue:
-                _i12.Future<_i16.Result<_i11.Failure, _i28.User>>.value(
-                  _i18.dummyValue<_i16.Result<_i11.Failure, _i28.User>>(
+                _i12.Future<_i16.Result<_i11.Failure, _i29.User>>.value(
+                  _i18.dummyValue<_i16.Result<_i11.Failure, _i29.User>>(
                     this,
                     Invocation.method(#signInWithGoogle, []),
                   ),
                 ),
             returnValueForMissingStub:
-                _i12.Future<_i16.Result<_i11.Failure, _i28.User>>.value(
-                  _i18.dummyValue<_i16.Result<_i11.Failure, _i28.User>>(
+                _i12.Future<_i16.Result<_i11.Failure, _i29.User>>.value(
+                  _i18.dummyValue<_i16.Result<_i11.Failure, _i29.User>>(
                     this,
                     Invocation.method(#signInWithGoogle, []),
                   ),
                 ),
           )
-          as _i12.Future<_i16.Result<_i11.Failure, _i28.User>>);
+          as _i12.Future<_i16.Result<_i11.Failure, _i29.User>>);
 
   @override
-  _i12.Future<_i16.Result<_i11.Failure, _i28.User>> signInWithApple() =>
+  _i12.Future<_i16.Result<_i11.Failure, _i29.User>> signInWithApple() =>
       (super.noSuchMethod(
             Invocation.method(#signInWithApple, []),
             returnValue:
-                _i12.Future<_i16.Result<_i11.Failure, _i28.User>>.value(
-                  _i18.dummyValue<_i16.Result<_i11.Failure, _i28.User>>(
+                _i12.Future<_i16.Result<_i11.Failure, _i29.User>>.value(
+                  _i18.dummyValue<_i16.Result<_i11.Failure, _i29.User>>(
                     this,
                     Invocation.method(#signInWithApple, []),
                   ),
                 ),
             returnValueForMissingStub:
-                _i12.Future<_i16.Result<_i11.Failure, _i28.User>>.value(
-                  _i18.dummyValue<_i16.Result<_i11.Failure, _i28.User>>(
+                _i12.Future<_i16.Result<_i11.Failure, _i29.User>>.value(
+                  _i18.dummyValue<_i16.Result<_i11.Failure, _i29.User>>(
                     this,
                     Invocation.method(#signInWithApple, []),
                   ),
                 ),
           )
-          as _i12.Future<_i16.Result<_i11.Failure, _i28.User>>);
+          as _i12.Future<_i16.Result<_i11.Failure, _i29.User>>);
 
   @override
   _i12.Future<_i16.Result<_i11.Failure, void>> signOut() =>
@@ -1065,28 +1135,28 @@ class MockAuthRepository extends _i1.Mock implements _i27.AuthRepository {
           as _i12.Future<_i16.Result<_i11.Failure, void>>);
 
   @override
-  _i12.Future<_i16.Result<_i11.Failure, _i28.User?>> getCurrentUser() =>
+  _i12.Future<_i16.Result<_i11.Failure, _i29.User?>> getCurrentUser() =>
       (super.noSuchMethod(
             Invocation.method(#getCurrentUser, []),
             returnValue:
-                _i12.Future<_i16.Result<_i11.Failure, _i28.User?>>.value(
-                  _i18.dummyValue<_i16.Result<_i11.Failure, _i28.User?>>(
+                _i12.Future<_i16.Result<_i11.Failure, _i29.User?>>.value(
+                  _i18.dummyValue<_i16.Result<_i11.Failure, _i29.User?>>(
                     this,
                     Invocation.method(#getCurrentUser, []),
                   ),
                 ),
             returnValueForMissingStub:
-                _i12.Future<_i16.Result<_i11.Failure, _i28.User?>>.value(
-                  _i18.dummyValue<_i16.Result<_i11.Failure, _i28.User?>>(
+                _i12.Future<_i16.Result<_i11.Failure, _i29.User?>>.value(
+                  _i18.dummyValue<_i16.Result<_i11.Failure, _i29.User?>>(
                     this,
                     Invocation.method(#getCurrentUser, []),
                   ),
                 ),
           )
-          as _i12.Future<_i16.Result<_i11.Failure, _i28.User?>>);
+          as _i12.Future<_i16.Result<_i11.Failure, _i29.User?>>);
 
   @override
-  _i12.Future<_i16.Result<_i11.Failure, _i28.User>> updateProfile({
+  _i12.Future<_i16.Result<_i11.Failure, _i29.User>> updateProfile({
     String? username,
     String? displayName,
     String? avatarUrl,
@@ -1100,8 +1170,8 @@ class MockAuthRepository extends _i1.Mock implements _i27.AuthRepository {
               #bio: bio,
             }),
             returnValue:
-                _i12.Future<_i16.Result<_i11.Failure, _i28.User>>.value(
-                  _i18.dummyValue<_i16.Result<_i11.Failure, _i28.User>>(
+                _i12.Future<_i16.Result<_i11.Failure, _i29.User>>.value(
+                  _i18.dummyValue<_i16.Result<_i11.Failure, _i29.User>>(
                     this,
                     Invocation.method(#updateProfile, [], {
                       #username: username,
@@ -1112,8 +1182,8 @@ class MockAuthRepository extends _i1.Mock implements _i27.AuthRepository {
                   ),
                 ),
             returnValueForMissingStub:
-                _i12.Future<_i16.Result<_i11.Failure, _i28.User>>.value(
-                  _i18.dummyValue<_i16.Result<_i11.Failure, _i28.User>>(
+                _i12.Future<_i16.Result<_i11.Failure, _i29.User>>.value(
+                  _i18.dummyValue<_i16.Result<_i11.Failure, _i29.User>>(
                     this,
                     Invocation.method(#updateProfile, [], {
                       #username: username,
@@ -1124,7 +1194,7 @@ class MockAuthRepository extends _i1.Mock implements _i27.AuthRepository {
                   ),
                 ),
           )
-          as _i12.Future<_i16.Result<_i11.Failure, _i28.User>>);
+          as _i12.Future<_i16.Result<_i11.Failure, _i29.User>>);
 
   @override
   _i12.Future<_i16.Result<_i11.Failure, bool>> isUsernameAvailable(
@@ -1237,4 +1307,116 @@ class MockAuthRepository extends _i1.Mock implements _i27.AuthRepository {
                 ),
           )
           as _i12.Future<_i16.Result<_i11.Failure, bool>>);
+}
+
+/// A class which mocks [SearchHistoryService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSearchHistoryService extends _i1.Mock
+    implements _i30.SearchHistoryService {
+  @override
+  _i12.Future<void> addSearch(String? query) =>
+      (super.noSuchMethod(
+            Invocation.method(#addSearch, [query]),
+            returnValue: _i12.Future<void>.value(),
+            returnValueForMissingStub: _i12.Future<void>.value(),
+          )
+          as _i12.Future<void>);
+
+  @override
+  _i12.Future<List<String>> getHistory() =>
+      (super.noSuchMethod(
+            Invocation.method(#getHistory, []),
+            returnValue: _i12.Future<List<String>>.value(<String>[]),
+            returnValueForMissingStub: _i12.Future<List<String>>.value(
+              <String>[],
+            ),
+          )
+          as _i12.Future<List<String>>);
+
+  @override
+  _i12.Future<void> removeSearch(String? query) =>
+      (super.noSuchMethod(
+            Invocation.method(#removeSearch, [query]),
+            returnValue: _i12.Future<void>.value(),
+            returnValueForMissingStub: _i12.Future<void>.value(),
+          )
+          as _i12.Future<void>);
+
+  @override
+  _i12.Future<void> clearHistory() =>
+      (super.noSuchMethod(
+            Invocation.method(#clearHistory, []),
+            returnValue: _i12.Future<void>.value(),
+            returnValueForMissingStub: _i12.Future<void>.value(),
+          )
+          as _i12.Future<void>);
+}
+
+/// A class which mocks [LocationService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockLocationService extends _i1.Mock implements _i31.LocationService {
+  @override
+  _i12.Future<_i32.Position?> getCurrentPosition() =>
+      (super.noSuchMethod(
+            Invocation.method(#getCurrentPosition, []),
+            returnValue: _i12.Future<_i32.Position?>.value(),
+            returnValueForMissingStub: _i12.Future<_i32.Position?>.value(),
+          )
+          as _i12.Future<_i32.Position?>);
+
+  @override
+  _i12.Future<_i31.DetectedLocation?> getCityFromCoordinates(
+    double? latitude,
+    double? longitude,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#getCityFromCoordinates, [latitude, longitude]),
+            returnValue: _i12.Future<_i31.DetectedLocation?>.value(),
+            returnValueForMissingStub:
+                _i12.Future<_i31.DetectedLocation?>.value(),
+          )
+          as _i12.Future<_i31.DetectedLocation?>);
+
+  @override
+  _i12.Future<void> saveDefaultLocation({
+    required String? countryId,
+    required String? regionId,
+    required String? cityId,
+    required String? countryName,
+    required String? regionName,
+    required String? cityName,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveDefaultLocation, [], {
+              #countryId: countryId,
+              #regionId: regionId,
+              #cityId: cityId,
+              #countryName: countryName,
+              #regionName: regionName,
+              #cityName: cityName,
+            }),
+            returnValue: _i12.Future<void>.value(),
+            returnValueForMissingStub: _i12.Future<void>.value(),
+          )
+          as _i12.Future<void>);
+
+  @override
+  _i12.Future<_i31.SavedLocation?> getDefaultLocation() =>
+      (super.noSuchMethod(
+            Invocation.method(#getDefaultLocation, []),
+            returnValue: _i12.Future<_i31.SavedLocation?>.value(),
+            returnValueForMissingStub: _i12.Future<_i31.SavedLocation?>.value(),
+          )
+          as _i12.Future<_i31.SavedLocation?>);
+
+  @override
+  _i12.Future<void> clearDefaultLocation() =>
+      (super.noSuchMethod(
+            Invocation.method(#clearDefaultLocation, []),
+            returnValue: _i12.Future<void>.value(),
+            returnValueForMissingStub: _i12.Future<void>.value(),
+          )
+          as _i12.Future<void>);
 }

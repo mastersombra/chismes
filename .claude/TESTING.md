@@ -11,10 +11,12 @@
 1. [⚠️ Regla Crítica](#️-regla-crítica)
 2. [Estructura](#estructura)
 3. [Pattern AAA](#pattern-aaa)
-4. [Mocks (Mockito)](#mocks-mockito)
-5. [Coverage](#coverage)
-6. [Anti-Patterns](#anti-patterns)
-7. [Comandos](#comandos)
+4. [Setup de DI para Tests](#setup-de-di-para-tests)
+5. [Mocks (Mockito)](#mocks-mockito)
+6. [Tests de Seguridad](#tests-de-seguridad-validators)
+7. [Coverage](#coverage)
+8. [Anti-Patterns](#anti-patterns)
+9. [Comandos](#comandos)
 
 ---
 
@@ -179,6 +181,238 @@ test('debe retornar gossips del remoto y guardar en cache', () async {
 
 ---
 
+## Setup de DI para Tests
+
+### ⚠️ Problema: Dependencias Globales
+
+Muchos widgets dependen de servicios registrados en GetIt (ej: `LocaleNotifier` para el selector de idioma). Los tests fallan si estas dependencias no están registradas.
+
+**Error típico:**
+```
+Bad state: GetIt: Object/factory with type LocaleNotifier is not registered inside GetIt.
+```
+
+### ✅ Solución: test_di_helper.dart
+
+Creamos un helper centralizado que registra todas las dependencias globales necesarias para tests.
+
+**Ubicación:** `test/helpers/test_di_helper.dart`
+
+### Uso en Tests
+
+#### Opción 1: Setup Manual (Recomendado para tests complejos)
+
+```dart
+import 'package:flutter_test/flutter_test.dart';
+import '../../../helpers/test_di_helper.dart';
+
+void main() {
+  setUp(() async {
+    // Inicializa LocaleNotifier, SharedPreferences, etc.
+    await setupTestDI();
+  });
+
+  tearDown(() async {
+    // Limpia DI después de cada test
+    await tearDownTestDI();
+  });
+
+  testWidgets('mi test', (tester) async {
+    // Tu test aquí
+  });
+}
+```
+
+#### Opción 2: pumpWidgetWithDI (Recomendado para tests simples)
+
+```dart
+import 'package:flutter_test/flutter_test.dart';
+import '../../../helpers/widget_test_wrapper.dart';
+
+void main() {
+  tearDown(() async {
+    await tearDownTestDI(); // IMPORTANTE: limpiar después
+  });
+
+  testWidgets('mi test', (tester) async {
+    // pumpWidgetWithDI inicializa DI automáticamente
+    await pumpWidgetWithDI(tester, MyWidget());
+
+    // Tu test aquí
+    expect(find.byType(MyWidget), findsOneWidget);
+  });
+}
+```
+
+### Dependencias Registradas
+
+El helper `setupTestDI()` registra automáticamente:
+
+| Dependencia | Tipo | Uso |
+|-------------|------|-----|
+| `LocaleNotifier` | Singleton | Selector de idioma (LanguageSelector) |
+| `SharedPreferences` | Singleton | Persistencia local |
+
+### Agregar Nuevas Dependencias Globales
+
+Cuando agregues una nueva dependencia global que los widgets necesiten:
+
+1. **Agregar en producción** (`lib/core/di/injection_container.dart`):
+```dart
+@singleton
+class MyNewService { }
+```
+
+2. **Agregar en tests** (`test/helpers/test_di_helper.dart`):
+```dart
+Future<void> setupTestDI() async {
+  // ... código existente
+  
+  // Registrar nueva dependencia
+  if (!getIt.isRegistered<MyNewService>()) {
+    final mockService = MockMyNewService();
+    getIt.registerSingleton<MyNewService>(mockService);
+  }
+}
+
+Future<void> tearDownTestDI() async {
+  // ... código existente
+  
+  // Limpiar nueva dependencia
+  if (getIt.isRegistered<MyNewService>()) {
+    await getIt.unregister<MyNewService>();
+  }
+}
+```
+
+### Funciones Disponibles
+
+| Función | Descripción |
+|---------|-------------|
+| `setupTestDI()` | Inicializa DI con dependencias globales |
+| `tearDownTestDI()` | Limpia todas las dependencias registradas |
+| `setupSharedPreferencesMock([values])` | Configura SharedPreferences con valores iniciales |
+| `isTestDIReady()` | Verifica si el DI está correctamente inicializado |
+| `getTestLocaleNotifier()` | Obtiene el LocaleNotifier para manipulación en tests |
+
+### Ejemplo Completo
+
+```dart
+import 'package:chismes/features/auth/presentation/screens/signup_screen.dart';
+import 'package:chismes/core/di/injection_container.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+
+import '../../../helpers/test_di_helper.dart';
+import '../../../helpers/widget_test_wrapper.dart';
+
+void main() {
+  late MockSignupController mockController;
+
+  setUp(() async {
+    // 1. Inicializar DI global (LocaleNotifier, etc.)
+    await setupTestDI();
+
+    // 2. Registrar mocks específicos del test
+    mockController = MockSignupController();
+    when(mockController.state).thenReturn(const AuthInitial());
+    
+    if (getIt.isRegistered<SignupController>()) {
+      getIt.unregister<SignupController>();
+    }
+    getIt.registerSingleton<SignupController>(mockController);
+  });
+
+  tearDown(() async {
+    // Limpiar mocks específicos
+    if (getIt.isRegistered<SignupController>()) {
+      getIt.unregister<SignupController>();
+    }
+
+    // Limpiar DI global
+    await tearDownTestDI();
+  });
+
+  testWidgets('debe renderizar correctamente', (tester) async {
+    await tester.pumpWidget(
+      testableWidget(child: const SignupScreen()),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SignupScreen), findsOneWidget);
+  });
+}
+```
+
+### Debugging
+
+Si un test falla con error de GetIt:
+
+1. **Verificar que `setupTestDI()` se llama en `setUp()`**
+   ```dart
+   setUp(() async {
+     await setupTestDI(); // ← Esto debe estar aquí
+   });
+   ```
+
+2. **Verificar que `tearDownTestDI()` se llama en `tearDown()`**
+   ```dart
+   tearDown(() async {
+     await tearDownTestDI(); // ← Esto debe estar aquí
+   });
+   ```
+
+3. **Verificar qué dependencias están registradas**
+   ```dart
+   print('DI ready: ${isTestDIReady()}');
+   print('LocaleNotifier registered: ${getIt.isRegistered<LocaleNotifier>()}');
+   ```
+
+4. **Revisar `test_di_helper.dart`**
+   - ¿La dependencia faltante está registrada ahí?
+   - ¿Necesitas agregarla?
+
+### Migración de Tests Antiguos
+
+Si tienes tests que fallan con error de GetIt:
+
+**Antes:**
+```dart
+void main() {
+  setUp(() {
+    // Solo mocks específicos
+  });
+
+  testWidgets('test', (tester) async {
+    await tester.pumpWidget(MyWidget());
+    // ❌ Falla: LocaleNotifier no está registrado
+  });
+}
+```
+
+**Después:**
+```dart
+import '../../../helpers/test_di_helper.dart';
+
+void main() {
+  setUp(() async {
+    await setupTestDI(); // ← Agregar esto
+    // Resto de mocks específicos
+  });
+
+  tearDown(() async {
+    await tearDownTestDI(); // ← Agregar esto
+  });
+
+  testWidgets('test', (tester) async {
+    await tester.pumpWidget(MyWidget());
+    // ✅ Funciona: LocaleNotifier está registrado
+  });
+}
+```
+
+---
+
 ## Mocks (Mockito)
 
 ### Setup
@@ -314,84 +548,51 @@ verify(mock.method(any)).called(1);
 
 ---
 
+## Tests de Seguridad (validators)
+
+Los mensajes de error que ve el usuario no deben filtrar información
+(OWASP: information disclosure). Helper: `test/helpers/security_test_helpers.dart`.
+
+```dart
+// Verifica: sin términos técnicos/rutas/versiones, sin emails ni IPs,
+// largo < 300 y al menos un término "amigable".
+SecurityTestHelpers.verifyMessageSecurity(error, context: 'validateContent');
+```
+
+- **Ejemplo con mensajes traducidos:** `test/features/gossip/domain/validators/gossip_validator_security_test.dart`
+  (`testWidgets` + `initializeEasyLocalizationForTest`, que pese al nombre usa gen-l10n).
+- **Ejemplo sobre `technicalMessage`:** `test/features/auth/domain/validators/auth_validator_security_test.dart`
+  (`test()`: el mensaje no contiene la contraseña ni el valor ingresado).
+- **Validator nuevo** → agregar `<nombre>_validator_security_test.dart`: el input sensible
+  (password, teléfono, contenido largo) no aparece en el error y el error pasa `verifyMessageSecurity`.
+
+---
+
 ## Coverage
 
-### Estado Actual
+**Meta:** >85% **sin `lib/l10n/`** (código generado). **CI falla si baja de 88%**
+(paso "Enforce coverage threshold" en `.github/workflows/flutter.yml`).
+**Estado (2026-11-18):** 97.44% sin l10n · 4,079 tests.
 
-**Coverage Global:** ✅ **78.9%** (1,865 / 2,363 líneas)  
-**Tests:** 1,846 pasando / 51 fallando = **1,897 tests totales**  
-**Archivos de test:** 59 archivos  
-**Última actualización:** 2026-10-20 07:00  
-**Reporte HTML:** `coverage/html/index.html` ⭐
+Plan, tracking por sesión, archivos intesteables y recetas (Supabase sobre HTTP falso,
+canales de plataforma, `testWidgets` con timers): **`docs/TEST_PLAN_85.md`**.
 
-### Coverage por Feature
+```bash
+flutter test --coverage
+awk '/^SF:/{skip=($0 ~ /lib\/l10n\//)} /^LF:/&&!skip{lf+=substr($0,4)} /^LH:/&&!skip{lh+=substr($0,4)} END{printf "Coverage sin l10n: %.2f%%\n", lh*100/lf}' coverage/lcov.info
+```
 
-| Feature | Coverage | Estado |
-|---------|----------|--------|
-| Core | ~88% | ✅ Excelente |
-| Gossip | ~80% | ✅ Bueno |
-| Location | ~75% | ✅ Bueno |
-| Home | ~60% | ⚠️ Mejorar |
-| Search | ~55% | ⚠️ Mejorar |
+### Plugins nativos: simular, no "documentar"
 
-### Archivos con 100% Coverage
+Un test que no ejecuta código de `lib/` no cuenta (ver §2 de `docs/TEST_PLAN_85.md`).
+Para código con plugins, reemplazar la plataforma:
 
-- ✅ `core/error/failure.dart` (49 tests)
-- ✅ `core/error/error_messages.dart` (70 tests)
-- ✅ `core/logging/log_entry.dart` (60 tests)
-- ✅ `core/result/result.dart`
-- ✅ `core/validation/form_validators.dart`
-
-### Archivos con Coverage Especial
-
-**device_info_provider.dart (20.8%)**
-- **Razón:** Plugins nativos no funcionan en unit tests
-- **Cubierto:** Error handling (100%), cache, clearCache
-- **No cubierto:** Success path (requiere integration tests)
-- **Estado:** Aceptable - error handling crítico está cubierto
-
-**remote_logger.dart (~85%)**
-- **Cubierto:** MockRemoteLogger (100%), SupabaseRemoteLogger básico
-- **Validado:** Persistencia selectiva, fire-and-forget, error handling
-- **Nota:** Tests simplificados por limitaciones de Mockito
-
-**app_logger.dart (~95%)** ⭐
-- **Cubierto:** Todos los métodos públicos
-- **Validado:** Persistencia selectiva, enriquecimiento, logs concurrentes
-- **Casos:** Operaciones exitosas, errores, crashes, warnings
-
-**supabase_storage_service.dart (documented)** ⭐
-- **Cubierto:** UploadResult (100%), deleteImage() con mocks
-- **Documentado:** uploadImageAfterGossipCreated() - lógica completa (59 tests)
-- **Validado:** Flujo, validaciones, paths, error handling
-- **Nota:** Tests de lógica (no funcionales) por plugins nativos
-
-**image_compressor.dart (documented)**
-- **Cubierto:** getFileSizeInKB() con archivos reales (6 tests funcionales)
-- **Documentado:** compressGossipImage(), generateThumbnail()
-- **Nota:** Tests de documentación por plugins nativos
-
-**deep_link_service.dart (documented)** ⭐
-- **Cubierto:** Métodos static generadores (100%)
-- **Documentado:** URI parsing, validación, tipos
-- **Validado:** 3 tipos de links, query params, errores
-- **Tests:** 31 generators, 30 parsing, 5 scenarios, 20 validation
-
-**app_radius.dart (0% técnico)** ⭐
-- **Razón 0%:** Solo constantes static (no ejecutables para lcov)
-- **Validado:** 7 valores, escala incremental, múltiplos
-- **Nota:** 0% coverage es NORMAL para constantes
-
-**shared_prefs_gossip_local_data_source.dart (TBD)** ⭐
-- **Cubierto:** getAll, save, saveAll, clear, getCacheInfo
-- **Documentado:** Edge Cases y Performance (20 tests)
-- **Validado:** Cache persistente, max 100, versión, idempotencia
-
-### Objetivo
-
-**Mantener >75% en nuevas features**
-
-Coverage de 78.9% es EXCELENTE para un MVP. Proyectos comerciales típicos: 50-70%.
+| Plugin | Cómo |
+|---|---|
+| Supabase (tablas, RPC, auth) | `test/helpers/fake_supabase_http.dart` |
+| flutter_image_compress | `test/helpers/fake_image_compress.dart` |
+| geolocator, device_info, app_links | `setMockMethodCallHandler` / `setMockStreamHandler` sobre su canal |
+| geocoding | subclase de `GeocodingPlatform` asignada a `GeocodingPlatform.instance` |
 
 ---
 

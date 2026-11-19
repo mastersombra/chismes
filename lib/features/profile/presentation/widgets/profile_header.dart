@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/localization/app_localizations.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../auth/domain/entities/user.dart';
 
@@ -38,7 +38,7 @@ class ProfileHeader extends StatelessWidget {
 
         // Nombre
         Text(
-          user.displayName ?? user.username ?? AppLocalizations.profileHeaderNoName,
+          user.displayName ?? user.username ?? context.l10n.profileHeaderNoName,
           style: Theme.of(context).textTheme.headlineMedium,
           textAlign: TextAlign.center,
         ),
@@ -105,7 +105,7 @@ class ProfileHeader extends StatelessWidget {
                 ),
                 const SizedBox(width: AppSpacing.xs),
                 Text(
-                  AppLocalizations.profileHeaderEmailVerified,
+                  context.l10n.profileHeaderEmailVerified,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.green,
                         fontWeight: FontWeight.w600,
@@ -133,7 +133,7 @@ class ProfileHeader extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              AppLocalizations.profileHeaderCompleteness,
+              context.l10n.profileHeaderCompleteness,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Colors.grey,
                   ),
@@ -162,7 +162,7 @@ class ProfileHeader extends StatelessWidget {
   }
 
   String _getInitials(String name) {
-    final words = name.trim().split(' ');
+    final words = name.trim().split(' ').where((w) => w.isNotEmpty).toList();
     if (words.isEmpty) return '';
     if (words.length == 1) return words[0][0].toUpperCase();
     return '${words[0][0]}${words[1][0]}'.toUpperCase();

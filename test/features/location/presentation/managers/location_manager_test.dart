@@ -13,6 +13,7 @@ import 'package:chismes/features/location/domain/usecases/get_countries.dart';
 import 'package:chismes/features/location/domain/usecases/get_regions_by_country.dart';
 import 'package:chismes/features/location/domain/usecases/get_cities_by_region.dart';
 import 'package:chismes/features/location/presentation/managers/location_manager.dart';
+import 'package:chismes/features/location/presentation/managers/location_error_key.dart';
 import 'package:geolocator/geolocator.dart';
 
 import 'location_manager_test.mocks.dart';
@@ -92,8 +93,8 @@ void main() {
       // Assert
       expect(manager.state.countries, isEmpty);
       expect(manager.state.isLoadingCountries, isFalse);
-      expect(manager.state.error, isNotNull);
-      expect(manager.state.error, contains('Error al cargar países'));
+      expect(manager.state.errorKey, isNotNull);
+      expect(manager.state.errorKey, LocationErrorKey.failedToLoadCountries);
     });
 
     test('debe establecer isLoadingCountries durante la carga', () async {
@@ -139,8 +140,8 @@ void main() {
       // Assert
       expect(manager.state.countries, isEmpty);
       expect(manager.state.isLoadingCountries, isFalse);
-      expect(manager.state.error, isNotNull);
-      expect(manager.state.error, contains('Error inesperado'));
+      expect(manager.state.errorKey, isNotNull);
+      expect(manager.state.errorKey, LocationErrorKey.unexpectedError);
     });
   });
 
@@ -199,7 +200,7 @@ void main() {
       // Assert
       expect(manager.state.regions, isEmpty);
       expect(manager.state.isLoadingRegions, isFalse);
-      expect(manager.state.error, isNotNull);
+      expect(manager.state.errorKey, isNotNull);
     });
 
     test('debe manejar excepción inesperada al cargar regiones', () async {
@@ -213,8 +214,8 @@ void main() {
       // Assert
       expect(manager.state.regions, isEmpty);
       expect(manager.state.isLoadingRegions, isFalse);
-      expect(manager.state.error, isNotNull);
-      expect(manager.state.error, contains('Error inesperado'));
+      expect(manager.state.errorKey, isNotNull);
+      expect(manager.state.errorKey, LocationErrorKey.unexpectedError);
     });
   });
 
@@ -271,7 +272,7 @@ void main() {
       // Assert
       expect(manager.state.cities, isEmpty);
       expect(manager.state.isLoadingCities, isFalse);
-      expect(manager.state.error, isNotNull);
+      expect(manager.state.errorKey, isNotNull);
     });
 
     test('debe manejar excepción inesperada al cargar ciudades', () async {
@@ -285,8 +286,8 @@ void main() {
       // Assert
       expect(manager.state.cities, isEmpty);
       expect(manager.state.isLoadingCities, isFalse);
-      expect(manager.state.error, isNotNull);
-      expect(manager.state.error, contains('Error inesperado'));
+      expect(manager.state.errorKey, isNotNull);
+      expect(manager.state.errorKey, LocationErrorKey.unexpectedError);
     });
   });
 
@@ -637,8 +638,8 @@ void main() {
 
       // Assert
       expect(manager.state.isDetectingLocation, isFalse);
-      expect(manager.state.error, isNotNull);
-      expect(manager.state.error, contains('No se pudo detectar ubicación'));
+      expect(manager.state.errorKey, isNotNull);
+      expect(manager.state.errorKey, LocationErrorKey.gpsPositionFailed);
       expect(manager.state.selectedCity, isNull);
     });
 
@@ -667,8 +668,8 @@ void main() {
 
       // Assert
       expect(manager.state.isDetectingLocation, isFalse);
-      expect(manager.state.error, isNotNull);
-      expect(manager.state.error, contains('No se pudo identificar la ubicación'));
+      expect(manager.state.errorKey, isNotNull);
+      expect(manager.state.errorKey, LocationErrorKey.geocodingFailed);
       expect(manager.state.selectedCity, isNull);
     });
 
@@ -706,9 +707,9 @@ void main() {
 
       // Assert
       expect(manager.state.isDetectingLocation, isFalse);
-      expect(manager.state.error, isNotNull);
-      expect(manager.state.error, contains('México'));
-      expect(manager.state.error, contains('no disponible'));
+      expect(manager.state.errorKey, isNotNull);
+      expect(manager.state.errorKey, LocationErrorKey.countryNotAvailable);
+      expect(manager.state.errorEntityName, 'México');
       expect(manager.state.selectedCity, isNull);
     });
 
@@ -749,9 +750,9 @@ void main() {
 
       // Assert
       expect(manager.state.isDetectingLocation, isFalse);
-      expect(manager.state.error, isNotNull);
-      expect(manager.state.error, contains('Cundinamarca'));
-      expect(manager.state.error, contains('no disponible'));
+      expect(manager.state.errorKey, isNotNull);
+      expect(manager.state.errorKey, LocationErrorKey.regionNotAvailable);
+      expect(manager.state.errorEntityName, 'Cundinamarca');
       expect(manager.state.selectedCity, isNull);
     });
 
@@ -795,9 +796,9 @@ void main() {
 
       // Assert
       expect(manager.state.isDetectingLocation, isFalse);
-      expect(manager.state.error, isNotNull);
-      expect(manager.state.error, contains('Envigado'));
-      expect(manager.state.error, contains('no disponible'));
+      expect(manager.state.errorKey, isNotNull);
+      expect(manager.state.errorKey, LocationErrorKey.cityNotAvailable);
+      expect(manager.state.errorEntityName, 'Envigado');
       expect(manager.state.selectedCity, isNull);
     });
 
@@ -811,8 +812,8 @@ void main() {
 
       // Assert
       expect(manager.state.isDetectingLocation, isFalse);
-      expect(manager.state.error, isNotNull);
-      expect(manager.state.error, contains('Error al detectar ubicación'));
+      expect(manager.state.errorKey, isNotNull);
+      expect(manager.state.errorKey, LocationErrorKey.detectionFailed);
     });
 
     test('debe cargar países si no están cargados', () async {

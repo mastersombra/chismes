@@ -28,6 +28,7 @@ void main() {
 
     when(mockClient.auth).thenReturn(mockAuth);
     when(mockAuth.currentSession).thenReturn(mockSession);
+    when(mockSession.accessToken).thenReturn('test-access-token');
     when(mockClient.functions).thenReturn(functions);
 
     return mockClient;
@@ -237,7 +238,11 @@ void main() {
       final mockResponse = MockFunctionResponse();
       final mockClient = setupMockSupabaseClient(functions: mockFunctions);
 
-      when(mockFunctions.invoke(any, body: anyNamed('body')))
+      when(mockFunctions.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => mockResponse);
       when(mockResponse.status).thenReturn(200);
 
@@ -250,7 +255,11 @@ void main() {
 
       // Assert
       verify(mockClient.functions).called(1);
-      verify(mockFunctions.invoke('log-error', body: anyNamed('body'))).called(1);
+      verify(mockFunctions.invoke(
+        'log-error',
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      )).called(1);
     });
 
     test('debe invocar Edge Function para logs fatal', () async {
@@ -259,7 +268,11 @@ void main() {
       final mockResponse = MockFunctionResponse();
       final mockClient = setupMockSupabaseClient(functions: mockFunctions);
 
-      when(mockFunctions.invoke(any, body: anyNamed('body')))
+      when(mockFunctions.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => mockResponse);
       when(mockResponse.status).thenReturn(200);
 
@@ -272,7 +285,11 @@ void main() {
 
       // Assert
       verify(mockClient.functions).called(1);
-      verify(mockFunctions.invoke('log-error', body: anyNamed('body'))).called(1);
+      verify(mockFunctions.invoke(
+        'log-error',
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      )).called(1);
     });
 
     test('debe manejar respuesta exitosa (status 200)', () async {
@@ -281,7 +298,11 @@ void main() {
       final mockResponse = MockFunctionResponse();
       final mockClient = setupMockSupabaseClient(functions: mockFunctions);
 
-      when(mockFunctions.invoke(any, body: anyNamed('body')))
+      when(mockFunctions.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => mockResponse);
       when(mockResponse.status).thenReturn(200);
 
@@ -301,7 +322,11 @@ void main() {
       final mockResponse = MockFunctionResponse();
       final mockClient = setupMockSupabaseClient(functions: mockFunctions);
 
-      when(mockFunctions.invoke(any, body: anyNamed('body')))
+      when(mockFunctions.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => mockResponse);
       when(mockResponse.status).thenReturn(429);
 
@@ -321,7 +346,11 @@ void main() {
       final mockResponse = MockFunctionResponse();
       final mockClient = setupMockSupabaseClient(functions: mockFunctions);
 
-      when(mockFunctions.invoke(any, body: anyNamed('body')))
+      when(mockFunctions.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => mockResponse);
       when(mockResponse.status).thenReturn(500);
 
@@ -341,7 +370,11 @@ void main() {
       final mockFunctions = MockFunctionsClient();
 
       when(mockClient.functions).thenReturn(mockFunctions);
-      when(mockFunctions.invoke(any, body: anyNamed('body')))
+      when(mockFunctions.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenThrow(Exception('Network error'));
 
       final logger = SupabaseRemoteLogger(mockClient);
@@ -358,7 +391,11 @@ void main() {
       final mockResponse = MockFunctionResponse();
       final mockClient = setupMockSupabaseClient(functions: mockFunctions);
 
-      when(mockFunctions.invoke(any, body: anyNamed('body')))
+      when(mockFunctions.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      ))
           .thenAnswer((_) async => mockResponse);
       when(mockResponse.status).thenReturn(200);
 
@@ -375,7 +412,11 @@ void main() {
 
       // Assert
       final captured = verify(
-        mockFunctions.invoke('log-error', body: captureAnyNamed('body'))
+        mockFunctions.invoke(
+          'log-error',
+          body: captureAnyNamed('body'),
+          headers: anyNamed('headers'),
+        )
       ).captured;
 
       expect(captured, hasLength(1));

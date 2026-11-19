@@ -14,7 +14,7 @@ enum PopularTabStatus {
   /// Feed cargado exitosamente
   loaded,
 
-  /// Error al cargar feed
+  /// Error cargar feed
   error,
 
   /// Cargando nuevos chismes del banner

@@ -15,23 +15,31 @@ import 'package:chismes/features/auth/presentation/controllers/login_controller.
 import 'package:chismes/features/auth/presentation/state/auth_state.dart';
 import 'package:chismes/core/di/injection_container.dart';
 import 'package:chismes/features/auth/domain/repositories/auth_repository.dart';
+import 'package:chismes/core/services/search_history_service.dart';
+import 'package:chismes/core/services/location_service.dart';
 
 import 'helpers/mock_app_logger_helper.dart';
+import 'helpers/test_di_helper.dart';
 import 'helpers/widget_test_wrapper.dart';
 
-@GenerateMocks([LoginController, AuthRepository])
+@GenerateMocks([LoginController, AuthRepository, SearchHistoryService, LocationService])
 import 'widget_test.mocks.dart';
 
 void main() {
   late MockLoginController mockLoginController;
   late MockAuthRepository mockAuthRepository;
+  late MockSearchHistoryService mockSearchHistoryService;
+  late MockLocationService mockLocationService;
 
   setUpAll(() {
     // Provide dummy values for complex types
     provideDummy<AuthState>(const AuthInitial());
   });
 
-  setUp(() {
+  setUp(() async {
+    // Inicializar DI para tests (LocaleNotifier, SharedPreferences, etc.)
+    await setupTestDI();
+
     // Registrar mocks necesarios
     setupMockAppLogger();
 
@@ -54,9 +62,25 @@ void main() {
       getIt.unregister<LoginController>();
     }
     getIt.registerSingleton<LoginController>(mockLoginController);
+
+    // Configurar mocks de servicios (necesarios para SearchScreen dentro de MainNavigationScreen)
+    mockSearchHistoryService = MockSearchHistoryService();
+    mockLocationService = MockLocationService();
+
+    when(mockSearchHistoryService.getHistory()).thenAnswer((_) async => []);
+    when(mockLocationService.getDefaultLocation()).thenAnswer((_) async => null);
+
+    if (getIt.isRegistered<SearchHistoryService>()) {
+      getIt.unregister<SearchHistoryService>();
+    }
+    if (getIt.isRegistered<LocationService>()) {
+      getIt.unregister<LocationService>();
+    }
+    getIt.registerSingleton<SearchHistoryService>(mockSearchHistoryService);
+    getIt.registerSingleton<LocationService>(mockLocationService);
   });
 
-  tearDown(() {
+  tearDown(() async {
     // Limpiar mocks
     if (getIt.isRegistered<LoginController>()) {
       getIt.unregister<LoginController>();
@@ -64,6 +88,15 @@ void main() {
     if (getIt.isRegistered<AuthRepository>()) {
       getIt.unregister<AuthRepository>();
     }
+    if (getIt.isRegistered<SearchHistoryService>()) {
+      getIt.unregister<SearchHistoryService>();
+    }
+    if (getIt.isRegistered<LocationService>()) {
+      getIt.unregister<LocationService>();
+    }
+
+    // Limpiar DI después del test
+    await tearDownTestDI();
   });
 
   testWidgets('App smoke test', (WidgetTester tester) async {

@@ -1,4 +1,5 @@
-import '../localization/app_localizations.dart';
+import 'package:flutter/material.dart';
+import 'package:chismes/core/l10n/l10n.dart';
 
 /// Helpers de validación para Flutter Form validators
 ///
@@ -8,16 +9,16 @@ import '../localization/app_localizations.dart';
 /// Uso:
 /// ```dart
 /// TextFormField(
-///   validator: FormValidators.required('un país'),
+///   validator: (v) => FormValidators.required(context, v, 'un país'),
 /// )
 /// ```
 class FormValidators {
   /// Validador de campo requerido
   ///
   /// Retorna el mensaje de error si el valor es null o vacío
-  static String? required(String? value, String fieldName) {
+  static String? required(BuildContext context, String? value, String fieldName) {
     if (value == null || value.isEmpty) {
-      return AppLocalizations.select(fieldName);
+      return context.l10n.commonSelect(fieldName);
     }
     return null;
   }
@@ -35,9 +36,9 @@ class FormValidators {
   /// Validador de longitud mínima
   ///
   /// Retorna error si el valor es más corto que minChars
-  static String? minLength(String? value, int minChars) {
+  static String? minLength(BuildContext context, String? value, int minChars) {
     if (value != null && value.length < minChars) {
-      return AppLocalizations.minLength(minChars);
+      return context.l10n.commonMinLength(minChars.toString());
     }
     return null;
   }
@@ -45,9 +46,9 @@ class FormValidators {
   /// Validador de longitud máxima
   ///
   /// Retorna error si el valor excede maxChars
-  static String? maxLength(String? value, int maxChars) {
+  static String? maxLength(BuildContext context, String? value, int maxChars) {
     if (value != null && value.length > maxChars) {
-      return AppLocalizations.maxLength(maxChars);
+      return context.l10n.commonMaxLength(maxChars.toString());
     }
     return null;
   }
@@ -56,9 +57,9 @@ class FormValidators {
   ///
   /// Valida formato de email simple.
   /// Los emails se normalizan a minúsculas para evitar duplicados.
-  static String? email(String? value) {
+  static String? email(BuildContext context, String? value) {
     if (value == null || value.isEmpty) {
-      return AppLocalizations.enterEmail;
+      return context.l10n.commonEnterEmail;
     }
 
     // Normalizar a minúsculas (los emails son case-insensitive)
@@ -66,7 +67,7 @@ class FormValidators {
 
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (!emailRegex.hasMatch(normalizedEmail)) {
-      return AppLocalizations.emailInvalidCommon;
+      return context.l10n.commonEmailInvalid;
     }
     return null;
   }
@@ -81,9 +82,9 @@ class FormValidators {
   /// Validador de contraseña (básico para login)
   ///
   /// Solo valida que no esté vacío
-  static String? password(String? value) {
+  static String? password(BuildContext context, String? value) {
     if (value == null || value.isEmpty) {
-      return AppLocalizations.enterPassword;
+      return context.l10n.commonEnterPassword;
     }
     return null;
   }

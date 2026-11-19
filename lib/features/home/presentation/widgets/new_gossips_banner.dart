@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
 
 /// Banner que aparece cuando hay chismes nuevos.
@@ -49,7 +50,7 @@ class NewGossipsBanner extends StatelessWidget {
                 ),
                 const SizedBox(width: AppSpacing.sm),
                 Text(
-                  '$count nuevos chismes · Tap aquí',
+                  context.l10n.homeNewGossipsBanner(count),
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.onPrimaryContainer,

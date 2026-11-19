@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import '../../domain/entities/city.dart';
 import '../../domain/entities/country.dart';
 import '../../domain/entities/region.dart';
+import '../managers/location_error_key.dart';
 
 /// Estado inmutable para gestión de ubicación en formularios
 ///
@@ -56,8 +57,15 @@ class LocationState extends Equatable {
   /// Indica si se está detectando ubicación por GPS
   final bool isDetectingLocation;
 
-  /// Error al cargar ubicación (si hay)
+  /// Error cargar ubicación (si hay)
+  /// @deprecated Usar errorKey en su lugar
   final String? error;
+
+  /// Clave de error localizada (reemplaza a error)
+  final LocationErrorKey? errorKey;
+
+  /// Nombre de la entidad relacionada con el error (ej: nombre de país/región/ciudad)
+  final String? errorEntityName;
 
   const LocationState({
     required this.countries,
@@ -71,6 +79,8 @@ class LocationState extends Equatable {
     required this.isLoadingCities,
     required this.isDetectingLocation,
     this.error,
+    this.errorKey,
+    this.errorEntityName,
   });
 
   /// Estado inicial (vacío, sin cargas)
@@ -87,6 +97,8 @@ class LocationState extends Equatable {
       isLoadingCities: false,
       isDetectingLocation: false,
       error: null,
+      errorKey: null,
+      errorEntityName: null,
     );
   }
 
@@ -120,6 +132,8 @@ class LocationState extends Equatable {
     bool? isLoadingCities,
     bool? isDetectingLocation,
     String? error,
+    LocationErrorKey? errorKey,
+    String? errorEntityName,
     bool clearError = false,
     bool clearSelectedCountry = false,
     bool clearSelectedRegion = false,
@@ -142,6 +156,8 @@ class LocationState extends Equatable {
       isLoadingCities: isLoadingCities ?? this.isLoadingCities,
       isDetectingLocation: isDetectingLocation ?? this.isDetectingLocation,
       error: clearError ? null : (error ?? this.error),
+      errorKey: clearError ? null : (errorKey ?? this.errorKey),
+      errorEntityName: clearError ? null : (errorEntityName ?? this.errorEntityName),
     );
   }
 
@@ -158,5 +174,7 @@ class LocationState extends Equatable {
         isLoadingCities,
         isDetectingLocation,
         error,
+        errorKey,
+        errorEntityName,
       ];
 }
