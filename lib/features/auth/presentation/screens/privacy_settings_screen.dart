@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/services/location_service.dart';
-import 'package:get_it/get_it.dart';
+import '../../../../core/di/injection_container.dart';
 
 
 /// Pantalla de configuración de privacidad
@@ -30,7 +30,7 @@ class PrivacySettingsScreen extends StatefulWidget {
 }
 
 class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
-  final LocationService _locationService = GetIt.I<LocationService>();
+  final LocationService _locationService = getIt<LocationService>();
 
   SavedLocation? _savedLocation;
   bool _anonymousMode = false;
