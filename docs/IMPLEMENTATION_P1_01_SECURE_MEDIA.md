@@ -251,24 +251,19 @@ WHERE bucket_id = 'images-quarantine'
 
 ### **Test 4: Cleanup de Cuarentena**
 
-```bash
-# 1. Simular archivo "atorado" en cuarentena (>24 horas)
-INSERT INTO storage.objects (bucket_id, name, created_at)
-VALUES (
-  'images-quarantine',
-  'quarantine/test-user/test_old.jpg',
-  NOW() - INTERVAL '25 hours'
-);
+> Desde la migración 011 el borrado lo hace la Edge Function `cleanup-media`
+> con la Storage API (un `DELETE FROM storage.objects` deja el archivo).
 
-# 2. Ejecutar cleanup:
-SELECT cleanup_quarantine_files();
--- Retorna: 1 (archivo eliminado)
+```sql
+-- 1. Subir un archivo a images-quarantine (Storage API) y envejecerlo:
+UPDATE storage.objects SET created_at = NOW() - INTERVAL '25 hours'
+WHERE bucket_id = 'images-quarantine' AND name = 'quarantine/test-user/test_old.jpg';
 
-# 3. Verificar eliminación:
-SELECT COUNT(*) FROM storage.objects
-WHERE bucket_id = 'images-quarantine'
-  AND name LIKE 'quarantine/test-user/test_old.jpg';
--- Esperado: 0
+-- 2. Ver qué se borraría:
+SELECT * FROM get_media_cleanup_candidates(10);
+
+-- 3. Ejecutar el job a mano (o llamar a cleanup-media con x-cleanup-secret)
+--    y verificar que el archivo ya no se puede descargar.
 ```
 
 **Resultado esperado:**
@@ -337,28 +332,16 @@ Atomicidad: Sí (una transacción) ✅
 
 ## 🔄 CLEANUP PROGRAMADO
 
-### **Función: cleanup_quarantine_files()**
+### **Edge Function `cleanup-media` (migración 011)**
 
-```sql
--- Elimina archivos en cuarentena >24 horas
-SELECT cleanup_quarantine_files();
-```
+- Cuarentena (`images-quarantine`, `audio-quarantine`): archivos >24 h
+- Públicos (`images`, `audio`): archivos >7 días sin gossip que los referencie
+- Candidatos: `SELECT * FROM get_media_cleanup_candidates(10);`
+- Programada: job pg_cron `media-cleanup`, diario 4:00 UTC
+- Setup de secrets: `supabase/functions/README.md` → "Limpieza de media"
 
-**Ejecutar vía:**
-- Cron job (Supabase Functions + pg_cron)
-- Manualmente (Dashboard SQL editor)
-- Scheduled Edge Function (futuro)
-
-**Frecuencia recomendada:** Cada 12 horas
-
-### **Función: cleanup_orphaned_images()**
-
-```sql
--- Elimina imágenes públicas sin gossip asociado >7 días
-SELECT cleanup_orphaned_images();
-```
-
-**Ejecutar vía:** Cron job semanal
+Las funciones SQL `cleanup_quarantine_files()` / `cleanup_orphaned_images()`
+se eliminaron en 011: borraban la fila de `storage.objects` pero no el archivo.
 
 ---
 

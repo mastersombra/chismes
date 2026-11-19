@@ -11,6 +11,7 @@ Funciones Deno que corren en Supabase. Cada carpeta es una función (`index.ts`)
 | `delete-account` | Borra la cuenta del usuario y todos sus datos (GDPR). |
 | `log-error` | Recibe logs de error de la app (autenticado, sanitiza el contexto). |
 | `search-cities` | Autocomplete remoto de ciudades. |
+| `cleanup-media` | Borra con la Storage API la media en cuarentena (>24 h) y la pública huérfana (>7 días). La llama solo el job pg_cron `media-cleanup`; exige el header `x-cleanup-secret`. |
 
 > **Limpieza de idempotency keys:** no es una Edge Function. La hace el job de
 > pg_cron `idempotency-keys-cleanup` (diario 3:30 UTC), que llama a
@@ -66,6 +67,30 @@ SELECT jobname, schedule, active FROM cron.job;   -- ver jobs
 SELECT cron.unschedule('<jobname>');              -- quitar uno
 ```
 
+### Limpieza de media (`media-cleanup`, migración 011)
+
+Setup único por proyecto (los valores **nunca** van al repo):
+
+```bash
+# 1. Generar un secret y guardarlo en la función
+SECRET=$(openssl rand -hex 32)
+supabase secrets set MEDIA_CLEANUP_SECRET=$SECRET
+supabase functions deploy cleanup-media
+```
+
+```sql
+-- 2. Mismos valores en Vault (SQL Editor del Dashboard)
+SELECT vault.create_secret('https://<project-ref>.supabase.co', 'project_url');
+SELECT vault.create_secret('<anon key>', 'anon_key');
+SELECT vault.create_secret('<el mismo SECRET>', 'media_cleanup_secret');
+```
+
+Verificar: ejecutar a mano el comando del job (`SELECT command FROM cron.job
+WHERE jobname = 'media-cleanup'`) y revisar
+`SELECT status_code, content FROM net._http_response ORDER BY created DESC LIMIT 1;`
+→ `200` con `{"success":true,...}`. `SELECT * FROM get_media_cleanup_candidates(10);`
+muestra qué se borraría.
+
 ## 🔐 Secrets
 
 Las funciones reciben automáticamente `SUPABASE_URL`, `SUPABASE_ANON_KEY` y
@@ -73,4 +98,4 @@ Las funciones reciben automáticamente `SUPABASE_URL`, `SUPABASE_ANON_KEY` y
 
 ---
 
-**Última actualización:** 2026-11-18
+**Última actualización:** 2026-11-19
