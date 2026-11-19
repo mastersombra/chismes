@@ -39,9 +39,6 @@ class _AddGossipScreenState extends State<AddGossipScreen> {
   final _authRepository = getIt<AuthRepository>();
   bool _isResendingEmail = false;
 
-  // ✅ MEDICIÓN: Contador de rebuilds (solo en debug)
-  int _buildCount = 0;
-
   @override
   void initState() {
     super.initState();
@@ -63,12 +60,6 @@ class _AddGossipScreenState extends State<AddGossipScreen> {
     return AnimatedBuilder(
       animation: widget.controller,
       builder: (context, child) {
-        // ✅ MEDICIÓN: Contador de rebuilds (solo en debug)
-        _buildCount++;
-        assert(() {
-          debugPrint('🔄 AddGossipScreen rebuild #$_buildCount');
-          return true;
-        }());
 
         final state = widget.controller.state;
 
