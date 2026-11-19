@@ -296,14 +296,23 @@ void main() {
       // Act
       await tester.pumpWidget(createWidget(settings));
       await tester.pumpAndSettle();
+      final l10n =
+          AppLocalizations.of(tester.element(find.byType(SettingsSection)))!;
 
-      await tester.tap(find.text('Nivel de privacidad'));
+      final tile = find.text(l10n.profileSettingsPrivacyLevel);
+      await tester.ensureVisible(tile);
+      await tester.tap(tile);
       await tester.pumpAndSettle();
 
       // Assert
-      expect(find.byType(AlertDialog), findsOneWidget);
-      expect(find.text('Selecciona el nivel de privacidad'), findsOneWidget);
-    }, skip: true); // Widget not accessible - needs investigation
+      final dialog = find.byType(AlertDialog);
+      expect(dialog, findsOneWidget);
+      expect(
+        find.descendant(
+            of: dialog, matching: find.text(l10n.profileSettingsPrivacyDialogTitle)),
+        findsOneWidget,
+      );
+    });
 
     testWidgets('debe mostrar opciones de privacidad en dialog',
         (tester) async {
@@ -390,18 +399,22 @@ void main() {
       await tester.pumpWidget(createWidget(settings));
       await tester.pumpAndSettle();
 
+      final l10n =
+          AppLocalizations.of(tester.element(find.byType(SettingsSection)))!;
+
       // Scroll para ver showEmail
-      await tester.ensureVisible(find.text('Mostrar email en perfil'));
+      final tile = find.text(l10n.profileSettingsShowEmail);
+      await tester.ensureVisible(tile);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Mostrar email en perfil'));
+      await tester.tap(tile);
       await tester.pumpAndSettle();
 
       // Assert
       verify(mockController.updateSetting(argThat(predicate<ProfileSettings>(
         (s) => s.showEmail == true,
       )))).called(1);
-    }, skip: true); // Widget not accessible - needs investigation
+    });
 
     testWidgets('debe actualizar showActivity', (tester) async {
       // Arrange
@@ -414,18 +427,22 @@ void main() {
       await tester.pumpWidget(createWidget(settings));
       await tester.pumpAndSettle();
 
+      final l10n =
+          AppLocalizations.of(tester.element(find.byType(SettingsSection)))!;
+
       // Scroll para ver showActivity
-      await tester.ensureVisible(find.text('Mostrar actividad reciente'));
+      final tile = find.text(l10n.profileSettingsShowActivity);
+      await tester.ensureVisible(tile);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Mostrar actividad reciente'));
+      await tester.tap(tile);
       await tester.pumpAndSettle();
 
       // Assert
       verify(mockController.updateSetting(argThat(predicate<ProfileSettings>(
         (s) => s.showActivity == true,
       )))).called(1);
-    }, skip: true); // Widget not accessible - needs investigation
+    });
   });
 
   group('SettingsSection - Idioma', () {
