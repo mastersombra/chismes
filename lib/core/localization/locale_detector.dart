@@ -1,28 +1,9 @@
 import 'package:flutter/material.dart';
 
-/// Helper para detectar y gestionar el idioma de la aplicación
-///
-/// Proporciona utilidades para obtener información sobre el idioma
-/// del dispositivo y el idioma actual de la aplicación.
+/// Helper con información de presentación de cada idioma soportado
+/// (nombre, nombre nativo y emoji), usado por `LanguageSelector`.
 class LocaleDetector {
   LocaleDetector._();
-
-  /// Obtiene el idioma del dispositivo del usuario
-  ///
-  /// Returns: Locale del sistema (ej: Locale('es', 'MX'))
-  static Locale getDeviceLocale() {
-    return WidgetsBinding.instance.platformDispatcher.locale;
-  }
-
-  /// Verifica si el idioma del dispositivo es soportado
-  ///
-  /// [supportedLocales] Lista de locales soportados por la app
-  static bool isDeviceLocalSupported(List<Locale> supportedLocales) {
-    final deviceLocale = getDeviceLocale();
-    return supportedLocales.any(
-      (locale) => locale.languageCode == deviceLocale.languageCode,
-    );
-  }
 
   /// Obtiene información del idioma actual
   ///
@@ -74,11 +55,4 @@ class LocaleDetector {
     }
   }
 
-  /// Formatea un locale para debugging
-  ///
-  /// Returns: String legible del locale
-  static String formatLocale(Locale locale) {
-    final info = getLocaleInfo(locale);
-    return '${info['emoji']} ${info['nativeName']} (${info['languageCode']})';
-  }
 }
