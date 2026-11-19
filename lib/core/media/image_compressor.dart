@@ -30,8 +30,7 @@ class ImageCompressor {
   /// ```
   static Future<File?> compressGossipImage(File file) async {
     final filePath = file.absolute.path;
-    final lastIndex = filePath.lastIndexOf('.');
-    final outPath = '${filePath.substring(0, lastIndex)}_compressed.jpg';
+    final outPath = _outputPath(filePath, '_compressed');
 
     final result = await FlutterImageCompress.compressAndGetFile(
       filePath,
@@ -53,8 +52,7 @@ class ImageCompressor {
   /// - Se usa en lista de chismes (más rápido)
   static Future<File?> generateThumbnail(File file) async {
     final filePath = file.absolute.path;
-    final lastIndex = filePath.lastIndexOf('.');
-    final outPath = '${filePath.substring(0, lastIndex)}_thumb.jpg';
+    final outPath = _outputPath(filePath, '_thumb');
 
     final result = await FlutterImageCompress.compressAndGetFile(
       filePath,
@@ -66,6 +64,15 @@ class ImageCompressor {
     );
 
     return result != null ? File(result.path) : null;
+  }
+
+  /// Ruta de salida `.jpg` junto al original: reemplaza solo la extensión del
+  /// nombre del archivo (no un punto de la carpeta) o agrega el sufijo si no hay.
+  static String _outputPath(String filePath, String suffix) {
+    final nameStart = filePath.lastIndexOf(Platform.pathSeparator) + 1;
+    final dot = filePath.lastIndexOf('.');
+    final base = dot > nameStart ? filePath.substring(0, dot) : filePath;
+    return '$base$suffix.jpg';
   }
 
   /// Obtiene tamaño de archivo en KB

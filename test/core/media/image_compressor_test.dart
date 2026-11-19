@@ -124,6 +124,40 @@ void main() {
             '${dir.path}/mi.foto.2024_compressed.jpg');
       });
 
+      // Regresión: con lastIndexOf('.') sin acotar al nombre, un archivo sin
+      // extensión lanzaba RangeError y un punto en la carpeta cortaba la ruta.
+      test('compressGossipImage agrega el sufijo si el archivo no tiene extensión',
+          () async {
+        final file = File('${dir.path}/image_picker_ABC')..writeAsBytesSync([1]);
+
+        final result = await ImageCompressor.compressGossipImage(file);
+
+        expect(compress.calls.single.targetPath,
+            '${dir.path}/image_picker_ABC_compressed.jpg');
+        expect(result!.path, '${dir.path}/image_picker_ABC_compressed.jpg');
+      });
+
+      test('no corta la ruta en un punto de la carpeta', () async {
+        final sub = Directory('${dir.path}/cache.v2')..createSync();
+        final file = File('${sub.path}/image')..writeAsBytesSync([1]);
+
+        await ImageCompressor.compressGossipImage(file);
+        await ImageCompressor.generateThumbnail(file);
+
+        expect(compress.calls.map((c) => c.targetPath), [
+          '${sub.path}/image_compressed.jpg',
+          '${sub.path}/image_thumb.jpg',
+        ]);
+      });
+
+      test('trata un archivo oculto (.foto) como sin extensión', () async {
+        final file = File('${dir.path}/.foto')..writeAsBytesSync([1]);
+
+        await ImageCompressor.generateThumbnail(file);
+
+        expect(compress.calls.single.targetPath, '${dir.path}/.foto_thumb.jpg');
+      });
+
       test('compressGossipImage retorna null si el plugin falla', () async {
         compress.outputBytes = (_) => null;
 
