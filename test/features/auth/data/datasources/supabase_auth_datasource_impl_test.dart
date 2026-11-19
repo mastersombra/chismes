@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:chismes/core/logging/logging.dart';
 import 'package:chismes/features/auth/data/datasources/supabase_auth_datasource_impl.dart';
+import 'package:chismes/features/auth/data/models/user_model.dart';
+
+import '../../../../helpers/fake_supabase_http.dart';
 
 import 'supabase_auth_datasource_impl_test.mocks.dart';
 
@@ -159,14 +165,34 @@ void main() {
         )).thenThrow(exception);
 
         // Act & Assert
-        try {
-          await dataSource.resetPassword(email: tEmail);
-        } catch (_) {}
+        await expectLater(
+          dataSource.resetPassword(email: tEmail),
+          throwsA(same(exception)),
+        );
 
         verify(mockLogger.w(
           'Reset password failed (AuthException)',
           error: exception,
           context: {'code': '404', 'message': 'User not found'},
+        )).called(1);
+      });
+      test('relanza y loguea error si falla con una excepción genérica',
+          () async {
+        final exception = Exception('Network error');
+        when(mockAuth.signInWithOtp(
+          email: anyNamed('email'),
+          shouldCreateUser: anyNamed('shouldCreateUser'),
+        )).thenThrow(exception);
+
+        await expectLater(
+          dataSource.resetPassword(email: tEmail),
+          throwsA(same(exception)),
+        );
+        verify(mockLogger.e(
+          'Reset password failed',
+          error: exception,
+          stackTrace: anyNamed('stackTrace'),
+          context: {'email': tEmail},
         )).called(1);
       });
     });
@@ -194,11 +220,42 @@ void main() {
         when(mockAuth.updateUser(any)).thenThrow(const AuthException('Password too weak'));
 
         // Act & Assert
-        try {
-          await dataSource.updatePassword(newPassword: tNewPassword);
-        } catch (_) {}
+        await expectLater(
+          dataSource.updatePassword(newPassword: tNewPassword),
+          throwsA(isA<AuthException>()),
+        );
 
         verify(mockLogger.i('Updating password', context: {'userId': 'user-123'})).called(1);
+      });
+      test('envía el nuevo password en UserAttributes', () async {
+        when(mockAuth.currentUser).thenReturn(mockUser);
+        when(mockUser.id).thenReturn('user-123');
+        when(mockAuth.updateUser(any))
+            .thenAnswer((_) async => UserResponse.fromJson({}));
+
+        await dataSource.updatePassword(newPassword: tNewPassword);
+
+        final attrs =
+            verify(mockAuth.updateUser(captureAny)).captured.single as UserAttributes;
+        expect(attrs.password, tNewPassword);
+        verify(mockLogger.i('Password updated successfully',
+                context: {'userId': 'user-123'}))
+            .called(1);
+      });
+
+      test('relanza y loguea error si falla con una excepción genérica',
+          () async {
+        final exception = Exception('Network error');
+        when(mockAuth.currentUser).thenReturn(null);
+        when(mockAuth.updateUser(any)).thenThrow(exception);
+
+        await expectLater(
+          dataSource.updatePassword(newPassword: tNewPassword),
+          throwsA(same(exception)),
+        );
+        verify(mockLogger.e('Update password failed',
+                error: exception, stackTrace: anyNamed('stackTrace')))
+            .called(1);
       });
     });
 
@@ -246,9 +303,10 @@ void main() {
         )).thenThrow(exception);
 
         // Act & Assert
-        try {
-          await dataSource.signUpWithEmailOTP(email: tEmail, password: tPassword);
-        } catch (_) {}
+        await expectLater(
+          dataSource.signUpWithEmailOTP(email: tEmail, password: tPassword),
+          throwsA(same(exception)),
+        );
 
         verify(mockLogger.e(
           'Sign up OTP failed',
@@ -291,6 +349,25 @@ void main() {
           throwsA(isA<AuthException>()),
         );
       });
+      test('relanza y loguea error si falla con una excepción genérica',
+          () async {
+        final exception = Exception('Network error');
+        when(mockAuth.resend(
+          type: anyNamed('type'),
+          email: anyNamed('email'),
+        )).thenThrow(exception);
+
+        await expectLater(
+          dataSource.resendOTP(email: tEmail),
+          throwsA(same(exception)),
+        );
+        verify(mockLogger.e(
+          'Resend OTP failed',
+          error: exception,
+          stackTrace: anyNamed('stackTrace'),
+          context: {'email': tEmail},
+        )).called(1);
+      });
     });
 
     group('resendVerificationEmail', () {
@@ -332,6 +409,25 @@ void main() {
           throwsA(isA<Exception>()),
         );
       });
+      test('relanza AuthException y loguea warning con el código', () async {
+        const exception = AuthException('Rate limit', statusCode: '429');
+        when(mockAuth.currentUser).thenReturn(mockUser);
+        when(mockUser.email).thenReturn('test@example.com');
+        when(mockAuth.resend(
+          type: anyNamed('type'),
+          email: anyNamed('email'),
+        )).thenThrow(exception);
+
+        await expectLater(
+          dataSource.resendVerificationEmail(),
+          throwsA(same(exception)),
+        );
+        verify(mockLogger.w(
+          'Resend verification email failed (AuthException)',
+          error: exception,
+          context: {'code': '429', 'message': 'Rate limit'},
+        )).called(1);
+      });
     });
 
     group('Logging', () {
@@ -344,9 +440,7 @@ void main() {
         when(mockAuth.signOut()).thenThrow(exception);
 
         // Act & Assert
-        try {
-          await dataSource.signOut();
-        } catch (_) {}
+        await expectLater(dataSource.signOut(), throwsA(same(exception)));
 
         verify(mockLogger.e(
           'Sign out failed',
@@ -370,6 +464,412 @@ void main() {
           'Sending password reset OTP',
           context: {'email': 'test@example.com'},
         )).called(1);
+      });
+    });
+  });
+
+  // Cliente Supabase real sobre HTTP falso: cubre GoTrue (auth), PostgREST y RPC.
+  group('SupabaseAuthDataSourceImpl con cliente real (fake HTTP)', () {
+    const tUserId = 'user-123';
+    const tEmail = 'test@example.com';
+    final userJson = <String, dynamic>{
+      'id': tUserId,
+      'aud': 'authenticated',
+      'email': tEmail,
+      'email_confirmed_at': '2024-01-01T00:00:00Z',
+      'created_at': '2024-01-01T00:00:00Z',
+      'app_metadata': <String, dynamic>{},
+      'user_metadata': <String, dynamic>{},
+    };
+    final sessionJson = <String, dynamic>{
+      'access_token': 'access-token',
+      'token_type': 'bearer',
+      'expires_in': 3600,
+      'refresh_token': 'refresh-token',
+      'user': userJson,
+    };
+    final profileRow = <String, dynamic>{
+      'id': tUserId,
+      'username': 'chismoso',
+      'display_name': 'Chismoso Mayor',
+      'avatar_url': 'https://cdn.test/a.jpg',
+      'bio': 'bio',
+      'profile_completed': true,
+      'updated_at': '2024-02-01T00:00:00Z',
+    };
+
+    late FakeSupabaseHttp fake;
+    late SupabaseAuthDataSourceImpl ds;
+    late MockAppLogger logger;
+    // Respuestas por ruta (método + path). Se pueden sobreescribir en cada test.
+    late Map<String, http.Response Function(http.Request)> routes;
+
+    http.Response json(http.Request req, Object? body, {int status = 200}) =>
+        FakeSupabaseHttp.jsonResponse(req, body, status: status);
+
+    http.Response authError(http.Request req) => json(
+          req,
+          {'code': 'invalid_credentials', 'msg': 'Invalid login credentials'},
+          status: 400,
+        );
+
+    http.Response pgError(http.Request req) => json(
+          req,
+          {'message': 'boom', 'code': '23505', 'details': null, 'hint': null},
+          status: 400,
+        );
+
+    List<http.Request> requestsTo(String method, String path) => fake.requests
+        .where((r) => r.method == method && r.url.path == path)
+        .toList();
+
+    setUp(() {
+      logger = MockAppLogger();
+      routes = {
+        'POST /auth/v1/token': (req) => json(req, sessionJson),
+        'POST /auth/v1/verify': (req) => json(req, sessionJson),
+        'GET /rest/v1/profiles': (req) => json(req, [profileRow]),
+        'PATCH /rest/v1/profiles': (req) => json(req, null),
+        'POST /rest/v1/rpc/check_email_exists_and_confirmed': (req) =>
+            json(req, true),
+      };
+      fake = FakeSupabaseHttp((req) {
+        final route = routes['${req.method} ${req.url.path}'];
+        if (route == null) {
+          throw StateError('Ruta no esperada: ${req.method} ${req.url}');
+        }
+        return route(req);
+      });
+      ds = SupabaseAuthDataSourceImpl(fake.client, logger);
+    });
+
+    tearDown(() => fake.client.dispose());
+
+    Future<UserModel> signIn() =>
+        ds.signInWithEmail(email: tEmail, password: 'Secret123!');
+
+    group('signInWithEmail', () {
+      test('autentica, carga el profile y deja la sesión activa', () async {
+        final user = await signIn();
+
+        final tokenReq = requestsTo('POST', '/auth/v1/token').single;
+        expect(tokenReq.url.queryParameters['grant_type'], 'password');
+        expect(jsonDecode(tokenReq.body),
+            containsPair('email', tEmail));
+        final profileReq = requestsTo('GET', '/rest/v1/profiles').single;
+        expect(profileReq.url.queryParameters['id'], 'eq.$tUserId');
+
+        expect(user.id, tUserId);
+        expect(user.email, tEmail);
+        expect(user.emailVerified, isTrue);
+        expect(user.username, 'chismoso');
+        expect(user.displayName, 'Chismoso Mayor');
+        expect(user.avatarUrl, 'https://cdn.test/a.jpg');
+        expect(user.bio, 'bio');
+        expect(user.profileCompleted, isTrue);
+        expect(user.updatedAt, DateTime.parse('2024-02-01T00:00:00Z'));
+        expect(ds.currentUser!.id, tUserId);
+        verify(logger.i('Sign in successful', context: {'userId': tUserId}))
+            .called(1);
+      });
+
+      test('retorna el user sin profile si la consulta de profile falla',
+          () async {
+        routes['GET /rest/v1/profiles'] = pgError;
+
+        final user = await signIn();
+
+        expect(user.id, tUserId);
+        expect(user.username, isNull);
+        expect(user.profileCompleted, isFalse);
+        verify(logger.w('Failed to get profile data',
+                error: anyNamed('error'), context: {'userId': tUserId}))
+            .called(1);
+      });
+
+      test('lanza Exception si la respuesta no trae user', () async {
+        routes['POST /auth/v1/token'] = (req) => json(req, {});
+
+        await expectLater(
+          signIn(),
+          throwsA(isA<Exception>().having((e) => e.toString(), 'message',
+              contains('Sign in returned null user'))),
+        );
+        expect(requestsTo('GET', '/rest/v1/profiles'), isEmpty);
+        verify(logger.e('Sign in failed',
+                error: anyNamed('error'),
+                stackTrace: anyNamed('stackTrace'),
+                context: {'email': tEmail}))
+            .called(1);
+      });
+
+      test('relanza AuthException con credenciales inválidas', () async {
+        routes['POST /auth/v1/token'] = authError;
+
+        await expectLater(signIn(), throwsA(isA<AuthException>()));
+        expect(ds.currentUser, isNull);
+        verify(logger.w('Sign in failed (AuthException)',
+                error: anyNamed('error'), context: anyNamed('context')))
+            .called(1);
+      });
+    });
+
+    group('authStateChanges', () {
+      test('emite el user con profile al iniciar sesión', () async {
+        final emitted = <UserModel?>[];
+        final sub = ds.authStateChanges.listen(emitted.add);
+        addTearDown(sub.cancel);
+
+        await signIn();
+        await pumpEventQueue();
+
+        final signedIn = emitted.whereType<UserModel>().last;
+        expect(signedIn.id, tUserId);
+        expect(signedIn.username, 'chismoso');
+      });
+
+      test('emite null al cerrar sesión', () async {
+        routes['POST /auth/v1/logout'] = (req) => http.Response('', 204, request: req);
+        final emitted = <UserModel?>[];
+        final sub = ds.authStateChanges.listen(emitted.add);
+        addTearDown(sub.cancel);
+        await signIn();
+        await pumpEventQueue();
+
+        await ds.signOut();
+        await pumpEventQueue();
+
+        expect(requestsTo('POST', '/auth/v1/logout'), hasLength(1));
+        expect(emitted.last, isNull);
+        expect(emitted.whereType<UserModel>(), isNotEmpty);
+        expect(ds.currentUser, isNull);
+      });
+
+      test('emite el user sin profile si el profile no se puede parsear',
+          () async {
+        routes['GET /rest/v1/profiles'] =
+            (req) => json(req, [{...profileRow, 'updated_at': 'no-es-fecha'}]);
+        await expectLater(signIn(), throwsA(isA<FormatException>()));
+
+        final user = await ds.authStateChanges.firstWhere((u) => u != null);
+
+        expect(user!.id, tUserId);
+        expect(user.username, isNull);
+        verify(logger.w('Error loading profile in auth state change',
+                error: anyNamed('error'), context: {'userId': tUserId}))
+            .called(1);
+      });
+    });
+
+    group('getCurrentUser', () {
+      test('retorna null sin sesión y no consulta profiles', () async {
+        expect(await ds.getCurrentUser(), isNull);
+        expect(fake.requests, isEmpty);
+      });
+
+      test('retorna el user con el profile recién consultado', () async {
+        await signIn();
+        routes['GET /rest/v1/profiles'] =
+            (req) => json(req, [{...profileRow, 'username': 'nuevo'}]);
+
+        final user = await ds.getCurrentUser();
+
+        expect(user!.id, tUserId);
+        expect(user.username, 'nuevo');
+        expect(requestsTo('GET', '/rest/v1/profiles'), hasLength(2));
+      });
+
+      test('relanza y loguea si el profile no se puede parsear', () async {
+        await signIn();
+        routes['GET /rest/v1/profiles'] =
+            (req) => json(req, [{...profileRow, 'updated_at': 'no-es-fecha'}]);
+
+        await expectLater(
+            ds.getCurrentUser(), throwsA(isA<FormatException>()));
+        verify(logger.e('Get current user failed',
+                error: anyNamed('error'), stackTrace: anyNamed('stackTrace')))
+            .called(1);
+      });
+    });
+
+    group('updateProfile', () {
+      test('lanza Exception sin usuario autenticado y no llama a la API',
+          () async {
+        await expectLater(
+          ds.updateProfile(username: 'x'),
+          throwsA(isA<Exception>().having((e) => e.toString(), 'message',
+              contains('No authenticated user'))),
+        );
+        expect(fake.requests, isEmpty);
+        verify(logger.e('Update profile failed',
+                error: anyNamed('error'), stackTrace: anyNamed('stackTrace')))
+            .called(1);
+      });
+
+      test('envía todos los campos y retorna el profile actualizado',
+          () async {
+        await signIn();
+        routes['GET /rest/v1/profiles'] = (req) => json(req, [
+              {...profileRow, 'username': 'nuevo', 'bio': 'nueva bio'}
+            ]);
+
+        final user = await ds.updateProfile(
+          username: 'nuevo',
+          displayName: 'Nuevo Nombre',
+          avatarUrl: 'https://cdn.test/b.jpg',
+          bio: 'nueva bio',
+        );
+
+        final patch = requestsTo('PATCH', '/rest/v1/profiles').single;
+        expect(patch.url.queryParameters['id'], 'eq.$tUserId');
+        expect(jsonDecode(patch.body), {
+          'username': 'nuevo',
+          'display_name': 'Nuevo Nombre',
+          'avatar_url': 'https://cdn.test/b.jpg',
+          'bio': 'nueva bio',
+        });
+        expect(user.username, 'nuevo');
+        expect(user.bio, 'nueva bio');
+        verify(logger.i('Profile updated successfully',
+                context: {'userId': tUserId}))
+            .called(1);
+      });
+
+      test('solo envía los campos no nulos', () async {
+        await signIn();
+
+        await ds.updateProfile(bio: 'solo bio');
+
+        final patch = requestsTo('PATCH', '/rest/v1/profiles').single;
+        expect(jsonDecode(patch.body), {'bio': 'solo bio'});
+      });
+
+      test('relanza PostgrestException (ej. username duplicado)', () async {
+        await signIn();
+        routes['PATCH /rest/v1/profiles'] = pgError;
+
+        await expectLater(ds.updateProfile(username: 'tomado'),
+            throwsA(isA<PostgrestException>()));
+        verify(logger.w('Update profile failed (PostgrestException)',
+                error: anyNamed('error'),
+                context: {'code': '23505', 'message': 'boom'}))
+            .called(1);
+      });
+    });
+
+    group('isUsernameAvailable', () {
+      test('retorna true si ningún profile tiene ese username', () async {
+        routes['GET /rest/v1/profiles'] = (req) => json(req, []);
+
+        expect(await ds.isUsernameAvailable('Libre'), isTrue);
+
+        final req = fake.lastRequest;
+        expect(req.url.queryParameters['select'], 'id');
+        expect(req.url.queryParameters['username'], 'ilike.Libre');
+      });
+
+      test('retorna false si el username ya existe', () async {
+        routes['GET /rest/v1/profiles'] =
+            (req) => json(req, [{'id': 'otro'}]);
+
+        expect(await ds.isUsernameAvailable('tomado'), isFalse);
+      });
+
+      test('relanza y loguea si la consulta falla', () async {
+        routes['GET /rest/v1/profiles'] = pgError;
+
+        await expectLater(ds.isUsernameAvailable('x'),
+            throwsA(isA<PostgrestException>()));
+        verify(logger.e('Check username availability failed',
+                error: anyNamed('error'),
+                stackTrace: anyNamed('stackTrace'),
+                context: {'username': 'x'}))
+            .called(1);
+      });
+    });
+
+    group('verifyOTP', () {
+      test('verifica OTP de signup y retorna el user con profile', () async {
+        final user = await ds.verifyOTP(email: tEmail, token: '123456');
+
+        final body = jsonDecode(
+            requestsTo('POST', '/auth/v1/verify').single.body) as Map;
+        expect(body['type'], 'signup');
+        expect(body['email'], tEmail);
+        expect(body['token'], '123456');
+        expect(user.id, tUserId);
+        expect(user.username, 'chismoso');
+        expect(ds.currentUser!.id, tUserId);
+      });
+
+      test('usa el tipo recovery cuando es reset de password', () async {
+        await ds.verifyOTP(
+            email: tEmail, token: '123456', isPasswordReset: true);
+
+        final body = jsonDecode(
+            requestsTo('POST', '/auth/v1/verify').single.body) as Map;
+        expect(body['type'], 'recovery');
+      });
+
+      test('lanza Exception si la respuesta no trae user', () async {
+        routes['POST /auth/v1/verify'] = (req) => json(req, {});
+
+        await expectLater(
+          ds.verifyOTP(email: tEmail, token: '123456'),
+          throwsA(isA<Exception>().having((e) => e.toString(), 'message',
+              contains('Verify OTP returned null user'))),
+        );
+        verify(logger.e('Verify OTP failed',
+                error: anyNamed('error'),
+                stackTrace: anyNamed('stackTrace'),
+                context: {'email': tEmail}))
+            .called(1);
+      });
+
+      test('relanza AuthException con OTP inválido', () async {
+        routes['POST /auth/v1/verify'] = authError;
+
+        await expectLater(ds.verifyOTP(email: tEmail, token: '000000'),
+            throwsA(isA<AuthException>()));
+        verify(logger.w('Verify OTP failed (AuthException)',
+                error: anyNamed('error'), context: anyNamed('context')))
+            .called(1);
+      });
+    });
+
+    group('checkEmailExistsAndConfirmed', () {
+      test('llama al RPC con el email y retorna el bool', () async {
+        expect(await ds.checkEmailExistsAndConfirmed(tEmail), isTrue);
+        expect(fake.lastBody, {'email_to_check': tEmail});
+
+        routes['POST /rest/v1/rpc/check_email_exists_and_confirmed'] =
+            (req) => json(req, false);
+        expect(await ds.checkEmailExistsAndConfirmed(tEmail), isFalse);
+      });
+
+      test('relanza PostgrestException si el RPC falla', () async {
+        routes['POST /rest/v1/rpc/check_email_exists_and_confirmed'] =
+            pgError;
+
+        await expectLater(ds.checkEmailExistsAndConfirmed(tEmail),
+            throwsA(isA<PostgrestException>()));
+        verify(logger.w('Check email exists failed (PostgrestException)',
+                error: anyNamed('error'), context: anyNamed('context')))
+            .called(1);
+      });
+
+      test('relanza y loguea si el RPC retorna null', () async {
+        routes['POST /rest/v1/rpc/check_email_exists_and_confirmed'] =
+            (req) => http.Response('null', 200,
+                headers: {'content-type': 'application/json'}, request: req);
+
+        await expectLater(ds.checkEmailExistsAndConfirmed(tEmail),
+            throwsA(isA<TypeError>()));
+        verify(logger.e('Check email exists failed',
+                error: anyNamed('error'),
+                stackTrace: anyNamed('stackTrace'),
+                context: {'email': tEmail}))
+            .called(1);
       });
     });
   });
