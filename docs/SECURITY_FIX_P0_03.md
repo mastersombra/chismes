@@ -539,12 +539,12 @@ Antes de lanzar a producción, verificar:
 ### **Documentación Relacionada:**
 - `.claude/SECURITY.md` - Guía de seguridad completa
 - `.claude/SUPABASE.md` - Migraciones y RLS
-- `docs/IMPLEMENTATION_AUTH_SUMMARY.md` - Módulo auth completo
-- `OAUTH_SETUP_COMPLETE.md` - OAuth configuración
+- `docs/auth_reactive_flow.md` - Flujo de autenticación
+- `docs/google_sign_in_setup.md` - OAuth configuración
 
 ### **Migraciones:**
-- `supabase/migrations/001_create_gossips_table.sql` - Tabla principal
-- `supabase/migrations/005_create_profiles_table.sql` - Auth users
+- `supabase/migrations/001_gossips.sql` - Tabla principal
+- `supabase/migrations/005_profiles.sql` - Auth users
 
 ### **Edge Functions:**
 - `supabase/functions/moderate-gossip/index.ts` - Moderación + creación
