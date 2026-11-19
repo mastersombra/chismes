@@ -11,22 +11,16 @@ import 'gossip_remote_data_source.dart';
 
 /// Implementación de Supabase para GossipRemoteDataSource
 ///
-/// **SEGURIDAD P0: INSERT vía RPC obligatorio ✅**
-/// - Cliente NO puede hacer INSERT directo a tabla gossips
-/// - Creación SOLO a través de RPC create_gossip_draft()
-/// - RPC valida auth, idempotencia y fuerza estados seguros
-/// - Previene bypass de moderación vía REST directo
+/// **SEGURIDAD P0: creación solo vía Edge Function ✅**
+/// - Cliente NO puede hacer INSERT directo a tabla gossips (sin policy/GRANT)
+/// - Creación: Edge Function `moderate-gossip` (auth, rate limit, moderación),
+///   que escribe con `upsert_gossip_idempotent()` como service_role
+/// - Los RPCs de escritura no son ejecutables por anon/authenticated (migración 012)
 ///
 /// **FLUJO DE CREACIÓN:**
-/// 1. Cliente llama create() → invoca RPC create_gossip_draft()
-/// 2. RPC valida auth.uid() y crea gossip en estado: draft, pending, private
-/// 3. (Futuro) Trigger/Edge Function ejecuta moderación asíncrona
-/// 4. Si aprobado → cambia a: published, approved, public
-///
-/// **MODERACIÓN (Pendiente):**
-/// - Mover lógica de moderate-gossip Edge Function a trigger/background job
-/// - Reglas locales + OpenAI Moderation API
-/// - Actualizar estados después de moderar
+/// 1. Cliente llama create() → `functions.invoke('moderate-gossip')`
+/// 2. La Edge Function modera (reglas + OpenAI) y decide estados
+/// 3. Aprobado → published/approved/public; dudoso → draft/pending; rechazado → error
 ///
 /// Pendiente para producción:
 /// - Implementar moderación asíncrona (trigger o Edge Function scheduled)
