@@ -617,14 +617,14 @@ Para nuevas sesiones:
 
 ## 📊 MÉTRICAS
 
-**Última actualización:** 2026-11-12 (Tests/Coverage: 2026-11-18)
+**Última actualización:** 2026-11-18
 
 ```
-Archivos Dart:        ~80
-Features:             4 (gossip, location, home, search)
+Archivos Dart:        167 en lib/ (sin generados ni l10n) · 163 archivos de test
+Features:             6 (auth, gossip, home, location, profile, search)
 Tests:                4,106 (4,100 pasando, 6 skip)
 Coverage:             97.42% (sin lib/l10n)
-Líneas de código:     ~8,000
+Líneas de código:     ~16,500 (lib/, sin comentarios ni generados)
 Migraciones:          9
 Architecture Score:   9.65/10 ✅ TOP 1%
 ```
@@ -641,7 +641,7 @@ Architecture Score:   9.65/10 ✅ TOP 1%
 | Quality Attributes | 10/10 |
 | Documentation | 10/10 |
 
-**Auditoría Automática:** 169 archivos, 0 violaciones ✅  
+**Auditoría Automática:** 166 archivos, 0 violaciones ✅ (2026-11-18)  
 **Comando:** `./tools/audit_dependencies.sh`
 
 Ver detalles: `.claude/ARCHITECTURE_REVIEW.md`
