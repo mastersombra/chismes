@@ -394,17 +394,33 @@ SET LOCAL request.jwt.claims.role = 'admin';
 SELECT * FROM gossips;  -- Ve todos
 ```
 
+### Creación de gossips: nunca INSERT directo (fix P0-02)
+
+La tabla `gossips` **no tiene policy ni GRANT de INSERT** (`001_gossips.sql`: solo
+`GRANT SELECT ... TO authenticated`). Así nadie puede saltarse la moderación con la
+anon key haciendo `POST /rest/v1/gossips`.
+
+- La app crea chismes llamando a la Edge Function `moderate-gossip`
+  (`SupabaseGossipRemoteDataSource.createWithImage`), que modera y escribe con el
+  RPC `upsert_gossip_idempotent()` (SECURITY DEFINER).
+- `create_gossip_draft()` (SECURITY DEFINER, `GRANT EXECUTE ... TO authenticated`)
+  es el RPC alternativo para crear borradores.
+- `status` y `moderation_status` los fija el servidor, nunca el cliente.
+- Test de regresión: `supabase/tests/001_gossip_creation_security_test.sql`
+  (INSERT directo debe fallar; el RPC debe funcionar).
+
+**Nunca** agregar una policy `FOR INSERT` ni `GRANT INSERT` sobre `gossips`.
+
 ### Regla de Oro
 
 **Usuario SOLO envía datos, backend decide permisos.**
 
 ```dart
-// ✅ BIEN: Usuario envía data, RLS valida permisos
-await supabase.from('gossips').insert({
+// ✅ BIEN: Usuario envía data; el backend (Edge Function + RPC) decide estados
+await supabase.functions.invoke('moderate-gossip', body: {
   'subject': subject,
   'body': body,
-  'created_by': userId,  // RLS valida que userId == auth.uid()
-});
+});  // created_by sale del JWT, no del body
 
 // ❌ MAL: Confiar en cliente para permisos
 if (user.isAdmin) {  // NO confiar en cliente
