@@ -314,8 +314,11 @@ flutter pub run build_runner build --delete-conflicting-outputs
 | Formato | JPEG |
 | Calidad | 75% |
 | Tamaño | 100-150 KB (max 300 KB) |
+| Thumbnail | 200×200 px, JPEG 70% (~30 KB), para listas |
+| Límite al elegir | 1920×1920 px, calidad 85% (`image_picker`), antes de comprimir |
 
-**Compresión automática con `flutter_image_compress`**
+**Compresión automática con `flutter_image_compress`** (`lib/core/media/image_compressor.dart`).
+Seguridad de media (cuarentena, URLs firmadas): `docs/ANALYSIS_P1_01_MEDIA.md`.
 
 ---
 

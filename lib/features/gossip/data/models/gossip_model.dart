@@ -33,7 +33,7 @@ import '../../domain/entities/gossip.dart';
 /// **Media (imágenes/audio):**
 /// - Se usa String simple (URL de Supabase Storage)
 /// - NO se usa MediaReference (decisión: overkill para app simple)
-/// - Ver: audio_imagen.md sección "Opción B: String Simple"
+/// - Ver: CLAUDE.md ADR-003
 ///
 /// **Validación de tipos:**
 /// - fromJson valida tipos de todos los campos
@@ -105,7 +105,7 @@ class GossipModel {
   /// **Formato:** https://{project}.supabase.co/storage/v1/object/public/images/gossips/audio/{filename}.mp3
   /// **Compresión:** MP3 @ 64kbps, máx 30 segundos (~240 KB)
   /// **Decisión:** String simple es suficiente (no se usa MediaReference)
-  /// Ver: audio_imagen.md sección "Opción B: String Simple"
+  /// Ver: CLAUDE.md ADR-003
   final String? audioUrl;
 
   /// URL de la imagen adjunta (opcional)
@@ -120,7 +120,7 @@ class GossipModel {
   /// **Compresión:** 800x800 px @ 75% calidad JPEG (~100-150 KB)
   /// **Thumbnail:** Se genera aparte en gossips/thumb/{filename}.jpg (200x200 px, ~30 KB)
   /// **Decisión:** String simple es suficiente (no se usa MediaReference)
-  /// Ver: audio_imagen.md sección "Opción B: String Simple"
+  /// Ver: CLAUDE.md ADR-003
   final String? imageUrl;
 
   /// URL del thumbnail de la imagen (opcional)

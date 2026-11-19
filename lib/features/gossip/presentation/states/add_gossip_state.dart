@@ -36,13 +36,13 @@ class AddGossipState extends Equatable {
   /// URL del audio (después de subir)
   ///
   /// **Decisión:** String simple (NO MediaReference)
-  /// Ver: audio_imagen.md sección "Opción B: String Simple"
+  /// Ver: CLAUDE.md ADR-003
   final String? audioUrl;
 
   /// URL de la imagen (después de subir)
   ///
   /// **Decisión:** String simple (NO MediaReference)
-  /// Ver: audio_imagen.md sección "Opción B: String Simple"
+  /// Ver: CLAUDE.md ADR-003
   final String? imageUrl;
 
   final bool isLoadingCountries;

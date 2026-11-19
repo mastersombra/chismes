@@ -29,7 +29,7 @@ import '../logging/logging.dart';
 /// **Desventaja:**
 /// - ⚠️ Ligeramente más lento (CREATE + UPDATE)
 ///
-/// Ver: audio_imagen.md sección "Estrategia 1"
+/// Ver: CLAUDE.md MEDIA STRATEGY y docs/ANALYSIS_P1_01_MEDIA.md
 @lazySingleton
 class SupabaseStorageService {
   final SupabaseClient _supabase;

@@ -11,7 +11,7 @@ import 'dart:io';
 /// **Decisión:**
 /// - NO usamos MediaReference (overkill para app simple)
 /// - Usamos String simple (URL de Supabase Storage)
-/// - Ver: audio_imagen.md sección "Opción B: String Simple"
+/// - Ver: CLAUDE.md ADR-003 y MEDIA STRATEGY
 class ImageCompressor {
   /// Comprime imagen para chisme (800x800 px, ~100-150 KB)
   ///
