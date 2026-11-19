@@ -335,9 +335,9 @@ class MockGossipRemoteDataSource implements GossipRemoteDataSource {
 
 ## Tests
 
-- [ ] Tests E2E de golden paths (ver TESTING_ROADMAP.md)
-- [ ] Tests de RLS (ver TESTING_ROADMAP.md)
-- [ ] Tests de Edge Functions (ver TESTING_ROADMAP.md)
+- [ ] Tests E2E de golden paths (ver test/integration/README.md)
+- [ ] Tests de RLS (ver test/integration/README.md)
+- [ ] Tests de Edge Functions (ver test/integration/README.md)
 
 ## Configuración
 
@@ -349,7 +349,7 @@ class MockGossipRemoteDataSource implements GossipRemoteDataSource {
 ## Documentación
 
 - [x] CLAUDE.md actualizado
-- [x] TESTING_ROADMAP.md creado
+- [x] docs/TEST_PLAN_85.md (plan de coverage)
 - [ ] API documentation (futuro)
 - [ ] Guía de deployment (futuro)
 ```

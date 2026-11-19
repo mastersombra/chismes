@@ -116,37 +116,17 @@ Theme.of(context).colorScheme.outline
 
 ---
 
-### 3. Theme Extensions (Helper)
+### 3. Colores semánticos (éxito / advertencia)
 
-**Archivo:** `lib/core/theme/theme_extensions.dart`
+La extensión `theme_extensions.dart` se eliminó el 2026-11-18 porque nadie la usaba.
+Para éxito y advertencia se usan las constantes de `AppTheme` según el brillo:
 
 ```dart
-extension ThemeExtensions on BuildContext {
-  ColorScheme get colors => Theme.of(this).colorScheme;
-  TextTheme get textTheme => Theme.of(this).textTheme;
-  
-  // Semantic colors
-  Color get errorColor => colors.error;
-  Color get successColor => _isLightMode ? AppTheme.successLight : AppTheme.successDark;
-  Color get surfaceColor => colors.surface;
-  
-  // Backgrounds con opacidades
-  Color get errorBackground => errorColor.withOpacity(0.1);
-  Color get successBackground => successColor.withOpacity(0.1);
-  
-  // Borders con opacidades
-  Color get errorBorder => errorColor.withOpacity(0.3);
-  Color get successBorder => successColor.withOpacity(0.3);
-}
-```
+final isLight = Theme.of(context).brightness == Brightness.light;
+final success = isLight ? AppTheme.successLight : AppTheme.successDark;
+final warning = isLight ? AppTheme.warningLight : AppTheme.warningDark;
 
-**Uso:**
-```dart
-// Opción 1: Extension (más corto)
-Container(color: context.errorBackground)
-
-// Opción 2: Theme.of (más explícito)
-Container(color: Theme.of(context).colorScheme.error)
+Container(color: Theme.of(context).colorScheme.error) // errores: colorScheme
 ```
 
 ---
@@ -163,8 +143,8 @@ Container(color: Theme.of(context).colorScheme.error)
 | `Colors.black` | `Theme.of(context).colorScheme.onSurface` | Texto principal |
 | `Colors.white` | `Theme.of(context).colorScheme.surface` | Background principal |
 | `Colors.red` | `Theme.of(context).colorScheme.error` | Errores |
-| `Colors.green` | `context.successColor` | Éxito |
-| `Colors.orange` | `context.warningColor` | Advertencias |
+| `Colors.green` | `AppTheme.successLight` / `successDark` | Éxito |
+| `Colors.orange` | `AppTheme.warningLight` / `warningDark` | Advertencias |
 | `Colors.black26` | `Theme.of(context).shadowColor.withOpacity(0.15)` | Sombras |
 
 ### Typography
@@ -343,7 +323,6 @@ Container(
 |---------|--------|---------|
 | `app_theme.dart` | ✅ | Semantic colors agregados |
 | `app_radius.dart` | ✅ | Tokens creados |
-| `theme_extensions.dart` | ✅ | Helper methods |
 | `add_gossip_screen.dart` | ✅ | Error messages |
 | `image_picker_widget.dart` | ✅ | Loading & placeholder |
 | `gossip_card.dart` | ✅ | Shadow & border radius |
@@ -403,7 +382,7 @@ Al crear un widget nuevo:
 [ ] Usar Theme.of(context).textTheme
 [ ] NO usar BorderRadius.circular(número)
 [ ] Usar BorderRadius.circular(AppRadius.*)
-[ ] Agregar imports necesarios (app_radius, theme_extensions)
+[ ] Agregar imports necesarios (app_radius, app_theme)
 ```
 
 ---

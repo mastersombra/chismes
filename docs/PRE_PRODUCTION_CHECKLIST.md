@@ -35,7 +35,7 @@
 - [x] ✅ RLS en bucket `image` (público con restricciones)
 - [x] ✅ RLS en bucket `audio-quarantine` (privado)
 - [x] ✅ RLS en bucket `audio` (público con restricciones)
-- [ ] 🔴 Verificar políticas con tests (ver TESTING_ROADMAP.md)
+- [ ] 🔴 Verificar políticas con tests (ver `test/integration/README.md`)
 
 ### Datos Sensibles
 
@@ -59,6 +59,7 @@
 - [x] ✅ Audio picker NO expuesto en UI (backend listo, UI oculta)
 - [ ] 🟡 Renombrar `MvpContentModerator` a `LocalFallbackContentModerator`
 - [ ] 🟡 Agregar comentarios de advertencia en mocks
+- [ ] 🟡 `MockLocationRepository` sigue registrado en DI (`@Named('mock') @Singleton`): borrarlo o dejarlo solo para tests
 
 ### Logging y Debug
 
@@ -99,7 +100,7 @@
 - [x] 🟡 Tests de controller (13/61 pasando, 48 rotos)
 - [x] ✅ Cobertura actual: 78.9% (objetivo: >80%)
 
-### Integración (Ver TESTING_ROADMAP.md)
+### Integración
 
 - [ ] 🔴 Tests de autenticación Edge Functions (5 casos)
 - [ ] 🔴 Tests de validación Edge Functions (8 casos)
@@ -107,7 +108,7 @@
 - [ ] 🔴 Tests de RLS storage (6 casos)
 - [ ] 🔴 Tests de media validation (7 casos)
 
-### E2E (Ver TESTING_ROADMAP.md)
+### E2E
 
 - [ ] 🔴 Crear gossip sin media (golden path)
 - [ ] 🔴 Crear gossip con imagen (golden path)
@@ -115,7 +116,7 @@
 - [ ] 🟡 GPS denegado → selección manual
 - [ ] 🟡 Pérdida de red durante submit
 
-**Estimación para completar P0:** 10-12 días (ver TESTING_ROADMAP.md)
+**Estimación para completar P0:** 10-12 días (ver `test/integration/README.md`)
 
 ---
 
@@ -123,9 +124,10 @@
 
 ### Database
 
-- [x] ✅ Migraciones aplicadas (001-012)
+- [x] ✅ Migraciones aplicadas (001-009, consolidadas)
 - [x] ✅ Seeds aplicados (países, regiones, ciudades)
 - [x] ✅ pg_cron configurado (error logs cleanup)
+- [ ] 🔴 Programar `cleanup_orphaned_images()` y `cleanup_quarantine_files()` (existen en `006_media_security.sql`, pero ningún `cron.schedule` las llama)
 - [ ] 🔴 Backups automáticos habilitados
 - [ ] 🔴 Point-in-time recovery configurado
 - [ ] 🟡 Índices verificados (performance)
@@ -188,6 +190,7 @@
 
 ### Build
 
+- [ ] 🔴 Configuración por entorno (dev/staging/prod): hoy solo hay `.env*` vía dotenv, sin flavors ni `--dart-define`
 - [ ] 🔴 Configurar signing (iOS)
 - [ ] 🔴 Configurar signing (Android)
 - [ ] 🔴 Versión bump a 1.0.0
@@ -205,7 +208,7 @@
 - [x] ✅ `.claude/ARCHITECTURE.md` completo
 - [x] ✅ `.claude/PATTERNS.md` completo
 - [x] ✅ `.claude/TESTING.md` completo
-- [x] ✅ `docs/TESTING_ROADMAP.md` creado
+- [x] ✅ `docs/TEST_PLAN_85.md` (plan de coverage, cerrado)
 - [x] ✅ `docs/cleanup_mocks_and_temporal_config.md` creado
 - [ ] 🟡 Changelog inicial (CHANGELOG.md)
 - [ ] 🟡 Contributing guide (CONTRIBUTING.md)
@@ -313,7 +316,7 @@
    - RLS tests
    - Edge Functions tests
    - E2E golden paths
-   - Ver: `docs/TESTING_ROADMAP.md`
+   - Ver: `test/integration/README.md`
 
 2. **Configuración Supabase** (2 días)
    - OpenAI API key en Secrets
