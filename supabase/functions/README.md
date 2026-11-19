@@ -1,270 +1,76 @@
 # Supabase Edge Functions
 
-Edge Functions programadas para tareas de mantenimiento.
+Funciones Deno que corren en Supabase. Cada carpeta es una función (`index.ts`).
+
+## 📋 Funciones
+
+| Función | Qué hace |
+|---|---|
+| `moderate-gossip` | Crea chismes: valida input, rate limit, modera y sube media a cuarentena. Escribe con el RPC `upsert_gossip_idempotent()` (la app nunca hace INSERT directo, ver `.claude/SECURITY.md`). |
+| `report-gossip` | Permite reportar chismes inapropiados. |
+| `delete-account` | Borra la cuenta del usuario y todos sus datos (GDPR). |
+| `log-error` | Recibe logs de error de la app (autenticado, sanitiza el contexto). |
+| `search-cities` | Autocomplete remoto de ciudades. |
+
+> **Limpieza de idempotency keys:** no es una Edge Function. La hace el job de
+> pg_cron `idempotency-keys-cleanup` (diario 3:30 UTC), que llama a
+> `cleanup_old_idempotency_keys()` (`supabase/migrations/010_idempotency_cleanup_cron.sql`).
+> La función `cleanup-idempotency` se eliminó el 2026-11-18 por redundante.
 
 ---
 
-## 📋 **Funciones Disponibles**
-
-### **cleanup-idempotency**
-
-Limpia `idempotency_key` de gossips mayores a 24 horas.
-
-**Propósito:** Prevenir acumulación indefinida de keys sin causar contención en inserts.
-
-**Programación:** Diario a las 3 AM UTC (horario de baja demanda)
-
-**Performance:**
-- ~500ms para 1M gossips
-- ~5s para 10M gossips
-- Usa índice parcial para optimización
-
----
-
-## 🚀 **Setup Inicial**
-
-### **1. Instalar Supabase CLI**
+## 🚀 Setup
 
 ```bash
-# Si no está instalado
-brew install supabase/tap/supabase
-
-# Verificar versión
-supabase --version
-```
-
-### **2. Login**
-
-```bash
+brew install supabase/tap/supabase   # si no está instalado
 supabase login
+supabase link --project-ref <your-project-id>
 ```
 
-### **3. Link al proyecto**
+## 📦 Deploy
 
 ```bash
-# Desde raíz del proyecto
-cd /Users/alejo/Documents/Piloto/chismes
-
-# Link (si no está linkeado)
-supabase link --project-ref <project-id>
+supabase functions deploy moderate-gossip      # una función
+supabase functions deploy moderate-gossip --debug
+supabase functions deploy                      # todas
 ```
 
----
+`scripts/reset-database.sh` despliega todas las carpetas de este directorio.
 
-## 📦 **Deploy de Funciones**
-
-### **Deploy individual**
-
-```bash
-# Deploy cleanup-idempotency
-supabase functions deploy cleanup-idempotency
-
-# Deploy con logs verbosos
-supabase functions deploy cleanup-idempotency --debug
-```
-
-### **Deploy todas las funciones**
-
-```bash
-# Deploy todas
-supabase functions deploy
-```
-
----
-
-## ⏰ **Programar Ejecución (Cron)**
-
-### **Programar cleanup-idempotency**
-
-> La CLI **no** tiene `supabase functions schedule`. Hoy no hay cron para esta
-> función en las migraciones (el único es `error-logs-cleanup`, en `003_error_logs.sql`).
-> Además, el trigger `gossips_cleanup_old_idempotency_keys` (`001_gossips.sql`) ya
-> limpia las keys viejas, así que este cron es opcional/redundante: decidir uno de los dos.
-
-Opciones para programarla (diario a las 3 AM UTC, `0 3 * * *`):
-
-1. **Dashboard:** Integrations → Cron → nuevo job → tipo *Supabase Edge Function* → `cleanup-idempotency`.
-2. **SQL (pg_cron + pg_net)** en una migración:
-
-```sql
-SELECT cron.schedule(
-  'cleanup-idempotency',
-  '0 3 * * *',
-  $$ SELECT net.http_post(
-       url := 'https://<project-ref>.supabase.co/functions/v1/cleanup-idempotency',
-       headers := jsonb_build_object('Authorization', 'Bearer <service-role-o-anon-key>')
-     ) $$
-);
-```
-
-No commitear keys reales: guardarlas en Vault (`vault.decrypted_secrets`) y leerlas desde el job.
-
-### **Sintaxis cron**
-
-```
-┌───────────── minuto (0-59)
-│ ┌───────────── hora (0-23)
-│ │ ┌───────────── día del mes (1-31)
-│ │ │ ┌───────────── mes (1-12)
-│ │ │ │ ┌───────────── día de la semana (0-6, 0=domingo)
-│ │ │ │ │
-* * * * *
-
-Ejemplos:
-- "0 3 * * *"     → 3 AM diario
-- "0 */6 * * *"   → Cada 6 horas
-- "0 2 * * 0"     → 2 AM cada domingo
-- "*/30 * * * *"  → Cada 30 minutos
-```
-
----
-
-## 🔍 **Monitoreo**
-
-### **Ver funciones programadas**
+## 🔍 Logs y pruebas manuales
 
 ```bash
 supabase functions list
+supabase functions logs moderate-gossip --tail
 ```
 
-Salida esperada:
-```
-NAME                 CRON           LAST DEPLOYED
-cleanup-idempotency  0 3 * * *      2026-10-22 04:00 UTC
-```
-
-### **Ver logs en tiempo real**
+La CLI **no** tiene `functions invoke` ni `functions schedule`. Para probar una
+función, usar curl con un JWT de usuario (las funciones exigen autenticación):
 
 ```bash
-# Tail logs
-supabase functions logs cleanup-idempotency --tail
-
-# Ver últimos N logs
-supabase functions logs cleanup-idempotency --limit 50
+curl -X POST https://<project-ref>.supabase.co/functions/v1/<funcion> \
+  -H "Authorization: Bearer <user-jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{...}'
 ```
 
-### **Ejecutar manualmente (testing)**
+## ⏰ Tareas programadas
 
-```bash
-# La CLI no tiene `functions invoke`: usar curl
-curl -X POST https://<project>.supabase.co/functions/v1/cleanup-idempotency \
-  -H "Authorization: Bearer <anon-key>"
-```
-
-**Respuesta esperada:**
-```json
-{
-  "cleaned": 1234,
-  "timestamp": "2026-10-22T03:00:00.000Z",
-  "duration_ms": 523
-}
-```
-
----
-
-## 📊 **Verificar Efectividad**
-
-### **Query para monitorear acumulación**
+Se programan con **pg_cron** dentro de una migración (ver `003_error_logs.sql`,
+job `error-logs-cleanup`), no desde la CLI. Para llamar a una Edge Function desde
+un cron: Dashboard → Integrations → Cron, o `pg_cron` + `net.http_post` con la key
+guardada en Vault (nunca commitear keys).
 
 ```sql
-SELECT
-  COUNT(*) FILTER (WHERE idempotency_key IS NOT NULL) AS with_key,
-  COUNT(*) AS total,
-  ROUND(100.0 * COUNT(*) FILTER (WHERE idempotency_key IS NOT NULL) / COUNT(*), 2) AS percentage,
-  COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '24 hours') AS last_24h
-FROM gossips;
+SELECT jobname, schedule, active FROM cron.job;   -- ver jobs
+SELECT cron.unschedule('<jobname>');              -- quitar uno
 ```
 
-**Valores esperados:**
-- `percentage`: 1-5% (solo gossips de últimas 24h tienen key)
-- Si `percentage > 10%` → limpieza no está ejecutándose
+## 🔐 Secrets
 
-### **Ver historial de limpiezas**
-
-```sql
--- Si guardas logs en tabla (opcional)
-SELECT
-  executed_at,
-  keys_cleaned,
-  duration_ms
-FROM cleanup_logs
-ORDER BY executed_at DESC
-LIMIT 10;
-```
+Las funciones reciben automáticamente `SUPABASE_URL`, `SUPABASE_ANON_KEY` y
+`SUPABASE_SERVICE_ROLE_KEY`. Otros secrets: `supabase secrets set NOMBRE=valor`.
 
 ---
 
-## 🛠️ **Troubleshooting**
-
-### **Función no se ejecuta automáticamente**
-
-```bash
-# Verificar que está programada
-supabase functions list
-
-# El cron no aparece en la CLI: revisar en SQL
-# SELECT jobname, schedule, active FROM cron.job;
-```
-
-### **Ver errores en logs**
-
-```bash
-# Filtrar solo errores
-supabase functions logs cleanup-idempotency --tail | grep -i error
-```
-
-### **Ejecutar manualmente para testing**
-
-```bash
-# Invocar y ver resultado inmediatamente (respuesta: {"cleaned": N, "timestamp": ..., "duration_ms": ...})
-curl -X POST https://<project-ref>.supabase.co/functions/v1/cleanup-idempotency \
-  -H "Authorization: Bearer <anon-key>"
-```
-
-### **Desprogramar función (si necesario)**
-
-```bash
-# Eliminar cron pero mantener función (SQL)
-# SELECT cron.unschedule('cleanup-idempotency');
-
-# Eliminar función completamente
-supabase functions delete cleanup-idempotency
-```
-
----
-
-## 🔐 **Secrets y Variables de Entorno**
-
-Las Edge Functions tienen acceso automático a:
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-
-No necesitas configurarlas manualmente.
-
----
-
-## 📚 **Documentación Adicional**
-
-- **Análisis de opciones:** `docs/ANALYSIS_P6_IDEMPOTENCY_OPTIONS.md`
-- **Migración 009:** `supabase/migrations/009_remove_idempotency_cleanup_trigger.sql`
-- **Refactor P6:** `docs/REFACTOR_P6_FEED_PAGINATION_MEDIA.md`
-
----
-
-## 🎯 **Checklist de Setup**
-
-- [ ] Supabase CLI instalado
-- [ ] Login completado
-- [ ] Proyecto linkeado
-- [ ] Edge Function deployed
-- [ ] Cron programado (3 AM diario)
-- [ ] Testing manual ejecutado
-- [ ] Logs verificados
-- [ ] Query de monitoreo ejecutado
-- [ ] Documentación leída
-
----
-
-**Última actualización:** 2026-10-22  
-**Mantenedor:** Alejo
+**Última actualización:** 2026-11-18

@@ -1,7 +1,7 @@
 # Migraciones de Base de Datos
 
 **Última consolidación:** 2026-10-25  
-**Total de migraciones:** 6
+**Total de migraciones:** 10
 
 ---
 
@@ -88,6 +88,19 @@
 **Fusionó:**
 - `006_secure_media_quarantine.sql` (images)
 - `008_secure_audio.sql` (audio)
+
+---
+
+### 007–009
+- `007_check_email_exists.sql`: RPC `check_email_exists_and_confirmed`
+- `008_home_feed_functions.sql`: funciones del feed de Home
+- `009_search_gossips_function.sql`: RPC `search_gossips`
+
+---
+
+### 010_idempotency_cleanup_cron.sql
+- ✅ Quita el trigger `gossips_cleanup_old_idempotency_keys` (UPDATE dentro de los inserts)
+- ✅ Job pg_cron `idempotency-keys-cleanup` (diario 3:30 UTC) → `SELECT cleanup_old_idempotency_keys()`
 
 ---
 

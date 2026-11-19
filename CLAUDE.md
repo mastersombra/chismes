@@ -503,7 +503,8 @@ open coverage/html/index.html
 
 ### Development
 ```bash
-flutter run
+flutter run                                                  # dev (.env)
+flutter build apk --dart-define-from-file=config/prod.json   # staging/prod (ver README "Entornos")
 flutter clean && flutter pub get
 ```
 

@@ -151,7 +151,7 @@ echo ""
 echo "⏰ Verificando schedulers de mantenimiento..."
 echo ""
 
-# ✅ ACTUALIZADO: pg_cron se configura automáticamente con migración 012
+# pg_cron se configura en las migraciones 003 (error-logs-cleanup) y 010 (idempotency-keys-cleanup)
 # No requiere acción manual en Dashboard
 
 echo "Verificando jobs de pg_cron..."

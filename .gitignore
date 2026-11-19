@@ -49,3 +49,6 @@ app.*.map.json
 .env.local
 .env.*.local
 .env.test
+# Config por entorno (--dart-define-from-file): solo se commitea la plantilla
+config/*.json
+!config/env.example.json
