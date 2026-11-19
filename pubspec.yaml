@@ -45,7 +45,6 @@ dependencies:
   collection: ^1.18.0
   get_it: ^7.6.4
   injectable: ^2.3.2
-  provider: ^6.1.2
 
   # Supabase
   supabase_flutter: ^2.5.6
