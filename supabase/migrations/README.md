@@ -102,6 +102,17 @@
 - ✅ Quita el trigger `gossips_cleanup_old_idempotency_keys` (UPDATE dentro de los inserts)
 - ✅ Job pg_cron `idempotency-keys-cleanup` (diario 3:30 UTC) → `SELECT cleanup_old_idempotency_keys()`
 
+### 011_media_cleanup_storage_api.sql
+- ✅ Borra las 4 funciones `cleanup_*` de 006 (hacían `DELETE FROM storage.objects`: quitaban la metadata pero dejaban el archivo)
+- ✅ RPC `get_media_cleanup_candidates()` (solo `service_role`): cuarentena >24 h y públicos huérfanos >7 días
+- ✅ Job pg_cron `media-cleanup` (diario 4:00 UTC) → Edge Function `cleanup-media` vía `net.http_post`
+- ⚠️ Requiere secrets en Vault y en la función: ver `supabase/functions/README.md` → "Limpieza de media"
+
+### 012_revoke_client_execute_server_functions.sql
+- 🔴 Fix de seguridad: quita EXECUTE a `anon`/`authenticated` en 9 funciones SECURITY DEFINER solo de servidor (`upsert_gossip_idempotent`, `create_gossip_draft`, rate limit, limpiezas, `check_error_log_rate`, `calculate_profile_completion`)
+- Antes, sin login se podía publicar un chisme aprobado a nombre de otro usuario vía `/rest/v1/rpc/upsert_gossip_idempotent`
+- Regresión: `supabase/tests/001_gossip_creation_security_test.sql`
+
 ---
 
 ## 🔄 Cómo usar
@@ -165,6 +176,24 @@ supabase/migrations_backup/
 
 Contiene las 12 migraciones originales por si necesitas referencia histórica.
 
+### Nombres anteriores → archivo actual
+
+Los docs de `docs/` (reportes históricos) citan nombres previos a la
+consolidación. Equivalencia:
+
+| Nombre citado en docs | Hoy está en |
+|---|---|
+| `001_create_gossips_table`, `001_gossips_merged`, `002_add_idempotency`, `007_atomic_idempotency`, `008_atomic_idempotency`, `010_create_gossip_reports`, `011_add_audio_storage_path_to_upsert` | `001_gossips.sql` |
+| `002_create_location_tables`, `003_create_location_tables`, `002_location_search_functions`, `011_fix_location_permissions` | `002_location.sql` |
+| `003_create_error_logs`, `004_create_error_logs`, `019_create_error_logs`, `009_schedule_error_logs_cleanup`, `012_schedule_error_logs_cleanup` | `003_error_logs.sql` |
+| `004_create_rate_limits_table`, `005_create_rate_limits_table`, `006_atomic_rate_limiting` | `004_rate_limits.sql` |
+| `005_create_profiles_table`, `006_create_profiles_table`, `006_add_user_avatar_column`, `012_fix_profiles_insert_policy` | `005_profiles.sql` |
+| `006_secure_media_quarantine`, `007_secure_media_quarantine`, `007_secure_media_storage`, `008_secure_audio`, `010_secure_audio_quarantine` | `006_media_security.sql` |
+| `009_remove_idempotency_cleanup_trigger` (nunca existió con ese nombre) | `010_idempotency_cleanup_cron.sql` |
+| `002_insert_sample_data` | Eliminado (P0-03), sin equivalente |
+
+Los números de línea citados en esos docs (`archivo.sql:11`) ya no aplican.
+
 ---
 
 ## 📊 Estado del esquema
@@ -200,7 +229,9 @@ Contiene las 12 migraciones originales por si necesitas referencia histórica.
 - `on_profile_completion_check` - Calcular profile_completed
 
 ### Schedulers (pg_cron)
-- Limpieza de error_logs (semanal)
+- `error-logs-cleanup`: limpieza de error_logs (domingos 3:00 UTC)
+- `idempotency-keys-cleanup`: idempotency keys >24 h (diario 3:30 UTC)
+- `media-cleanup`: media huérfana y cuarentena vía Edge Function `cleanup-media` (diario 4:00 UTC)
 
 ---
 

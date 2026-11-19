@@ -13,16 +13,30 @@ Orden sugerido. El detalle de cada ítem está en su sección.
 
 | # | Pendiente | Prioridad | Tipo | Requiere |
 |---|---|---|---|---|
-| 1 | Limpieza de media: `cleanup_orphaned_images()` y `cleanup_quarantine_files()` hacen `DELETE FROM storage.objects` (borra el registro, **no el archivo**; Supabase pide usar la Storage API) y no cubren `audio-quarantine`. Reescribir como Edge Function con `storage.remove()` + cron | 🔴 | Backend | Edge Function + cron |
+| 1 | ~~Limpieza de media~~ ✅ Edge Function `cleanup-media` (Storage API) + pg_cron `media-cleanup` (`011_media_cleanup_storage_api.sql`); cubre imágenes y audio. Falta setup de secrets (ver `supabase/functions/README.md`) | ✅ | Backend | Aplicar 011 + secrets + deploy |
 | 2 | ~~Limpieza de idempotency keys~~ ✅ pg_cron directo (`010_idempotency_cleanup_cron.sql`); trigger y Edge Function eliminados | ✅ | Backend | Aplicar migración 010 |
 | 3 | ~~Configuración por entorno~~ ✅ `--dart-define` (`AppEnvironment`, `config/<env>.json`; ver README "Entornos"). Falta crear `config/staging.json`/`prod.json` y un proyecto Supabase de staging si se quiere | ✅ | Infra | Crear los JSON |
-| 4 | Signing iOS/Android, versión 1.0.0, beta (TestFlight / internal track) | 🔴 | Deploy | Cuentas de Apple/Google |
-| 5 | `MvpContentModerator`, `ContentModerator` y `MvpModerationPolicy` no se usan (la moderación real es la Edge Function `moderate-gossip`): conectarlos como respaldo local o borrarlos | 🟡 | Código | Decisión de producto |
-| 6 | Regla de `PATTERNS.md` "NO usar GetIt en widgets" contradice el patrón real (todas las screens usan `getIt<Controller>()`): ajustar la regla o refactorizar | 🟡 | Arquitectura | Decisión |
-| 7 | 11 `debugPrint` en `lib/` (`error_handler`, `remote_logger`, `device_info_provider`...) → `AppLogger` | 🟡 | Código | — |
-| 8 | ~20 docs de `docs/` citan migraciones con nombres viejos (`006_atomic_rate_limiting.sql`, etc.; hoy son `001`–`009`) | 🟡 | Docs | — |
-| 10 | `supabase/tests/001_gossip_creation_security_test.sql` está roto (usa `'fake-user-123'` como UUID y aborta antes de probar). La regla sí se cumple (verificado a mano: el INSERT directo falla por RLS) | 🟡 | Tests | — |
+| 4 | App ID definitivo `com.shadows.chismes` ✅ y signing release Android vía `key.properties` ✅ (`docs/ANDROID_RELEASE_SIGNING.md`). Falta: generar keystore, clients OAuth de Google con el ID nuevo (Android + iOS, `GoogleService-Info.plist` y `REVERSED_CLIENT_ID`), registrar el App ID en Apple, beta (TestFlight / internal track) | 🔴 | Deploy | Cuentas de Apple/Google |
+| 5 | ~~Moderador local duplicado~~ ✅ eliminado de `lib/` (2026-11-19); la moderación vive solo en `moderate-gossip`. Ver "Hoja de ruta de moderación" | ✅ | Código | — |
+| 6 | ~~Regla GetIt~~ ✅ `PATTERNS.md` ajustado al patrón real: screens/root usan `getIt` en `initState`, widgets hoja no. Deuda: `gossip_card`, `language_selector`, `settings_section` aún lo usan | ✅ | Arquitectura | — |
+| 7 | ~~`debugPrint` en `lib/`~~ ✅ No se pasan a `AppLogger` los del propio logging (`RemoteLogger`, `AppLogger`, `DeviceInfoProvider`): sería un ciclo. Ahora solo imprimen en debug (antes salían en release). `ErrorHandler` ya estaba bajo `kDebugMode`. Contador de rebuilds de `AddGossipScreen` eliminado | ✅ | Código | — |
+| 8 | ~~Docs con nombres viejos de migraciones~~ ✅ Tabla de equivalencias en `supabase/migrations/README.md` ("Nombres anteriores → archivo actual"). No se reescribieron los reportes históricos: un reemplazo masivo rompía su contexto (`mv`, mapeos, números de línea) | ✅ | Docs | — |
+| 10 | ~~Test SQL roto~~ ✅ `001_gossip_creation_security_test.sql` reescrito con UUIDs reales; verificado que falla sin la 012 y pasa con ella | ✅ | Tests | — |
+| 11 | 🔴 **Vulnerabilidad corregida (2026-11-19):** `upsert_gossip_idempotent` y otras 8 funciones SECURITY DEFINER eran ejecutables por `anon`: sin login se podía publicar un chisme aprobado a nombre de cualquier usuario. Fix: `012_revoke_client_execute_server_functions.sql`. **Aplicar en prod cuanto antes** | 🔴 | Seguridad | `supabase db push` |
 | 9 | Apple Sign-In: código listo, falta config externa (ver `docs/google_sign_in_setup.md`) | 🟡 | Externo | Apple Developer (USD 99/año) |
+
+
+### 🛡️ Hoja de ruta de moderación (decidida 2026-11-19)
+
+Principio: **toda decisión de moderación en el servidor**. La app nunca modera
+(se puede saltar modificando el APK, y expondría las reglas).
+
+1. 🔴 **Reglas en tabla** (`moderation_rules`: términos, patrones, umbrales) leídas por `moderate-gossip`, editables sin deploy ni release de app.
+2. 🔴 **Cola de revisión humana** para el veredicto `review` (hoy queda en `draft+pending` sin herramienta para revisarlo).
+3. 🔴 **Reportes → cola**: conectar `report-gossip` a la misma cola, con auto-ocultar tras N reportes.
+4. 🟡 **Panel de moderación** (aprobar/rechazar, historial, apelaciones).
+5. 🔴 **Moderación de imagen/audio**: hoy `moderateContent()` solo recibe asunto y contenido, y la media pasa a los buckets públicos según el veredicto del **texto**. Una imagen inapropiada con texto inocente se publica. Mínimo: pasar la imagen por `omni-moderation-latest` (acepta imágenes) antes de `moveToPublicBucket()`; audio: transcribir y moderar el texto, o mandarlo a `review`.
+6. 🟢 **Aviso previo en la app** vía un endpoint de pre-validación del servidor (no copiando reglas).
 
 ---
 
@@ -77,7 +91,7 @@ Orden sugerido. El detalle de cada ítem está en su sección.
 - [x] ✅ `MockGossipLocalDataSource` NO registrado en DI
 - [x] ✅ `spike-user` solo en tests (no en código producción)
 - [x] ✅ Audio picker NO expuesto en UI (backend listo, UI oculta)
-- [ ] 🟡 `MvpContentModerator` / `ContentModerator` sin uso: conectar como respaldo o borrar (renombrar no aporta mientras no se use)
+- [x] ✅ `MvpContentModerator` / `ContentModerator` eliminados (2026-11-19): reglas solo en el servidor
 - [ ] 🟡 Agregar comentarios de advertencia en mocks
 - [x] ✅ `MockLocationRepository` eliminado de DI (2026-11-18)
 
@@ -147,7 +161,8 @@ Orden sugerido. El detalle de cada ítem está en su sección.
 - [x] ✅ Migraciones aplicadas (001-009, consolidadas)
 - [x] ✅ Seeds aplicados (países, regiones, ciudades)
 - [x] ✅ pg_cron configurado (error logs cleanup)
-- [ ] 🔴 Programar `cleanup_orphaned_images()` y `cleanup_quarantine_files()` (existen en `006_media_security.sql`, pero ningún `cron.schedule` las llama)
+- [x] ✅ Limpieza de media programada: job `media-cleanup` → Edge Function `cleanup-media` (migración 011)
+- [ ] 🔴 Aplicar 011 en prod + secrets `MEDIA_CLEANUP_SECRET` y Vault (`project_url`, `anon_key`, `media_cleanup_secret`)
 - [ ] 🔴 Backups automáticos habilitados
 - [ ] 🔴 Point-in-time recovery configurado
 - [ ] 🟡 Índices verificados (performance)
@@ -211,9 +226,10 @@ Orden sugerido. El detalle de cada ítem está en su sección.
 ### Build
 
 - [x] ✅ Configuración por entorno con `--dart-define` (`lib/core/config/app_environment.dart`)
-- [ ] 🔴 Configurar signing (iOS)
-- [ ] 🔴 Configurar signing (Android)
-- [ ] 🔴 Versión bump a 1.0.0
+- [ ] 🔴 Configurar signing (iOS): firma automática con el team ya configurado; falta registrar `com.shadows.chismes` en Apple Developer
+- [x] ✅ Signing (Android) preparado: `key.properties` → ver `docs/ANDROID_RELEASE_SIGNING.md` (falta generar el keystore)
+- [x] ✅ Versión 1.0.0+1 (`pubspec.yaml`)
+- [x] ✅ App ID definitivo `com.shadows.chismes` (Android, iOS, macOS, Linux)
 - [ ] 🔴 Build número inicial
 - [ ] 🟡 ProGuard/R8 configurado (Android)
 - [ ] 🟡 Obfuscación habilitada
@@ -361,8 +377,8 @@ Orden sugerido. El detalle de cada ítem está en su sección.
 
 1. **Mejoras de código** (2 días)
    - ~~Arreglar controller tests~~ ✅ (suite 100% verde, coverage 97%)
-   - Eliminar debugPrint (11 en `lib/`)
-   - Decidir `MvpContentModerator` (conectar o borrar)
+   - ~~Eliminar debugPrint~~ ✅ solo debug, dentro del logging
+   - ~~Decidir `MvpContentModerator`~~ ✅ eliminado
 
 2. **Performance** (2 días)
    - Benchmarks
