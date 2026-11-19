@@ -48,10 +48,26 @@ lib/
 flutter pub get
 ```
 
-3. Ejecutar la aplicación:
+3. Copiar `.env.example` a `.env` y completar `SUPABASE_URL` / `SUPABASE_ANON_KEY` (proyecto de desarrollo).
+
+4. Ejecutar la aplicación:
 ```bash
 flutter run
 ```
+
+### Entornos (dev / staging / prod)
+
+El entorno se elige al compilar con `--dart-define`:
+
+| Entorno | Comando | Credenciales |
+|---|---|---|
+| dev (default) | `flutter run` | `.env` |
+| staging | `flutter build apk --dart-define-from-file=config/staging.json` | `config/staging.json` |
+| prod | `flutter build ipa --dart-define-from-file=config/prod.json` | `config/prod.json` |
+
+- Crear `config/<entorno>.json` a partir de `config/env.example.json` (los reales están en `.gitignore`).
+- Un build `staging`/`prod` sin `SUPABASE_URL`/`SUPABASE_ANON_KEY` definidos **falla al arrancar**
+  (nunca usa el `.env` de desarrollo). Ver `lib/core/config/app_environment.dart`.
 
 ## Dependencias Principales
 

@@ -15,7 +15,7 @@ Orden sugerido. El detalle de cada ítem está en su sección.
 |---|---|---|---|---|
 | 1 | Limpieza de media: `cleanup_orphaned_images()` y `cleanup_quarantine_files()` hacen `DELETE FROM storage.objects` (borra el registro, **no el archivo**; Supabase pide usar la Storage API) y no cubren `audio-quarantine`. Reescribir como Edge Function con `storage.remove()` + cron | 🔴 | Backend | Edge Function + cron |
 | 2 | ~~Limpieza de idempotency keys~~ ✅ pg_cron directo (`010_idempotency_cleanup_cron.sql`); trigger y Edge Function eliminados | ✅ | Backend | Aplicar migración 010 |
-| 3 | Configuración por entorno (dev/staging/prod) | 🔴 | Infra | Diseño (flavors o `--dart-define`) |
+| 3 | ~~Configuración por entorno~~ ✅ `--dart-define` (`AppEnvironment`, `config/<env>.json`; ver README "Entornos"). Falta crear `config/staging.json`/`prod.json` y un proyecto Supabase de staging si se quiere | ✅ | Infra | Crear los JSON |
 | 4 | Signing iOS/Android, versión 1.0.0, beta (TestFlight / internal track) | 🔴 | Deploy | Cuentas de Apple/Google |
 | 5 | `MvpContentModerator`, `ContentModerator` y `MvpModerationPolicy` no se usan (la moderación real es la Edge Function `moderate-gossip`): conectarlos como respaldo local o borrarlos | 🟡 | Código | Decisión de producto |
 | 6 | Regla de `PATTERNS.md` "NO usar GetIt en widgets" contradice el patrón real (todas las screens usan `getIt<Controller>()`): ajustar la regla o refactorizar | 🟡 | Arquitectura | Decisión |
@@ -210,7 +210,7 @@ Orden sugerido. El detalle de cada ítem está en su sección.
 
 ### Build
 
-- [ ] 🔴 Configuración por entorno (dev/staging/prod): hoy solo hay `.env*` vía dotenv, sin flavors ni `--dart-define`
+- [x] ✅ Configuración por entorno con `--dart-define` (`lib/core/config/app_environment.dart`)
 - [ ] 🔴 Configurar signing (iOS)
 - [ ] 🔴 Configurar signing (Android)
 - [ ] 🔴 Versión bump a 1.0.0
