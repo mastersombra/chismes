@@ -1,4 +1,8 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:chismes/core/services/location_service.dart';
@@ -1108,4 +1112,199 @@ void main() {
   // 3. Usar paquetes como geolocator_test para simular respuestas
   //
   // Estos métodos están probados manualmente y cubiertos por tests E2E.
+
+  group('LocationService - GPS y geocoding', () {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    const geolocatorChannel = MethodChannel('flutter.baseflow.com/geolocator');
+
+    late MockAppLogger logger;
+    late LocationService service;
+    late List<MethodCall> calls;
+    // Respuestas del canal nativo de geolocator por método.
+    late Map<String, Object? Function()> native;
+
+    setUp(() {
+      logger = MockAppLogger();
+      service = LocationService(logger);
+      calls = [];
+      native = {
+        'isLocationServiceEnabled': () => true,
+        'checkPermission': () => 2, // whileInUse
+        'requestPermission': () => 2,
+        'getCurrentPosition': () => {
+              'latitude': 4.711,
+              'longitude': -74.072,
+              'timestamp': 1700000000000,
+            },
+      };
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(geolocatorChannel, (call) async {
+        calls.add(call);
+        final answer = native[call.method];
+        if (answer == null) throw StateError('No esperado: ${call.method}');
+        return answer();
+      });
+      addTearDown(() => TestDefaultBinaryMessengerBinding
+          .instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(geolocatorChannel, null));
+    });
+
+    List<String> methods() => calls.map((c) => c.method).toList();
+
+    group('getCurrentPosition', () {
+      test('retorna la posición con precisión baja cuando hay permiso',
+          () async {
+        final position = await service.getCurrentPosition();
+
+        expect(position!.latitude, 4.711);
+        expect(position.longitude, -74.072);
+        expect(methods(), [
+          'isLocationServiceEnabled',
+          'checkPermission',
+          'getCurrentPosition',
+        ]);
+        final args = calls.last.arguments as Map;
+        expect(args['accuracy'], LocationAccuracy.low.index);
+        verify(logger.i('GPS location obtained')).called(1);
+      });
+
+      test('retorna null sin pedir permisos si el GPS está apagado',
+          () async {
+        native['isLocationServiceEnabled'] = () => false;
+
+        expect(await service.getCurrentPosition(), isNull);
+        expect(methods(), ['isLocationServiceEnabled']);
+        verify(logger.w('Location service disabled')).called(1);
+      });
+
+      test('solicita permiso si está denegado y continúa si lo otorgan',
+          () async {
+        native['checkPermission'] = () => 0; // denied
+
+        final position = await service.getCurrentPosition();
+
+        expect(position, isNotNull);
+        expect(position!.latitude, 4.711);
+        expect(methods(), contains('requestPermission'));
+      });
+
+      test('retorna null si el usuario vuelve a denegar el permiso',
+          () async {
+        native['checkPermission'] = () => 0;
+        native['requestPermission'] = () => 0;
+
+        expect(await service.getCurrentPosition(), isNull);
+        expect(methods(), isNot(contains('getCurrentPosition')));
+        verify(logger.w('Location permissions denied')).called(1);
+      });
+
+      test('retorna null si el permiso está denegado para siempre', () async {
+        native['checkPermission'] = () => 1; // deniedForever
+
+        expect(await service.getCurrentPosition(), isNull);
+        expect(methods(), isNot(contains('requestPermission')));
+        expect(methods(), isNot(contains('getCurrentPosition')));
+        verify(logger.w('Location permissions permanently denied')).called(1);
+      });
+
+      test('retorna null y loguea warning si el plugin falla', () async {
+        native['getCurrentPosition'] =
+            () => throw PlatformException(code: 'TIMEOUT');
+
+        expect(await service.getCurrentPosition(), isNull);
+        verify(logger.w('Error getting GPS location',
+                context: anyNamed('context')))
+            .called(1);
+      });
+    });
+
+    group('getCityFromCoordinates', () {
+      late _FakeGeocoding geocoding;
+
+      setUp(() {
+        geocoding = _FakeGeocoding();
+        GeocodingPlatform.instance = geocoding;
+      });
+
+      test('retorna ciudad, región y país del primer placemark', () async {
+        geocoding.result = [
+          Placemark(
+              locality: 'Bogotá',
+              administrativeArea: 'Cundinamarca',
+              country: 'Colombia'),
+          Placemark(locality: 'Otra', administrativeArea: 'X', country: 'Y'),
+        ];
+
+        final location = await service.getCityFromCoordinates(4.711, -74.072);
+
+        expect(geocoding.requested, [4.711, -74.072]);
+        expect(location!.cityName, 'Bogotá');
+        expect(location.regionName, 'Cundinamarca');
+        expect(location.countryName, 'Colombia');
+      });
+
+      test('usa subAdministrativeArea si no hay locality', () async {
+        geocoding.result = [
+          Placemark(
+              subAdministrativeArea: 'Sabana Centro',
+              administrativeArea: 'Cundinamarca',
+              country: 'Colombia'),
+        ];
+
+        final location = await service.getCityFromCoordinates(1, 2);
+
+        expect(location!.cityName, 'Sabana Centro');
+      });
+
+      test('usa administrativeArea como ciudad si no hay nada más', () async {
+        geocoding.result = [
+          Placemark(administrativeArea: 'Cundinamarca', country: 'Colombia'),
+        ];
+
+        final location = await service.getCityFromCoordinates(1, 2);
+
+        expect(location!.cityName, 'Cundinamarca');
+        expect(location.regionName, 'Cundinamarca');
+      });
+
+      test('retorna null si no hay placemarks', () async {
+        geocoding.result = [];
+
+        expect(await service.getCityFromCoordinates(1, 2), isNull);
+        verify(logger.w('Location information not found')).called(1);
+      });
+
+      test('retorna null si falta el país', () async {
+        geocoding.result = [
+          Placemark(locality: 'Bogotá', administrativeArea: 'Cundinamarca'),
+        ];
+
+        expect(await service.getCityFromCoordinates(1, 2), isNull);
+        verify(logger.w('Incomplete location information')).called(1);
+      });
+
+      test('retorna null y loguea warning si el geocoding falla', () async {
+        geocoding.error = PlatformException(code: 'NOT_FOUND');
+
+        expect(await service.getCityFromCoordinates(1, 2), isNull);
+        verify(logger.w('Reverse geocoding error',
+                context: anyNamed('context')))
+            .called(1);
+      });
+    });
+  });
+}
+
+class _FakeGeocoding extends GeocodingPlatform {
+  List<Placemark> result = [];
+  Object? error;
+  List<double>? requested;
+
+  @override
+  Future<List<Placemark>> placemarkFromCoordinates(
+      double latitude, double longitude) async {
+    requested = [latitude, longitude];
+    if (error != null) throw error!;
+    return result;
+  }
 }
