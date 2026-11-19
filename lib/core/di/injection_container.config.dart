@@ -80,8 +80,6 @@ import '../../features/home/presentation/controllers/popular_tab_controller.dart
     as _i840;
 import '../../features/location/data/datasources/supabase_location_remote_data_source.dart'
     as _i852;
-import '../../features/location/data/repositories/mock_location_repository.dart'
-    as _i42;
 import '../../features/location/data/repositories/supabase_location_repository.dart'
     as _i859;
 import '../../features/location/domain/repositories/location_repository.dart'
@@ -136,10 +134,6 @@ _i174.GetIt $initGetIt(
     () => _i817.LocaleNotifier(gh<_i460.SharedPreferences>()),
   );
   gh.singleton<_i1000.IdGenerator>(() => _i458.TimestampIdGenerator());
-  gh.singleton<_i332.LocationRepository>(
-    () => _i42.MockLocationRepository(),
-    instanceName: 'mock',
-  );
   gh.singleton<_i332.RemoteLogger>(
     () => _i332.SupabaseRemoteLogger(gh<_i454.SupabaseClient>()),
   );
