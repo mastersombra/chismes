@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+import 'package:chismes/l10n/app_localizations.dart';
 import 'package:chismes/core/services/deep_link_service.dart';
 import 'package:chismes/core/logging/logging.dart';
 
@@ -262,250 +266,6 @@ void main() {
     });
   });
 
-  group('DeepLinkService - URI Parsing Logic', () {
-    group('URI validation', () {
-      test('debe aceptar scheme "chismes"', () {
-        const validUri = 'chismes://gossip/123';
-        final uri = Uri.parse(validUri);
-
-        expect(uri.scheme, 'chismes');
-      });
-
-      test('debe rechazar scheme incorrecto (http)', () {
-        const invalidUri = 'http://gossip/123';
-        final uri = Uri.parse(invalidUri);
-
-        expect(uri.scheme, isNot('chismes'));
-        expect(uri.scheme, 'http');
-      });
-
-      test('debe rechazar scheme incorrecto (https)', () {
-        const invalidUri = 'https://gossip/123';
-        final uri = Uri.parse(invalidUri);
-
-        expect(uri.scheme, isNot('chismes'));
-        expect(uri.scheme, 'https');
-      });
-
-      test('debe rechazar scheme vacío', () {
-        const invalidUri = '://gossip/123';
-
-        // Uri.parse lanza exception con scheme vacío o inválido
-        expect(() => Uri.parse(invalidUri), throwsFormatException);
-      });
-
-      test('debe parsear pathSegments correctamente', () {
-        const uri = 'chismes://gossip/abc123';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.pathSegments.length, 1);
-        expect(parsed.pathSegments[0], 'abc123');
-      });
-
-      test('debe parsear múltiples pathSegments', () {
-        const uri = 'chismes://gossip/abc123/extra';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.pathSegments.length, 2);
-        expect(parsed.pathSegments[0], 'abc123');
-        expect(parsed.pathSegments[1], 'extra');
-      });
-
-      test('debe detectar pathSegments vacíos', () {
-        const uri = 'chismes://gossip';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.pathSegments, isEmpty);
-      });
-
-      test('debe parsear query parameters', () {
-        const uri = 'chismes://feed?city=medellin';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.queryParameters['city'], 'medellin');
-      });
-
-      test('debe parsear múltiples query parameters', () {
-        const uri = 'chismes://feed?city=medellin&sort=recent';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.queryParameters['city'], 'medellin');
-        expect(parsed.queryParameters['sort'], 'recent');
-      });
-    });
-
-    group('Gossip link parsing', () {
-      test('debe extraer gossipId de URI válido', () {
-        const uri = 'chismes://gossip/abc123';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.host, 'gossip');
-        expect(parsed.pathSegments.length, greaterThanOrEqualTo(1));
-        final gossipId = parsed.pathSegments[0];
-        expect(gossipId, 'abc123');
-      });
-
-      test('debe detectar gossip link sin ID', () {
-        const uri = 'chismes://gossip';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.host, 'gossip');
-        expect(parsed.pathSegments, isEmpty);
-      });
-
-      test('debe manejar gossipIds con caracteres especiales', () {
-        const uri = 'chismes://gossip/uuid-abc-123_test';
-        final parsed = Uri.parse(uri);
-
-        final gossipId = parsed.pathSegments[0];
-        expect(gossipId, 'uuid-abc-123_test');
-      });
-
-      test('debe manejar path segments extra (ignorarlos)', () {
-        const uri = 'chismes://gossip/abc123/extra/data';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.pathSegments.length, 3);
-        final gossipId = parsed.pathSegments[0]; // Solo tomar el primero
-        expect(gossipId, 'abc123');
-      });
-    });
-
-    group('Profile link parsing', () {
-      test('debe extraer userId de URI válido', () {
-        const uri = 'chismes://profile/user123';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.host, 'profile');
-        expect(parsed.pathSegments.length, greaterThanOrEqualTo(1));
-        final userId = parsed.pathSegments[0];
-        expect(userId, 'user123');
-      });
-
-      test('debe detectar profile link sin ID', () {
-        const uri = 'chismes://profile';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.host, 'profile');
-        expect(parsed.pathSegments, isEmpty);
-      });
-
-      test('debe manejar userIds con caracteres especiales', () {
-        const uri = 'chismes://profile/uuid-user-456_test';
-        final parsed = Uri.parse(uri);
-
-        final userId = parsed.pathSegments[0];
-        expect(userId, 'uuid-user-456_test');
-      });
-    });
-
-    group('Feed link parsing', () {
-      test('debe parsear feed link sin parámetros', () {
-        const uri = 'chismes://feed';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.host, 'feed');
-        expect(parsed.queryParameters, isEmpty);
-      });
-
-      test('debe extraer cityId de query parameters', () {
-        const uri = 'chismes://feed?city=medellin';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.host, 'feed');
-        expect(parsed.queryParameters['city'], 'medellin');
-      });
-
-      test('debe manejar feed link con city null', () {
-        const uri = 'chismes://feed?city=';
-        final parsed = Uri.parse(uri);
-
-        final cityId = parsed.queryParameters['city'];
-        expect(cityId, isEmpty); // String vacío, no null
-      });
-
-      test('debe ignorar query parameters desconocidos', () {
-        const uri = 'chismes://feed?city=bogota&unknown=value';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.queryParameters['city'], 'bogota');
-        expect(parsed.queryParameters['unknown'], 'value');
-        // En código real, solo usar 'city'
-      });
-    });
-
-    group('Edge cases en parsing', () {
-      test('debe manejar URI con fragmento (#)', () {
-        const uri = 'chismes://gossip/abc123#section';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.fragment, 'section');
-        expect(parsed.pathSegments[0], 'abc123');
-      });
-
-      test('debe manejar URI con puerto', () {
-        const uri = 'chismes://gossip:8080/abc123';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.port, 8080);
-        expect(parsed.host, 'gossip');
-      });
-
-      test('debe normalizar mayúsculas en scheme', () {
-        const uri = 'CHISMES://gossip/abc123';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.scheme.toLowerCase(), 'chismes');
-      });
-
-      test('debe manejar espacios encodificados (%20)', () {
-        const uri = 'chismes://gossip/abc%20123';
-        final parsed = Uri.parse(uri);
-
-        // Uri.parse decodifica automáticamente
-        expect(parsed.pathSegments[0], 'abc 123');
-      });
-
-      test('debe manejar caracteres unicode', () {
-        const uri = 'chismes://profile/usuario_测试';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.pathSegments[0], contains('测试'));
-      });
-    });
-
-    group('Type detection (host)', () {
-      test('debe detectar tipo "gossip"', () {
-        const uri = 'chismes://gossip/id';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.host, 'gossip');
-      });
-
-      test('debe detectar tipo "profile"', () {
-        const uri = 'chismes://profile/id';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.host, 'profile');
-      });
-
-      test('debe detectar tipo "feed"', () {
-        const uri = 'chismes://feed';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.host, 'feed');
-      });
-
-      test('debe detectar tipo desconocido', () {
-        const uri = 'chismes://unknown/id';
-        final parsed = Uri.parse(uri);
-
-        expect(parsed.host, 'unknown');
-        expect(['gossip', 'profile', 'feed'], isNot(contains(parsed.host)));
-      });
-    });
-  });
-
   group('DeepLinkService - Usage scenarios', () {
     group('Compartir chisme', () {
       test('usuario genera link y lo comparte', () {
@@ -593,140 +353,6 @@ void main() {
       expect(service, isNotNull);
       expect(service, isA<DeepLinkService>());
     });
-
-    testWidgets('debe ser singleton en DI', (tester) async {
-      // Documenta que la anotación @singleton está presente
-      // Se crea una sola instancia compartida
-    });
-  });
-
-  group('DeepLinkService - Validation rules', () {
-    group('Scheme validation', () {
-      test('scheme "chismes" es válido', () {
-        const validScheme = 'chismes';
-        expect(validScheme, 'chismes');
-      });
-
-      test('scheme "http" es inválido', () {
-        const invalidScheme = 'http';
-        expect(invalidScheme, isNot('chismes'));
-      });
-
-      test('scheme "https" es inválido', () {
-        const invalidScheme = 'https';
-        expect(invalidScheme, isNot('chismes'));
-      });
-
-      test('scheme vacío es inválido', () {
-        const emptyScheme = '';
-        expect(emptyScheme, isNot('chismes'));
-      });
-    });
-
-    group('PathSegments validation', () {
-      test('pathSegments vacío es inválido', () {
-        final uri = Uri.parse('chismes://gossip');
-        expect(uri.pathSegments, isEmpty);
-      });
-
-      test('pathSegments con al menos 1 elemento es válido para gossip', () {
-        final uri = Uri.parse('chismes://gossip/id123');
-        expect(uri.pathSegments.length, greaterThanOrEqualTo(1));
-      });
-
-      test('gossip requiere mínimo 1 pathSegment (el ID)', () {
-        // Valid
-        final validUri = Uri.parse('chismes://gossip/id123');
-        expect(validUri.pathSegments.length, greaterThanOrEqualTo(1));
-
-        // Invalid
-        final invalidUri = Uri.parse('chismes://gossip');
-        expect(invalidUri.pathSegments, isEmpty);
-      });
-
-      test('profile requiere mínimo 1 pathSegment (el ID)', () {
-        // Valid
-        final validUri = Uri.parse('chismes://profile/user123');
-        expect(validUri.pathSegments.length, greaterThanOrEqualTo(1));
-
-        // Invalid
-        final invalidUri = Uri.parse('chismes://profile');
-        expect(invalidUri.pathSegments, isEmpty);
-      });
-
-      test('feed NO requiere pathSegments', () {
-        final uri = Uri.parse('chismes://feed');
-        expect(uri.pathSegments, isEmpty); // OK para feed
-      });
-    });
-
-    group('Type validation (host)', () {
-      test('tipo "gossip" es válido', () {
-        const validTypes = ['gossip', 'profile', 'feed'];
-        expect(validTypes, contains('gossip'));
-      });
-
-      test('tipo "profile" es válido', () {
-        const validTypes = ['gossip', 'profile', 'feed'];
-        expect(validTypes, contains('profile'));
-      });
-
-      test('tipo "feed" es válido', () {
-        const validTypes = ['gossip', 'profile', 'feed'];
-        expect(validTypes, contains('feed'));
-      });
-
-      test('tipo "unknown" es inválido', () {
-        const validTypes = ['gossip', 'profile', 'feed'];
-        expect(validTypes, isNot(contains('unknown')));
-      });
-    });
-  });
-
-  group('DeepLinkService - Error cases', () {
-    test('URI con scheme incorrecto debe ser rechazado', () {
-      const invalidUri = 'http://gossip/123';
-      final parsed = Uri.parse(invalidUri);
-
-      expect(parsed.scheme, isNot('chismes'));
-    });
-
-    test('URI sin pathSegments debe ser rechazado para gossip', () {
-      const invalidUri = 'chismes://gossip';
-      final parsed = Uri.parse(invalidUri);
-
-      expect(parsed.pathSegments, isEmpty);
-      // En código real, esto retorna early
-    });
-
-    test('URI sin pathSegments debe ser rechazado para profile', () {
-      const invalidUri = 'chismes://profile';
-      final parsed = Uri.parse(invalidUri);
-
-      expect(parsed.pathSegments, isEmpty);
-    });
-
-    test('URI con tipo desconocido debe ser rechazado', () {
-      const invalidUri = 'chismes://unknown/123';
-      final parsed = Uri.parse(invalidUri);
-
-      const validTypes = ['gossip', 'profile', 'feed'];
-      expect(validTypes, isNot(contains(parsed.host)));
-    });
-
-    test('URI malformado lanza exception o retorna vacío', () {
-      // '://gossip/123' - Sin scheme lanza exception
-      expect(() => Uri.parse('://gossip/123'), throwsFormatException);
-
-      // 'chismes://' - Válido pero vacío
-      final emptyHost = Uri.parse('chismes://');
-      expect(emptyHost.host, isEmpty);
-
-      // '' - Uri vacío es técnicamente válido
-      final empty = Uri.parse('');
-      expect(empty.scheme, isEmpty);
-      expect(empty.host, isEmpty);
-    });
   });
 
   group('DeepLinkService - Integration scenarios', () {
@@ -778,16 +404,250 @@ void main() {
       stopwatch.stop();
       expect(stopwatch.elapsedMilliseconds, lessThan(100)); // <100ms para 1000 links
     });
+  });
 
-    test('Uri.parse debe ser rápido', () {
-      final stopwatch = Stopwatch()..start();
+  // initialize() de punta a punta: canales de app_links simulados.
+  group('DeepLinkService - manejo de links recibidos', () {
+    const methodChannel = MethodChannel('com.llfbandit.app_links/messages');
+    const eventChannel = EventChannel('com.llfbandit.app_links/events');
 
-      for (var i = 0; i < 1000; i++) {
-        Uri.parse('chismes://gossip/id-$i');
-      }
+    late MockAppLogger logger;
+    late GlobalKey<NavigatorState> navigatorKey;
+    late DeepLinkService service;
+    MockStreamHandlerEventSink? sink;
+    late Object? Function() initialLink;
 
-      stopwatch.stop();
-      expect(stopwatch.elapsedMilliseconds, lessThan(100));
+    setUp(() {
+      logger = MockAppLogger();
+      navigatorKey = GlobalKey<NavigatorState>();
+      service = DeepLinkService(navigatorKey, logger);
+      sink = null;
+      initialLink = () => null;
+      final messenger =
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(methodChannel, (call) async {
+        if (call.method == 'getInitialLink') return initialLink();
+        return null;
+      });
+      messenger.setMockStreamHandler(
+        eventChannel,
+        MockStreamHandler.inline(onListen: (_, events) {
+          sink = events;
+        }),
+      );
+      addTearDown(() {
+        service.dispose();
+        messenger.setMockMethodCallHandler(methodChannel, null);
+        messenger.setMockStreamHandler(eventChannel, null);
+      });
+    });
+
+    Future<void> pumpApp(WidgetTester tester) async {
+      await tester.pumpWidget(MaterialApp(
+        navigatorKey: navigatorKey,
+        locale: const Locale('es'),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const Scaffold(body: Text('HOME')),
+      ));
+    }
+
+    AppLocalizations l10n(WidgetTester tester) =>
+        AppLocalizations.of(tester.element(find.text('HOME')))!;
+
+    // Los eventos de plataforma se entregan en el event loop real.
+    Future<void> receive(WidgetTester tester, String link) async {
+      await tester.runAsync(() async {
+        sink!.success(link);
+        await pumpEventQueue();
+      });
+      await tester.pump();
+    }
+
+    testWidgets('link de chisme generado por la app muestra el snackbar',
+        (tester) async {
+      await pumpApp(tester);
+      await service.initialize();
+
+      await receive(tester, DeepLinkService.generateGossipLink('abc123'));
+
+      expect(find.text(l10n(tester).deepLinkOpeningGossip('abc123')),
+          findsOneWidget);
+      verify(logger.i('Navigating to gossip', context: {'gossipId': 'abc123'}))
+          .called(1);
+      verifyNever(logger.w(any, context: anyNamed('context')));
+    });
+
+    testWidgets('acepta también el formato sin host (chismes:///gossip/id)',
+        (tester) async {
+      await pumpApp(tester);
+      await service.initialize();
+
+      await receive(tester, 'chismes:///gossip/xyz');
+
+      expect(find.text(l10n(tester).deepLinkOpeningGossip('xyz')),
+          findsOneWidget);
+    });
+
+    testWidgets('link de perfil generado por la app muestra el snackbar',
+        (tester) async {
+      await pumpApp(tester);
+      await service.initialize();
+
+      await receive(tester, DeepLinkService.generateProfileLink('user-9'));
+
+      expect(find.text(l10n(tester).deepLinkOpeningProfile('user-9')),
+          findsOneWidget);
+      verify(logger.i('Navigating to profile', context: {'userId': 'user-9'}))
+          .called(1);
+    });
+
+    testWidgets('link de feed con ciudad muestra el snackbar de la ciudad',
+        (tester) async {
+      await pumpApp(tester);
+      await service.initialize();
+
+      await receive(tester, DeepLinkService.generateFeedLink(cityId: 'medellin'));
+
+      expect(find.text(l10n(tester).deepLinkOpeningCityFeed('medellin')),
+          findsOneWidget);
+    });
+
+    testWidgets('link de feed sin ciudad vuelve a la primera ruta',
+        (tester) async {
+      await pumpApp(tester);
+      await service.initialize();
+      navigatorKey.currentState!.push(MaterialPageRoute<void>(
+          builder: (_) => const Scaffold(body: Text('DETALLE'))));
+      await tester.pumpAndSettle();
+      expect(find.text('DETALLE'), findsOneWidget);
+
+      await receive(tester, DeepLinkService.generateFeedLink());
+      await tester.pumpAndSettle();
+
+      expect(find.text('DETALLE'), findsNothing);
+      expect(find.text('HOME'), findsOneWidget);
+      verify(logger.i('Navigating to general feed')).called(1);
+    });
+
+    testWidgets('link de auth lo deja a Supabase sin snackbar', (tester) async {
+      await pumpApp(tester);
+      await service.initialize();
+
+      await receive(tester, 'chismes://auth/callback');
+
+      expect(find.byType(SnackBar), findsNothing);
+      verify(logger.i('Auth deep link (handled by Supabase)',
+              context: {'uri': 'chismes://auth/callback'}))
+          .called(1);
+      verifyNever(logger.w(any, context: anyNamed('context')));
+    });
+
+    testWidgets('ignora links inválidos sin snackbar y loguea el motivo',
+        (tester) async {
+      await pumpApp(tester);
+      await service.initialize();
+
+      await receive(tester, 'https://chismes.app/gossip/1');
+      await receive(tester, 'chismes://gossip');
+      await receive(tester, 'chismes://profile');
+      await receive(tester, 'chismes://otro/1');
+      await receive(tester, 'chismes:');
+
+      expect(find.byType(SnackBar), findsNothing);
+      final warnings =
+          verify(logger.w(captureAny, context: captureAnyNamed('context')))
+              .captured;
+      expect(warnings, [
+        'Unsupported scheme', {'scheme': 'https'},
+        'Gossip deep link without ID', {'uri': 'chismes://gossip'},
+        'Profile deep link without ID', {'uri': 'chismes://profile'},
+        'Unsupported deep link type', {'type': 'otro'},
+        'Deep link without path', {'uri': 'chismes:'},
+      ]);
+    });
+
+    testWidgets('sin navigator montado no muestra nada ni falla',
+        (tester) async {
+      await service.initialize();
+
+      await receive(tester, DeepLinkService.generateGossipLink('a'));
+      await receive(tester, DeepLinkService.generateProfileLink('b'));
+      await receive(tester, DeepLinkService.generateFeedLink(cityId: 'c'));
+
+      expect(find.byType(SnackBar), findsNothing);
+      verify(logger.i('Navigating to gossip', context: {'gossipId': 'a'}))
+          .called(1);
+      verify(logger.i('Navigating to profile', context: {'userId': 'b'}))
+          .called(1);
+      verify(logger.i('Navigating to filtered feed', context: {'cityId': 'c'}))
+          .called(1);
+    });
+
+    testWidgets('link inicial (app cerrada) se maneja tras 500ms',
+        (tester) async {
+      initialLink = () => 'chismes://gossip/inicial';
+      await pumpApp(tester);
+      final text = l10n(tester).deepLinkOpeningGossip('inicial');
+
+      final init = service.initialize();
+      await tester.pump(const Duration(milliseconds: 499));
+      expect(find.text(text), findsNothing);
+      await tester.pump(const Duration(milliseconds: 1));
+      await init;
+      await tester.pump();
+
+      expect(find.text(text), findsOneWidget);
+      verify(logger.i('Initial deep link (app closed)',
+              context: {'uri': 'chismes://gossip/inicial'}))
+          .called(1);
+    });
+
+    testWidgets('loguea error si falla obtener el link inicial',
+        (tester) async {
+      initialLink = () => throw PlatformException(code: 'BOOM');
+
+      await service.initialize();
+
+      verify(logger.e('Error getting initial deep link',
+              error: argThat(isA<PlatformException>(), named: 'error')))
+          .called(1);
+    });
+
+    testWidgets('loguea error si el stream de links falla', (tester) async {
+      await service.initialize();
+
+      await tester.runAsync(() async {
+        sink!.error(code: 'STREAM', message: 'roto');
+        await pumpEventQueue();
+      });
+      await tester.pump();
+
+      verify(logger.e('Error receiving deep link',
+              error: argThat(isA<PlatformException>(), named: 'error')))
+          .called(1);
+    });
+
+    testWidgets('dispose deja de escuchar links', (tester) async {
+      await pumpApp(tester);
+      await service.initialize();
+      final activeSink = sink!;
+
+      service.dispose();
+      await tester.runAsync(() async {
+        activeSink.success(DeepLinkService.generateGossipLink('tarde'));
+        await pumpEventQueue();
+      });
+      await tester.pump();
+
+      expect(find.byType(SnackBar), findsNothing);
+      verifyNever(logger.i('Deep link received (app open)',
+          context: anyNamed('context')));
     });
   });
 }

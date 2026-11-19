@@ -81,13 +81,20 @@ class DeepLinkService {
       return;
     }
 
-    // Validar que hay segmentos de path
-    if (uri.pathSegments.isEmpty) {
+    // En chismes://gossip/abc123 el tipo es el host ("gossip") y el ID es el
+    // primer segmento del path. También se acepta chismes:///gossip/abc123.
+    final segments = [
+      if (uri.host.isNotEmpty) uri.host,
+      ...uri.pathSegments,
+    ];
+
+    // Validar que hay tipo de link
+    if (segments.isEmpty) {
       _logger.w('Deep link without path', context: {'uri': uri.toString()});
       return;
     }
 
-    final type = uri.pathSegments.first; // "gossip", "profile", "auth", etc.
+    final type = segments.first; // "gossip", "profile", "auth", etc.
 
     switch (type) {
       case 'auth':
@@ -97,11 +104,11 @@ class DeepLinkService {
         break;
 
       case 'gossip':
-        _handleGossipLink(uri);
+        _handleGossipLink(uri, segments);
         break;
 
       case 'profile':
-        _handleProfileLink(uri);
+        _handleProfileLink(uri, segments);
         break;
 
       case 'feed':
@@ -114,13 +121,13 @@ class DeepLinkService {
   }
 
   /// Maneja deep link de chisme: chismes://gossip/{id}
-  void _handleGossipLink(Uri uri) {
-    if (uri.pathSegments.length < 2) {
+  void _handleGossipLink(Uri uri, List<String> segments) {
+    if (segments.length < 2) {
       _logger.w('Gossip deep link without ID', context: {'uri': uri.toString()});
       return;
     }
 
-    final gossipId = uri.pathSegments[1]; // "abc123"
+    final gossipId = segments[1]; // "abc123"
     _logger.i('Navigating to gossip', context: {'gossipId': gossipId});
 
     // Navegar a pantalla de detalle de chisme
@@ -142,13 +149,13 @@ class DeepLinkService {
   }
 
   /// Maneja deep link de perfil: chismes://profile/{id}
-  void _handleProfileLink(Uri uri) {
-    if (uri.pathSegments.length < 2) {
+  void _handleProfileLink(Uri uri, List<String> segments) {
+    if (segments.length < 2) {
       _logger.w('Profile deep link without ID', context: {'uri': uri.toString()});
       return;
     }
 
-    final userId = uri.pathSegments[1];
+    final userId = segments[1];
     _logger.i('Navigating to profile', context: {'userId': userId});
 
     // TODO: Implementar cuando tengas ProfileScreen
