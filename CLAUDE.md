@@ -479,9 +479,9 @@ test('debe retornar gossips', () async {
 
 ### Coverage
 
-**Estado:** ✅ **78.9%** (1,865 / 2,363 líneas)  
-**Tests:** 1,897 tests totales  
-**Objetivo:** Mantener >75% en nuevas features
+**Estado:** ✅ **97.42%** sin `lib/l10n/` (6,833 / 7,014 líneas, medido 2026-11-18)  
+**Tests:** 4,106 tests (4,100 pasan · 6 skip)  
+**Objetivo:** >85% sin `lib/l10n/` (código generado, no se mide). Plan y tracking: `docs/TEST_PLAN_85.md`
 
 ```bash
 # Generar coverage
@@ -614,13 +614,13 @@ Para nuevas sesiones:
 
 ## 📊 MÉTRICAS
 
-**Última actualización:** 2026-11-12
+**Última actualización:** 2026-11-12 (Tests/Coverage: 2026-11-18)
 
 ```
 Archivos Dart:        ~80
 Features:             4 (gossip, location, home, search)
-Tests:                1,897 (1,846 pasando)
-Coverage:             78.9%
+Tests:                4,106 (4,100 pasando, 6 skip)
+Coverage:             97.42% (sin lib/l10n)
 Líneas de código:     ~8,000
 Migraciones:          9
 Architecture Score:   9.65/10 ✅ TOP 1%

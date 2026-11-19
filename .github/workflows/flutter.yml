@@ -37,11 +37,22 @@ jobs:
     - name: 🔎 Analyze code
       run: flutter analyze
 
-    - name: 🧪 Run tests
-      run: flutter test
-
-    - name: 📊 Generate coverage
+    - name: 🧪 Run tests with coverage
       run: flutter test --coverage
+
+    # Meta del proyecto: >85% sin lib/l10n (código generado). Umbral 88% = margen.
+    # Ver docs/TEST_PLAN_85.md. lcov --remove no se usa (falla con lcov 2.6).
+    - name: 🎯 Enforce coverage threshold (sin lib/l10n, mínimo 88%)
+      run: |
+        awk -v min=88 '
+          /^SF:/ { skip = ($0 ~ /lib\/l10n\//) }
+          /^LF:/ && !skip { lf += substr($0, 4) }
+          /^LH:/ && !skip { lh += substr($0, 4) }
+          END {
+            pct = lh * 100 / lf
+            printf "Coverage sin l10n: %.2f%% (%d/%d), mínimo %d%%\n", pct, lh, lf, min
+            if (pct < min) { printf "::error::Coverage sin l10n %.2f%% < %d%%\n", pct, min; exit 1 }
+          }' coverage/lcov.info
 
     - name: 📈 Upload coverage to Codecov
       uses: codecov/codecov-action@v4
