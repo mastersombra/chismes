@@ -73,10 +73,15 @@ Este proyecto usa **GitHub Actions** para automatizar pruebas y builds:
 Verifica el estado del último build en: [Actions](https://github.com/mastersombra/chismes/actions)
 
 ### 🔒 Branch Protection
-La rama `main` está protegida:
-- ❌ No se puede hacer force push
-- ❌ No se puede eliminar
-- ✅ Se requiere historial lineal
+La rama `main` está protegida (Settings → Branches, regla clásica; verificado 2026-11-18):
+- ✅ **Pull request obligatorio**: no se puede hacer push directo a `main`; trabajar en una rama y abrir un PR.
+  No se exigen aprobaciones (0 reviews).
+- ✅ **Status check obligatorio:** `Test Flutter App` (job `test` de `.github/workflows/flutter.yml`:
+  analyze + tests + coverage sin `lib/l10n` ≥ 88%). No se exige que la rama esté al día con `main`.
+  Si se renombra el job, hay que actualizar el check requerido o los PR quedan bloqueados.
+- ✅ **Sin bypass:** las reglas también aplican a administradores.
+- ❌ Force push y eliminación de la rama bloqueados.
+- No se exige historial lineal, commits firmados ni resolver conversaciones.
 
 ## Estructura de Features
 
