@@ -4,6 +4,11 @@
 **Contexto:** Trigger automático de limpieza causa contención en inserts  
 **Pregunta:** ¿Eliminar trigger? ¿Qué otras opciones hay?
 
+> ✅ **Decisión final (2026-11-18):** pg_cron llama directo a `cleanup_old_idempotency_keys()`
+> (job `idempotency-keys-cleanup`, diario 3:30 UTC) y se quitó el trigger:
+> `supabase/migrations/010_idempotency_cleanup_cron.sql`. La Edge Function
+> `cleanup-idempotency` se eliminó (nunca llegó a programarse). Lo de abajo es el análisis histórico.
+
 ---
 
 ## 📚 **¿QUÉ ES IDEMPOTENCY_KEY Y PARA QUÉ SIRVE?**

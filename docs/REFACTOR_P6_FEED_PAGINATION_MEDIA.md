@@ -442,7 +442,9 @@ WHERE idempotency_key IS NOT NULL;
 
 **Configurar limpieza programada:**
 
-✅ **Edge Function ya creada:** `supabase/functions/cleanup-idempotency/index.ts`
+> ⚠️ **Actualizado 2026-11-18:** la Edge Function se eliminó; la limpieza la hace pg_cron (`010_idempotency_cleanup_cron.sql`).
+
+~~✅ **Edge Function ya creada:** `supabase/functions/cleanup-idempotency/index.ts`~~
 
 **Script automatizado:**
 ```bash
