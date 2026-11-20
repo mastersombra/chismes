@@ -212,7 +212,8 @@ class AppLogger {
     } catch (error) {
       // Si falla el logging remoto, solo mostrar en consola
       // NO propagar el error (el logging no debe romper la app)
-      debugPrint('⚠️ Error en remote logging: $error');
+      // No usar _logger.e aquí: volvería a llamar al remote logging (bucle).
+      if (kDebugMode) debugPrint('⚠️ Error en remote logging: $error');
     }
   }
 

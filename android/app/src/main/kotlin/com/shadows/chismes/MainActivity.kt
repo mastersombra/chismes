@@ -1,4 +1,4 @@
-package com.example.chismes
+package com.shadows.chismes
 
 import io.flutter.embedding.android.FlutterActivity
 

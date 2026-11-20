@@ -179,10 +179,12 @@ supabase db query --file /tmp/verify_cron.sql --linked 2>&1 || echo "⚠️  No 
 rm /tmp/verify_cron.sql
 
 echo ""
-echo "✅ Schedulers configurados automáticamente:"
-echo "   - error-logs-cleanup: Cada domingo 3 AM UTC (retención 90 días)"
+echo "✅ Schedulers configurados automáticamente por las migraciones:"
+echo "   - error-logs-cleanup:       domingos 3:00 UTC, retención 90 días (003)"
+echo "   - idempotency-keys-cleanup: diario 3:30 UTC (010)"
+echo "   - media-cleanup:            diario 4:00 UTC vía Edge Function (011, usa Vault)"
 echo ""
-echo "📝 NOTA: pg_cron se configura automáticamente con la migración 012"
+echo "📝 NOTA: los secrets de Vault y de Edge Functions sobreviven al reset"
 echo "         No requiere configuración manual en Dashboard"
 echo ""
 
@@ -194,13 +196,20 @@ if [ "$SKIP_IMPORT" = false ]; then
     echo "🌍 Importando ciudades de GeoNames..."
     echo ""
     echo "Ejecutando:"
-    echo "  python3 $IMPORT_SCRIPT \\"
+    echo "  venv/bin/python (o python3) $IMPORT_SCRIPT \\"
     echo "    --country CO \\"
     echo "    --file $GEONAMES_FILE \\"
     echo "    --min-population 500"
     echo ""
 
-    python3 "$IMPORT_SCRIPT" \
+    # Usar el venv del repo si existe (no depender de `source venv/bin/activate`:
+    # si se mueve la carpeta del proyecto, activate queda apuntando a la ruta vieja)
+    PYTHON_BIN="python3"
+    if [ -x "venv/bin/python" ]; then
+        PYTHON_BIN="venv/bin/python"
+    fi
+
+    "$PYTHON_BIN" "$IMPORT_SCRIPT" \
         --country CO \
         --file "$GEONAMES_FILE" \
         --min-population 500

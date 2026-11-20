@@ -204,6 +204,14 @@ WITH CHECK (
 -- Las políticas RLS arriba controlan QUÉ gossips pueden ver
 GRANT SELECT ON gossips TO authenticated;
 
+-- ⚠️ El proyecto remoto NO da privilegios por defecto a los roles de la API
+-- en tablas nuevas (solo TRUNCATE/REFERENCES/TRIGGER). Todo acceso de la app
+-- o de Edge Functions necesita GRANT explícito; RLS filtra las filas después.
+-- service_role (solo backend/Edge Functions) recibe ALL, como en Supabase estándar.
+-- service_role: report-gossip (actualiza report_count/estado), delete-account,
+-- moderación y limpieza de media.
+GRANT ALL ON TABLE gossips TO service_role;
+
 -- ❌ NO otorgar a 'anon' porque AuthGate requiere login obligatorio
 -- Si en el futuro se permite navegación sin login, agregar:
 -- GRANT SELECT ON gossips TO anon;
@@ -818,6 +826,12 @@ CREATE POLICY "Users can view own reports"
 -- Policy: Solo service_role puede actualizar reportes (moderación)
 -- (No crear policy SELECT para moderadores - usar service_role)
 
+-- GRANTs (ver nota en la sección de gossips): report-gossip usa el JWT del
+-- usuario (authenticated) para leer/crear sus reportes; delete-account y la
+-- moderación usan service_role.
+GRANT SELECT, INSERT ON TABLE public.gossip_reports TO authenticated;
+GRANT ALL ON TABLE public.gossip_reports TO service_role;
+
 -- =====================================================
 -- 4. Función para auto-incrementar report_count
 -- =====================================================
@@ -898,6 +912,9 @@ INNER JOIN public.gossip_reports gr ON g.id = gr.gossip_id
 WHERE gr.status = 'pending'
 GROUP BY g.id, g.subject, g.status, g.moderation_status, g.report_count
 ORDER BY unique_reporters DESC, last_reported_at DESC;
+
+-- Solo backend: la vista corre con permisos de su dueño (ve todos los reportes)
+GRANT SELECT ON gossip_reports_summary TO service_role;
 
 COMMENT ON VIEW gossip_reports_summary IS
 'Vista de análisis de reportes para moderadores.

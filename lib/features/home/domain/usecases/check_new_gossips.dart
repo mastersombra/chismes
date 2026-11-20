@@ -51,11 +51,15 @@ class CheckNewGossips {
   Future<Result<Failure, int>> call({
     required String? userId,
     required String? cityId,
+    String? regionId,
+    String? countryId,
     required DateTime since,
   }) async {
     return await _repository.checkNewGossips(
       userId: userId,
       cityId: cityId,
+      regionId: regionId,
+      countryId: countryId,
       since: since,
     );
   }

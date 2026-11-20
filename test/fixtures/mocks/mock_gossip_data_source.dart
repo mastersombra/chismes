@@ -8,7 +8,15 @@ import 'package:chismes/core/id/id_generator.dart';
 import 'package:chismes/core/error/app_exception.dart';
 import 'package:chismes/core/error/error_codes.dart';
 import 'package:chismes/features/gossip/domain/entities/moderation_decision.dart';
-import 'package:chismes/features/gossip/domain/services/content_moderator.dart';
+
+/// Moderador que el mock usa para simular el veredicto del backend.
+///
+/// En producción la moderación la hace la Edge Function `moderate-gossip`;
+/// la app no modera. Esta interfaz existe solo para que los tests controlen
+/// el veredicto (publish / review / reject).
+abstract class ContentModerator {
+  Future<ModerationDecision> moderate(CreateGossipInput input);
+}
 
 /// ⚠️ MOCK - NO REGISTRADO EN DI DE PRODUCCIÓN
 ///
@@ -37,12 +45,8 @@ class MockGossipRemoteDataSource implements GossipRemoteDataSource {
   final IdGenerator idGenerator;
   final ContentModerator contentModerator;
 
-  /// Simula el backend. En producción, [contentModerator] se ejecuta en el
-  /// servidor y no dentro de Flutter para que no se expongan claves de IA.
-  ///
-  /// TODO: Mover moderación a backend (Cloud Functions) para producción
-  /// Riesgo: Claves de IA expuestas en cliente, bypass posible
-  /// Ver: docs/audit_add_gossip_module.md sección 9.1
+  /// Simula el backend. En producción la moderación ocurre en la Edge
+  /// Function `moderate-gossip`, nunca en Flutter.
   MockGossipRemoteDataSource({
     required this.idGenerator,
     required this.contentModerator,

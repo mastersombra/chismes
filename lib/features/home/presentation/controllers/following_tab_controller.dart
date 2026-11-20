@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 
 import '../../../../core/logging/logging.dart';
 import '../../../../core/result/result.dart';
+import '../../../../core/services/auth_service.dart';
 import '../../../../core/services/profile_service.dart';
 import '../../../location/presentation/managers/location_manager.dart';
 import '../../domain/entities/feed_gossip.dart';
@@ -70,6 +71,7 @@ class FollowingTabController extends ChangeNotifier {
   final GetRecommendedFeed _getRecommendedFeed;
   final LocationManager _locationManager;
   final ProfileService _profileService;
+  final AuthService _authService;
   final AppLogger _logger;
 
   FollowingTabState _state = const FollowingTabState();
@@ -79,6 +81,7 @@ class FollowingTabController extends ChangeNotifier {
     this._getRecommendedFeed,
     this._locationManager,
     this._profileService,
+    this._authService,
     this._logger,
   );
 
@@ -106,8 +109,18 @@ class FollowingTabController extends ChangeNotifier {
     ));
 
     try {
+      final userId = _authService.userId;
+      if (userId == null) {
+        // Sin sesión (no debería pasar tras AuthGate): no hay a quién seguir
+        _logger.w('No authenticated user for following feed');
+        _updateState(_state.copyWith(
+          status: FollowingTabStatus.notFollowing,
+          followingCount: 0,
+        ));
+        return;
+      }
+
       // Obtener followingCount de ProfileService
-      final userId = 'user-id'; // TODO: Get from AuthService when implemented
       final followingCount = await _profileService.getFollowingCount(userId);
 
       _logger.d('Following count obtained', context: {
@@ -290,7 +303,8 @@ class FollowingTabController extends ChangeNotifier {
 
   /// Carga más chismes de quienes sigo.
   Future<void> _loadMoreFollowing() async {
-    final userId = 'user-id'; // TODO: Get from AuthService
+    final userId = _authService.userId;
+    if (userId == null) return;
 
     final result = await _getFollowingFeed(
       userId: userId,

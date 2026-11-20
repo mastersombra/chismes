@@ -7,9 +7,11 @@ import 'dart:async' as _i4;
 import 'dart:ui' as _i15;
 
 import 'package:chismes/core/error/failure.dart' as _i6;
-import 'package:chismes/core/logging/app_logger.dart' as _i17;
+import 'package:chismes/core/logging/app_logger.dart' as _i19;
 import 'package:chismes/core/result/result.dart' as _i5;
+import 'package:chismes/core/services/auth_service.dart' as _i17;
 import 'package:chismes/core/services/profile_service.dart' as _i16;
+import 'package:chismes/features/auth/domain/entities/user.dart' as _i18;
 import 'package:chismes/features/home/domain/entities/feed_cursor.dart' as _i8;
 import 'package:chismes/features/home/domain/entities/paginated_gossips.dart'
     as _i7;
@@ -266,10 +268,64 @@ class MockProfileService extends _i1.Mock implements _i16.ProfileService {
           as _i4.Future<int>);
 }
 
+/// A class which mocks [AuthService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockAuthService extends _i1.Mock implements _i17.AuthService {
+  MockAuthService() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Stream<_i18.User?> get userStream =>
+      (super.noSuchMethod(
+            Invocation.getter(#userStream),
+            returnValue: _i4.Stream<_i18.User?>.empty(),
+          )
+          as _i4.Stream<_i18.User?>);
+
+  @override
+  bool get isAuthenticated =>
+      (super.noSuchMethod(
+            Invocation.getter(#isAuthenticated),
+            returnValue: false,
+          )
+          as bool);
+
+  @override
+  bool get hasCompleteProfile =>
+      (super.noSuchMethod(
+            Invocation.getter(#hasCompleteProfile),
+            returnValue: false,
+          )
+          as bool);
+
+  @override
+  bool get hasUsername =>
+      (super.noSuchMethod(Invocation.getter(#hasUsername), returnValue: false)
+          as bool);
+
+  @override
+  Map<String, dynamic> debugSessionStatus() =>
+      (super.noSuchMethod(
+            Invocation.method(#debugSessionStatus, []),
+            returnValue: <String, dynamic>{},
+          )
+          as Map<String, dynamic>);
+
+  @override
+  bool isSessionExpired() =>
+      (super.noSuchMethod(
+            Invocation.method(#isSessionExpired, []),
+            returnValue: false,
+          )
+          as bool);
+}
+
 /// A class which mocks [AppLogger].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAppLogger extends _i1.Mock implements _i17.AppLogger {
+class MockAppLogger extends _i1.Mock implements _i19.AppLogger {
   MockAppLogger() {
     _i1.throwOnMissingStub(this);
   }

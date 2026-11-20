@@ -42,6 +42,8 @@ class HomeRepositoryImpl implements HomeRepository {
   Future<Result<Failure, PaginatedGossips>> getPopularFeed({
     required String? userId,
     required String? cityId,
+    String? regionId,
+    String? countryId,
     int pageSize = 20,
     FeedCursor? cursor,
   }) async {
@@ -49,12 +51,16 @@ class HomeRepositoryImpl implements HomeRepository {
       _logger.d('Getting popular feed', context: {
         'userId': userId,
         'cityId': cityId,
+        'regionId': regionId,
+        'countryId': countryId,
         'pageSize': pageSize,
         'cursor': cursor?.toString(),
       });
 
       final model = await _remoteDataSource.getPopularFeed(
         userCityId: cityId,
+        userRegionId: regionId,
+        userCountryId: countryId,
         pageSize: pageSize,
         cursor: cursor,
       );
@@ -167,17 +173,23 @@ class HomeRepositoryImpl implements HomeRepository {
   Future<Result<Failure, int>> checkNewGossips({
     required String? userId,
     required String? cityId,
+    String? regionId,
+    String? countryId,
     required DateTime since,
   }) async {
     try {
       _logger.d('Checking new gossips', context: {
         'userId': userId,
         'cityId': cityId,
+        'regionId': regionId,
+        'countryId': countryId,
         'since': since.toIso8601String(),
       });
 
       final count = await _remoteDataSource.checkNewGossips(
         userCityId: cityId,
+        userRegionId: regionId,
+        userCountryId: countryId,
         since: since,
       );
 

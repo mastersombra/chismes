@@ -21,11 +21,11 @@ Acabamos de migrar de `signInWithOAuth` (abre Safari completo) a `google_sign_in
 
 #### **A) Android (OAuth 2.0 Client)**
 - Tipo: **Android**
-- Package name: `com.piloto.chismes` (verificar en `android/app/build.gradle.kts`)
-- SHA-1: Obtenerlo con:
-  ```bash
-  keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
-  ```
+- Package name: `com.shadows.chismes` (verificar en `android/app/build.gradle.kts`)
+- SHA-1: crear **un client por cada llave** que firme la app:
+  - Debug: `keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android`
+  - Upload key: `keytool -list -v -keystore <tu .jks> -alias upload` (ver `docs/ANDROID_RELEASE_SIGNING.md`)
+  - Play App Signing: Play Console → Test and release → App integrity → SHA-1 de la llave de firma
 - Copia el **Client ID** generado
 
 #### **B) Web (OAuth 2.0 Client)** ⭐ **IMPORTANTE**
@@ -38,7 +38,8 @@ Acabamos de migrar de `signInWithOAuth` (abre Safari completo) a `google_sign_in
 
 #### **C) iOS (OAuth 2.0 Client)**
 - Tipo: **iOS**
-- Bundle ID: `com.piloto.chismes` (verificar en `ios/Runner/Info.plist`)
+- Bundle ID: `com.shadows.chismes` (verificar `PRODUCT_BUNDLE_IDENTIFIER` en `ios/Runner.xcodeproj`)
+- Luego descargar el `GoogleService-Info.plist` nuevo (reemplaza `ios/Runner/GoogleService-Info.plist` e `ios/GoogleService-Info.plist`) y actualizar en `ios/Runner/Info.plist` el URL scheme `com.googleusercontent.apps...` con el `REVERSED_CLIENT_ID` nuevo
 - Copia el **iOS Client ID**
 
 ---

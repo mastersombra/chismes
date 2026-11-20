@@ -20,16 +20,13 @@ class MainNavigationScreen extends StatefulWidget {
 class MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 
-  // ✅ Lista de pantallas para navegación
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const SearchScreen(),
-    AddGossipScreen(controller: getIt<AddGossipController>()),
-    const ProfileScreen(),
-  ];
-
-  // ✅ Usar DI container (Injectable)
+  // Una sola instancia: AddGossipController es factory y arranca la detección
+  // GPS al crearse. Dos instancias pedían permisos en paralelo; Android
+  // descarta una petición y su Future nunca completa (spinner infinito).
   late final AddGossipController _addGossipController;
+
+  // Lista de pantallas para navegación (usa el controller de arriba)
+  late final List<Widget> _screens;
 
   @override
   void initState() {
@@ -37,6 +34,12 @@ class MainNavigationScreenState extends State<MainNavigationScreen> {
 
     // ✅ Resolver dependencias de Injectable/GetIt
     _addGossipController = getIt<AddGossipController>();
+    _screens = [
+      const HomeScreen(),
+      const SearchScreen(),
+      AddGossipScreen(controller: _addGossipController),
+      const ProfileScreen(),
+    ];
 
     // ✅ AuthGate ya maneja autenticación (no necesitamos guards duplicados aquí)
     // Si el usuario llega aquí, AuthGate ya validó que está autenticado

@@ -236,7 +236,7 @@ y dime qué features tiene el proyecto"
 ### Paso 1: Abrir Claude Code
 
 ```bash
-cd /Users/alejo/Documents/Piloto/chismes
+cd /Users/alejo/Documents/Sombras/chismes
 claude code
 ```
 
@@ -306,7 +306,7 @@ Yo: [Leo graph.json]
 1. Cerrar Claude Code (si está abierto)
 2. Abrir de nuevo:
    ```bash
-   cd /Users/alejo/Documents/Piloto/chismes
+   cd /Users/alejo/Documents/Sombras/chismes
    claude code
    ```
 3. Esperar 3-5 segundos

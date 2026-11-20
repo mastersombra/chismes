@@ -279,7 +279,9 @@ void main() {
       await tester.pump();
     }
 
-    testWidgets('sincroniza el idioma cuando settings difiere del LocaleNotifier',
+    // El idioma vive solo en LocaleNotifier: los settings (placeholder con
+    // 'es' fijo) no deben pisarlo al recargar/refrescar el perfil.
+    testWidgets('no cambia el idioma aunque settings difiera del LocaleNotifier',
         (tester) async {
       final listeners = captureListeners();
       when(mockController.state).thenReturn(ProfileState.loaded);
@@ -293,7 +295,7 @@ void main() {
           .thenReturn(mockSettings.copyWith(language: 'en'));
       await notifyAll(tester, listeners);
 
-      verify(mockLocaleNotifier.setLocale(const Locale('en'))).called(1);
+      verifyNever(mockLocaleNotifier.setLocale(any));
       expect(find.byType(SnackBar), findsNothing);
     });
 

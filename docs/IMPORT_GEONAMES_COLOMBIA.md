@@ -58,7 +58,7 @@ El archivo `CO.txt` es TSV (tab-separated) con estas columnas:
 ### A. Aplicar Migration de Tablas
 
 ```bash
-cd /Users/alejo/Documents/Piloto/chismes
+cd /Users/alejo/Documents/Sombras/chismes
 
 # Aplicar migration 003 (crea tablas countries, regions, cities)
 supabase db reset --linked
@@ -133,7 +133,7 @@ SELECT COUNT(*) FROM regions;   -- Debe ser 33
 ### A. Instalar Dependencias
 
 ```bash
-cd /Users/alejo/Documents/Piloto/chismes
+cd /Users/alejo/Documents/Sombras/chismes
 
 # Crear virtual environment
 python3 -m venv venv

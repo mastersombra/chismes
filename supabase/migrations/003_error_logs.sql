@@ -351,3 +351,16 @@ END $$;
 -- Ver jobs programados:
 --   SELECT * FROM cron.job;
 -- =====================================================
+
+-- =====================================================
+-- GRANT PERMISSIONS
+-- =====================================================
+-- ⚠️ El proyecto remoto NO da privilegios por defecto a los roles de la API
+-- en tablas nuevas (solo TRUNCATE/REFERENCES/TRIGGER). Todo acceso de la app
+-- o de Edge Functions necesita GRANT explícito; RLS filtra las filas después.
+-- service_role (solo backend/Edge Functions) recibe ALL, como en Supabase estándar.
+-- La app no escribe error_logs directo: lo hace la Edge Function log-error
+-- con service_role. Las vistas de monitoreo son solo para backend (corren
+-- con permisos de su dueño y exponen errores de todos los usuarios).
+GRANT ALL ON TABLE public.error_logs TO service_role;
+GRANT SELECT ON recent_errors, error_summary, users_with_most_errors TO service_role;

@@ -35,6 +35,7 @@ class FeedGossipModel {
   final String subject;
   final String content;
   final String cityId;
+  final String? cityName;
   final String createdAt; // ISO8601 string
   final int likes;
   final int comments;
@@ -43,6 +44,7 @@ class FeedGossipModel {
   final String? createdBy;
   final String? imageUrl;
   final double score;
+  final String? proximity; // 'city' | 'region' | 'country' | 'global'
   final bool? isFromMyCity; // Nullable: puede ser null si el usuario no tiene ciudad configurada
   final bool isTrending;
 
@@ -51,6 +53,7 @@ class FeedGossipModel {
     required this.subject,
     required this.content,
     required this.cityId,
+    this.cityName,
     required this.createdAt,
     required this.likes,
     required this.comments,
@@ -59,6 +62,7 @@ class FeedGossipModel {
     this.createdBy,
     this.imageUrl,
     required this.score,
+    this.proximity,
     this.isFromMyCity, // Nullable: puede ser null
     required this.isTrending,
   });
@@ -75,6 +79,7 @@ class FeedGossipModel {
         subject: json['subject'] as String,
         content: json['content'] as String,
         cityId: json['city_id'] as String,
+        cityName: json['city_name'] as String?,
         createdAt: json['created_at'] as String,
         likes: json['likes'] as int,
         comments: json['comments'] as int,
@@ -83,6 +88,7 @@ class FeedGossipModel {
         createdBy: json['created_by'] as String?,
         imageUrl: json['image_url'] as String?,
         score: (json['score'] as num).toDouble(),
+        proximity: json['proximity'] as String?,
         isFromMyCity: json['is_from_my_city'] as bool?, // Nullable: puede ser null
         isTrending: json['is_trending'] as bool,
       );
@@ -105,6 +111,7 @@ class FeedGossipModel {
       subject: subject,
       content: content,
       cityId: cityId,
+      cityName: cityName,
       createdAt: DateTime.parse(createdAt),
       likes: likes,
       comments: comments,
@@ -113,6 +120,7 @@ class FeedGossipModel {
       createdBy: createdBy,
       imageUrl: imageUrl,
       score: score,
+      proximity: FeedProximity.fromString(proximity),
       isFromMyCity: isFromMyCity,
       isTrending: isTrending,
     );
@@ -124,6 +132,7 @@ class FeedGossipModel {
         'subject': subject,
         'content': content,
         'city_id': cityId,
+        'city_name': cityName,
         'created_at': createdAt,
         'likes': likes,
         'comments': comments,
@@ -132,6 +141,7 @@ class FeedGossipModel {
         'created_by': createdBy,
         'image_url': imageUrl,
         'score': score,
+        'proximity': proximity,
         'is_from_my_city': isFromMyCity,
         'is_trending': isTrending,
       };

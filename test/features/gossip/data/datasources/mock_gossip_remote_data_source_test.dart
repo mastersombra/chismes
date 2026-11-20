@@ -7,7 +7,6 @@ import 'package:chismes/features/gossip/domain/entities/gossip.dart';
 import 'package:chismes/features/gossip/domain/entities/create_gossip_input.dart';
 import 'package:chismes/features/gossip/domain/entities/moderation_decision.dart';
 import 'package:chismes/core/id/id_generator.dart';
-import 'package:chismes/features/gossip/domain/services/content_moderator.dart';
 import 'package:chismes/core/error/app_exception.dart';
 
 import 'mock_gossip_remote_data_source_test.mocks.dart';

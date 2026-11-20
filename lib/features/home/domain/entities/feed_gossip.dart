@@ -22,11 +22,33 @@ import 'package:equatable/equatable.dart';
 ///   // Mostrar badge "Trending 🔥"
 /// }
 /// ```
+/// Anillo de cercanía de un chisme respecto a la ubicación del usuario.
+///
+/// Lo calcula `get_popular_feed` comparando la ciudad/región/país del chisme
+/// con los del usuario. `global` = otro país (entra por tendencia o relleno).
+enum FeedProximity {
+  city,
+  region,
+  country,
+  global;
+
+  /// Parsea el valor del servidor; desconocido o null → `global`.
+  static FeedProximity fromString(String? value) {
+    return FeedProximity.values.firstWhere(
+      (p) => p.name == value,
+      orElse: () => FeedProximity.global,
+    );
+  }
+}
+
 class FeedGossip extends Equatable {
   final String id;
   final String subject;
   final String content;
   final String cityId;
+
+  /// Nombre de la ciudad del chisme (para la etiqueta "📍 Medellín")
+  final String? cityName;
   final DateTime createdAt;
 
   // Contadores
@@ -42,14 +64,13 @@ class FeedGossip extends Equatable {
   final String? imageUrl;
 
   // Metadata del algoritmo
-  /// Score calculado por el algoritmo de ranking (40/30/20/10)
-  ///
-  /// Componentes:
-  /// - 40% Ciudad (local=100, trending=50, otras=20)
-  /// - 30% Interacciones (likes*1 + comments*2 + shares*3)
-  /// - 20% Velocity (interacciones / horas)
-  /// - 10% Decay (penalización por antigüedad)
+  /// Score del ranking (ver `get_popular_feed` en la migración 008):
+  /// 40% cercanía + 25% popularidad + 20% velocity + 15% frescura
+  /// (+ bonus si es tendencia). Pesos en la tabla `feed_settings`.
   final double score;
+
+  /// Anillo de cercanía (ciudad, región, país, global)
+  final FeedProximity proximity;
 
   /// Si el chisme es de la ciudad del usuario
   ///
@@ -61,12 +82,10 @@ class FeedGossip extends Equatable {
   /// - Si `null`, no mostrar badge de ciudad
   final bool? isFromMyCity;
 
-  /// Si el chisme es trending (viral)
+  /// Si el chisme es tendencia
   ///
-  /// Criterio (cualquiera):
-  /// - likes > 1000
-  /// - comments > 200
-  /// - shares > 100
+  /// Criterio RELATIVO (servidor): interacciones/hora en el percentil 95 de
+  /// las últimas 48 h, con un mínimo absoluto. Ver `feed_settings`.
   ///
   /// Usado para:
   /// - Mostrar badge "Trending 🔥" en GossipCard
@@ -77,6 +96,7 @@ class FeedGossip extends Equatable {
     required this.subject,
     required this.content,
     required this.cityId,
+    this.cityName,
     required this.createdAt,
     required this.likes,
     required this.comments,
@@ -85,6 +105,7 @@ class FeedGossip extends Equatable {
     this.createdBy,
     this.imageUrl,
     required this.score,
+    this.proximity = FeedProximity.global,
     this.isFromMyCity, // Nullable: puede ser null si el usuario no tiene ciudad
     required this.isTrending,
   });
@@ -95,6 +116,7 @@ class FeedGossip extends Equatable {
         subject,
         content,
         cityId,
+        cityName,
         createdAt,
         likes,
         comments,
@@ -103,6 +125,7 @@ class FeedGossip extends Equatable {
         createdBy,
         imageUrl,
         score,
+        proximity,
         isFromMyCity,
         isTrending,
       ];

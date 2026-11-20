@@ -9,13 +9,19 @@ import 'package:chismes/features/home/domain/usecases/check_new_gossips.dart';
 import 'package:chismes/features/home/domain/usecases/get_popular_feed.dart';
 import 'package:chismes/features/home/presentation/controllers/popular_tab_controller.dart';
 import 'package:chismes/features/home/presentation/states/popular_tab_state.dart';
+import 'dart:async';
+
 import 'package:chismes/features/location/domain/entities/city.dart';
+import 'package:chismes/features/location/domain/entities/country.dart';
+import 'package:flutter/foundation.dart';
 import 'package:chismes/features/location/presentation/managers/location_manager.dart';
 import 'package:chismes/features/location/presentation/states/location_state.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:chismes/core/localization/device_region.dart';
+import 'package:chismes/core/services/gossip_events.dart';
 
 import 'popular_tab_controller_test.mocks.dart';
 
@@ -23,6 +29,7 @@ import 'popular_tab_controller_test.mocks.dart';
   GetPopularFeed,
   CheckNewGossips,
   LocationManager,
+  DeviceRegion,
   AppLogger,
 ])
 void main() {
@@ -30,6 +37,8 @@ void main() {
   late MockGetPopularFeed mockGetPopularFeed;
   late MockCheckNewGossips mockCheckNewGossips;
   late MockLocationManager mockLocationManager;
+  late MockDeviceRegion mockDeviceRegion;
+  late GossipEvents gossipEvents;
   late MockAppLogger mockLogger;
 
   // Provide dummies
@@ -73,7 +82,12 @@ void main() {
     mockGetPopularFeed = MockGetPopularFeed();
     mockCheckNewGossips = MockCheckNewGossips();
     mockLocationManager = MockLocationManager();
+    mockDeviceRegion = MockDeviceRegion();
+    gossipEvents = GossipEvents();
     mockLogger = MockAppLogger();
+
+    // Región del teléfono por defecto: sin país
+    when(mockDeviceRegion.countryCode).thenReturn(null);
 
     // Setup default LocationManager state
     when(mockLocationManager.state).thenReturn(
@@ -84,6 +98,8 @@ void main() {
       mockGetPopularFeed,
       mockCheckNewGossips,
       mockLocationManager,
+      mockDeviceRegion,
+      gossipEvents,
       mockLogger,
     );
   });
@@ -116,6 +132,8 @@ void main() {
       when(mockGetPopularFeed(
         userId: anyNamed('userId'),
         cityId: anyNamed('cityId'),
+        regionId: anyNamed('regionId'),
+        countryId: anyNamed('countryId'),
         pageSize: anyNamed('pageSize'),
         cursor: anyNamed('cursor'),
       )).thenAnswer((_) async => Result.success(tPaginatedFeed));
@@ -139,6 +157,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: anyNamed('userId'),
           cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tPaginatedFeed));
@@ -166,6 +186,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: anyNamed('userId'),
           cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tPaginatedFeed));
@@ -184,6 +206,8 @@ void main() {
         verify(mockGetPopularFeed(
           userId: null,
           cityId: tCity.id,
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: 20,
           cursor: null,
         )).called(1);
@@ -204,6 +228,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: anyNamed('userId'),
           cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tPaginatedFeed));
@@ -217,7 +243,9 @@ void main() {
         expect(controller.state.currentCityName, isNull);
         verify(mockGetPopularFeed(
           userId: null,
-          cityId: null, // Feed global
+          cityId: null,
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'), // Feed global
           pageSize: 20,
           cursor: null,
         )).called(1);
@@ -232,6 +260,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: anyNamed('userId'),
           cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.failure(tFailure));
@@ -249,6 +279,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: anyNamed('userId'),
           cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenThrow(Exception('Unexpected database error'));
@@ -274,6 +306,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: anyNamed('userId'),
           cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tInitialFeed));
@@ -284,6 +318,8 @@ void main() {
         when(mockCheckNewGossips(
           userId: anyNamed('userId'),
           cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           since: anyNamed('since'),
         )).thenAnswer((_) async => Result.success(5));
 
@@ -296,6 +332,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: anyNamed('userId'),
           cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tRefreshedFeed));
@@ -310,6 +348,8 @@ void main() {
         verify(mockGetPopularFeed(
           userId: null,
           cityId: tCity.id,
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: 20,
           cursor: null,
         )).called(2); // Una vez en loadFeed inicial, otra en refresh
@@ -328,6 +368,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: anyNamed('userId'),
           cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tFirstPage));
@@ -360,6 +402,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: null,
           cityId: tCity.id,
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: 20,
           cursor: tCursor,
         )).thenAnswer((_) async => Result.success(tSecondPage));
@@ -374,6 +418,8 @@ void main() {
         verify(mockGetPopularFeed(
           userId: null,
           cityId: tCity.id,
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: 20,
           cursor: tCursor,
         )).called(1);
@@ -390,6 +436,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: anyNamed('userId'),
           cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tFirstPage));
@@ -407,6 +455,8 @@ void main() {
         verify(mockGetPopularFeed(
           userId: null,
           cityId: tCity.id,
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: 20,
           cursor: tCursor,
         )).called(1);
@@ -423,6 +473,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: anyNamed('userId'),
           cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tOnlyPage));
@@ -436,6 +488,8 @@ void main() {
         verify(mockGetPopularFeed(
           userId: null,
           cityId: tCity.id,
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: 20,
           cursor: null,
         )).called(1); // Solo la llamada inicial
@@ -452,6 +506,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: anyNamed('userId'),
           cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tFirstPage));
@@ -465,6 +521,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: null,
           cityId: tCity.id,
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: 20,
           cursor: tCursor,
         )).thenAnswer((_) async => Result.failure(tFailure));
@@ -488,6 +546,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: anyNamed('userId'),
           cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tFirstPage));
@@ -498,6 +558,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: null,
           cityId: tCity.id,
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: 20,
           cursor: tCursor,
         )).thenThrow(Exception('Unexpected pagination error'));
@@ -523,6 +585,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: anyNamed('userId'),
           cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tInitialFeed));
@@ -555,6 +619,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: anyNamed('userId'),
           cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tRefreshedFeed));
@@ -581,6 +647,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: anyNamed('userId'),
           cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tPaginatedFeed));
@@ -606,6 +674,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: anyNamed('userId'),
           cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tPaginatedFeed));
@@ -625,6 +695,8 @@ void main() {
             mockGetPopularFeed,
             mockCheckNewGossips,
             mockLocationManager,
+            mockDeviceRegion,
+            gossipEvents,
             mockLogger,
           );
 
@@ -637,6 +709,8 @@ void main() {
           when(mockGetPopularFeed(
             userId: anyNamed('userId'),
             cityId: anyNamed('cityId'),
+            regionId: anyNamed('regionId'),
+            countryId: anyNamed('countryId'),
             pageSize: anyNamed('pageSize'),
             cursor: anyNamed('cursor'),
           )).thenAnswer((_) async => Result.success(tPaginatedFeed));
@@ -644,6 +718,8 @@ void main() {
           when(mockCheckNewGossips(
             userId: anyNamed('userId'),
             cityId: anyNamed('cityId'),
+            regionId: anyNamed('regionId'),
+            countryId: anyNamed('countryId'),
             since: anyNamed('since'),
           )).thenAnswer((_) async => Result.success(3));
 
@@ -655,6 +731,8 @@ void main() {
           verifyNever(mockCheckNewGossips(
             userId: anyNamed('userId'),
             cityId: anyNamed('cityId'),
+            regionId: anyNamed('regionId'),
+            countryId: anyNamed('countryId'),
             since: anyNamed('since'),
           ));
 
@@ -665,6 +743,8 @@ void main() {
           verify(mockCheckNewGossips(
             userId: null,
             cityId: tCity.id,
+            regionId: anyNamed('regionId'),
+            countryId: anyNamed('countryId'),
             since: anyNamed('since'),
           )).called(1);
 
@@ -680,6 +760,8 @@ void main() {
             mockGetPopularFeed,
             mockCheckNewGossips,
             mockLocationManager,
+            mockDeviceRegion,
+            gossipEvents,
             mockLogger,
           );
 
@@ -692,6 +774,8 @@ void main() {
           when(mockGetPopularFeed(
             userId: anyNamed('userId'),
             cityId: anyNamed('cityId'),
+            regionId: anyNamed('regionId'),
+            countryId: anyNamed('countryId'),
             pageSize: anyNamed('pageSize'),
             cursor: anyNamed('cursor'),
           )).thenAnswer((_) async => Result.success(tPaginatedFeed));
@@ -699,6 +783,8 @@ void main() {
           when(mockCheckNewGossips(
             userId: anyNamed('userId'),
             cityId: anyNamed('cityId'),
+            regionId: anyNamed('regionId'),
+            countryId: anyNamed('countryId'),
             since: anyNamed('since'),
           )).thenAnswer((_) async => Result.success(0));
 
@@ -715,6 +801,8 @@ void main() {
           verifyNever(mockCheckNewGossips(
             userId: anyNamed('userId'),
             cityId: anyNamed('cityId'),
+            regionId: anyNamed('regionId'),
+            countryId: anyNamed('countryId'),
             since: anyNamed('since'),
           ));
         });
@@ -727,6 +815,8 @@ void main() {
             mockGetPopularFeed,
             mockCheckNewGossips,
             mockLocationManager,
+            mockDeviceRegion,
+            gossipEvents,
             mockLogger,
           );
 
@@ -739,6 +829,8 @@ void main() {
           when(mockGetPopularFeed(
             userId: anyNamed('userId'),
             cityId: anyNamed('cityId'),
+            regionId: anyNamed('regionId'),
+            countryId: anyNamed('countryId'),
             pageSize: anyNamed('pageSize'),
             cursor: anyNamed('cursor'),
           )).thenAnswer((_) async => Result.success(tPaginatedFeed));
@@ -747,6 +839,8 @@ void main() {
           when(mockCheckNewGossips(
             userId: anyNamed('userId'),
             cityId: anyNamed('cityId'),
+            regionId: anyNamed('regionId'),
+            countryId: anyNamed('countryId'),
             since: anyNamed('since'),
           )).thenAnswer((_) async => Result.success(5));
 
@@ -773,6 +867,8 @@ void main() {
             mockGetPopularFeed,
             mockCheckNewGossips,
             mockLocationManager,
+            mockDeviceRegion,
+            gossipEvents,
             mockLogger,
           );
 
@@ -785,6 +881,8 @@ void main() {
           when(mockGetPopularFeed(
             userId: anyNamed('userId'),
             cityId: anyNamed('cityId'),
+            regionId: anyNamed('regionId'),
+            countryId: anyNamed('countryId'),
             pageSize: anyNamed('pageSize'),
             cursor: anyNamed('cursor'),
           )).thenAnswer((_) async => Result.success(tPaginatedFeed));
@@ -793,6 +891,8 @@ void main() {
           when(mockCheckNewGossips(
             userId: anyNamed('userId'),
             cityId: anyNamed('cityId'),
+            regionId: anyNamed('regionId'),
+            countryId: anyNamed('countryId'),
             since: anyNamed('since'),
           )).thenAnswer((_) async => Result.success(0));
 
@@ -820,6 +920,8 @@ void main() {
             mockGetPopularFeed,
             mockCheckNewGossips,
             mockLocationManager,
+            mockDeviceRegion,
+            gossipEvents,
             mockLogger,
           );
 
@@ -832,6 +934,8 @@ void main() {
           when(mockGetPopularFeed(
             userId: anyNamed('userId'),
             cityId: anyNamed('cityId'),
+            regionId: anyNamed('regionId'),
+            countryId: anyNamed('countryId'),
             pageSize: anyNamed('pageSize'),
             cursor: anyNamed('cursor'),
           )).thenAnswer((_) async => Result.success(tPaginatedFeed));
@@ -841,6 +945,8 @@ void main() {
           when(mockCheckNewGossips(
             userId: anyNamed('userId'),
             cityId: anyNamed('cityId'),
+            regionId: anyNamed('regionId'),
+            countryId: anyNamed('countryId'),
             since: anyNamed('since'),
           )).thenAnswer((_) async => Result.failure(tFailure));
 
@@ -868,6 +974,8 @@ void main() {
             mockGetPopularFeed,
             mockCheckNewGossips,
             mockLocationManager,
+            mockDeviceRegion,
+            gossipEvents,
             mockLogger,
           );
 
@@ -880,6 +988,8 @@ void main() {
           when(mockGetPopularFeed(
             userId: anyNamed('userId'),
             cityId: anyNamed('cityId'),
+            regionId: anyNamed('regionId'),
+            countryId: anyNamed('countryId'),
             pageSize: anyNamed('pageSize'),
             cursor: anyNamed('cursor'),
           )).thenAnswer((_) async => Result.success(tPaginatedFeed));
@@ -888,6 +998,8 @@ void main() {
           when(mockCheckNewGossips(
             userId: anyNamed('userId'),
             cityId: anyNamed('cityId'),
+            regionId: anyNamed('regionId'),
+            countryId: anyNamed('countryId'),
             since: anyNamed('since'),
           )).thenThrow(Exception('Unexpected polling error'));
 
@@ -920,6 +1032,8 @@ void main() {
         when(mockGetPopularFeed(
           userId: anyNamed('userId'),
           cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tPaginatedFeed));
@@ -931,6 +1045,182 @@ void main() {
         // y que loadFeed se ejecutó correctamente
         expect(controller, isNotNull);
         expect(controller.state.status, PopularTabStatus.loaded);
+      });
+    });
+    group('ubicación del feed (anillos de cercanía)', () {
+      final tPage = PaginatedGossips(data: [tGossip], hasMore: false);
+
+      void stubFeed() {
+        when(mockGetPopularFeed(
+          userId: anyNamed('userId'),
+          cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
+          pageSize: anyNamed('pageSize'),
+          cursor: anyNamed('cursor'),
+        )).thenAnswer((_) async => Result.success(tPage));
+      }
+
+      VoidCallback capturedLocationListener() =>
+          verify(mockLocationManager.addListener(captureAny)).captured.single
+              as VoidCallback;
+
+      test('con ciudad envía ciudad, región y país seleccionados', () async {
+        stubFeed();
+        when(mockLocationManager.state).thenReturn(LocationState.initial().copyWith(
+          selectedCountry: const Country(id: 'CO', code: 'CO', name: 'Colombia'),
+          selectedCity: tCity,
+        ));
+
+        await controller.loadFeed();
+
+        verify(mockGetPopularFeed(
+          userId: anyNamed('userId'),
+          cityId: 'city-1',
+          regionId: 'region-1',
+          countryId: 'CO',
+          pageSize: anyNamed('pageSize'),
+          cursor: anyNamed('cursor'),
+        )).called(1);
+      });
+
+      test('sin ciudad usa solo el país de la región del teléfono', () async {
+        stubFeed();
+        when(mockLocationManager.state).thenReturn(LocationState.initial());
+        when(mockDeviceRegion.countryCode).thenReturn('CO');
+
+        await controller.loadFeed();
+
+        verify(mockGetPopularFeed(
+          userId: anyNamed('userId'),
+          cityId: null,
+          regionId: null,
+          countryId: 'CO',
+          pageSize: anyNamed('pageSize'),
+          cursor: anyNamed('cursor'),
+        )).called(1);
+      });
+
+      test('recarga cuando cambia la ciudad (LocationManager compartido)', () async {
+        stubFeed();
+        when(mockLocationManager.state).thenReturn(LocationState.initial());
+        await controller.loadFeed();
+        final listener = capturedLocationListener();
+
+        // El usuario elige/detecta Medellín en Crea
+        when(mockLocationManager.state).thenReturn(
+          LocationState.initial().copyWith(selectedCity: tCity),
+        );
+        listener();
+        await untilCalled(mockGetPopularFeed(
+          userId: anyNamed('userId'),
+          cityId: 'city-1',
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
+          pageSize: anyNamed('pageSize'),
+          cursor: anyNamed('cursor'),
+        ));
+
+        verify(mockGetPopularFeed(
+          userId: anyNamed('userId'),
+          cityId: 'city-1',
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
+          pageSize: anyNamed('pageSize'),
+          cursor: anyNamed('cursor'),
+        )).called(1);
+      });
+
+      test('no recarga si la ubicación no cambió o aún está cargando', () async {
+        stubFeed();
+        await controller.loadFeed();
+        final listener = capturedLocationListener();
+        clearInteractions(mockGetPopularFeed);
+
+        listener(); // misma ubicación
+        when(mockLocationManager.state).thenReturn(
+          LocationState.initial().copyWith(isDetectingLocation: true),
+        );
+        listener(); // detectando: esperar a que termine
+        await Future<void>.delayed(Duration.zero);
+
+        verifyNever(mockGetPopularFeed(
+          userId: anyNamed('userId'),
+          cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
+          pageSize: anyNamed('pageSize'),
+          cursor: anyNamed('cursor'),
+        ));
+      });
+
+      test('recarga el feed al publicar un chisme', () async {
+        stubFeed();
+        await controller.loadFeed();
+        clearInteractions(mockGetPopularFeed);
+
+        gossipEvents.gossipPublished();
+        await untilCalled(mockGetPopularFeed(
+          userId: anyNamed('userId'),
+          cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
+          pageSize: anyNamed('pageSize'),
+          cursor: anyNamed('cursor'),
+        ));
+        await Future<void>.delayed(Duration.zero); // dejar que responda
+
+        expect(controller.state.status, PopularTabStatus.loaded);
+      });
+
+      test('descarta la respuesta de un loadFeed viejo', () async {
+        final stale = Completer<Result<Failure, PaginatedGossips>>();
+        final staleGossip = FeedGossip(
+          id: 'old',
+          subject: 'Viejo',
+          content: 'c',
+          cityId: 'x',
+          createdAt: DateTime(2024),
+          likes: 0,
+          comments: 0,
+          shares: 0,
+          publishedAs: 'profile',
+          score: 1,
+          isTrending: false,
+        );
+        var call = 0;
+        when(mockGetPopularFeed(
+          userId: anyNamed('userId'),
+          cityId: anyNamed('cityId'),
+          regionId: anyNamed('regionId'),
+          countryId: anyNamed('countryId'),
+          pageSize: anyNamed('pageSize'),
+          cursor: anyNamed('cursor'),
+        )).thenAnswer((_) => ++call == 1 ? stale.future : Future.value(Result.success(tPage)));
+
+        final first = controller.loadFeed();
+        await controller.loadFeed(); // más nuevo, responde primero
+        stale.complete(Result.success(
+          PaginatedGossips(data: [staleGossip], hasMore: false),
+        ));
+        await first;
+
+        expect(controller.state.gossips, [tGossip]);
+      });
+
+      test('dispose deja de escuchar ubicación y publicaciones', () {
+        final local = PopularTabController(
+          mockGetPopularFeed,
+          mockCheckNewGossips,
+          mockLocationManager,
+          mockDeviceRegion,
+          gossipEvents,
+          mockLogger,
+        );
+        local.dispose();
+
+        verify(mockLocationManager.removeListener(any)).called(1);
+        expect(() => gossipEvents.gossipPublished(), returnsNormally);
       });
     });
   });

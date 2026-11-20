@@ -16,6 +16,7 @@ import 'package:chismes/features/location/presentation/states/location_state.dar
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:chismes/core/services/auth_service.dart';
 
 import 'following_tab_controller_test.mocks.dart';
 
@@ -24,6 +25,7 @@ import 'following_tab_controller_test.mocks.dart';
   GetRecommendedFeed,
   LocationManager,
   ProfileService,
+  AuthService,
   AppLogger,
 ])
 void main() {
@@ -32,6 +34,7 @@ void main() {
   late MockGetRecommendedFeed mockGetRecommendedFeed;
   late MockLocationManager mockLocationManager;
   late MockProfileService mockProfileService;
+  late MockAuthService mockAuthService;
   late MockAppLogger mockLogger;
 
   // Provide dummies
@@ -73,6 +76,8 @@ void main() {
     mockLocationManager = MockLocationManager();
     mockProfileService = MockProfileService();
     mockLogger = MockAppLogger();
+    mockAuthService = MockAuthService();
+    when(mockAuthService.userId).thenReturn('user-id');
 
     // Setup default LocationManager state
     when(mockLocationManager.state).thenReturn(
@@ -88,6 +93,7 @@ void main() {
       mockGetRecommendedFeed,
       mockLocationManager,
       mockProfileService,
+      mockAuthService,
       mockLogger,
     );
   });
@@ -155,6 +161,31 @@ void main() {
 
         // Assert
         expect(capturedStates.first, FollowingTabStatus.loading);
+      });
+
+      test('usa el id del usuario autenticado (no un placeholder)', () async {
+        when(mockAuthService.userId).thenReturn('d68036a0-uuid');
+        when(mockProfileService.getFollowingCount(any))
+            .thenAnswer((_) async => 0);
+
+        await controller.loadFeed();
+
+        verify(mockProfileService.getFollowingCount('d68036a0-uuid')).called(1);
+      });
+
+      test('sin usuario autenticado muestra notFollowing sin llamar al RPC',
+          () async {
+        when(mockAuthService.userId).thenReturn(null);
+
+        await controller.loadFeed();
+
+        expect(controller.state.status, FollowingTabStatus.notFollowing);
+        verifyNever(mockProfileService.getFollowingCount(any));
+        verifyNever(mockGetFollowingFeed(
+          userId: anyNamed('userId'),
+          pageSize: anyNamed('pageSize'),
+          cursor: anyNamed('cursor'),
+        ));
       });
 
       test('debe cambiar estado a notFollowing cuando followingCount es 0',

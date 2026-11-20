@@ -58,12 +58,16 @@ void main() {
 
       await dataSource.getPopularFeed(
         userCityId: 'MED',
+        userRegionId: 'co-antioquia',
+        userCountryId: 'CO',
         pageSize: 50,
         cursor: const FeedCursor.popular(score: 99.5, id: 'g9'),
       );
 
       expect(fake.lastBody, {
         'user_city_id': 'MED',
+        'user_region_id': 'co-antioquia',
+        'user_country_id': 'CO',
         'page_size': 50,
         'cursor_score': 99.5,
         'cursor_id': 'g9',
@@ -77,6 +81,8 @@ void main() {
 
       expect(fake.lastBody, {
         'user_city_id': null,
+        'user_region_id': null,
+        'user_country_id': null,
         'page_size': 20,
         'cursor_score': null,
         'cursor_id': null,
@@ -203,6 +209,8 @@ void main() {
 
       final count = await dataSource.checkNewGossips(
         userCityId: 'MED',
+        userRegionId: 'co-antioquia',
+        userCountryId: 'CO',
         since: DateTime.utc(2024, 1, 15, 10),
       );
 
@@ -210,6 +218,8 @@ void main() {
       expect(fake.lastRequest.url.path, '/rest/v1/rpc/check_new_gossips');
       expect(fake.lastBody, {
         'user_city_id': 'MED',
+        'user_region_id': 'co-antioquia',
+        'user_country_id': 'CO',
         'since_timestamp': '2024-01-15T10:00:00.000Z',
       });
     });

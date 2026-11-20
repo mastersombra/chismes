@@ -62,7 +62,7 @@ class SupabaseRemoteLogger implements RemoteLogger {
       final session = _client.auth.currentSession;
       if (session == null) {
         // Usuario no autenticado - no podemos enviar logs
-        debugPrint('⚠️ No se puede enviar log remoto: usuario no autenticado');
+        _console('⚠️ No se puede enviar log remoto: usuario no autenticado');
         return;
       }
 
@@ -75,23 +75,28 @@ class SupabaseRemoteLogger implements RemoteLogger {
       );
 
       if (response.status == 200) {
-        debugPrint('📤 Log enviado a Edge Function: ${entry.level.value}');
+        _console('📤 Log enviado a Edge Function: ${entry.level.value}');
       } else if (response.status == 429) {
         // Rate limit excedido, no es error crítico
-        debugPrint('⚠️ Rate limit excedido para logging remoto');
+        _console('⚠️ Rate limit excedido para logging remoto');
       } else {
-        debugPrint('⚠️ Edge Function retornó status ${response.status}');
+        _console('⚠️ Edge Function retornó status ${response.status}');
       }
     } catch (error, stackTrace) {
       // Si falla el logging remoto, solo mostrar en consola
       // NO propagar el error (el logging no debe romper la app)
-      debugPrint('⚠️ Error enviando log a Edge Function: $error');
+      _console('⚠️ Error enviando log a Edge Function: $error');
 
       // En DEBUG: Mostrar stack trace para troubleshooting
-      if (kDebugMode) {
-        debugPrint('Stack trace: $stackTrace');
-      }
+      _console('Stack trace: $stackTrace');
     }
+  }
+
+  /// Salida a consola solo en debug. El logger remoto no puede usar AppLogger
+  /// (AppLogger depende de él: sería un ciclo y un error al loguear generaría
+  /// otro log). En release no imprime nada.
+  void _console(String message) {
+    if (kDebugMode) debugPrint(message);
   }
 }
 

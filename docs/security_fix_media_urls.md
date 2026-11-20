@@ -53,9 +53,8 @@ Cliente → audio_base64 → Cuarentena (privado) → Validación → Moderació
 **Columnas agregadas:**
 - `audio_storage_path` en tabla `gossips` (fuente de verdad)
 
-**Funciones de cleanup:**
-- `cleanup_audio_quarantine_files()`: Limpia cuarentena >24h
-- `cleanup_orphaned_audio()`: Limpia audios huérfanos >7 días
+**Cleanup:** Edge Function `cleanup-media` + job `media-cleanup` (migración 011;
+las funciones SQL `cleanup_audio_quarantine_files()` / `cleanup_orphaned_audio()` se eliminaron).
 
 **RPC actualizado:**
 - `create_gossip_draft()` ahora acepta `audio_storage_path`
@@ -241,8 +240,7 @@ audio_storage_path | text |
 ```sql
 SELECT proname FROM pg_proc
 WHERE proname IN (
-  'cleanup_audio_quarantine_files',
-  'cleanup_orphaned_audio',
+  'get_media_cleanup_candidates',
   'upsert_gossip_idempotent'
 );
 ```

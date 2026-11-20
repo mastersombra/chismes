@@ -58,6 +58,15 @@ class LocationService {
   static const String _keyRegionName = 'default_region_name';
   static const String _keyCityName = 'default_city_name';
 
+  /// Límite para la petición de permisos. Si Android descarta la petición
+  /// (p. ej. otra ya en curso), geolocator nunca completa el Future y la UI
+  /// quedaría cargando para siempre. Amplio porque incluye el tiempo que el
+  /// usuario tarda en responder el diálogo.
+  static const Duration permissionRequestTimeout = Duration(seconds: 60);
+
+  /// Límite para el reverse geocoding (servicio de la plataforma, sin límite propio)
+  static const Duration geocodingTimeout = Duration(seconds: 10);
+
   /// Obtiene la posición GPS actual del usuario
   ///
   /// **Flujo:**
@@ -85,7 +94,8 @@ class LocationService {
 
       if (permission == LocationPermission.denied) {
         // Solicitar permisos
-        permission = await Geolocator.requestPermission();
+        permission = await Geolocator.requestPermission()
+            .timeout(permissionRequestTimeout);
         if (permission == LocationPermission.denied) {
           _logger.w('Location permissions denied');
           return null;
@@ -162,7 +172,8 @@ class LocationService {
         });
       }
 
-      final placemarks = await placemarkFromCoordinates(latitude, longitude);
+      final placemarks = await placemarkFromCoordinates(latitude, longitude)
+          .timeout(geocodingTimeout);
 
       if (placemarks.isEmpty) {
         _logger.w('Location information not found');

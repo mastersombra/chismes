@@ -29,7 +29,7 @@ echo "════════════════════════�
 echo ""
 
 grep "\[E\]" test_output.log | \
-  sed 's/^.*: \/Users\/alejo\/Documents\/Piloto\/chismes\/test\///' | \
+  sed "s|^.*: $(cd "$(dirname "$0")" && pwd)/test/||" | \
   sed 's/\[E\].*$//' | \
   sort | \
   awk -F': ' '{

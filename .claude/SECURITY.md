@@ -402,14 +402,42 @@ anon key haciendo `POST /rest/v1/gossips`.
 
 - La app crea chismes llamando a la Edge Function `moderate-gossip`
   (`SupabaseGossipRemoteDataSource.createWithImage`), que modera y escribe con el
-  RPC `upsert_gossip_idempotent()` (SECURITY DEFINER).
-- `create_gossip_draft()` (SECURITY DEFINER, `GRANT EXECUTE ... TO authenticated`)
-  es el RPC alternativo para crear borradores.
+  RPC `upsert_gossip_idempotent()` (SECURITY DEFINER, **solo `service_role`**).
+- `create_gossip_draft()` (legacy, sin uso) también es solo `service_role`.
 - `status` y `moderation_status` los fija el servidor, nunca el cliente.
 - Test de regresión: `supabase/tests/001_gossip_creation_security_test.sql`
-  (INSERT directo debe fallar; el RPC debe funcionar).
+  (INSERT directo y RPCs de servidor deben fallar para anon/authenticated;
+  service_role sí puede).
 
 **Nunca** agregar una policy `FOR INSERT` ni `GRANT INSERT` sobre `gossips`.
+
+### ⛔ Funciones SECURITY DEFINER: REVOKE obligatorio (fix 2026-11-19, migración 012)
+
+En Postgres toda función es ejecutable por `PUBLIC` al crearse, y Supabase además
+da EXECUTE a `anon` y `authenticated` en `public`. Una función `SECURITY DEFINER`
+corre como `postgres` **sin RLS**: si no se revoca, cualquiera con la anon key la
+llama por `POST /rest/v1/rpc/<nombre>`.
+
+Hasta la 012, `upsert_gossip_idempotent()` permitía, **sin login**, publicar un
+chisme `published/approved/public` a nombre de cualquier usuario.
+
+Toda función que no deba llamar la app lleva, en la misma migración:
+
+```sql
+REVOKE EXECUTE ON FUNCTION mi_funcion(args) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION mi_funcion(args) TO service_role;
+```
+
+Y si la app sí la llama, **nunca** debe aceptar del cliente identidad
+(`user_id`, `created_by`) ni estados: se toman de `auth.uid()` y se fijan en el servidor.
+
+Auditar qué está expuesto:
+
+```sql
+SELECT p.proname FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+WHERE n.nspname = 'public' AND p.prosecdef
+  AND has_function_privilege('anon', p.oid, 'EXECUTE');
+```
 
 ### Regla de Oro
 

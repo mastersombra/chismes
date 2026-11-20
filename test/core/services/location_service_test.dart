@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geocoding/geocoding.dart';
@@ -1207,6 +1210,34 @@ void main() {
         verify(logger.w('Location permissions permanently denied')).called(1);
       });
 
+      // Android descarta una petición de permisos si ya hay otra en curso y
+      // geolocator nunca completa ese Future: sin timeout, spinner infinito.
+      test('retorna null si la petición de permiso nunca responde', () {
+        native['checkPermission'] = () => 0; // denied
+        native['requestPermission'] = () => Completer<int>().future;
+
+        fakeAsync((async) {
+          Position? position;
+          var done = false;
+          service.getCurrentPosition().then((p) {
+            position = p;
+            done = true;
+          });
+
+          async.elapse(LocationService.permissionRequestTimeout -
+              const Duration(seconds: 1));
+          expect(done, isFalse, reason: 'aún dentro del límite');
+
+          async.elapse(const Duration(seconds: 2));
+          expect(done, isTrue);
+          expect(position, isNull);
+          expect(methods(), isNot(contains('getCurrentPosition')));
+          verify(logger.w('Error getting GPS location',
+                  context: anyNamed('context')))
+              .called(1);
+        });
+      });
+
       test('retorna null y loguea warning si el plugin falla', () async {
         native['getCurrentPosition'] =
             () => throw PlatformException(code: 'TIMEOUT');
@@ -1283,6 +1314,28 @@ void main() {
         verify(logger.w('Incomplete location information')).called(1);
       });
 
+      test('retorna null si el geocoding nunca responde', () {
+        geocoding.hang = true;
+
+        fakeAsync((async) {
+          DetectedLocation? location;
+          var done = false;
+          service.getCityFromCoordinates(1, 2).then((l) {
+            location = l;
+            done = true;
+          });
+
+          async.elapse(LocationService.geocodingTimeout +
+              const Duration(seconds: 1));
+
+          expect(done, isTrue);
+          expect(location, isNull);
+          verify(logger.w('Reverse geocoding error',
+                  context: anyNamed('context')))
+              .called(1);
+        });
+      });
+
       test('retorna null y loguea warning si el geocoding falla', () async {
         geocoding.error = PlatformException(code: 'NOT_FOUND');
 
@@ -1298,6 +1351,7 @@ void main() {
 class _FakeGeocoding extends GeocodingPlatform {
   List<Placemark> result = [];
   Object? error;
+  bool hang = false;
   List<double>? requested;
 
   @override
@@ -1305,6 +1359,7 @@ class _FakeGeocoding extends GeocodingPlatform {
       double latitude, double longitude) async {
     requested = [latitude, longitude];
     if (error != null) throw error!;
+    if (hang) return Completer<List<Placemark>>().future;
     return result;
   }
 }

@@ -81,7 +81,8 @@ class DeviceInfoProvider {
       _cachedInfo = info;
       return info;
     } catch (error) {
-      debugPrint('⚠️ Error obteniendo device info: $error');
+      // AppLogger depende de este provider: no puede usarse aquí (ciclo).
+      if (kDebugMode) debugPrint('⚠️ Error obteniendo device info: $error');
       return {
         'os': Platform.operatingSystem,
         'osVersion': Platform.operatingSystemVersion,

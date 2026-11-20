@@ -148,7 +148,10 @@ class SettingsSection extends StatelessWidget {
             _buildListTile(
               context,
               title: context.l10n.profileSettingsLanguage,
-              subtitle: settings.language == 'es' ? context.l10n.profileSettingsLanguageSpanish : context.l10n.profileSettingsLanguageEnglish,
+              // Idioma activo de la app (LocaleNotifier → MaterialApp), no settings.language
+              subtitle: Localizations.localeOf(context).languageCode == 'es'
+                  ? context.l10n.profileSettingsLanguageSpanish
+                  : context.l10n.profileSettingsLanguageEnglish,
               trailing: const Icon(Icons.chevron_right),
               onTap: () => _showLanguageDialog(context),
             ),
@@ -344,7 +347,7 @@ class SettingsSection extends StatelessWidget {
     final result = await showDialog<String>(
       context: context,
       builder: (context) {
-        final currentLanguage = settings.language;
+        final currentLanguage = Localizations.localeOf(context).languageCode;
         return AlertDialog(
           title: Text(context.l10n.profileSettingsLanguage),
           content: Column(
@@ -389,16 +392,10 @@ class SettingsSection extends StatelessWidget {
     if (result != null) {
       if (!context.mounted) return;
 
-      // Cambiar el idioma con LocaleNotifier
-      final localeNotifier = getIt<LocaleNotifier>();
-      await localeNotifier.setLocale(Locale(result));
-
-      // Guardar preferencia en settings
-      if (!context.mounted) return;
-      await _updateSettings(
-        context,
-        settings.copyWith(language: result),
-      );
+      // LocaleNotifier es la única fuente de verdad del idioma (persiste en
+      // SharedPreferences). No se escribe en settings.language: los settings
+      // remotos aún no se persisten y al recargarlos pisaban esta elección.
+      await getIt<LocaleNotifier>().setLocale(Locale(result));
     }
   }
 }

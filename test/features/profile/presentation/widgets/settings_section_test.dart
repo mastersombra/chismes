@@ -511,9 +511,23 @@ void main() {
 
       // Assert
       verify(mockLocaleNotifier.setLocale(const Locale('en'))).called(1);
-      verify(mockController.updateSetting(argThat(predicate<ProfileSettings>(
-        (s) => s.language == 'en',
-      )))).called(1);
+      // El idioma no se guarda en settings (fuente única: LocaleNotifier)
+      verifyNever(mockController.updateSetting(any));
+    });
+
+    testWidgets('muestra el idioma activo de la app, no settings.language',
+        (tester) async {
+      // settings dice 'en' pero la app está en 'es' (locale del MaterialApp)
+      final settings = ProfileSettings.defaultSettings().copyWith(
+        language: 'en',
+      );
+
+      await tester.pumpWidget(createWidget(settings));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Idioma'));
+
+      expect(find.text('Español'), findsOneWidget);
+      expect(find.text('English'), findsNothing);
     });
 
     testWidgets('debe cerrar dialog de idioma al cancelar', (tester) async {

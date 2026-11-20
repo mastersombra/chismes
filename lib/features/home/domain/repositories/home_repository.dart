@@ -53,9 +53,14 @@ abstract class HomeRepository {
   ///   cursor: result.getOrNull()!.nextCursor,
   /// );
   /// ```
+  ///
+  /// **Ubicación (anillos de cercanía):** `cityId`, `regionId` y `countryId`
+  /// son opcionales. Sin ciudad, mandar al menos el país; sin nada, feed global.
   Future<Result<Failure, PaginatedGossips>> getPopularFeed({
     required String? userId,
     required String? cityId,
+    String? regionId,
+    String? countryId,
     int pageSize = 20,
     FeedCursor? cursor,
   });
@@ -146,6 +151,8 @@ abstract class HomeRepository {
   Future<Result<Failure, int>> checkNewGossips({
     required String? userId,
     required String? cityId,
+    String? regionId,
+    String? countryId,
     required DateTime since,
   });
 }

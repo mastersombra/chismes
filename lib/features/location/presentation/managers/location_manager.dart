@@ -49,7 +49,12 @@ import 'location_error_key.dart';
 ///   }
 /// }
 /// ```
-@injectable
+///
+/// **Singleton (lazy):** una sola instancia en toda la app para que Crea y
+/// el feed vean la misma ubicación. Antes era factory: cada controller tenía
+/// su propio estado (el feed nunca tenía ciudad) y dos instancias pedían
+/// permisos de GPS en paralelo. No llamar `dispose()` desde un controller.
+@lazySingleton
 class LocationManager extends ChangeNotifier {
   final GetCountries _getCountries;
   final GetRegionsByCountry _getRegionsByCountry;

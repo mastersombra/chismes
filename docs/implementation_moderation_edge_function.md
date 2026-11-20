@@ -235,9 +235,7 @@ CREATE TRIGGER protect_gossip_fields
 | **Estados** | Cliente decide | Servidor decide |
 | **Seguridad** | ❌ Inseguro | ✅ Seguro |
 
-**Código Legacy (puede limpiarse):**
-- `lib/features/gossip/domain/services/mvp_content_moderator.dart` - Ya no se usa
-- `lib/features/gossip/domain/services/content_moderator.dart` - Interface legacy
+**Código legacy:** `mvp_content_moderator.dart` y `content_moderator.dart` ✅ eliminados (2026-11-19).
 
 ---
 

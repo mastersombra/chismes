@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:chismes/core/services/gossip_events.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:chismes/features/gossip/presentation/controllers/add_gossip_controller.dart';
 import 'package:chismes/features/gossip/domain/usecases/create_gossip.dart';
@@ -154,6 +155,7 @@ void main() {
     controller = AddGossipController(
       locationManager: mockLocationManager,
       createGossip: mockCreateGossip,
+      gossipEvents: GossipEvents(),
       logger: mockLogger,
     );
   });
@@ -868,6 +870,38 @@ void main() {
       verify(mockCreateGossip.call(input: anyNamed('input'), imageFile: anyNamed('imageFile'))).called(1);
     });
 
+    test('emite gossipPublished solo cuando la creación tiene éxito', () async {
+      final events = GossipEvents();
+      final local = AddGossipController(
+        locationManager: mockLocationManager,
+        createGossip: mockCreateGossip,
+        gossipEvents: events,
+        logger: mockLogger,
+      );
+      var published = 0;
+      final sub = events.onPublished.listen((_) => published++);
+      addTearDown(sub.cancel);
+
+      await local.initialize();
+      await local.selectCountry('1');
+      await local.selectRegion('ant');
+      local.selectCity('med');
+      local.updateSubject('Test Subject');
+      local.updateContent('Test Content');
+
+      when(mockCreateGossip.call(input: anyNamed('input'), imageFile: anyNamed('imageFile')))
+          .thenAnswer((_) async => Result.failure(const NetworkFailure(code: ErrorCode.networkError)));
+      await local.submit();
+      await Future<void>.delayed(Duration.zero);
+      expect(published, 0, reason: 'un error no debe recargar el feed');
+
+      when(mockCreateGossip.call(input: anyNamed('input'), imageFile: anyNamed('imageFile')))
+          .thenAnswer((_) async => Result.success(mockGossip));
+      await local.submit();
+      await Future<void>.delayed(Duration.zero);
+      expect(published, 1);
+    });
+
     test('debe retornar null si falta ubicación completa', () async {
       // Arrange
       controller.updateSubject('Test Subject');
@@ -992,6 +1026,15 @@ void main() {
       expect(controller.state.selectedCountryId, isNull);
       expect(controller.state.selectedRegionId, isNull);
       expect(controller.state.selectedCityId, isNull);
+    });
+
+    test('reset conserva la ubicación (es la ubicación por defecto)', () {
+      final keyBefore = controller.state.idempotencyKey;
+
+      controller.reset();
+
+      verifyNever(mockLocationManager.clearLocation());
+      expect(controller.state.idempotencyKey, isNot(keyBefore));
     });
 
     test('debe limpiar el error', () async {
@@ -2301,6 +2344,7 @@ void main() {
       controller = AddGossipController(
         locationManager: mockLocationManager,
         createGossip: mockCreateGossip,
+        gossipEvents: GossipEvents(),
         logger: mockLogger,
       );
 
@@ -2689,6 +2733,7 @@ void main() {
       controller = AddGossipController(
         locationManager: mockLocationManager,
         createGossip: mockCreateGossip,
+        gossipEvents: GossipEvents(),
         logger: mockLogger,
       );
 
@@ -2721,6 +2766,7 @@ void main() {
       controller = AddGossipController(
         locationManager: mockLocationManager,
         createGossip: mockCreateGossip,
+        gossipEvents: GossipEvents(),
         logger: mockLogger,
       );
 
@@ -2761,6 +2807,7 @@ void main() {
       controller = AddGossipController(
         locationManager: mockLocationManager,
         createGossip: mockCreateGossip,
+        gossipEvents: GossipEvents(),
         logger: mockLogger,
       );
 

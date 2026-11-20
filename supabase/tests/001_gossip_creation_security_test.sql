@@ -1,249 +1,151 @@
 -- =====================================================
--- TEST DE SEGURIDAD: Prevención de bypass de moderación
+-- TEST DE SEGURIDAD: creación de gossips solo vía servidor
 -- =====================================================
--- Este test verifica que:
--- 1. INSERT directo con anon key → FALLA (403)
--- 2. RPC create_gossip_draft() → FUNCIONA correctamente
--- 3. Estados son controlados por servidor (no cliente)
+-- Verifica que un cliente (anon o authenticated) NO puede crear ni publicar
+-- gossips saltándose la Edge Function moderate-gossip:
+--   1. INSERT directo en gossips → bloqueado (anon y authenticated)
+--   2. RPC upsert_gossip_idempotent → sin permiso (anon y authenticated)
+--   3. RPC create_gossip_draft (legacy) → sin permiso
+--   4. RPCs de rate limit → sin permiso
+--   5. service_role (Edge Function) sí puede, e idempotencia funciona
+--
+-- Ejecutar (local):
+--   docker exec -i supabase_db_<project_id> psql -U postgres -v ON_ERROR_STOP=1 \
+--     < supabase/tests/001_gossip_creation_security_test.sql
+-- Todo corre en una transacción con ROLLBACK: no deja datos.
+-- Cualquier fallo aborta con RAISE EXCEPTION.
+-- =====================================================
 
 BEGIN;
 
--- =====================================================
--- TEST 1: INSERT directo debe FALLAR
--- =====================================================
--- Simular usuario anon intentando INSERT directo
-SET LOCAL ROLE anon;
-SET LOCAL request.jwt.claims TO '{"role": "anon"}';
+-- Usuario real (gossips.created_by tiene FK a auth.users)
+INSERT INTO auth.users (id, email, aud, role)
+VALUES ('aaaaaaaa-0000-4000-8000-000000000001', 'security-test@test.local', 'authenticated', 'authenticated');
 
-DO $$
+CREATE TEMP TABLE _t (user_id UUID, claims TEXT) ON COMMIT DROP;
+INSERT INTO _t VALUES (
+  'aaaaaaaa-0000-4000-8000-000000000001',
+  '{"sub": "aaaaaaaa-0000-4000-8000-000000000001", "role": "authenticated"}'
+);
+GRANT SELECT ON _t TO anon, authenticated, service_role;
+
+-- Helper: intenta un statement y exige que falle por permisos/RLS
+CREATE OR REPLACE FUNCTION pg_temp.expect_denied(p_label TEXT, p_sql TEXT)
+RETURNS VOID LANGUAGE plpgsql AS $$
 BEGIN
-  -- Intentar INSERT directo (debe fallar)
-  INSERT INTO gossips (
-    subject,
-    content,
-    country_id,
-    region_id,
-    city_id,
-    published_as,
-    status,              -- Intento de bypass
-    moderation_status,   -- Intento de bypass
-    visibility,          -- Intento de bypass
-    created_by
-  ) VALUES (
-    'Test bypass',
-    'Este gossip intenta bypasear moderación',
-    'COL',
-    'ANT',
-    'MED',
-    'anonymous',
-    'published',         -- ❌ Bypass intento
-    'approved',          -- ❌ Bypass intento
-    'public',            -- ❌ Bypass intento
-    'fake-user-123'      -- ❌ Falsificación intento
-  );
-
-  -- Si llegamos aquí, el test FALLA
-  RAISE EXCEPTION 'SECURITY BREACH: INSERT directo NO fue bloqueado!';
-
+  EXECUTE p_sql;
+  RAISE EXCEPTION '❌ % : NO fue bloqueado', p_label;
 EXCEPTION
-  WHEN insufficient_privilege OR check_violation THEN
-    -- ✅ Correcto: INSERT fue bloqueado
-    RAISE NOTICE 'TEST 1 PASSED: INSERT directo fue bloqueado correctamente';
-  WHEN OTHERS THEN
-    -- ❌ Error inesperado
-    RAISE EXCEPTION 'TEST 1 FAILED: Error inesperado: %', SQLERRM;
-END;
-$$;
+  WHEN insufficient_privilege THEN
+    RAISE NOTICE '✅ % : bloqueado (%)', p_label, SQLERRM;
+END $$;
+GRANT EXECUTE ON FUNCTION pg_temp.expect_denied(TEXT, TEXT) TO anon, authenticated;
 
 -- =====================================================
--- TEST 2: RPC debe funcionar correctamente
+-- Ataques como anon y como authenticated
 -- =====================================================
--- Simular usuario autenticado usando RPC
-RESET ROLE;
-SET LOCAL ROLE authenticated;
-SET LOCAL request.jwt.claims TO '{"sub": "test-user-123", "role": "authenticated"}';
-
 DO $$
 DECLARE
-  v_result JSON;
-  v_gossip_id UUID;
-  v_status TEXT;
-  v_moderation_status TEXT;
-  v_visibility TEXT;
-  v_created_by TEXT;
+  v_role TEXT;
+  v_insert TEXT := $q$
+    INSERT INTO gossips (subject, content, country_id, region_id, city_id,
+      published_as, status, moderation_status, visibility, created_by)
+    VALUES ('bypass', 'bypass', 'x', 'x', 'x', 'anonymous',
+      'published', 'approved', 'public', 'aaaaaaaa-0000-4000-8000-000000000001')
+  $q$;
+  v_upsert TEXT := $q$
+    SELECT upsert_gossip_idempotent(
+      p_subject := 'bypass', p_content := 'bypass',
+      p_country_id := 'x', p_region_id := 'x', p_city_id := 'x',
+      p_published_as := 'profile', p_status := 'published',
+      p_moderation_status := 'approved', p_visibility := 'public',
+      p_created_by := 'aaaaaaaa-0000-4000-8000-000000000001',
+      p_idempotency_key := gen_random_uuid())
+  $q$;
+  v_draft TEXT := $q$
+    SELECT create_gossip_draft(
+      p_subject := 'x', p_content := 'x', p_country_id := 'x',
+      p_region_id := 'x', p_city_id := 'x', p_published_as := 'anonymous')
+  $q$;
+  v_reserve TEXT := $q$
+    SELECT reserve_rate_limit_slot('aaaaaaaa-0000-4000-8000-000000000001', 'create_gossip')
+  $q$;
+  v_release TEXT := $q$
+    SELECT release_rate_limit_slot('aaaaaaaa-0000-4000-8000-000000000001', 'create_gossip')
+  $q$;
 BEGIN
-  -- Llamar RPC para crear gossip
-  SELECT create_gossip_draft(
-    p_subject := 'Test RPC',
-    p_content := 'Este gossip se crea correctamente vía RPC',
-    p_country_id := 'COL',
-    p_region_id := 'ANT',
-    p_city_id := 'MED',
-    p_published_as := 'anonymous',
-    p_audio_url := NULL,
-    p_image_url := NULL,
-    p_idempotency_key := NULL
-  ) INTO v_result;
-
-  -- Extraer ID del resultado
-  v_gossip_id := (v_result->>'id')::UUID;
-
-  IF v_gossip_id IS NULL THEN
-    RAISE EXCEPTION 'TEST 2 FAILED: RPC no retornó un ID válido';
-  END IF;
-
-  -- Verificar que el gossip existe en la DB
-  SELECT status, moderation_status, visibility, created_by
-  INTO v_status, v_moderation_status, v_visibility, v_created_by
-  FROM gossips
-  WHERE id = v_gossip_id;
-
-  -- Verificar estados forzados por servidor
-  IF v_status != 'draft' THEN
-    RAISE EXCEPTION 'TEST 2 FAILED: status debería ser draft pero es: %', v_status;
-  END IF;
-
-  IF v_moderation_status != 'pending' THEN
-    RAISE EXCEPTION 'TEST 2 FAILED: moderation_status debería ser pending pero es: %', v_moderation_status;
-  END IF;
-
-  IF v_visibility != 'private' THEN
-    RAISE EXCEPTION 'TEST 2 FAILED: visibility debería ser private pero es: %', v_visibility;
-  END IF;
-
-  IF v_created_by != 'test-user-123' THEN
-    RAISE EXCEPTION 'TEST 2 FAILED: created_by debería ser test-user-123 pero es: %', v_created_by;
-  END IF;
-
-  -- ✅ Todos los checks pasaron
-  RAISE NOTICE 'TEST 2 PASSED: RPC funcionó correctamente y estados son controlados por servidor';
-
-  -- Limpiar gossip de test
-  DELETE FROM gossips WHERE id = v_gossip_id;
-
-END;
-$$;
-
--- =====================================================
--- TEST 3: RPC sin auth debe FALLAR
--- =====================================================
-RESET ROLE;
-SET LOCAL ROLE anon;
-SET LOCAL request.jwt.claims TO '{"role": "anon"}'; -- Sin 'sub'
-
-DO $$
-DECLARE
-  v_result JSON;
-BEGIN
-  -- Intentar RPC sin autenticación (debe fallar)
-  SELECT create_gossip_draft(
-    p_subject := 'Test sin auth',
-    p_content := 'Este gossip intenta crearse sin autenticación',
-    p_country_id := 'COL',
-    p_region_id := 'ANT',
-    p_city_id := 'MED',
-    p_published_as := 'anonymous',
-    p_audio_url := NULL,
-    p_image_url := NULL,
-    p_idempotency_key := NULL
-  ) INTO v_result;
-
-  -- Si llegamos aquí, el test FALLA
-  RAISE EXCEPTION 'TEST 3 FAILED: RPC sin auth NO fue bloqueado!';
-
-EXCEPTION
-  WHEN OTHERS THEN
-    IF SQLERRM LIKE '%Authentication required%' THEN
-      -- ✅ Correcto: RPC rechazó usuario no autenticado
-      RAISE NOTICE 'TEST 3 PASSED: RPC rechazó correctamente usuario sin auth';
+  FOREACH v_role IN ARRAY ARRAY['anon', 'authenticated'] LOOP
+    IF v_role = 'anon' THEN
+      PERFORM set_config('request.jwt.claims', '{"role": "anon"}', true);
     ELSE
-      -- ❌ Error inesperado
-      RAISE EXCEPTION 'TEST 3 FAILED: Error inesperado: %', SQLERRM;
+      PERFORM set_config('request.jwt.claims', (SELECT claims FROM _t), true);
     END IF;
-END;
-$$;
+    EXECUTE format('SET LOCAL ROLE %I', v_role);
+
+    PERFORM pg_temp.expect_denied(v_role || ' INSERT directo', v_insert);
+    PERFORM pg_temp.expect_denied(v_role || ' upsert_gossip_idempotent', v_upsert);
+    PERFORM pg_temp.expect_denied(v_role || ' create_gossip_draft', v_draft);
+    PERFORM pg_temp.expect_denied(v_role || ' reserve_rate_limit_slot', v_reserve);
+    PERFORM pg_temp.expect_denied(v_role || ' release_rate_limit_slot', v_release);
+
+    RESET ROLE;
+  END LOOP;
+END $$;
+
+-- Ningún ataque dejó filas
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM gossips WHERE created_by = 'aaaaaaaa-0000-4000-8000-000000000001') THEN
+    RAISE EXCEPTION '❌ Se creó un gossip desde un cliente';
+  END IF;
+  RAISE NOTICE '✅ Ningún gossip creado desde clientes';
+END $$;
 
 -- =====================================================
--- TEST 4: Idempotencia debe prevenir duplicados
+-- service_role (Edge Function) sí puede, con idempotencia
 -- =====================================================
-RESET ROLE;
-SET LOCAL ROLE authenticated;
-SET LOCAL request.jwt.claims TO '{"sub": "test-user-456", "role": "authenticated"}';
+SET LOCAL ROLE service_role;
 
 DO $$
 DECLARE
-  v_result1 JSON;
-  v_result2 JSON;
-  v_gossip_id1 UUID;
-  v_gossip_id2 UUID;
-  v_is_duplicate BOOLEAN;
-  v_idempotency_key UUID := gen_random_uuid();
+  v_key UUID := gen_random_uuid();
+  v_r1 JSON;
+  v_r2 JSON;
 BEGIN
-  -- Primera llamada: crear gossip
-  SELECT create_gossip_draft(
-    p_subject := 'Test idempotencia',
-    p_content := 'Primer intento',
-    p_country_id := 'COL',
-    p_region_id := 'ANT',
-    p_city_id := 'MED',
-    p_published_as := 'anonymous',
-    p_audio_url := NULL,
-    p_image_url := NULL,
-    p_idempotency_key := v_idempotency_key
-  ) INTO v_result1;
+  SELECT upsert_gossip_idempotent(
+    p_subject := 'Test servidor', p_content := 'Creado por la Edge Function',
+    p_country_id := 'x', p_region_id := 'x', p_city_id := 'x',
+    p_published_as := 'anonymous', p_status := 'draft',
+    p_moderation_status := 'pending', p_visibility := 'private',
+    p_created_by := (SELECT user_id FROM _t), p_idempotency_key := v_key
+  ) INTO v_r1;
 
-  v_gossip_id1 := (v_result1->>'id')::UUID;
+  SELECT upsert_gossip_idempotent(
+    p_subject := 'Test servidor DUPLICADO', p_content := 'Reintento',
+    p_country_id := 'x', p_region_id := 'x', p_city_id := 'x',
+    p_published_as := 'anonymous', p_status := 'draft',
+    p_moderation_status := 'pending', p_visibility := 'private',
+    p_created_by := (SELECT user_id FROM _t), p_idempotency_key := v_key
+  ) INTO v_r2;
 
-  -- Segunda llamada: misma idempotency_key (debe retornar el mismo gossip)
-  SELECT create_gossip_draft(
-    p_subject := 'Test idempotencia DUPLICADO',
-    p_content := 'Segundo intento (debería ser ignorado)',
-    p_country_id := 'COL',
-    p_region_id := 'ANT',
-    p_city_id := 'MED',
-    p_published_as := 'anonymous',
-    p_audio_url := NULL,
-    p_image_url := NULL,
-    p_idempotency_key := v_idempotency_key
-  ) INTO v_result2;
-
-  v_gossip_id2 := (v_result2->>'id')::UUID;
-  v_is_duplicate := (v_result2->>'is_duplicate')::BOOLEAN;
-
-  -- Verificar que retornó el MISMO gossip
-  IF v_gossip_id1 != v_gossip_id2 THEN
-    RAISE EXCEPTION 'TEST 4 FAILED: Idempotencia no funcionó. ID1: %, ID2: %', v_gossip_id1, v_gossip_id2;
+  IF (v_r1->'gossip'->>'id') IS NULL THEN
+    RAISE EXCEPTION '❌ service_role no pudo crear el gossip: %', v_r1;
   END IF;
 
-  IF v_is_duplicate IS NOT TRUE THEN
-    RAISE EXCEPTION 'TEST 4 FAILED: is_duplicate debería ser true';
+  IF (v_r1->'gossip'->>'id') <> (v_r2->'gossip'->>'id')
+     OR (v_r2->>'idempotent')::BOOLEAN IS NOT TRUE THEN
+    RAISE EXCEPTION '❌ Idempotencia falló: % / %', v_r1, v_r2;
   END IF;
 
-  -- Verificar que solo existe UN gossip en la DB
-  IF (SELECT COUNT(*) FROM gossips WHERE id = v_gossip_id1) != 1 THEN
-    RAISE EXCEPTION 'TEST 4 FAILED: Se crearon múltiples gossips con la misma idempotency_key';
+  IF (SELECT COUNT(*) FROM gossips WHERE idempotency_key = v_key) <> 1 THEN
+    RAISE EXCEPTION '❌ Se crearon gossips duplicados con la misma key';
   END IF;
 
-  -- ✅ Idempotencia funciona correctamente
-  RAISE NOTICE 'TEST 4 PASSED: Idempotencia previene duplicados correctamente';
+  RAISE NOTICE '✅ service_role crea gossips y la idempotencia evita duplicados';
+END $$;
 
-  -- Limpiar
-  DELETE FROM gossips WHERE id = v_gossip_id1;
+RESET ROLE;
 
-END;
-$$;
-
--- =====================================================
--- RESUMEN
--- =====================================================
-RAISE NOTICE '========================================';
-RAISE NOTICE 'TODOS LOS TESTS DE SEGURIDAD PASARON ✅';
-RAISE NOTICE '========================================';
-RAISE NOTICE '1. INSERT directo → BLOQUEADO';
-RAISE NOTICE '2. RPC create_gossip_draft() → FUNCIONA';
-RAISE NOTICE '3. Estados controlados por servidor → OK';
-RAISE NOTICE '4. Auth requerida → OK';
-RAISE NOTICE '5. Idempotencia → OK';
-RAISE NOTICE '========================================';
+DO $$ BEGIN RAISE NOTICE '✅ TODOS LOS TESTS DE SEGURIDAD PASARON'; END $$;
 
 ROLLBACK;

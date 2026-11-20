@@ -7,6 +7,7 @@ import '../../../../core/result/result.dart';
 import '../../../../core/error/failure.dart';
 import '../../../../core/error/error_codes.dart';
 import '../../../../core/logging/logging.dart';
+import '../../../../core/services/gossip_events.dart';
 import '../../domain/entities/create_gossip_input.dart';
 import '../../domain/entities/gossip.dart';
 import '../../domain/usecases/create_gossip.dart';
@@ -106,6 +107,7 @@ import '../states/add_gossip_state.dart';
 class AddGossipController extends ChangeNotifier {
   final CreateGossip createGossip;
   final LocationManager locationManager;
+  final GossipEvents _gossipEvents;
   final AppLogger _logger;
 
   // Estado inmutable
@@ -151,8 +153,10 @@ class AddGossipController extends ChangeNotifier {
   AddGossipController({
     required this.createGossip,
     required this.locationManager,
+    required GossipEvents gossipEvents,
     required AppLogger logger,
-  }) : _logger = logger {
+  })  : _gossipEvents = gossipEvents,
+        _logger = logger {
     // Escuchar cambios en LocationManager
     locationManager.addListener(_onLocationChanged);
 
@@ -436,6 +440,8 @@ class AddGossipController extends ChangeNotifier {
           isSubmitting: false,
           idempotencyKey: const Uuid().v4(), // Nueva clave para próximo intento
         ));
+        // Avisar al feed (home) para que recargue y muestre el chisme
+        _gossipEvents.gossipPublished();
         return gossip;
       },
       onFailure: (error) {
@@ -496,9 +502,11 @@ class AddGossipController extends ChangeNotifier {
   /// 3. Request región A termina → requestId 1 != 2, se ignora ✅
   ///
   /// **ACTUALIZADO:** Ahora LocationManager maneja la ubicación
+  ///
+  /// La ubicación NO se limpia: es la ubicación por defecto del usuario
+  /// (persistida) y se reutiliza en el siguiente chisme. Antes se borraba
+  /// tras publicar y el usuario tenía que volver a elegir la ciudad.
   void reset() {
-    locationManager.clearLocation();
-
     _updateState(AddGossipState(
       idempotencyKey: const Uuid().v4(), // Nueva clave para nuevo intento
     ));

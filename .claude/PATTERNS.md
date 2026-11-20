@@ -320,8 +320,39 @@ flutter pub run build_runner watch --delete-conflicting-outputs
 - ✅ Usar @singleton para servicios globales únicos
 - ✅ Registrar interfaces: `@Singleton(as: Interface)`
 - ✅ Regenerar después de cambios
-- ❌ NO usar GetIt directamente en widgets de UI (excepto root)
+- ✅ **Screens** (`presentation/screens/`) y el **root** (`main.dart`, `AuthGate`) resuelven sus dependencias con `getIt<T>()` en `initState` o en handlers de eventos (p. ej. al abrir un diálogo o navegar)
+- ✅ **Widgets hoja** (`presentation/widgets/`, `core/widgets/`) reciben dependencias o callbacks por constructor; NO llaman a `getIt`
+- ❌ NO resolver con GetIt dentro de `build()` (se ejecuta en cada rebuild)
 - ❌ NO crear dependencias circulares
+
+**¿Por qué screens sí y widgets no?** La screen es el punto de entrada de la
+feature (equivale a un composition root local): resolver ahí su controller es
+coherente con ADR-007 y en tests basta registrar un mock en GetIt. Los widgets
+hoja se reutilizan y se testean aislados; si dependen de GetIt, cada test y cada
+uso arrastran el contenedor global.
+
+```dart
+// ✅ Screen
+class _AddGossipScreenState extends State<AddGossipScreen> {
+  late final AddGossipController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = getIt<AddGossipController>();
+  }
+}
+
+// ✅ Widget hoja: recibe lo que necesita
+class GossipCard extends StatelessWidget {
+  final VoidCallback? onReport;
+  const GossipCard({super.key, this.onReport});
+}
+```
+
+**Deuda conocida (2026-11-19)** — widgets hoja que aún llaman a `getIt`:
+`gossip_card.dart` (`ReportGossip`), `language_selector.dart` y
+`settings_section.dart` (`LocaleNotifier`). Corregir al tocarlos.
 
 ---
 

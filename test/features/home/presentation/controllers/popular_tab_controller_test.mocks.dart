@@ -7,7 +7,8 @@ import 'dart:async' as _i4;
 import 'dart:ui' as _i15;
 
 import 'package:chismes/core/error/failure.dart' as _i6;
-import 'package:chismes/core/logging/app_logger.dart' as _i16;
+import 'package:chismes/core/localization/device_region.dart' as _i16;
+import 'package:chismes/core/logging/app_logger.dart' as _i17;
 import 'package:chismes/core/result/result.dart' as _i5;
 import 'package:chismes/features/home/domain/entities/feed_cursor.dart' as _i8;
 import 'package:chismes/features/home/domain/entities/paginated_gossips.dart'
@@ -58,6 +59,8 @@ class MockGetPopularFeed extends _i1.Mock implements _i3.GetPopularFeed {
   _i4.Future<_i5.Result<_i6.Failure, _i7.PaginatedGossips>> call({
     required String? userId,
     required String? cityId,
+    String? regionId,
+    String? countryId,
     int? pageSize = 20,
     _i8.FeedCursor? cursor,
   }) =>
@@ -65,6 +68,8 @@ class MockGetPopularFeed extends _i1.Mock implements _i3.GetPopularFeed {
             Invocation.method(#call, [], {
               #userId: userId,
               #cityId: cityId,
+              #regionId: regionId,
+              #countryId: countryId,
               #pageSize: pageSize,
               #cursor: cursor,
             }),
@@ -75,6 +80,8 @@ class MockGetPopularFeed extends _i1.Mock implements _i3.GetPopularFeed {
                     Invocation.method(#call, [], {
                       #userId: userId,
                       #cityId: cityId,
+                      #regionId: regionId,
+                      #countryId: countryId,
                       #pageSize: pageSize,
                       #cursor: cursor,
                     }),
@@ -96,12 +103,16 @@ class MockCheckNewGossips extends _i1.Mock implements _i10.CheckNewGossips {
   _i4.Future<_i5.Result<_i6.Failure, int>> call({
     required String? userId,
     required String? cityId,
+    String? regionId,
+    String? countryId,
     required DateTime? since,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#call, [], {
               #userId: userId,
               #cityId: cityId,
+              #regionId: regionId,
+              #countryId: countryId,
               #since: since,
             }),
             returnValue: _i4.Future<_i5.Result<_i6.Failure, int>>.value(
@@ -110,6 +121,8 @@ class MockCheckNewGossips extends _i1.Mock implements _i10.CheckNewGossips {
                 Invocation.method(#call, [], {
                   #userId: userId,
                   #cityId: cityId,
+                  #regionId: regionId,
+                  #countryId: countryId,
                   #since: since,
                 }),
               ),
@@ -238,10 +251,19 @@ class MockLocationManager extends _i1.Mock implements _i11.LocationManager {
   );
 }
 
+/// A class which mocks [DeviceRegion].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockDeviceRegion extends _i1.Mock implements _i16.DeviceRegion {
+  MockDeviceRegion() {
+    _i1.throwOnMissingStub(this);
+  }
+}
+
 /// A class which mocks [AppLogger].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAppLogger extends _i1.Mock implements _i16.AppLogger {
+class MockAppLogger extends _i1.Mock implements _i17.AppLogger {
   MockAppLogger() {
     _i1.throwOnMissingStub(this);
   }

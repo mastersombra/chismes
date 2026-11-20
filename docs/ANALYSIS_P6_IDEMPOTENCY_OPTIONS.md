@@ -518,7 +518,7 @@ Opción 5 (cliente):
 
 ```bash
 # 1. Deploy Edge Function
-cd /Users/alejo/Documents/Piloto/chismes
+cd /Users/alejo/Documents/Sombras/chismes
 supabase functions deploy cleanup-idempotency
 
 # 2. Programar ejecución diaria

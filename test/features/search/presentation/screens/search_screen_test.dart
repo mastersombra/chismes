@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:chismes/core/services/gossip_events.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:chismes/core/result/result.dart';
@@ -65,6 +66,10 @@ void main() {
     getIt.registerSingleton<SearchGossips>(mockSearchGossips);
     getIt.registerSingleton<SearchHistoryService>(mockSearchHistoryService);
     getIt.registerSingleton<LocationService>(mockLocationService);
+    if (getIt.isRegistered<GossipEvents>()) {
+      getIt.unregister<GossipEvents>();
+    }
+    getIt.registerSingleton<GossipEvents>(GossipEvents());
   });
 
   tearDown(() async {
@@ -79,6 +84,9 @@ void main() {
     }
     if (getIt.isRegistered<LocationService>()) {
       getIt.unregister<LocationService>();
+    }
+    if (getIt.isRegistered<GossipEvents>()) {
+      getIt.unregister<GossipEvents>();
     }
 
     // Limpiar DI después del test
@@ -146,6 +154,38 @@ void main() {
       verify(mockGetGossips()).called(1);
       expect(find.text('🆕'), findsOneWidget);
       expect(find.text('Recientes'), findsOneWidget);
+      expect(find.byType(GridView), findsOneWidget);
+    });
+
+    testWidgets('recarga los recientes al publicar un chisme (tab ya construido)',
+        (tester) async {
+      // Al abrir la app no hay chismes: estado vacío
+      when(mockGetGossips()).thenAnswer((_) async => Result.success([]));
+      await tester.pumpWidget(testableWidget(child: const SearchScreen()));
+      await tester.pumpAndSettle();
+      expect(find.byType(GridView), findsNothing);
+
+      // El usuario publica en Crea: el tab de búsqueda debe enterarse
+      when(mockGetGossips()).thenAnswer((_) async => Result.success([
+            Gossip(
+              id: 'nuevo',
+              countryId: 'co',
+              regionId: 'ant',
+              cityId: 'med',
+              subject: 'Recién publicado',
+              content: 'Contenido',
+              publishedAs: PublishAs.anonymous,
+              status: GossipStatus.published,
+              moderationStatus: ModerationStatus.approved,
+              visibility: GossipVisibility.public,
+              createdAt: DateTime.now(),
+              createdBy: 'user1',
+            ),
+          ]));
+      getIt<GossipEvents>().gossipPublished();
+      await tester.pumpAndSettle();
+
+      verify(mockGetGossips()).called(2);
       expect(find.byType(GridView), findsOneWidget);
     });
 

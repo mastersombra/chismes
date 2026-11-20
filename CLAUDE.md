@@ -482,8 +482,8 @@ test('debe retornar gossips', () async {
 
 ### Coverage
 
-**Estado:** ✅ **97.42%** sin `lib/l10n/` (6,833 / 7,014 líneas, medido 2026-11-18)  
-**Tests:** 4,106 tests (4,100 pasan · 6 skip)  
+**Estado:** ✅ **97.48%** sin `lib/l10n/` (6,758 / 6,933 líneas, medido 2026-11-19)  
+**Tests:** 3,987 tests (3,984 pasan · 3 skip)  
 **Objetivo:** >85% sin `lib/l10n/` (código generado, no se mide). Plan y tracking: `docs/TEST_PLAN_85.md`
 
 ```bash
@@ -585,6 +585,8 @@ supabase migration new name
 ```dart
 // ❌ NO usar print() o debugPrint()
 print('Debug');  // Usar _logger.d()
+// Única excepción: dentro del propio logging (RemoteLogger, AppLogger,
+// DeviceInfoProvider) y ErrorHandler, siempre bajo kDebugMode (evita ciclos)
 
 // ❌ NO lanzar excepciones desde repositories
 throw Exception();  // Usar Result.failure()
@@ -621,12 +623,12 @@ Para nuevas sesiones:
 **Última actualización:** 2026-11-18
 
 ```
-Archivos Dart:        167 en lib/ (sin generados ni l10n) · 163 archivos de test
+Archivos Dart:        166 en lib/ (sin generados ni l10n) · 163 archivos de test
 Features:             6 (auth, gossip, home, location, profile, search)
-Tests:                4,106 (4,100 pasando, 6 skip)
-Coverage:             97.42% (sin lib/l10n)
+Tests:                3,987 (3,984 pasando, 3 skip)
+Coverage:             97.48% (sin lib/l10n)
 Líneas de código:     ~16,500 (lib/, sin comentarios ni generados)
-Migraciones:          9
+Migraciones:          12
 Architecture Score:   9.65/10 ✅ TOP 1%
 ```
 

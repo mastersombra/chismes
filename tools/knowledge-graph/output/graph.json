@@ -61,15 +61,6 @@
       "detail": "AppLocalizationsEn"
     },
     {
-      "id": "shared.data.gossip_mock_data",
-      "file": "shared/data/gossip_mock_data.dart",
-      "type": "other",
-      "layer": "data",
-      "feature": "shared",
-      "evidence": [],
-      "detail": ""
-    },
-    {
       "id": "features.profile.presentation.screens.profile_screen",
       "file": "features/profile/presentation/screens/profile_screen.dart",
       "type": "screen",
@@ -312,8 +303,7 @@
       "layer": "shared",
       "feature": "gossip",
       "evidence": [
-        "class GossipModule",
-        "method:MvpModerationPolicy"
+        "class GossipModule"
       ],
       "detail": "GossipModule"
     },
@@ -327,8 +317,8 @@
         "class AddGossipScreen",
         "extends StatefulWidget",
         "method:AddGossipScreen",
-        "method:rebuilds",
-        "method:initState"
+        "method:initState",
+        "method:initialize"
       ],
       "detail": "AddGossipScreen"
     },
@@ -656,34 +646,6 @@
       "detail": "GossipStateMachine"
     },
     {
-      "id": "features.gossip.domain.services.mvp_content_moderator",
-      "file": "features/gossip/domain/services/mvp_content_moderator.dart",
-      "type": "service",
-      "layer": "domain",
-      "feature": "gossip",
-      "evidence": [
-        "class MvpModerationPolicy",
-        "implements ContentModerator",
-        "method:MvpModerationPolicy",
-        "method:evaluate",
-        "method:ModerationDecision"
-      ],
-      "detail": "MvpModerationPolicy"
-    },
-    {
-      "id": "features.gossip.domain.services.content_moderator",
-      "file": "features/gossip/domain/services/content_moderator.dart",
-      "type": "service",
-      "layer": "domain",
-      "feature": "gossip",
-      "evidence": [
-        "class ContentModerator",
-        "method:moderate",
-        "method:moderateText"
-      ],
-      "detail": "ContentModerator"
-    },
-    {
       "id": "features.gossip.domain.entities.report_reason",
       "file": "features/gossip/domain/entities/report_reason.dart",
       "type": "entity",
@@ -730,23 +692,6 @@
         "field:value"
       ],
       "detail": "Gossip"
-    },
-    {
-      "id": "features.gossip.domain.entities.media_reference",
-      "file": "features/gossip/domain/entities/media_reference.dart",
-      "type": "entity",
-      "layer": "domain",
-      "feature": "gossip",
-      "evidence": [
-        "class MediaReference",
-        "method:multimedia",
-        "method:Storage",
-        "method:archivo",
-        "field:storagePath",
-        "field:downloadUrl",
-        "field:mimeType"
-      ],
-      "detail": "MediaReference"
     },
     {
       "id": "features.gossip.domain.entities.gossip_query",
@@ -803,9 +748,9 @@
       "evidence": [
         "class SupabaseGossipRemoteDataSource",
         "implements GossipRemoteDataSource",
-        "method:create_gossip_draft",
+        "method:gossips",
         "method:create",
-        "method:create_gossip_draft"
+        "method:modera"
       ],
       "detail": "SupabaseGossipRemoteDataSource"
     },
@@ -1045,22 +990,6 @@
         "returns:Result"
       ],
       "detail": "SupabaseLocationRepository"
-    },
-    {
-      "id": "features.location.data.repositories.mock_location_repository",
-      "file": "features/location/data/repositories/mock_location_repository.dart",
-      "type": "repository",
-      "layer": "data",
-      "feature": "location",
-      "evidence": [
-        "class MockLocationRepository",
-        "implements LocationRepository",
-        "method:Region",
-        "method:Region",
-        "method:Region",
-        "returns:Result"
-      ],
-      "detail": "MockLocationRepository"
     },
     {
       "id": "features.auth.presentation.state.auth_state",
@@ -2015,6 +1944,17 @@
       "detail": ""
     },
     {
+      "id": "core.config.app_environment",
+      "file": "core/config/app_environment.dart",
+      "type": "config",
+      "layer": "core",
+      "feature": "core",
+      "evidence": [
+        "method:parse"
+      ],
+      "detail": ""
+    },
+    {
       "id": "core.config.supabase_config",
       "file": "core/config/supabase_config.dart",
       "type": "config",
@@ -2022,9 +1962,9 @@
       "feature": "core",
       "evidence": [
         "class SupabaseConfig",
-        "method:runApp",
-        "method:logs",
-        "method:initialize"
+        "method:resolve",
+        "method:StateError",
+        "method:runApp"
       ],
       "detail": "SupabaseConfig"
     },
@@ -2052,21 +1992,6 @@
         "method:signOut"
       ],
       "detail": "AuthRepository"
-    },
-    {
-      "id": "core.auth.mock_auth_repository",
-      "file": "core/auth/mock_auth_repository.dart",
-      "type": "other",
-      "layer": "core",
-      "feature": "core",
-      "evidence": [
-        "class MockAuthRepository",
-        "implements AuthRepository",
-        "method:signOut",
-        "method:sesión",
-        "method:signIn"
-      ],
-      "detail": "MockAuthRepository"
     },
     {
       "id": "core.user.user_service",
@@ -2133,17 +2058,6 @@
         "method:grande"
       ],
       "detail": "AppSpacing"
-    },
-    {
-      "id": "core.theme.theme_extensions",
-      "file": "core/theme/theme_extensions.dart",
-      "type": "theme",
-      "layer": "core",
-      "feature": "core",
-      "evidence": [
-        "method:específicos"
-      ],
-      "detail": ""
     },
     {
       "id": "core.theme.app_radius",
@@ -2452,10 +2366,7 @@
       "layer": "core",
       "feature": "core",
       "evidence": [
-        "class LocaleDetector",
-        "method:sistema",
-        "method:getDeviceLocale",
-        "method:isDeviceLocalSupported"
+        "class LocaleDetector"
       ],
       "detail": "LocaleDetector"
     },
@@ -3125,16 +3036,6 @@
       "relation": "imports"
     },
     {
-      "from": "features.location.data.repositories.mock_location_repository",
-      "to": "core.result.result",
-      "relation": "imports"
-    },
-    {
-      "from": "features.location.data.repositories.mock_location_repository",
-      "to": "core.error.failure",
-      "relation": "imports"
-    },
-    {
       "from": "features.auth.presentation.state.auth_state",
       "to": "core.error.custom_error_keys",
       "relation": "imports"
@@ -3197,6 +3098,11 @@
     {
       "from": "features.auth.presentation.screens.privacy_settings_screen",
       "to": "core.services.location_service",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.screens.privacy_settings_screen",
+      "to": "core.di.injection_container",
       "relation": "imports"
     },
     {
@@ -3851,11 +3757,6 @@
     },
     {
       "from": "core.di.injection_container.config",
-      "to": "features.gossip.domain.services.mvp_content_moderator",
-      "relation": "imports"
-    },
-    {
-      "from": "core.di.injection_container.config",
       "to": "features.gossip.domain.usecases.create_gossip",
       "relation": "imports"
     },
@@ -3927,11 +3828,6 @@
     {
       "from": "core.di.injection_container.config",
       "to": "features.location.data.datasources.supabase_location_remote_data_source",
-      "relation": "imports"
-    },
-    {
-      "from": "core.di.injection_container.config",
-      "to": "features.location.data.repositories.mock_location_repository",
       "relation": "imports"
     },
     {
@@ -4021,8 +3917,8 @@
     }
   ],
   "stats": {
-    "total_nodes": 176,
-    "total_edges": 306,
-    "files_analyzed": 176
+    "total_nodes": 170,
+    "total_edges": 303,
+    "files_analyzed": 170
   }
 }

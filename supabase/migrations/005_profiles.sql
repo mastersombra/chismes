@@ -285,5 +285,8 @@ COMMENT ON POLICY "profiles_insert_own" ON profiles IS
 -- Permisos completos para usuarios autenticados
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE profiles TO authenticated;
 
+-- service_role (backend): ver nota de GRANTs en 001_gossips.sql
+GRANT ALL ON TABLE profiles TO service_role;
+
 -- ❌ NO otorgar a 'anon' porque AuthGate requiere login obligatorio
 -- Los perfiles solo se acceden después del login
