@@ -148,18 +148,12 @@ serve(async (req) => {
     // PASO 7: Guardar Feedback (Opcional)
     // =====================================================
     if (body.reason) {
-      // Guardar feedback en tabla de analytics (sin info personal)
-      await supabaseAdmin
-        .from('account_deletion_feedback')
-        .insert({
-          reason: body.reason,
-          deleted_at: new Date().toISOString(),
-          // NO incluir user_id (GDPR)
-        })
-        .catch((err) => {
-          // No bloquear eliminación si esto falla
-          console.error('Failed to save feedback:', err)
-        })
+      // Solo a los logs de la función (sin user_id, GDPR). No existe tabla de
+      // feedback: antes se insertaba en `account_deletion_feedback` (inexistente)
+      // con `.catch()`, que el query builder de supabase-js no tiene → TypeError
+      // que abortaba la eliminación justo cuando el usuario daba un motivo.
+      // TODO: tabla de analytics si se quiere medir motivos de baja.
+      console.log('Account deletion reason:', String(body.reason).slice(0, 200))
     }
 
     // =====================================================

@@ -213,3 +213,14 @@ COMMENT ON FUNCTION cleanup_old_rate_limits IS
 -- =====================================================
 -- FIN MIGRACIÓN 004
 -- =====================================================
+
+-- =====================================================
+-- GRANT PERMISSIONS (tabla)
+-- =====================================================
+-- ⚠️ El proyecto remoto NO da privilegios por defecto a los roles de la API
+-- en tablas nuevas (solo TRUNCATE/REFERENCES/TRIGGER). Todo acceso de la app
+-- o de Edge Functions necesita GRANT explícito; RLS filtra las filas después.
+-- service_role (solo backend/Edge Functions) recibe ALL, como en Supabase estándar.
+-- Clientes no tocan rate_limits: reserve/release son SECURITY DEFINER.
+-- service_role: delete-account borra las filas del usuario.
+GRANT ALL ON TABLE rate_limits TO service_role;

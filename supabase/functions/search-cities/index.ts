@@ -119,7 +119,7 @@ serve(async (req) => {
     const searchPattern = `${q.trim()}%`
 
     const { data: cities, error: dbError } = await supabase
-      .from('location_cities')
+      .from('cities')
       .select('id, name, region_id')
       .eq('region_id', regionId)
       .ilike('name', searchPattern)
@@ -180,7 +180,7 @@ serve(async (req) => {
 //
 // 1. Índice Recomendado:
 //    CREATE INDEX idx_cities_region_name
-//    ON location_cities(region_id, name);
+//    ON cities(region_id, name);
 //
 // 2. Performance:
 //    - ILIKE con pattern "query%" usa índice B-tree
