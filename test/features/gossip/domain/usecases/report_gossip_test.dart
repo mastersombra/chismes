@@ -490,7 +490,7 @@ void main() {
       });
 
       test('debe documentar que reportes quedan registrados', () {
-        // Documenta: tabla gossip_reports en base de datos
+        // Documenta: tabla content_reports en base de datos
         // Todos los reportes se guardan para auditoría
       });
     });

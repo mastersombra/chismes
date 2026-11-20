@@ -246,6 +246,15 @@ void main() {
         expect(result, isFalse);
       });
 
+      test('debe retornar false cuando createdBy es null (autor oculto)', () {
+        final entity = TestAuditable(
+          createdAt: DateTime(2024, 1, 1),
+          createdBy: null,
+        );
+
+        expect(auditService.isValidAudit(entity), isFalse);
+      });
+
       test('debe retornar false cuando tiene modifiedAt sin modifiedBy', () {
         // Arrange
         final entity = TestAuditable(
@@ -339,7 +348,7 @@ class TestAuditable implements Auditable {
   final DateTime createdAt;
 
   @override
-  final String createdBy;
+  final String? createdBy;
 
   @override
   final DateTime? modifiedAt;

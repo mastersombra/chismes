@@ -44,7 +44,7 @@ class FeedGossipAdapter {
       viewCount: 0,
       visibility: GossipVisibility.public,
       createdAt: feedGossip.createdAt,
-      createdBy: feedGossip.createdBy ?? 'anonymous',
+      createdBy: feedGossip.createdBy,
     );
   }
 

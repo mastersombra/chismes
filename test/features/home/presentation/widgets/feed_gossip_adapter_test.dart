@@ -162,7 +162,7 @@ void main() {
         expect(result.imageUrl, imageUrl);
       });
 
-      test('debe manejar createdBy null usando fallback "anonymous"', () {
+      test('debe mantener createdBy null (autor oculto por el servidor)', () {
         // Arrange
         final feedGossip = _createFeedGossip(createdBy: null);
 
@@ -170,7 +170,7 @@ void main() {
         final result = FeedGossipAdapter.toGossip(feedGossip);
 
         // Assert
-        expect(result.createdBy, 'anonymous');
+        expect(result.createdBy, isNull);
       });
 
       test('debe preservar createdBy cuando está presente', () {

@@ -4,10 +4,13 @@
 // Permite a usuarios reportar gossips inapropiados
 //
 // Flujo:
-// 1. Usuario autenticado reporta gossip
-// 2. Se crea registro en tabla `gossip_reports`
-// 3. Si reports > threshold → incrementar report_count
-// 4. Moderadores revisan reports en dashboard
+// 1. Usuario autenticado reporta un chisme que puede ver (public_gossips)
+// 2. Se crea el reporte en `content_reports` (service_role: los clientes no
+//    tienen acceso a la tabla)
+// 3. El trigger de content_reports aplica el umbral (013_moderation.sql):
+//    cola de revisión y, si corresponde, auto-ocultar. Umbrales en
+//    moderation_settings.
+// 4. Moderadores deciden con moderation-review
 //
 // Fecha: 2026-10-22
 // Autor: Alejo + Claude Code
@@ -96,13 +99,16 @@ serve(async (req) => {
     }
 
     // =====================================================
-    // PASO 4: Verificar que gossip existe
+    // PASO 4: Verificar que el chisme existe y el usuario puede verlo
     // =====================================================
+    // Con el JWT del usuario: solo se reporta lo visible para él.
+    // (public_gossips muestra created_by solo si es del propio usuario o
+    // si el chisme no es anónimo: alcanza para detectar el propio.)
     const { data: gossip, error: gossipError } = await supabase
-      .from('gossips')
-      .select('id, report_count')
+      .from('public_gossips')
+      .select('id, created_by')
       .eq('id', body.gossip_id)
-      .single()
+      .maybeSingle()
 
     if (gossipError || !gossip) {
       return new Response(
@@ -111,75 +117,50 @@ serve(async (req) => {
       )
     }
 
-    // =====================================================
-    // PASO 5: Verificar duplicados (rate limiting)
-    // =====================================================
-    // Prevenir que un usuario reporte el mismo gossip múltiples veces
-    const { data: existingReport } = await supabase
-      .from('gossip_reports')
-      .select('id')
-      .eq('gossip_id', body.gossip_id)
-      .eq('reported_by', user.id)
-      .maybeSingle()
-
-    if (existingReport) {
+    // No se reporta lo propio (sumaría a su propio umbral)
+    if (gossip.created_by === user.id) {
       return new Response(
-        JSON.stringify({
-          error: 'You have already reported this gossip',
-          report_id: existingReport.id
-        }),
-        { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'You cannot report your own gossip' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
     // =====================================================
-    // PASO 6: Crear reporte
+    // PASO 5: Crear reporte (el trigger aplica el umbral)
     // =====================================================
-    const { data: report, error: reportError } = await supabase
-      .from('gossip_reports')
+    const supabaseAdmin = createClient(
+      supabaseUrl,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    )
+
+    const { data: report, error: reportError } = await supabaseAdmin
+      .from('content_reports')
       .insert({
         gossip_id: body.gossip_id,
         reason: body.reason,
         details: body.details || null,
         reported_by: user.id,
-        status: 'pending',  // pending, reviewed, resolved
       })
-      .select()
+      .select('id, gossip_id, reason, status, created_at')
       .single()
 
     if (reportError) {
+      // Índice único (gossip_id, reported_by): ya lo había reportado
+      if (reportError.code === '23505') {
+        return new Response(
+          JSON.stringify({ error: 'You have already reported this gossip' }),
+          { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
       console.error('Error creating report:', reportError)
       return new Response(
-        JSON.stringify({ error: 'Failed to create report', details: reportError.message }),
+        JSON.stringify({ error: 'Failed to create report' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
     // =====================================================
-    // PASO 7: Incrementar contador si threshold alcanzado
-    // =====================================================
-    const REPORT_THRESHOLD = 3  // Después de 3 reportes, incrementar contador
-
-    const { count: totalReports } = await supabase
-      .from('gossip_reports')
-      .select('id', { count: 'exact', head: true })
-      .eq('gossip_id', body.gossip_id)
-
-    if (totalReports && totalReports >= REPORT_THRESHOLD) {
-      // Incrementar report_count (solo con service_role para bypass RLS)
-      const supabaseAdmin = createClient(
-        supabaseUrl,
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-      )
-
-      await supabaseAdmin
-        .from('gossips')
-        .update({ report_count: gossip.report_count + 1 })
-        .eq('id', body.gossip_id)
-    }
-
-    // =====================================================
-    // PASO 8: Retornar Success
+    // PASO 6: Retornar Success
     // =====================================================
     return new Response(
       JSON.stringify({

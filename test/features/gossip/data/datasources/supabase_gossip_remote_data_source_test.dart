@@ -974,6 +974,22 @@ void main() {
       )).called(1);
     });
 
+    test('acepta 201 Created (lo que responde report-gossip)', () async {
+      when(mockFunctionsClient.invoke(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+      )).thenAnswer((_) async => FunctionResponse(
+            data: {'success': true, 'report': {'id': 'r-1'}},
+            status: 201,
+          ));
+
+      await expectLater(
+        dataSource.reportGossip(gossipId: 'gossip-123', reason: ReportReason.spam),
+        completes,
+      );
+    });
+
     test('debe reportar gossip sin details', () async {
       // Arrange
       when(mockFunctionsClient.invoke(
@@ -1430,7 +1446,7 @@ void main() {
 
       final result = await ds.getGossips(const GossipQuery());
 
-      expect(fake.lastRequest.url.path, '/rest/v1/gossips');
+      expect(fake.lastRequest.url.path, '/rest/v1/public_gossips');
       expect(params()['status'], 'eq.published');
       expect(params()['moderation_status'], 'eq.approved');
       expect(params()['visibility'], 'eq.public');

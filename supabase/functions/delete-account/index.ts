@@ -120,7 +120,7 @@ serve(async (req) => {
 
     // A) Eliminar reportes del usuario
     const { error: reportsError } = await supabaseAdmin
-      .from('gossip_reports')
+      .from('content_reports')
       .delete()
       .eq('reported_by', user.id)
 

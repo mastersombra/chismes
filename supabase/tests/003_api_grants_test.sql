@@ -7,8 +7,9 @@
 -- sobre una base local que imite al remoto (ver supabase/tests/README.md).
 --
 -- Recorre cada camino real de acceso con el rol que usa:
---   - app (authenticated): feed, búsquedas, location, perfil, reportes
---   - Edge Functions con service_role: log-error, report-gossip, delete-account
+--   - app (authenticated): feed, búsquedas, location, perfil (reportes: vía report-gossip)
+--   - Edge Functions con service_role: log-error, report-gossip, moderate-gossip,
+--     moderation-review, cleanup-media, delete-account
 --   - anon: check_email_exists_and_confirmed (login), nada más
 -- Todo en una transacción con ROLLBACK.
 -- =====================================================
@@ -37,15 +38,13 @@ BEGIN
   PERFORM * FROM search_cities('Med');
   PERFORM * FROM find_nearest_city(6.25, -75.56, 50);
   PERFORM check_email_exists_and_confirmed('a@t.co');
-  PERFORM 1 FROM gossips LIMIT 1;
+  PERFORM 1 FROM public_gossips LIMIT 1;
   PERFORM 1 FROM countries, regions, cities LIMIT 1;
   PERFORM 1 FROM feed_settings LIMIT 1;
   UPDATE profiles SET display_name = 'Test' WHERE id = auth.uid();
-  -- report-gossip usa el JWT del usuario para crear/leer su reporte
-  INSERT INTO gossip_reports (gossip_id, reported_by, reason)
-    VALUES ('a0000000-0000-0000-0000-000000000001', auth.uid(), 'spam');
-  PERFORM 1 FROM gossip_reports WHERE reported_by = auth.uid();
-  RAISE NOTICE '✅ authenticated: feed, búsquedas, location, perfil y reportes';
+  -- report-gossip usa el JWT del usuario solo para verificar que ve el chisme
+  PERFORM 1 FROM public_gossips WHERE id = 'a0000000-0000-0000-0000-000000000001';
+  RAISE NOTICE '✅ authenticated: feed, búsquedas, location, perfil y verificación de reporte';
 END $$;
 
 -- Lo que NO debe poder: escribir gossips directo ni leer logs/rate limits
@@ -58,8 +57,21 @@ BEGIN
   BEGIN PERFORM 1 FROM error_logs; EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
   BEGIN PERFORM 1 FROM rate_limits; EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
   BEGIN UPDATE feed_settings SET value = 1; EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
-  IF denied <> 4 THEN RAISE EXCEPTION 'authenticated tiene permisos de más (% de 4 bloqueados)', denied; END IF;
-  RAISE NOTICE '✅ authenticated: bloqueado en gossips (INSERT), error_logs, rate_limits, feed_settings (UPDATE)';
+  BEGIN PERFORM 1 FROM gossips; EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
+  -- Moderación: solo backend
+  BEGIN INSERT INTO content_reports (gossip_id, reported_by, reason)
+        VALUES ('a0000000-0000-0000-0000-000000000001', auth.uid(), 'spam');
+  EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
+  BEGIN PERFORM 1 FROM content_reports; EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
+  BEGIN PERFORM 1 FROM moderation_queue; EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
+  BEGIN PERFORM 1 FROM moderation_queue_items; EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
+  BEGIN UPDATE moderation_settings SET value = 1; EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
+  BEGIN PERFORM enqueue_moderation('a0000000-0000-0000-0000-000000000001', 'ai_review', '{}');
+  EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
+  BEGIN PERFORM apply_moderation_decision(gen_random_uuid(), 'approve', auth.uid());
+  EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
+  IF denied <> 12 THEN RAISE EXCEPTION 'authenticated tiene permisos de más (% de 12 bloqueados)', denied; END IF;
+  RAISE NOTICE '✅ authenticated: bloqueado en gossips (INSERT y SELECT), error_logs, rate_limits, feed_settings (UPDATE) y toda la moderación';
 END $$;
 
 -- ---------- service_role (Edge Functions) ----------
@@ -71,17 +83,26 @@ BEGIN
   INSERT INTO error_logs (level, message) VALUES ('error', 'test');
   PERFORM 1 FROM error_logs;
   PERFORM 1 FROM recent_errors, error_summary, users_with_most_errors LIMIT 1;
-  -- report-gossip (admin) + moderación
-  UPDATE gossips SET report_count = report_count + 1 WHERE id = 'a0000000-0000-0000-0000-000000000001';
-  PERFORM 1 FROM gossip_reports_summary LIMIT 1;
+  -- report-gossip (crea el reporte con service_role)
+  INSERT INTO content_reports (gossip_id, reported_by, reason)
+    VALUES ('a0000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', 'spam');
+  -- moderate-gossip (encola 'review') y moderation-review (lista y decide)
+  PERFORM enqueue_moderation('a0000000-0000-0000-0000-000000000001', 'ai_review', ARRAY['potential_spam']);
+  PERFORM 1 FROM moderation_queue_items LIMIT 1;
+  PERFORM apply_moderation_decision(
+    (SELECT id FROM moderation_queue WHERE status = 'pending' LIMIT 1), 'approve',
+    '11111111-1111-1111-1111-111111111111');
+  PERFORM 1 FROM moderation_settings;
+  -- cleanup-media
+  PERFORM * FROM get_media_cleanup_candidates(10);
   -- delete-account
-  DELETE FROM gossip_reports WHERE reported_by = '11111111-1111-1111-1111-111111111111';
+  DELETE FROM content_reports WHERE reported_by = '11111111-1111-1111-1111-111111111111';
   DELETE FROM rate_limits WHERE user_id = '11111111-1111-1111-1111-111111111111';
   UPDATE profiles SET display_name = NULL WHERE id = '11111111-1111-1111-1111-111111111111';
   DELETE FROM gossips WHERE created_by = '11111111-1111-1111-1111-111111111111';
   -- moderate-gossip (validación de ubicación)
   PERFORM 1 FROM countries, regions, cities LIMIT 1;
-  RAISE NOTICE '✅ service_role: log-error, report-gossip, delete-account, moderate-gossip';
+  RAISE NOTICE '✅ service_role: log-error, report-gossip, moderation-review, cleanup-media, delete-account, moderate-gossip';
 END $$;
 
 -- ---------- anon (sin sesión: solo pantalla de login) ----------
@@ -95,7 +116,9 @@ BEGIN
   BEGIN PERFORM 1 FROM profiles; EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
   BEGIN PERFORM 1 FROM error_logs; EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
   BEGIN PERFORM get_popular_feed(); EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
-  IF denied <> 4 THEN RAISE EXCEPTION 'anon tiene permisos de más (% de 4 bloqueados)', denied; END IF;
+  BEGIN PERFORM 1 FROM public_gossips; EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
+  BEGIN PERFORM * FROM search_gossips(''); EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
+  IF denied <> 6 THEN RAISE EXCEPTION 'anon tiene permisos de más (% de 6 bloqueados)', denied; END IF;
   RAISE NOTICE '✅ anon: solo check_email_exists_and_confirmed';
 END $$;
 

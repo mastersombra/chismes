@@ -77,7 +77,8 @@ class AuditService {
 
   /// Valida si una entidad tiene campos de auditoría válidos
   bool isValidAudit(Auditable entity) {
-    if (entity.createdBy.isEmpty) return false;
+    final createdBy = entity.createdBy;
+    if (createdBy == null || createdBy.isEmpty) return false;
     
     // Si tiene modified_at, debe tener modified_by
     if (entity.modifiedAt != null && entity.modifiedBy == null) {

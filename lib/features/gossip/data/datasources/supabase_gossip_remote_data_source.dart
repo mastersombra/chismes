@@ -37,7 +37,9 @@ class SupabaseGossipRemoteDataSource implements GossipRemoteDataSource {
   Future<List<GossipModel>> getGossips(GossipQuery query) async {
     // Construir query base
     var builder = _supabase
-        .from('gossips')
+        // Vista: la tabla gossips no es legible por clientes y la vista
+        // oculta el autor de los chismes anónimos ajenos.
+        .from('public_gossips')
         .select()
         .eq('status', 'published')
         .eq('moderation_status', 'approved')
@@ -321,8 +323,8 @@ class SupabaseGossipRemoteDataSource implements GossipRemoteDataSource {
         },
       );
 
-      // Verificar respuesta
-      if (response.status != 200) {
+      // Verificar respuesta (report-gossip responde 201 Created)
+      if (response.status < 200 || response.status >= 300) {
         final errorData = response.data as Map<String, dynamic>?;
         final errorMessage = errorData?['error'] as String? ?? 'Unknown error';
         throw Exception(errorMessage);
