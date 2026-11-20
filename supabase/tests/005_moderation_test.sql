@@ -188,7 +188,14 @@ BEGIN
       WHERE gossip_id = 'c0000000-0000-4000-8000-000000000001') <> 'a0000000-0000-4000-8000-00000000000a' THEN
     RAISE EXCEPTION 'D3: el moderador no ve el autor del anónimo';
   END IF;
-  RAISE NOTICE '✅ D3: moderation_queue_items: prioridad alta primero, autor real visible al equipo';
+  -- ... y su nombre de perfil (para el panel de moderación)
+  INSERT INTO profiles (id, display_name) VALUES ('a0000000-0000-4000-8000-00000000000a', 'Autor Test')
+    ON CONFLICT (id) DO UPDATE SET display_name = EXCLUDED.display_name;
+  IF (SELECT author_display_name FROM moderation_queue_items
+      WHERE gossip_id = 'c0000000-0000-4000-8000-000000000001') IS DISTINCT FROM 'Autor Test' THEN
+    RAISE EXCEPTION 'D3: la vista no trae el nombre del autor';
+  END IF;
+  RAISE NOTICE '✅ D3: moderation_queue_items: prioridad alta primero, autor real y su nombre visibles al equipo';
 END $$;
 
 -- ---------- D4: aprobar restaura lo auto-ocultado y descarta reportes ----------
@@ -312,6 +319,74 @@ BEGIN
   EXCEPTION WHEN unique_violation THEN NULL;
   END;
   RAISE NOTICE '✅ content_reports: exactamente un contenido por reporte y uno por usuario';
+END $$;
+
+-- ---------- Reglas de contenido (moderation_rules) ----------
+RESET ROLE;
+DO $$
+DECLARE
+  v_count INT;
+  v_after TIMESTAMPTZ;
+BEGIN
+  SELECT COUNT(*) INTO v_count FROM moderation_rules WHERE enabled;
+  IF v_count <> 9 THEN RAISE EXCEPTION 'R1: se esperaban 9 reglas iniciales, hay %', v_count; END IF;
+  RAISE NOTICE '✅ R1: reglas iniciales (3 fijas + 6 términos)';
+
+  -- Umbral de IA válido y editable
+  INSERT INTO moderation_rules (kind, target, action, min_score)
+    VALUES ('ai_category', 'harassment', 'review', 0.3);
+  INSERT INTO moderation_rules (kind, target, action, min_score)
+    VALUES ('ai_category', 'harassment', 'reject', 0.7);
+  RAISE NOTICE '✅ R2: umbral review y reject en la misma categoría';
+
+  -- Lo que un typo no debe poder dejar
+  BEGIN
+    INSERT INTO moderation_rules (kind, target, action, min_score) VALUES ('ai_category', 'acoso', 'review', 0.3);
+    RAISE EXCEPTION 'R3: categoría de IA inexistente aceptada';
+  EXCEPTION WHEN check_violation THEN NULL; END;
+  BEGIN
+    INSERT INTO moderation_rules (kind, target, action) VALUES ('ai_category', 'hate', 'review');
+    RAISE EXCEPTION 'R3: umbral sin min_score aceptado';
+  EXCEPTION WHEN check_violation THEN NULL; END;
+  BEGIN
+    INSERT INTO moderation_rules (kind, target, action, min_score) VALUES ('ai_category', 'hate', 'review', 1.5);
+    RAISE EXCEPTION 'R3: min_score > 1 aceptado';
+  EXCEPTION WHEN check_violation THEN NULL; END;
+  BEGIN
+    INSERT INTO moderation_rules (kind, target, action, min_score) VALUES ('term', 'sapo', 'review', 0.5);
+    RAISE EXCEPTION 'R3: término con min_score aceptado';
+  EXCEPTION WHEN check_violation THEN NULL; END;
+  BEGIN
+    INSERT INTO moderation_rules (kind, target, action) VALUES ('term', ' x ', 'review');
+    RAISE EXCEPTION 'R3: término de 1 letra aceptado';
+  EXCEPTION WHEN check_violation THEN NULL; END;
+  BEGIN
+    INSERT INTO moderation_rules (kind, target, action) VALUES ('builtin', 'regex_libre', 'review');
+    RAISE EXCEPTION 'R3: regla fija inexistente aceptada';
+  EXCEPTION WHEN check_violation THEN NULL; END;
+  BEGIN
+    INSERT INTO moderation_rules (kind, target, action) VALUES ('term', 'sapo', 'publish');
+    RAISE EXCEPTION 'R3: acción inválida aceptada';
+  EXCEPTION WHEN check_violation THEN NULL; END;
+  RAISE NOTICE '✅ R3: categorías, puntajes, términos, reglas fijas y acciones validados';
+
+  -- Duplicados: mismo término (sin importar mayúsculas/espacios) y acción; regla fija dos veces
+  BEGIN
+    INSERT INTO moderation_rules (kind, target, action) VALUES ('term', ' Malparido', 'review');
+    RAISE EXCEPTION 'R4: término duplicado aceptado';
+  EXCEPTION WHEN unique_violation THEN NULL; END;
+  BEGIN
+    INSERT INTO moderation_rules (kind, target, action) VALUES ('builtin', 'spam', 'reject');
+    RAISE EXCEPTION 'R4: regla fija duplicada aceptada';
+  EXCEPTION WHEN unique_violation THEN NULL; END;
+  RAISE NOTICE '✅ R4: sin reglas duplicadas';
+
+  -- updated_at lo pone el trigger: aunque el UPDATE intente otra fecha
+  UPDATE moderation_rules SET enabled = FALSE, updated_at = NOW() - interval '1 day'
+    WHERE target = 'spam';
+  SELECT updated_at INTO v_after FROM moderation_rules WHERE target = 'spam';
+  IF v_after <> NOW() THEN RAISE EXCEPTION 'R5: updated_at no lo puso el trigger (%)', v_after; END IF;
+  RAISE NOTICE '✅ R5: apagar una regla fija actualiza updated_at';
 END $$;
 
 RESET ROLE;

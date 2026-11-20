@@ -115,6 +115,7 @@
 
 ### 013_moderation.sql
 - ✅ `moderation_settings`: umbrales de reportes editables desde el dashboard (sin desplegar)
+- ✅ `moderation_rules`: reglas de contenido de `moderate-gossip` (términos, umbrales por categoría de la IA, reglas fijas on/off), editables sin desplegar; CHECK contra typos; sin acceso de clientes
 - ✅ `content_reports`: reportes genéricos (hoy `gossip_id`; a futuro `comment_id`) con la regla "exactamente una referencia"; reemplaza a `gossip_reports`
 - ✅ `moderation_queue`: cola de revisión humana + historial (autor, gravedad, motivo: base de sanciones futuras); media pendiente protegida de la limpieza
 - ✅ Trigger de reportes: mínimo de reportes, cuentas nuevas no cuentan, umbral relativo a las interacciones, lo popular no se oculta solo
@@ -212,6 +213,7 @@ Los números de línea citados en esos docs (`archivo.sql:11`) ya no aplican.
 - `content_reports` - Reportes de contenido (genéricos)
 - `moderation_queue` - Cola de revisión humana e historial de decisiones
 - `moderation_settings` - Umbrales de moderación (editables)
+- `moderation_rules` - Reglas de contenido de `moderate-gossip` (editables)
 - `profiles` - Perfiles de usuarios
 - `location_countries` - Países
 - `location_regions` - Regiones/estados

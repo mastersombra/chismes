@@ -422,4 +422,27 @@ void main() {
       expect(find.byType(AlertDialog), findsNothing);
     });
   });
+
+  group('ProfileScreen - Moderación', () {
+    testWidgets('moderador: muestra la entrada al panel de moderación', (tester) async {
+      when(mockController.state).thenReturn(ProfileState.loaded);
+      when(mockController.currentUser).thenReturn(mockUser.copyWith(isModerator: true));
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+
+      expect(find.byKey(const Key('moderationEntry')), findsOneWidget);
+      expect(find.text('Panel de moderación'), findsOneWidget);
+    });
+
+    testWidgets('usuario normal: no ve la entrada', (tester) async {
+      when(mockController.state).thenReturn(ProfileState.loaded);
+      when(mockController.currentUser).thenReturn(mockUser);
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+
+      expect(find.byKey(const Key('moderationEntry')), findsNothing);
+    });
+  });
 }

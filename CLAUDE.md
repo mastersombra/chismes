@@ -512,6 +512,7 @@ flutter clean && flutter pub get
 ```bash
 flutter test
 flutter test --coverage
+./scripts/e2e.sh        # E2E Edge Functions: Supabase local + OpenAI falso (Docker)
 ```
 
 ### Code Generation
@@ -620,15 +621,15 @@ Para nuevas sesiones:
 
 ## 📊 MÉTRICAS
 
-**Última actualización:** 2026-11-18
+**Última actualización:** 2026-11-20
 
 ```
 Archivos Dart:        166 en lib/ (sin generados ni l10n) · 163 archivos de test
-Features:             6 (auth, gossip, home, location, profile, search)
-Tests:                3,987 (3,984 pasando, 3 skip)
-Coverage:             97.48% (sin lib/l10n)
+Features:             7 (auth, gossip, home, location, moderation, profile, search)
+Tests:                4,117 (4,114 pasando, 3 skip)
+Coverage:             97.58% (sin lib/l10n)
 Líneas de código:     ~16,500 (lib/, sin comentarios ni generados)
-Migraciones:          12
+Migraciones:          13
 Architecture Score:   9.65/10 ✅ TOP 1%
 ```
 

@@ -6,7 +6,7 @@ import {
   RequestValidationError,
   type CreateGossipRequest,
 } from './validation.ts'
-import { moderateContent } from './moderation.ts'
+import { isMissingAutomaticVerdict, loadModerationRules, moderateContent } from './moderation.ts'
 import {
   deleteAudioFromPublicBucket,
   deleteAudioFromQuarantine,
@@ -33,11 +33,13 @@ import {
  * - images-quarantine (privado) → images (público)
  * - audio-quarantine (privado) → audio (público)
  *
- * Estrategia de moderación (ver moderation.ts):
- * 1. Reglas locales rápidas (10ms) → Detectar amenazas obvias
- * 2. OpenAI omni-moderation-latest → texto e imagen en una llamada
- * 3. Reglas complementarias → Datos personales, spam
- * 4. Fail-closed: sin veredicto de la IA → review (nunca se publica)
+ * Estrategia de moderación (ver moderation.ts). Reglas en la tabla
+ * moderation_rules, editables sin desplegar:
+ * 1. Reglas locales que rechazan (amenazas, términos) → sin llamar a la IA
+ * 2. OpenAI omni-moderation-latest → texto e imagen en una llamada,
+ *    + umbrales por categoría de la tabla
+ * 3. Reglas locales que mandan a revisión (datos personales, spam, términos)
+ * 4. Fail-closed: sin veredicto de la IA o sin reglas → review (nunca se publica)
  *
  * Seguridad:
  * - ✅ Cuarentena privada (archivos no públicos hasta aprobar)
@@ -307,6 +309,14 @@ serve(async (req) => {
     // 3. ✅ PASO 2: MODERAR CONTENIDO (texto + imagen; audio → review)
     // La imagen va como data URL (ya validada por magic bytes): OpenAI no
     // recibe ninguna URL de la cuarentena.
+    // Reglas leídas en cada chisme: un cambio en la tabla aplica al siguiente.
+    // Si no se pueden leer → null → review (fail-closed)
+    const rules = await loadModerationRules(() =>
+      supabaseAdmin
+        .from('moderation_rules')
+        .select('kind, target, action, min_score')
+        .eq('enabled', true)
+    )
     const moderationResult = await moderateContent({
       subject: body.subject,
       content: body.content,
@@ -314,7 +324,7 @@ serve(async (req) => {
         ? `data:${imageMimeType};base64,${body.image_base64}`
         : null,
       hasAudio: audioQuarantinePath !== null,
-    })
+    }, { rules })
 
     // 4. Si fue rechazado, limpiar cuarentena y retornar error
     if (moderationResult.verdict === 'reject') {
@@ -510,7 +520,7 @@ serve(async (req) => {
     // está pendiente: en un reintento idempotente de un chisme ya publicado
     // no se encola. Si ya estaba en la cola, enqueue_moderation no hace nada.
     if (moderationResult.verdict === 'review' && gossip.status === 'draft') {
-      const source = moderationResult.reasons.includes('moderation_unavailable')
+      const source = isMissingAutomaticVerdict(moderationResult)
         ? 'ai_unavailable'
         : 'ai_review'
       const { error: enqueueError } = await supabaseAdmin.rpc('enqueue_moderation', {

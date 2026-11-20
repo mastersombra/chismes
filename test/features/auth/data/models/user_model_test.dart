@@ -115,6 +115,7 @@ void main() {
         when(mockSupabaseUser.id).thenReturn(tId);
         when(mockSupabaseUser.email).thenReturn(tEmail);
         when(mockSupabaseUser.createdAt).thenReturn(tCreatedAt.toIso8601String());
+        when(mockSupabaseUser.appMetadata).thenReturn({});
       });
 
       test('debe crear UserModel con profile data completo', () {
@@ -237,6 +238,35 @@ void main() {
 
         // Assert
         expect(model.profileCompleted, false);
+      });
+
+      test('no es moderador sin rol en app_metadata', () {
+        when(mockSupabaseUser.emailConfirmedAt).thenReturn(null);
+
+        final model = UserModel.fromSupabase(supabaseUser: mockSupabaseUser, profileData: null);
+
+        expect(model.isModerator, isFalse);
+        expect(model.toEntity().isModerator, isFalse);
+      });
+
+      test('es moderador con app_metadata.role = moderator', () {
+        when(mockSupabaseUser.emailConfirmedAt).thenReturn(null);
+        when(mockSupabaseUser.appMetadata).thenReturn({'provider': 'google', 'role': 'moderator'});
+
+        final model = UserModel.fromSupabase(supabaseUser: mockSupabaseUser, profileData: null);
+
+        expect(model.isModerator, isTrue);
+        expect(model.toEntity().isModerator, isTrue);
+        expect(UserModel.fromEntity(model.toEntity()).isModerator, isTrue);
+      });
+
+      test('otro rol en app_metadata no es moderador', () {
+        when(mockSupabaseUser.emailConfirmedAt).thenReturn(null);
+        when(mockSupabaseUser.appMetadata).thenReturn({'role': 'admin'});
+
+        final model = UserModel.fromSupabase(supabaseUser: mockSupabaseUser, profileData: null);
+
+        expect(model.isModerator, isFalse);
       });
     });
 

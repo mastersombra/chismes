@@ -9,6 +9,7 @@ export const SEVERITIES = ['low', 'medium', 'high', 'critical'] as const
 export const QUEUE_STATUSES = ['pending', 'approved', 'rejected'] as const
 export const LIST_DEFAULT_LIMIT = 20
 export const LIST_MAX_LIMIT = 50
+export const LIST_MAX_OFFSET = 10_000
 export const REASON_MAX_LENGTH = 100
 export const NOTE_MAX_LENGTH = 1000
 
@@ -16,7 +17,7 @@ export type Severity = typeof SEVERITIES[number]
 export type QueueStatus = typeof QUEUE_STATUSES[number]
 
 export type ReviewRequest =
-  | { action: 'list'; status: QueueStatus; limit: number }
+  | { action: 'list'; status: QueueStatus; limit: number; offset: number }
   | {
     action: 'decide'
     queueId: string
@@ -57,7 +58,14 @@ export function parseReviewRequest(body: unknown): ParseResult {
     if (!Number.isInteger(limit) || (limit as number) < 1 || (limit as number) > LIST_MAX_LIMIT) {
       return { ok: false, error: `limit must be an integer between 1 and ${LIST_MAX_LIMIT}`, field: 'limit' }
     }
-    return { ok: true, value: { action: 'list', status: status as QueueStatus, limit: limit as number } }
+    const offset = b.offset ?? 0
+    if (!Number.isInteger(offset) || (offset as number) < 0 || (offset as number) > LIST_MAX_OFFSET) {
+      return { ok: false, error: `offset must be an integer between 0 and ${LIST_MAX_OFFSET}`, field: 'offset' }
+    }
+    return {
+      ok: true,
+      value: { action: 'list', status: status as QueueStatus, limit: limit as number, offset: offset as number },
+    }
   }
 
   if (b.action === 'decide') {

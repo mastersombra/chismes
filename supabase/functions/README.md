@@ -8,7 +8,7 @@ Funciones Deno que corren en Supabase. Cada carpeta es una función (`index.ts`)
 |---|---|
 | `moderate-gossip` | Crea chismes: valida input, rate limit, modera texto e imagen (`moderation.ts`) y sube media a cuarentena; el veredicto `review` va a la cola con la ruta de su media. Escribe con el RPC `upsert_gossip_idempotent()` (la app nunca hace INSERT directo, ver `.claude/SECURITY.md`). |
 | `report-gossip` | Reporta un chisme visible (no el propio). Guarda en `content_reports`; el umbral (cola + auto-ocultar) lo aplica un trigger con los valores de `moderation_settings`. |
-| `moderation-review` | Cola de revisión humana, **solo moderadores** (`app_metadata.role = 'moderator'`). `list` (con URL firmada de la media en cuarentena) y `decide` (aprobar publica la media; rechazar oculta y exige gravedad). Ver "Moderadores". |
+| `moderation-review` | Cola de revisión humana, **solo moderadores** (`app_metadata.role = 'moderator'`). `list` (paginado con `limit`/`offset`; pendientes por prioridad y antigüedad, historial por decisión más reciente; con URL firmada de la media en cuarentena y nombre del autor) y `decide` (aprobar publica la media; rechazar oculta y exige gravedad). La usa el panel de moderación de la app (`lib/features/moderation`). Ver "Moderadores". |
 | `delete-account` | Borra la cuenta del usuario y todos sus datos (GDPR). |
 | `log-error` | Recibe logs de error de la app (autenticado, sanitiza el contexto). |
 | `search-cities` | Autocomplete remoto de ciudades. |
@@ -105,7 +105,10 @@ así que asignarlo o quitarlo aplica **de inmediato**, sin volver a iniciar
 sesión. (El JWT también lo trae, pero solo después de refrescar la sesión: no
 usar el claim del JWT para autorizar.) Para quitarlo, borrar la clave `role`.
 
-Umbrales de reportes: tabla `moderation_settings` (Table Editor). Código
+Umbrales de reportes: tabla `moderation_settings`; reglas de contenido de
+`moderate-gossip` (términos, umbrales de IA, reglas fijas on/off): tabla
+`moderation_rules` (ambas en Table Editor, sin desplegar; ver
+`moderate-gossip/README.md`). Código
 compartido de media: `_shared/media.ts`. Tests (Deno):
 
 ```bash

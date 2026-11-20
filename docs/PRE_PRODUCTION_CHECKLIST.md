@@ -3,7 +3,7 @@
 **Fecha de creación:** 2026-10-22  
 **Objetivo:** Verificar que el proyecto está listo para producción  
 **Estado:** 📋 EN PROGRESO
-**Última revisión:** 2026-11-20
+**Última revisión:** 2026-11-20 (reglas de moderación en tabla, panel de moderación, E2E de Edge Functions)
 
 ---
 
@@ -40,23 +40,31 @@ usuarios: el usuario del mantenedor (Google) se re-registró y tiene
 falla), reportar un chisme ajeno (debe mostrar éxito), y listar la cola con
 `moderation-review`.
 
-**Siguiente recomendado:** C (reglas de moderación en tabla), panel de
-moderación (ítem 4 de la hoja de ruta) o sanciones (ítem 7).
+**Hecho 2026-11-20:** reglas de moderación en tabla (`moderation_rules`, ítem 1
+de la hoja de ruta). **Aplicar a `chismes-dev`:** reset con la 013 modificada
+(`scripts/reset-database.sh`) + desplegar `moderate-gossip`.
+
+También 2026-11-20: panel de moderación en la app (ítem 4). **Probar en la app**
+con el usuario moderador: Perfil → Panel de moderación (requiere desplegar
+`moderation-review` y el reset con la 013 modificada).
+
+**Siguiente recomendado:** sanciones (ítem 7) + apelaciones, o los pendientes
+🔴 del ítem 4 (App ID / release).
 
 1. ~~**AuthGate debe validar la sesión con el servidor**~~ ✅ (2026-11-19) `AuthRepository.validateSession()` (`GET /auth/v1/user`) en segundo plano al iniciar y al volver a primer plano (máx. cada 5 min). Cierra sesión solo si GoTrue responde `user_not_found`, `session_not_found`, `user_banned` o `bad_jwt` (o 401/403 sin código); sin red/timeout/5xx conserva la sesión. Con el access token vencido no valida: lo resuelve el refresh. Mejora posterior 🟢: cerrar sesión ante cualquier 401 de Edge Functions/PostgREST, y avisar en Login "tu sesión expiró".
 2. ~~**Privacidad de la tabla `gossips`**~~ ✅ (2026-11-19, en 001/008/009) Los clientes ya no leen la tabla: leen la vista `public_gossips` (columnas explícitas, autor de anónimos oculto salvo para su autor). Feed y `search_gossips` leen la vista; `search_gossips` solo `authenticated`. `report-gossip` adaptada. Test: `supabase/tests/004_anonymous_author_privacy_test.sql`. Aplicado a `chismes-dev` (2026-11-20).
 3. 🔴 **Ítem 4 (App ID):** keystore de release, cliente OAuth Android de release (SHA-1 de la llave de release + Play App Signing), registrar App ID en Apple, beta (TestFlight / internal track).
-4. 🟡 **Pendientes de este checklist:** tests E2E de Edge Functions (automatizar el E2E local que se hizo a mano), backups/PITR. Moderación de imagen, reportes y cola: ✅ (ver "Hoja de ruta de moderación").
+4. 🟡 **Pendientes de este checklist:** ~~tests E2E de Edge Functions~~ ✅ (2026-11-20, `./scripts/e2e.sh`: 28 casos con Supabase local + OpenAI falso; pendiente agregarlo al CI), backups/PITR. Moderación de imagen, reportes y cola: ✅ (ver "Hoja de ruta de moderación").
 
 ### 🛡️ Hoja de ruta de moderación (decidida 2026-11-19)
 
 Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 (se puede saltar modificando el APK, y expondría las reglas).
 
-1. 🔴 **Reglas en tabla** (`moderation_rules`: términos, patrones, umbrales) leídas por `moderate-gossip`, editables sin deploy ni release de app.
+1. ~~**Reglas en tabla**~~ ✅ (2026-11-20) `moderation_rules` en `013_moderation.sql`, leída por `moderate-gossip` en cada chisme: términos (normalizados, palabra completa), umbrales por categoría de OpenAI (`min_score` → review/reject; solo endurecen, lo `flagged` se rechaza siempre) y on/off + acción de las reglas fijas (amenaza, datos personales, spam). Las regex siguen en el código a propósito (ReDoS). **Fail-closed:** si no se pueden leer o hay una fila inválida → review (`rules_unavailable`). CHECK contra typos; clientes sin acceso. Tests: `moderation.test.ts` (32), `005_moderation_test.sql` (R1–R5), `003_api_grants_test.sql`. Pendiente 🟢: definir umbrales iniciales de IA (hoy ninguno: mismo comportamiento que antes).
 2. ~~**Cola de revisión humana**~~ ✅ (2026-11-19, backend) `013_moderation.sql` + Edge Function `moderation-review` (solo `app_metadata.role = 'moderator'`): `list` con URL firmada de la media en cuarentena; `decide` aprobar (publica la media) / rechazar (oculta, no borra; gravedad obligatoria). El veredicto `review` de `moderate-gossip` se encola con la ruta de su media, y `cleanup-media` no la borra mientras esté pendiente. Cada decisión guarda autor, gravedad y motivo (base de sanciones). Genérica por tipo de contenido (lista para comentarios). Tests: `005_moderation_test.sql`, `moderation-review/logic.test.ts`, E2E local.
 3. ~~**Reportes → cola**~~ ✅ (2026-11-19) `content_reports` (genérica, reemplaza a `gossip_reports`) + trigger: entra a la cola con ≥ `report_min_count` reportes de cuentas con ≥ `report_min_account_age_hours`; se auto-oculta si además supera `report_ratio` de las interacciones; desde `report_popular_interactions` nunca se oculta solo (prioridad alta). Todo en `moderation_settings`, editable sin desplegar. Arreglado: el umbral nunca funcionaba (`protect_critical_fields` revertía el UPDATE del trigger; `report-gossip` contaba solo los reportes propios). Además: la app mostraba error al reportar (esperaba 200; la función responde 201) y el autor podía reportar lo propio.
-4. 🟡 **Panel de moderación** (UI sobre `moderation-review`: aprobar/rechazar, historial, apelaciones).
+4. ~~**Panel de moderación**~~ ✅ (2026-11-20) En la app (`lib/features/moderation`), entrada en Perfil visible solo si `app_metadata.role = 'moderator'` (el servidor igual exige el rol: sin él, 403 → "sin permisos"). Pestañas Pendientes / Aprobados / Rechazados con scroll infinito; detalle con contenido, imagen en cuarentena (URL firmada), razones traducidas, reportes, autor real (también de anónimos); aprobar (con confirmación) o rechazar (gravedad obligatoria, motivo predefinido, nota interna). Si otro moderador ya decidió (409/404) avisa y lo saca de la lista. Backend: `list` acepta `offset`, el historial se ordena por `decided_at` desc y la vista trae `author_username`/`author_display_name`. Tests: 71 Flutter (100% en casi todo el módulo), `logic.test.ts`, `005` D3. Pendiente 🟡: **apelaciones** (con sanciones, ítem 7) y reproducir el **audio** en el panel (hoy solo indica que hay audio).
 5. ~~**Moderación de imagen**~~ ✅ (2026-11-19) `moderate-gossip/moderation.ts`: texto + imagen en una sola llamada a `omni-moderation-latest` (imagen como data URL, nunca una URL de cuarentena); imagen marcada → reject y se borra de cuarentena. **Fail-closed:** sin API key, error, timeout (10 s) o respuesta inválida → `review`, nunca se publica. **Audio → `review` siempre** (no se modera automáticamente; la UI sigue oculta). Tests: `moderation.test.ts` (Deno, OpenAI simulado). Pendiente 🟡: texto dentro de la imagen (OCR → mismas reglas de datos personales), detección de CSAM por hash, audio con transcripción + moderación del texto y duración máxima.
 6. 🟢 **Aviso previo en la app** vía un endpoint de pre-validación del servidor (no copiando reglas).
 7. 🟡 **Sanciones al usuario** (faltas/strikes por gravedad → advertencia → restricción temporal para publicar/comentar → suspensión; lo crítico suspende directo; apelación). Los datos ya se guardan: `moderation_queue.content_author_id`, `decision_severity`, `decision_reason`. Falta: tabla de sanciones, reglas de duración, bloqueo en el servidor (`moderate-gossip`) y aviso en la app.
@@ -160,17 +168,17 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 
 ### Integración
 
-- [ ] 🔴 Tests de autenticación Edge Functions (5 casos)
-- [ ] 🔴 Tests de validación Edge Functions (8 casos)
-- [ ] 🔴 Tests de RLS gossips (8 casos)
-- [ ] 🔴 Tests de RLS storage (6 casos)
-- [ ] 🔴 Tests de media validation (7 casos)
+- [x] ✅ Tests de autenticación Edge Functions (`scripts/e2e.sh`, 6 casos, 2026-11-20)
+- [x] ✅ Tests de validación Edge Functions (E2E: 8 casos, incluye rate limit e idempotencia)
+- [x] ✅ Tests de RLS gossips (SQL `001`, `003`, `004`: escritura, grants, privacidad del autor)
+- [ ] 🟡 Tests de RLS storage (el E2E verifica cuarentena/público vía las funciones; falta probar acceso directo de clientes a los buckets)
+- [x] ✅ Tests de media validation (E2E: magic bytes, tamaño, imagen marcada, cuarentena → público)
 
 ### E2E
 
-- [ ] 🔴 Crear gossip sin media (golden path)
-- [ ] 🔴 Crear gossip con imagen (golden path)
-- [ ] 🔴 Idempotencia (retry con misma key)
+- [x] ✅ Crear gossip sin media (golden path) — E2E backend (falta E2E desde la app)
+- [x] ✅ Crear gossip con imagen (golden path) — E2E backend
+- [x] ✅ Idempotencia (retry con misma key) — E2E backend
 - [ ] 🟡 GPS denegado → selección manual
 - [ ] 🟡 Pérdida de red durante submit
 

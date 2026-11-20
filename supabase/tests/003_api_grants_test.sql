@@ -66,11 +66,13 @@ BEGIN
   BEGIN PERFORM 1 FROM moderation_queue; EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
   BEGIN PERFORM 1 FROM moderation_queue_items; EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
   BEGIN UPDATE moderation_settings SET value = 1; EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
+  -- Reglas de moderate-gossip: conocerlas ayuda a esquivarlas
+  BEGIN PERFORM 1 FROM moderation_rules; EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
   BEGIN PERFORM enqueue_moderation('a0000000-0000-0000-0000-000000000001', 'ai_review', '{}');
   EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
   BEGIN PERFORM apply_moderation_decision(gen_random_uuid(), 'approve', auth.uid());
   EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
-  IF denied <> 12 THEN RAISE EXCEPTION 'authenticated tiene permisos de más (% de 12 bloqueados)', denied; END IF;
+  IF denied <> 13 THEN RAISE EXCEPTION 'authenticated tiene permisos de más (% de 13 bloqueados)', denied; END IF;
   RAISE NOTICE '✅ authenticated: bloqueado en gossips (INSERT y SELECT), error_logs, rate_limits, feed_settings (UPDATE) y toda la moderación';
 END $$;
 
@@ -100,8 +102,9 @@ BEGIN
   DELETE FROM rate_limits WHERE user_id = '11111111-1111-1111-1111-111111111111';
   UPDATE profiles SET display_name = NULL WHERE id = '11111111-1111-1111-1111-111111111111';
   DELETE FROM gossips WHERE created_by = '11111111-1111-1111-1111-111111111111';
-  -- moderate-gossip (validación de ubicación)
+  -- moderate-gossip (validación de ubicación y reglas de moderación)
   PERFORM 1 FROM countries, regions, cities LIMIT 1;
+  PERFORM kind, target, action, min_score FROM moderation_rules WHERE enabled;
   RAISE NOTICE '✅ service_role: log-error, report-gossip, moderation-review, cleanup-media, delete-account, moderate-gossip';
 END $$;
 
@@ -118,7 +121,8 @@ BEGIN
   BEGIN PERFORM get_popular_feed(); EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
   BEGIN PERFORM 1 FROM public_gossips; EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
   BEGIN PERFORM * FROM search_gossips(''); EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
-  IF denied <> 6 THEN RAISE EXCEPTION 'anon tiene permisos de más (% de 6 bloqueados)', denied; END IF;
+  BEGIN PERFORM 1 FROM moderation_rules; EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
+  IF denied <> 7 THEN RAISE EXCEPTION 'anon tiene permisos de más (% de 7 bloqueados)', denied; END IF;
   RAISE NOTICE '✅ anon: solo check_email_exists_and_confirmed';
 END $$;
 

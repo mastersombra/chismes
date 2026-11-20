@@ -26,8 +26,19 @@ Deno.test('isModerator: solo app_metadata.role = moderator', () => {
 Deno.test('list: defaults pending y límite por defecto', () => {
   assertEquals(parseReviewRequest({ action: 'list' }), {
     ok: true,
-    value: { action: 'list', status: 'pending', limit: LIST_DEFAULT_LIMIT },
+    value: { action: 'list', status: 'pending', limit: LIST_DEFAULT_LIMIT, offset: 0 },
   })
+})
+
+Deno.test('list: offset para paginar el historial', () => {
+  assertEquals(parseReviewRequest({ action: 'list', status: 'approved', limit: 20, offset: 40 }), {
+    ok: true,
+    value: { action: 'list', status: 'approved', limit: 20, offset: 40 },
+  })
+  for (const offset of [-1, 10_001, 1.5, '20']) {
+    const r = parseReviewRequest({ action: 'list', offset })
+    assert(!r.ok && r.field === 'offset', `offset ${offset} debería fallar`)
+  }
 })
 
 Deno.test('list: valida status y límite', () => {
