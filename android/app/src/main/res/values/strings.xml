@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Client ID web de Google ("Chismes Web Client" en Google Cloud).
+      google_sign_in lo lee solo para pedir el idToken que valida Supabase.
+      No es secreto: va dentro de la app. Los clientes Android (paquete +
+      SHA-1) se registran aparte en Google Cloud, no aquí.
+    -->
+    <string name="default_web_client_id" translatable="false">915308899006-4kf16ape5ld7upf53pgo4ihvqqajrt4g.apps.googleusercontent.com</string>
+</resources>
