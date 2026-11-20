@@ -83,6 +83,20 @@ abstract class SupabaseAuthDataSource {
   /// - NetworkException
   Future<UserModel?> getCurrentUser();
 
+  /// Confirma con el servidor (`GET /auth/v1/user`) que la sesión guardada
+  /// sigue vigente.
+  ///
+  /// Returns:
+  /// - `false` solo si el servidor rechaza la sesión: usuario eliminado,
+  ///   sesión revocada, usuario bloqueado o JWT inválido.
+  /// - `true` si la sesión es válida, si no hay sesión o si el access token
+  ///   ya venció (eso lo resuelve el refresh automático de Supabase, que
+  ///   cierra la sesión si el refresh token fue revocado).
+  ///
+  /// Throws:
+  /// - AuthException no concluyente (red, timeout, 5xx): la sesión se conserva
+  Future<bool> validateSession();
+
   /// Actualiza perfil del usuario
   ///
   /// Throws:

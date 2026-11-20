@@ -319,6 +319,19 @@ class MockAuthRepository extends _i1.Mock implements _i9.AuthRepository {
           as _i4.Future<_i11.Result<_i12.Failure, _i10.User?>>);
 
   @override
+  _i4.Future<_i11.Result<_i12.Failure, bool>> validateSession() =>
+      (super.noSuchMethod(
+            Invocation.method(#validateSession, []),
+            returnValue: _i4.Future<_i11.Result<_i12.Failure, bool>>.value(
+              _i7.dummyValue<_i11.Result<_i12.Failure, bool>>(
+                this,
+                Invocation.method(#validateSession, []),
+              ),
+            ),
+          )
+          as _i4.Future<_i11.Result<_i12.Failure, bool>>);
+
+  @override
   _i4.Future<_i11.Result<_i12.Failure, _i10.User>> updateProfile({
     String? username,
     String? displayName,

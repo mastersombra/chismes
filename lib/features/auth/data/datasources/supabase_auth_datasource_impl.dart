@@ -232,6 +232,38 @@ class SupabaseAuthDataSourceImpl implements SupabaseAuthDataSource {
     }
   }
 
+  /// Códigos de GoTrue que significan "esta sesión ya no existe o no vale".
+  static const _rejectedSessionCodes = {
+    'user_not_found',
+    'session_not_found',
+    'user_banned',
+    'bad_jwt',
+  };
+
+  @override
+  Future<bool> validateSession() async {
+    final session = _supabase.auth.currentSession;
+    // Sin sesión no hay nada que validar. Con el token vencido, getUser()
+    // respondería bad_jwt aunque la cuenta esté bien: se deja al refresh.
+    if (session == null || session.isExpired) return true;
+
+    try {
+      await _supabase.auth.getUser();
+      return true;
+    } on supabase.AuthException catch (e) {
+      // Servidores sin códigos de error: 401/403 también es rechazo.
+      final rejected = e.code != null
+          ? _rejectedSessionCodes.contains(e.code)
+          : e is supabase.AuthApiException &&
+              (e.statusCode == '401' || e.statusCode == '403');
+      if (!rejected) rethrow;
+
+      _logger.w('Session rejected by server',
+          context: {'code': e.code, 'statusCode': e.statusCode});
+      return false;
+    }
+  }
+
   @override
   Future<UserModel> updateProfile({
     String? username,

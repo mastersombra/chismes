@@ -1,3 +1,5 @@
+import 'package:chismes/core/result/result.dart';
+import 'package:chismes/core/error/failure.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -34,6 +36,7 @@ void main() {
   setUpAll(() {
     // Provide dummy values for complex types
     provideDummy<AuthState>(const AuthInitial());
+    provideDummy<Result<Failure, bool>>(Result.success(true));
     provideDummy<OtpVerificationState>(
       const OtpVerificationState(email: 'test@example.com'),
     );
@@ -53,6 +56,8 @@ void main() {
     // Configurar mock de AuthRepository
     mockAuthRepository = MockAuthRepository();
     // Configurar authStateChanges para que devuelva un Stream que emite null (no autenticado)
+    when(mockAuthRepository.validateSession())
+        .thenAnswer((_) async => Result.success(true));
     when(mockAuthRepository.authStateChanges).thenAnswer(
       (_) => Stream.value(null),
     );

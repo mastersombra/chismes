@@ -7,6 +7,9 @@ import 'package:chismes/features/auth/domain/repositories/auth_repository.dart';
 import 'package:chismes/features/auth/domain/entities/user.dart';
 import 'package:chismes/core/logging/logging.dart';
 import 'package:chismes/core/di/injection_container.dart';
+import 'package:chismes/core/error/error_codes.dart';
+import 'package:chismes/core/error/failure.dart';
+import 'package:chismes/core/result/result.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 
@@ -14,6 +17,9 @@ import 'auth_gate_test.mocks.dart';
 
 @GenerateMocks([AuthRepository, AppLogger])
 void main() {
+  provideDummy<Result<Failure, bool>>(Result.success(true));
+  provideDummy<Result<Failure, void>>(Result.success(null));
+
   group('AuthGate', () {
     late MockAuthRepository mockAuthRepository;
     late MockAppLogger mockLogger;
@@ -37,6 +43,10 @@ void main() {
       // Setup stream
       when(mockAuthRepository.authStateChanges)
           .thenAnswer((_) => authStreamController.stream);
+      when(mockAuthRepository.validateSession())
+          .thenAnswer((_) async => Result.success(true));
+      when(mockAuthRepository.signOut())
+          .thenAnswer((_) async => Result.success(null));
     });
 
     tearDown(() {
@@ -182,6 +192,131 @@ void main() {
         orElse: () => throw TestFailure('SizedBox 30x30 not found'),
       );
       expect(loadingBox, isNotNull);
+    });
+    group('validación de sesión con el servidor', () {
+      void resume(WidgetTester tester) => tester.binding
+          .handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+
+      void background(WidgetTester tester) => tester.binding
+          .handleAppLifecycleStateChanged(AppLifecycleState.paused);
+
+      testWidgets('valida la sesión al iniciar sin bloquear el arranque',
+          (tester) async {
+        final pending = Completer<Result<Failure, bool>>();
+        when(mockAuthRepository.validateSession())
+            .thenAnswer((_) => pending.future);
+
+        await tester.pumpWidget(createWidget());
+
+        verify(mockAuthRepository.validateSession()).called(1);
+        // El guard sigue reaccionando al stream mientras valida
+        verify(mockAuthRepository.authStateChanges).called(greaterThan(0));
+        pending.complete(Result.success(true));
+        await tester.pump();
+      });
+
+      testWidgets('sesión válida: no cierra sesión', (tester) async {
+        await tester.pumpWidget(createWidget());
+        await tester.pump();
+
+        verifyNever(mockAuthRepository.signOut());
+      });
+
+      testWidgets('sesión rechazada por el servidor: cierra sesión',
+          (tester) async {
+        when(mockAuthRepository.validateSession())
+            .thenAnswer((_) async => Result.success(false));
+
+        await tester.pumpWidget(createWidget());
+        await tester.pump();
+
+        verify(mockAuthRepository.signOut()).called(1);
+        verify(mockLogger.w(
+                'AuthGate: Sesión rechazada por el servidor, cerrando sesión'))
+            .called(1);
+      });
+
+      testWidgets('validación no concluyente (sin red): conserva la sesión',
+          (tester) async {
+        when(mockAuthRepository.validateSession()).thenAnswer((_) async =>
+            Result.failure(
+                const NetworkFailure(code: ErrorCode.networkError)));
+
+        await tester.pumpWidget(createWidget());
+        await tester.pump();
+
+        verifyNever(mockAuthRepository.signOut());
+      });
+
+      testWidgets('al volver a primer plano dentro del intervalo no revalida',
+          (tester) async {
+        await tester.pumpWidget(createWidget());
+        await tester.pump();
+
+        background(tester);
+        resume(tester);
+        await tester.pump();
+
+        verify(mockAuthRepository.validateSession()).called(1);
+      });
+
+      testWidgets('al volver a primer plano pasado el intervalo revalida',
+          (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(home: AuthGate(revalidateInterval: Duration.zero)),
+        );
+        await tester.pump();
+
+        background(tester);
+        resume(tester);
+        await tester.pump();
+
+        verify(mockAuthRepository.validateSession()).called(2);
+      });
+
+      testWidgets('ignora estados distintos de resumed', (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(home: AuthGate(revalidateInterval: Duration.zero)),
+        );
+        await tester.pump();
+
+        background(tester);
+        await tester.pump();
+
+        verify(mockAuthRepository.validateSession()).called(1);
+      });
+
+      testWidgets('no lanza validaciones simultáneas', (tester) async {
+        final pending = Completer<Result<Failure, bool>>();
+        when(mockAuthRepository.validateSession())
+            .thenAnswer((_) => pending.future);
+        await tester.pumpWidget(
+          const MaterialApp(home: AuthGate(revalidateInterval: Duration.zero)),
+        );
+
+        background(tester);
+        resume(tester);
+        await tester.pump();
+
+        verify(mockAuthRepository.validateSession()).called(1);
+        pending.complete(Result.success(true));
+        await tester.pump();
+      });
+
+      testWidgets('deja de observar el ciclo de vida al desmontarse',
+          (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(home: AuthGate(revalidateInterval: Duration.zero)),
+        );
+        await tester.pump();
+        await tester.pumpWidget(const SizedBox());
+
+        background(tester);
+        resume(tester);
+        await tester.pump();
+
+        verify(mockAuthRepository.validateSession()).called(1);
+      });
     });
   });
 }

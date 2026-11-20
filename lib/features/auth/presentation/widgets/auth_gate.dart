@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/logging/logging.dart';
+import '../../../../core/result/result.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../home/presentation/screens/main_navigation_screen.dart';
 import '../../domain/entities/user.dart';
@@ -24,21 +25,75 @@ import '../screens/login_screen.dart';
 /// - Al hacer login → navega a Home automáticamente
 /// - Al hacer logout → navega a Login automáticamente
 /// - Token expira → Supabase renueva automáticamente (si es válido)
+///
+/// Validación con el servidor (en segundo plano, no bloquea Home):
+/// - Al iniciar y al volver a primer plano (máximo cada
+///   [AuthGate.revalidateInterval]) confirma la sesión con `validateSession()`.
+/// - Si el servidor la rechaza (cuenta eliminada, sesión revocada, usuario
+///   bloqueado) cierra sesión; el stream emite null y se muestra Login.
+/// - Sin red o con timeout conserva la sesión (la app funciona offline).
 class AuthGate extends StatefulWidget {
-  const AuthGate({super.key});
+  const AuthGate({
+    super.key,
+    this.revalidateInterval = const Duration(minutes: 5),
+  });
+
+  /// Intervalo mínimo entre validaciones al volver a primer plano.
+  final Duration revalidateInterval;
 
   @override
   State<AuthGate> createState() => _AuthGateState();
 }
 
-class _AuthGateState extends State<AuthGate> {
+class _AuthGateState extends State<AuthGate> with WidgetsBindingObserver {
   final _authRepository = getIt<AuthRepository>();
   final _logger = getIt<AppLogger>();
+
+  DateTime? _lastValidation;
+  bool _validating = false;
 
   @override
   void initState() {
     super.initState();
     _logger.d('AuthGate: Inicializando guard de autenticación');
+    WidgetsBinding.instance.addObserver(this);
+    _validateSession();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) return;
+    final last = _lastValidation;
+    if (last != null &&
+        DateTime.now().difference(last) < widget.revalidateInterval) {
+      return;
+    }
+    _validateSession();
+  }
+
+  Future<void> _validateSession() async {
+    if (_validating) return;
+    _validating = true;
+    _lastValidation = DateTime.now();
+    try {
+      final result = await _authRepository.validateSession();
+      final rejected = result.when(
+        onFailure: (_) => false, // No concluyente: conservar la sesión
+        onSuccess: (isValid) => !isValid,
+      );
+      if (!rejected) return;
+
+      _logger.w('AuthGate: Sesión rechazada por el servidor, cerrando sesión');
+      await _authRepository.signOut();
+    } finally {
+      _validating = false;
+    }
   }
 
   @override
