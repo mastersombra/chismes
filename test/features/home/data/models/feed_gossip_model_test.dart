@@ -230,6 +230,41 @@ void main() {
       });
     });
 
+    group('proximity y city_name', () {
+      Map<String, dynamic> json({Object? proximity, Object? cityName}) => {
+            'id': 'g1',
+            'subject': 's',
+            'content': 'c',
+            'city_id': 'MED',
+            'city_name': cityName,
+            'created_at': '2024-01-15T10:30:00Z',
+            'likes': 0,
+            'comments': 0,
+            'shares': 0,
+            'published_as': 'profile',
+            'score': 1,
+            'proximity': proximity,
+            'is_trending': false,
+          };
+
+      test('parsea proximity y city_name del RPC', () {
+        final entity = FeedGossipModel.fromJson(
+          json(proximity: 'region', cityName: 'Envigado'),
+        ).toEntity();
+
+        expect(entity.proximity, FeedProximity.region);
+        expect(entity.cityName, 'Envigado');
+      });
+
+      test('proximity ausente o desconocido → global', () {
+        expect(FeedGossipModel.fromJson(json()).toEntity().proximity,
+            FeedProximity.global);
+        expect(
+            FeedGossipModel.fromJson(json(proximity: 'planeta')).toEntity().proximity,
+            FeedProximity.global);
+      });
+    });
+
     group('toJson', () {
       test('debe convertir modelo a JSON correctamente', () {
         // Act
@@ -241,6 +276,7 @@ void main() {
           'subject': 'Test Subject',
           'content': 'Test Content',
           'city_id': 'MED',
+          'city_name': null,
           'created_at': '2024-01-15T10:30:00Z',
           'likes': 100,
           'comments': 20,
@@ -249,6 +285,7 @@ void main() {
           'created_by': 'user-456',
           'image_url': 'https://example.com/image.jpg',
           'score': 123.45,
+          'proximity': null,
           'is_from_my_city': true,
           'is_trending': false,
         });

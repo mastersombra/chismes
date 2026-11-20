@@ -932,6 +932,12 @@ abstract class AppLocalizations {
   /// **'Populares'**
   String get homeTabsPopular;
 
+  /// Etiqueta de un chisme en tendencia en el feed Popular
+  ///
+  /// In es, this message translates to:
+  /// **'Tendencia'**
+  String get homePopularTrendingBadge;
+
   /// No description provided for @navigationCreate.
   ///
   /// In es, this message translates to:

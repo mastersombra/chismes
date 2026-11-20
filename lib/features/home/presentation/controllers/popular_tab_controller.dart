@@ -2,8 +2,10 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 
+import '../../../../core/localization/device_region.dart';
 import '../../../../core/logging/logging.dart';
 import '../../../../core/result/result.dart';
+import '../../../../core/services/gossip_events.dart';
 import '../../../location/presentation/managers/location_manager.dart';
 import '../../domain/entities/feed_gossip.dart';
 import '../../domain/usecases/check_new_gossips.dart';
@@ -71,11 +73,16 @@ import '../states/popular_tab_state.dart';
 ///   }
 /// }
 /// ```
+/// Ubicación con la que se pide el feed (anillos de cercanía).
+typedef FeedLocation = ({String? cityId, String? regionId, String? countryId});
+
 @injectable
 class PopularTabController extends ChangeNotifier {
   final GetPopularFeed _getPopularFeed;
   final CheckNewGossips _checkNewGossips;
   final LocationManager _locationManager;
+  final DeviceRegion _deviceRegion;
+  final GossipEvents _gossipEvents;
   final AppLogger _logger;
 
   PopularTabState _state = const PopularTabState();
@@ -84,12 +91,66 @@ class PopularTabController extends ChangeNotifier {
   Timer? _pollingTimer;
   static const _pollingInterval = Duration(seconds: 60);
 
+  /// Ubicación del último loadFeed pedido (null = aún no se cargó)
+  FeedLocation? _requestedLocation;
+
+  /// Invalida respuestas de loadFeed anteriores si llega uno más nuevo
+  int _loadToken = 0;
+
+  StreamSubscription<void>? _publishedSubscription;
+
   PopularTabController(
     this._getPopularFeed,
     this._checkNewGossips,
     this._locationManager,
+    this._deviceRegion,
+    this._gossipEvents,
     this._logger,
-  );
+  ) {
+    // LocationManager es singleton: si el usuario elige/detecta ciudad en
+    // Crea, el feed se recarga con la nueva ubicación.
+    _locationManager.addListener(_onLocationChanged);
+    // Al publicar un chisme, recargar para que aparezca.
+    _publishedSubscription = _gossipEvents.onPublished.listen((_) {
+      _logger.d('Gossip published, refreshing popular feed');
+      refresh();
+    });
+  }
+
+  /// Ubicación del usuario para el feed.
+  ///
+  /// - Con ciudad elegida/detectada: ciudad + región + país.
+  /// - Sin ciudad (nunca publicó ni activó GPS): solo el país de la región
+  ///   del teléfono → chismes de su país + tendencias.
+  /// - Sin nada: feed global.
+  ///
+  /// Selecciones parciales (país sin ciudad, mientras elige en el diálogo) se
+  /// ignoran para no recargar el feed a cada paso.
+  FeedLocation _resolveLocation() {
+    final location = _locationManager.state;
+    final city = location.selectedCity;
+    if (city != null) {
+      return (
+        cityId: city.id,
+        regionId: city.regionId,
+        countryId: location.selectedCountry?.id ?? _deviceRegion.countryCode,
+      );
+    }
+    return (cityId: null, regionId: null, countryId: _deviceRegion.countryCode);
+  }
+
+  void _onLocationChanged() {
+    // Esperar a que termine la carga/detección (cambia varias veces el estado)
+    if (_locationManager.state.isLoading) return;
+    // Si el feed aún no se pidió, loadFeed tomará la ubicación actual
+    if (_requestedLocation == null) return;
+
+    final location = _resolveLocation();
+    if (location != _requestedLocation) {
+      _logger.d('Feed location changed, reloading popular feed');
+      refresh();
+    }
+  }
 
   /// Estado actual
   PopularTabState get state => _state;
@@ -110,29 +171,33 @@ class PopularTabController extends ChangeNotifier {
   Future<void> loadFeed() async {
     _logger.d('Loading popular feed');
 
+    final token = ++_loadToken;
+    final location = _resolveLocation();
+    final city = _locationManager.state.selectedCity;
+    _requestedLocation = location;
+
     _updateState(_state.copyWith(
       status: PopularTabStatus.loading,
     ));
 
     try {
-      // 1. Obtener ciudad (de LocationManager state)
-      // TODO: Cargar ubicación guardada al iniciar la app
-      final city = _locationManager.state.selectedCity;
-
       _logger.d('Location obtained', context: {
-        'cityId': city?.id,
-        'cityName': city?.name,
+        'cityId': location.cityId,
+        'regionId': location.regionId,
+        'countryId': location.countryId,
       });
 
-      // 2. Cargar feed
-      // ⚠️ TEMPORAL: Si no hay ciudad, cargar feed global (sin filtro de ciudad)
-      // TODO: Solicitar al usuario que configure su ciudad en onboarding
       final result = await _getPopularFeed(
-        userId: null, // TODO: Get from AuthService when implemented
-        cityId: city?.id, // null = feed global (todos los chismes)
+        userId: null,
+        cityId: location.cityId,
+        regionId: location.regionId,
+        countryId: location.countryId,
         pageSize: 20,
         cursor: null,
       );
+
+      // Llegó un loadFeed más nuevo (cambió la ubicación): descartar este
+      if (token != _loadToken) return;
 
       switch (result) {
         case ResultFailure(error: final failure):
@@ -146,10 +211,6 @@ class PopularTabController extends ChangeNotifier {
             'count': paginated.data.length,
             'hasMore': paginated.hasMore,
           });
-
-          // DEBUG: Log para verificar que los chismes lleguen al estado
-          _logger.d('DEBUG PopularTab: Loaded ${paginated.data.length} gossips');
-          _logger.d('DEBUG PopularTab: First gossip: ${paginated.data.isNotEmpty ? paginated.data.first.subject : "EMPTY"}');
 
           _updateState(_state.copyWith(
             status: PopularTabStatus.loaded,
@@ -221,9 +282,12 @@ class PopularTabController extends ChangeNotifier {
     ));
 
     try {
+      final location = _requestedLocation ?? _resolveLocation();
       final result = await _getPopularFeed(
         userId: null,
-        cityId: _state.currentCityId,
+        cityId: location.cityId,
+        regionId: location.regionId,
+        countryId: location.countryId,
         pageSize: 20,
         cursor: _state.nextCursor,
       );
@@ -303,9 +367,12 @@ class PopularTabController extends ChangeNotifier {
     _logger.d('Checking for new gossips');
 
     try {
+      final location = _requestedLocation ?? _resolveLocation();
       final result = await _checkNewGossips(
         userId: null,
-        cityId: _state.currentCityId,
+        cityId: location.cityId,
+        regionId: location.regionId,
+        countryId: location.countryId,
         since: _state.lastLoadTime!,
       );
 
@@ -349,6 +416,8 @@ class PopularTabController extends ChangeNotifier {
   @override
   void dispose() {
     _stopPolling();
+    _locationManager.removeListener(_onLocationChanged);
+    _publishedSubscription?.cancel();
     _logger.d('PopularTabController disposed');
     super.dispose();
   }

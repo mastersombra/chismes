@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:chismes/core/services/gossip_events.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:chismes/features/home/presentation/screens/main_navigation_screen.dart';
@@ -190,6 +191,10 @@ void main() {
     getIt.registerSingleton<AuthRepository>(mockAuthRepository);
     getIt.registerSingleton<SearchHistoryService>(mockSearchHistoryService);
     getIt.registerSingleton<LocationService>(mockLocationService);
+    if (getIt.isRegistered<GossipEvents>()) {
+      getIt.unregister<GossipEvents>();
+    }
+    getIt.registerSingleton<GossipEvents>(GossipEvents());
 
     // Mock GetGossips para que HomeScreen funcione
     when(mockGetGossips()).thenAnswer(
@@ -240,6 +245,9 @@ void main() {
     }
     if (getIt.isRegistered<LocationService>()) {
       getIt.unregister<LocationService>();
+    }
+    if (getIt.isRegistered<GossipEvents>()) {
+      getIt.unregister<GossipEvents>();
     }
 
     // Limpiar DI después del test

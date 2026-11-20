@@ -43,12 +43,16 @@ class GetPopularFeed {
   Future<Result<Failure, PaginatedGossips>> call({
     required String? userId,
     required String? cityId,
+    String? regionId,
+    String? countryId,
     int pageSize = 20,
     FeedCursor? cursor,
   }) async {
     return await _repository.getPopularFeed(
       userId: userId,
       cityId: cityId,
+      regionId: regionId,
+      countryId: countryId,
       pageSize: pageSize,
       cursor: cursor,
     );

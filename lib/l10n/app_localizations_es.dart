@@ -484,6 +484,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get homeTabsPopular => 'Populares';
 
   @override
+  String get homePopularTrendingBadge => 'Tendencia';
+
+  @override
   String get navigationCreate => 'Crea';
 
   @override

@@ -42,6 +42,8 @@ class MockHomeRepository extends _i1.Mock implements _i2.HomeRepository {
   _i3.Future<_i4.Result<_i5.Failure, _i6.PaginatedGossips>> getPopularFeed({
     required String? userId,
     required String? cityId,
+    String? regionId,
+    String? countryId,
     int? pageSize = 20,
     _i7.FeedCursor? cursor,
   }) =>
@@ -49,6 +51,8 @@ class MockHomeRepository extends _i1.Mock implements _i2.HomeRepository {
             Invocation.method(#getPopularFeed, [], {
               #userId: userId,
               #cityId: cityId,
+              #regionId: regionId,
+              #countryId: countryId,
               #pageSize: pageSize,
               #cursor: cursor,
             }),
@@ -59,6 +63,8 @@ class MockHomeRepository extends _i1.Mock implements _i2.HomeRepository {
                     Invocation.method(#getPopularFeed, [], {
                       #userId: userId,
                       #cityId: cityId,
+                      #regionId: regionId,
+                      #countryId: countryId,
                       #pageSize: pageSize,
                       #cursor: cursor,
                     }),
@@ -126,12 +132,16 @@ class MockHomeRepository extends _i1.Mock implements _i2.HomeRepository {
   _i3.Future<_i4.Result<_i5.Failure, int>> checkNewGossips({
     required String? userId,
     required String? cityId,
+    String? regionId,
+    String? countryId,
     required DateTime? since,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#checkNewGossips, [], {
               #userId: userId,
               #cityId: cityId,
+              #regionId: regionId,
+              #countryId: countryId,
               #since: since,
             }),
             returnValue: _i3.Future<_i4.Result<_i5.Failure, int>>.value(
@@ -140,6 +150,8 @@ class MockHomeRepository extends _i1.Mock implements _i2.HomeRepository {
                 Invocation.method(#checkNewGossips, [], {
                   #userId: userId,
                   #cityId: cityId,
+                  #regionId: regionId,
+                  #countryId: countryId,
                   #since: since,
                 }),
               ),

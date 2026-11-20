@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../../gossip/domain/entities/gossip.dart';
@@ -10,6 +12,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/result/result.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/services/gossip_events.dart';
 import '../../../../core/services/search_history_service.dart';
 import '../../../../core/services/location_service.dart';
 import 'package:chismes/core/l10n/l10n.dart';
@@ -40,6 +43,11 @@ class _SearchScreenState extends State<SearchScreen> {
   late final SearchHistoryService _historyService;
   late final LocationService _locationService;
 
+  /// Esta pantalla es un tab del IndexedStack: se construye una vez al entrar
+  /// y no vuelve a initState. Sin esto, los recientes quedaban congelados
+  /// (vacíos si al abrir la app aún no había chismes).
+  StreamSubscription<void>? _publishedSubscription;
+
   final FocusNode _searchFocusNode = FocusNode();
   final TextEditingController _searchController = TextEditingController();
 
@@ -50,6 +58,8 @@ class _SearchScreenState extends State<SearchScreen> {
     _searchGossips = getIt<SearchGossips>();
     _historyService = getIt<SearchHistoryService>();
     _locationService = getIt<LocationService>();
+    _publishedSubscription =
+        getIt<GossipEvents>().onPublished.listen((_) => _loadRecentGossips());
     _loadRecentGossips();
     _loadSearchHistory();
     _loadUserLocation();
@@ -70,6 +80,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void dispose() {
+    _publishedSubscription?.cancel();
     _searchFocusNode.dispose();
     _searchController.dispose();
     super.dispose();
@@ -97,6 +108,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   /// Carga los chismes recientes para mostrar en el estado inicial
   void _loadRecentGossips() async {
+    if (!mounted) return;
     setState(() {
       isLoadingRecent = true;
       errorMessage = null;

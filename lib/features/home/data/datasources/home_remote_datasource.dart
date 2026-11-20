@@ -43,12 +43,16 @@ class HomeRemoteDataSource {
   /// - `FormatException`: Error de deserialización
   Future<PaginatedGossipsModel> getPopularFeed({
     required String? userCityId,
+    String? userRegionId,
+    String? userCountryId,
     int pageSize = 20,
     FeedCursor? cursor,
   }) async {
     try {
       _logger.d('Calling get_popular_feed RPC', context: {
         'userCityId': userCityId,
+        'userRegionId': userRegionId,
+        'userCountryId': userCountryId,
         'pageSize': pageSize,
         'cursor': cursor?.toString(),
       });
@@ -57,6 +61,8 @@ class HomeRemoteDataSource {
         'get_popular_feed',
         params: {
           'user_city_id': userCityId,
+          'user_region_id': userRegionId,
+          'user_country_id': userCountryId,
           'page_size': pageSize,
           'cursor_score': cursor?.score,
           'cursor_id': cursor?.id,
@@ -212,6 +218,8 @@ class HomeRemoteDataSource {
   /// - `ServerException`: Error en Supabase
   Future<int> checkNewGossips({
     required String? userCityId,
+    String? userRegionId,
+    String? userCountryId,
     required DateTime since,
   }) async {
     try {
@@ -224,6 +232,8 @@ class HomeRemoteDataSource {
         'check_new_gossips',
         params: {
           'user_city_id': userCityId,
+          'user_region_id': userRegionId,
+          'user_country_id': userCountryId,
           'since_timestamp': since.toIso8601String(),
         },
       );

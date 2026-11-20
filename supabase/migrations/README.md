@@ -93,7 +93,7 @@
 
 ### 007–009
 - `007_check_email_exists.sql`: RPC `check_email_exists_and_confirmed`
-- `008_home_feed_functions.sql`: funciones del feed de Home
+- `008_home_feed_functions.sql`: feed de Home. `get_popular_feed` por anillos de cercanía (ciudad 100 / región 60 / país 25 / otro país 0) + popularidad + frescura, tendencia relativa (percentil 95 de interacciones/hora en 48 h) y relleno cuando hay pocos chismes cercanos. Pesos y umbrales en la tabla `feed_settings` (editable sin deploy). También `get_following_feed` y `check_new_gossips`. Ambos feeds ocultan `created_by` en chismes anónimos. Test: `supabase/tests/002_popular_feed_test.sql`
 - `009_search_gossips_function.sql`: RPC `search_gossips`
 
 ---

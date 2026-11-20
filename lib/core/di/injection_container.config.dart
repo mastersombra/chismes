@@ -105,6 +105,7 @@ import '../../features/profile/presentation/controllers/profile_controller.dart'
 import '../id/id_generator.dart' as _i1000;
 import '../id/timestamp_id_generator.dart' as _i458;
 import '../l10n/locale_notifier.dart' as _i817;
+import '../localization/device_region.dart' as _i897;
 import '../logging/app_logger.dart' as _i354;
 import '../logging/device_info_provider.dart' as _i966;
 import '../logging/logging.dart' as _i482;
@@ -112,6 +113,7 @@ import '../logging/remote_logger.dart' as _i332;
 import '../media/supabase_storage_service.dart' as _i710;
 import '../services/auth_service.dart' as _i745;
 import '../services/deep_link_service.dart' as _i391;
+import '../services/gossip_events.dart' as _i377;
 import '../services/location_service.dart' as _i669;
 import '../services/profile_service.dart' as _i989;
 import '../services/search_history_service.dart' as _i283;
@@ -126,6 +128,11 @@ _i174.GetIt $initGetIt(
   final gossipModule = _$GossipModule();
   gh.singleton<_i966.DeviceInfoProvider>(() => _i966.DeviceInfoProvider());
   gh.singleton<_i989.ProfileService>(() => _i989.ProfileService());
+  gh.lazySingleton<_i897.DeviceRegion>(() => _i897.DeviceRegion());
+  gh.lazySingleton<_i377.GossipEvents>(
+    () => _i377.GossipEvents(),
+    dispose: (i) => i.dispose(),
+  );
   gh.lazySingleton<_i454.SupabaseClient>(() => gossipModule.supabaseClient);
   gh.singleton<_i817.LocaleNotifier>(
     () => _i817.LocaleNotifier(gh<_i460.SharedPreferences>()),
@@ -341,7 +348,7 @@ _i174.GetIt $initGetIt(
       email: gh<String>(),
     ),
   );
-  gh.factory<_i491.LocationManager>(
+  gh.lazySingleton<_i491.LocationManager>(
     () => _i491.LocationManager(
       gh<_i552.GetCountries>(),
       gh<_i819.GetRegionsByCountry>(),
@@ -350,18 +357,13 @@ _i174.GetIt $initGetIt(
       gh<_i354.AppLogger>(),
     ),
   );
-  gh.factory<_i541.AddGossipController>(
-    () => _i541.AddGossipController(
-      createGossip: gh<_i458.CreateGossip>(),
-      locationManager: gh<_i491.LocationManager>(),
-      logger: gh<_i482.AppLogger>(),
-    ),
-  );
   gh.factory<_i840.PopularTabController>(
     () => _i840.PopularTabController(
       gh<_i214.GetPopularFeed>(),
       gh<_i155.CheckNewGossips>(),
       gh<_i491.LocationManager>(),
+      gh<_i897.DeviceRegion>(),
+      gh<_i377.GossipEvents>(),
       gh<_i482.AppLogger>(),
     ),
   );
@@ -380,12 +382,21 @@ _i174.GetIt $initGetIt(
       gh<_i482.AppLogger>(),
     ),
   );
+  gh.factory<_i541.AddGossipController>(
+    () => _i541.AddGossipController(
+      createGossip: gh<_i458.CreateGossip>(),
+      locationManager: gh<_i491.LocationManager>(),
+      gossipEvents: gh<_i377.GossipEvents>(),
+      logger: gh<_i482.AppLogger>(),
+    ),
+  );
   gh.factory<_i527.FollowingTabController>(
     () => _i527.FollowingTabController(
       gh<_i760.GetFollowingFeed>(),
       gh<_i890.GetRecommendedFeed>(),
       gh<_i491.LocationManager>(),
       gh<_i989.ProfileService>(),
+      gh<_i745.AuthService>(),
       gh<_i482.AppLogger>(),
     ),
   );

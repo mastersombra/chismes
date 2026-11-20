@@ -189,6 +189,10 @@
   "homePopularNoMore": "No hay más chismes por ahora 🌙",
   "homeTabsFollowing": "Siguiendo",
   "homeTabsPopular": "Populares",
+  "homePopularTrendingBadge": "Tendencia",
+  "@homePopularTrendingBadge": {
+    "description": "Etiqueta de un chisme en tendencia en el feed Popular"
+  },
   "navigationCreate": "Crea",
   "navigationExplore": "Explora",
   "navigationHome": "Inicio",

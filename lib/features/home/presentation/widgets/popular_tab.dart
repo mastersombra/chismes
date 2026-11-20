@@ -5,6 +5,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../gossip/presentation/widgets/gossip_card.dart';
 import '../controllers/popular_tab_controller.dart';
 import 'feed_gossip_adapter.dart';
+import 'feed_gossip_label.dart';
 import 'new_gossips_banner.dart';
 
 /// Widget del tab Popular.
@@ -136,9 +137,14 @@ class PopularTab extends StatelessWidget {
                         horizontal: AppSpacing.lg,
                         vertical: AppSpacing.sm,
                       ),
-                      child: GossipCard(
-                        gossip: FeedGossipAdapter.toGossip(gossip),
-                        // TODO: Mostrar badge de ciudad si !isFromMyCity
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          FeedGossipLabel(gossip: gossip),
+                          GossipCard(
+                            gossip: FeedGossipAdapter.toGossip(gossip),
+                          ),
+                        ],
                       ),
                     );
                   },

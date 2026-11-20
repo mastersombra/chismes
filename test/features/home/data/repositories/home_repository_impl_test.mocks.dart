@@ -46,12 +46,16 @@ class MockHomeRemoteDataSource extends _i1.Mock
   @override
   _i4.Future<_i2.PaginatedGossipsModel> getPopularFeed({
     required String? userCityId,
+    String? userRegionId,
+    String? userCountryId,
     int? pageSize = 20,
     _i5.FeedCursor? cursor,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#getPopularFeed, [], {
               #userCityId: userCityId,
+              #userRegionId: userRegionId,
+              #userCountryId: userCountryId,
               #pageSize: pageSize,
               #cursor: cursor,
             }),
@@ -60,6 +64,8 @@ class MockHomeRemoteDataSource extends _i1.Mock
                 this,
                 Invocation.method(#getPopularFeed, [], {
                   #userCityId: userCityId,
+                  #userRegionId: userRegionId,
+                  #userCountryId: userCountryId,
                   #pageSize: pageSize,
                   #cursor: cursor,
                 }),
@@ -96,11 +102,15 @@ class MockHomeRemoteDataSource extends _i1.Mock
   @override
   _i4.Future<int> checkNewGossips({
     required String? userCityId,
+    String? userRegionId,
+    String? userCountryId,
     required DateTime? since,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#checkNewGossips, [], {
               #userCityId: userCityId,
+              #userRegionId: userRegionId,
+              #userCountryId: userCountryId,
               #since: since,
             }),
             returnValue: _i4.Future<int>.value(0),
