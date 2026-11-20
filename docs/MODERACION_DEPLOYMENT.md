@@ -44,7 +44,7 @@ supabase login
 
 ```bash
 # Desde la raíz del proyecto
-cd /Users/alejo/Documents/Piloto/chismes
+cd /Users/alejo/Documents/Sombras/chismes
 
 # Desplegar
 supabase functions deploy moderate-gossip

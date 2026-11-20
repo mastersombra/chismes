@@ -48,7 +48,7 @@ test/integration/
 ### Ejecutar todos los tests de integración
 
 ```bash
-cd /Users/alejo/Documents/Piloto/chismes
+cd /Users/alejo/Documents/Sombras/chismes
 
 # Todos los tests de integración
 flutter test test/integration/

@@ -3,7 +3,7 @@
 **Fecha de creación:** 2026-10-22  
 **Objetivo:** Verificar que el proyecto está listo para producción  
 **Estado:** 📋 EN PROGRESO
-**Última revisión:** 2026-11-18
+**Última revisión:** 2026-11-19
 
 ---
 
@@ -25,6 +25,18 @@ Orden sugerido. El detalle de cada ítem está en su sección.
 | 11 | 🔴 **Vulnerabilidad corregida (2026-11-19):** `upsert_gossip_idempotent` y otras 8 funciones SECURITY DEFINER eran ejecutables por `anon`: sin login se podía publicar un chisme aprobado a nombre de cualquier usuario. Fix: `012_revoke_client_execute_server_functions.sql`. **Aplicar en prod cuanto antes** | 🔴 | Seguridad | `supabase db push` |
 | 9 | Apple Sign-In: código listo, falta config externa (ver `docs/google_sign_in_setup.md`) | 🟡 | Externo | Apple Developer (USD 99/año) |
 
+
+### ⏭️ Siguiente sesión (dejado 2026-11-19)
+
+Hecho en esta sesión: Google Sign-In con el App ID nuevo (Android debug + iOS),
+feed por anillos de cercanía (`feed_settings`), GRANTs explícitos por tabla
+(el remoto no da privilegios por defecto; ver `supabase/tests/README.md`),
+idioma solo local, fixes de ubicación/Following/Buscar.
+
+1. 🔴 **AuthGate debe validar la sesión con el servidor** al iniciar (`auth.getUser()`) y cerrar sesión si el usuario ya no existe. Hoy confía en la sesión guardada: tras un reset de BD, una cuenta eliminada en otro dispositivo o un usuario bloqueado, la app sigue "logueada" hasta que vence el token y las Edge Functions responden 401.
+2. 🔴 **Privacidad de la tabla `gossips`:** revisar qué columnas quedan expuestas en la lectura directa por la API (RLS es por filas, no por columnas) y restringirlas. Los RPC del feed ya filtran lo necesario.
+3. 🔴 **Ítem 4 (App ID):** keystore de release, cliente OAuth Android de release (SHA-1 de la llave de release + Play App Signing), registrar App ID en Apple, beta (TestFlight / internal track).
+4. 🟡 **Pendientes de este checklist:** moderación de imagen/audio y cola de revisión humana (ver "Hoja de ruta de moderación"), tests E2E de Edge Functions, backups/PITR.
 
 ### 🛡️ Hoja de ruta de moderación (decidida 2026-11-19)
 

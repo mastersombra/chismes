@@ -69,7 +69,7 @@ flutter pub run build_runner build
 ### Paso 1: Aplicar Migrations en Supabase (5 minutos)
 
 ```bash
-cd /Users/alejo/Documents/Piloto/chismes
+cd /Users/alejo/Documents/Sombras/chismes
 
 # Aplicar todas las migrations (001, 002, 003)
 supabase db reset --linked
@@ -111,7 +111,7 @@ supabase db push --seed
 #### A. Preparar Entorno
 
 ```bash
-cd /Users/alejo/Documents/Piloto/chismes
+cd /Users/alejo/Documents/Sombras/chismes
 
 # Crear virtual environment
 python3 -m venv venv

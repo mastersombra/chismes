@@ -27,7 +27,7 @@ Cada vez que abres Claude Code:
 Ya está instalado si ejecutaste:
 
 ```bash
-cd /Users/alejo/Documents/Piloto/chismes/tools/knowledge-graph
+cd /Users/alejo/Documents/Sombras/chismes/tools/knowledge-graph
 ./install.sh
 ```
 
@@ -43,7 +43,7 @@ Si quieres ejecutarlo manualmente:
 ### Generar Grafo Completo
 
 ```bash
-cd /Users/alejo/Documents/Piloto/chismes/tools/knowledge-graph
+cd /Users/alejo/Documents/Sombras/chismes/tools/knowledge-graph
 python3 generate_graph.py
 ```
 
@@ -231,7 +231,7 @@ pip3 install networkx matplotlib
 
 ```bash
 # Asegurarse de estar en el directorio correcto
-cd /Users/alejo/Documents/Piloto/chismes/tools/knowledge-graph
+cd /Users/alejo/Documents/Sombras/chismes/tools/knowledge-graph
 ```
 
 ### Visualización no se genera

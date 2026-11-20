@@ -180,7 +180,7 @@ Future<void> _deleteAccount() async {
 
 ### Análisis de Dart:
 ```bash
-flutter analyze /Users/alejo/Documents/Piloto/chismes/lib/features/auth/presentation/screens/privacy_settings_screen.dart
+flutter analyze /Users/alejo/Documents/Sombras/chismes/lib/features/auth/presentation/screens/privacy_settings_screen.dart
 
 ✅ No issues found! (ran in 1.5s)
 ```

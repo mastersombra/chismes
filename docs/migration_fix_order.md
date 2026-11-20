@@ -159,7 +159,7 @@ Cuando fusiones migraciones que incluyen permisos GRANT:
 Si necesitas hacer reset completo desde el raíz del proyecto:
 
 ```bash
-cd /Users/alejo/Documents/Piloto/chismes
+cd /Users/alejo/Documents/Sombras/chismes
 supabase db reset --linked
 ```
 
