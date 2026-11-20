@@ -1405,4 +1405,204 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get locationErrorDetection =>
       'Error al detectar ubicación. Intenta de nuevo.';
+
+  @override
+  String get moderationEntryTitle => 'Panel de moderación';
+
+  @override
+  String get moderationEntrySubtitle => 'Revisa el contenido pendiente';
+
+  @override
+  String get moderationTitle => 'Moderación';
+
+  @override
+  String get moderationTabPending => 'Pendientes';
+
+  @override
+  String get moderationTabApproved => 'Aprobados';
+
+  @override
+  String get moderationTabRejected => 'Rechazados';
+
+  @override
+  String get moderationEmptyPending => 'No hay nada pendiente';
+
+  @override
+  String get moderationEmptyPendingHint =>
+      'Lo que la IA o los reportes manden a revisión aparecerá aquí';
+
+  @override
+  String get moderationEmptyHistory => 'Todavía no hay decisiones aquí';
+
+  @override
+  String get moderationLoadError => 'No se pudo cargar la cola';
+
+  @override
+  String get moderationForbidden => 'Tu cuenta no tiene permisos de moderación';
+
+  @override
+  String get moderationHighPriority => 'Prioridad alta';
+
+  @override
+  String get moderationSourceAiReview => 'IA';
+
+  @override
+  String get moderationSourceAiUnavailable => 'Sin veredicto automático';
+
+  @override
+  String get moderationSourceReports => 'Reportes';
+
+  @override
+  String moderationReportCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reportes',
+      one: '1 reporte',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String moderationInteractions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count interacciones',
+      one: '1 interacción',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get moderationAutoHidden => 'Oculto por reportes';
+
+  @override
+  String get moderationAuthorLabel => 'Autor';
+
+  @override
+  String get moderationAuthorNoName => 'Sin nombre de perfil';
+
+  @override
+  String get moderationAnonymousAuthor =>
+      'Publicado como anónimo: solo moderación ve el autor';
+
+  @override
+  String get moderationReasonsTitle => 'Por qué está aquí';
+
+  @override
+  String get moderationHasAudio =>
+      'Tiene audio (todavía no se puede escuchar aquí)';
+
+  @override
+  String get moderationImageUnavailable => 'No se pudo cargar la imagen';
+
+  @override
+  String moderationQueuedAt(String date) {
+    return 'En la cola desde $date';
+  }
+
+  @override
+  String moderationDecidedAt(String date) {
+    return 'Decidido el $date';
+  }
+
+  @override
+  String get moderationDecisionTitle => 'Decisión';
+
+  @override
+  String get moderationNoteTitle => 'Nota interna';
+
+  @override
+  String get moderationApprove => 'Aprobar';
+
+  @override
+  String get moderationReject => 'Rechazar';
+
+  @override
+  String get moderationApproveConfirmTitle => '¿Aprobar y publicar?';
+
+  @override
+  String get moderationApproveConfirmBody =>
+      'El chisme quedará visible para todos.';
+
+  @override
+  String get moderationApprovedMessage => 'Aprobado y publicado';
+
+  @override
+  String get moderationRejectedMessage => 'Rechazado: el chisme quedó oculto';
+
+  @override
+  String get moderationAlreadyDecided =>
+      'Ya no está pendiente: otro moderador lo decidió';
+
+  @override
+  String get moderationDecisionError =>
+      'No se pudo aplicar la decisión. Intenta de nuevo.';
+
+  @override
+  String get moderationRejectTitle => 'Rechazar contenido';
+
+  @override
+  String get moderationRejectHint =>
+      'Se oculta, no se borra: queda para una apelación.';
+
+  @override
+  String get moderationSeverityLabel => 'Gravedad';
+
+  @override
+  String get moderationSeverityLow => 'Leve';
+
+  @override
+  String get moderationSeverityMedium => 'Media';
+
+  @override
+  String get moderationSeverityHigh => 'Grave';
+
+  @override
+  String get moderationSeverityCritical => 'Crítica';
+
+  @override
+  String get moderationRejectReasonLabel => 'Motivo';
+
+  @override
+  String get moderationRejectReasonHate => 'Odio o discriminación';
+
+  @override
+  String get moderationRejectReasonPersonalData => 'Datos personales';
+
+  @override
+  String get moderationNoteLabel => 'Nota interna (opcional)';
+
+  @override
+  String get moderationNoteHint => 'Contexto para otros moderadores';
+
+  @override
+  String get moderationReasonAiUnavailable => 'La IA no respondió';
+
+  @override
+  String get moderationReasonRulesUnavailable =>
+      'No se pudieron leer las reglas';
+
+  @override
+  String get moderationReasonPersonalData => 'Posibles datos personales';
+
+  @override
+  String get moderationReasonSpam => 'Posible spam o links';
+
+  @override
+  String get moderationReasonThreat => 'Posible amenaza';
+
+  @override
+  String get moderationReasonAudio => 'Audio sin moderar';
+
+  @override
+  String moderationReasonTerm(String term) {
+    return 'Término: $term';
+  }
+
+  @override
+  String moderationReasonAiScore(String category) {
+    return 'IA: $category';
+  }
 }

@@ -19,6 +19,13 @@ class UserModel {
   final DateTime createdAt;
   final DateTime? updatedAt;
 
+  /// Ver [User.isModerator]
+  final bool isModerator;
+
+  /// Rol de moderador en `app_metadata` (lo escribe solo el backend;
+  /// `user_metadata` lo puede escribir el usuario y NO cuenta)
+  static const moderatorRole = 'moderator';
+
   const UserModel({
     required this.id,
     required this.email,
@@ -30,6 +37,7 @@ class UserModel {
     required this.profileCompleted,
     required this.createdAt,
     this.updatedAt,
+    this.isModerator = false,
   });
 
   /// Crea UserModel desde Supabase User + Profile data
@@ -52,6 +60,7 @@ class UserModel {
       updatedAt: profileData?['updated_at'] != null
           ? DateTime.parse(profileData!['updated_at'] as String)
           : null,
+      isModerator: supabaseUser.appMetadata['role'] == moderatorRole,
     );
   }
 
@@ -102,6 +111,7 @@ class UserModel {
       profileCompleted: profileCompleted,
       createdAt: createdAt,
       updatedAt: updatedAt,
+      isModerator: isModerator,
     );
   }
 
@@ -118,6 +128,7 @@ class UserModel {
       profileCompleted: user.profileCompleted,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
+      isModerator: user.isModerator,
     );
   }
 

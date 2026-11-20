@@ -578,5 +578,103 @@
       }
     }
   },
-  "locationErrorDetection": "Error al detectar ubicación. Intenta de nuevo."
+  "locationErrorDetection": "Error al detectar ubicación. Intenta de nuevo.",
+  "moderationEntryTitle": "Panel de moderación",
+  "moderationEntrySubtitle": "Revisa el contenido pendiente",
+  "moderationTitle": "Moderación",
+  "moderationTabPending": "Pendientes",
+  "moderationTabApproved": "Aprobados",
+  "moderationTabRejected": "Rechazados",
+  "moderationEmptyPending": "No hay nada pendiente",
+  "moderationEmptyPendingHint": "Lo que la IA o los reportes manden a revisión aparecerá aquí",
+  "moderationEmptyHistory": "Todavía no hay decisiones aquí",
+  "moderationLoadError": "No se pudo cargar la cola",
+  "moderationForbidden": "Tu cuenta no tiene permisos de moderación",
+  "moderationHighPriority": "Prioridad alta",
+  "moderationSourceAiReview": "IA",
+  "moderationSourceAiUnavailable": "Sin veredicto automático",
+  "moderationSourceReports": "Reportes",
+  "moderationReportCount": "{count, plural, =1{1 reporte} other{{count} reportes}}",
+  "@moderationReportCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moderationInteractions": "{count, plural, =1{1 interacción} other{{count} interacciones}}",
+  "@moderationInteractions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moderationAutoHidden": "Oculto por reportes",
+  "moderationAuthorLabel": "Autor",
+  "moderationAuthorNoName": "Sin nombre de perfil",
+  "moderationAnonymousAuthor": "Publicado como anónimo: solo moderación ve el autor",
+  "moderationReasonsTitle": "Por qué está aquí",
+  "moderationHasAudio": "Tiene audio (todavía no se puede escuchar aquí)",
+  "moderationImageUnavailable": "No se pudo cargar la imagen",
+  "moderationQueuedAt": "En la cola desde {date}",
+  "@moderationQueuedAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "moderationDecidedAt": "Decidido el {date}",
+  "@moderationDecidedAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "moderationDecisionTitle": "Decisión",
+  "moderationNoteTitle": "Nota interna",
+  "moderationApprove": "Aprobar",
+  "moderationReject": "Rechazar",
+  "moderationApproveConfirmTitle": "¿Aprobar y publicar?",
+  "moderationApproveConfirmBody": "El chisme quedará visible para todos.",
+  "moderationApprovedMessage": "Aprobado y publicado",
+  "moderationRejectedMessage": "Rechazado: el chisme quedó oculto",
+  "moderationAlreadyDecided": "Ya no está pendiente: otro moderador lo decidió",
+  "moderationDecisionError": "No se pudo aplicar la decisión. Intenta de nuevo.",
+  "moderationRejectTitle": "Rechazar contenido",
+  "moderationRejectHint": "Se oculta, no se borra: queda para una apelación.",
+  "moderationSeverityLabel": "Gravedad",
+  "moderationSeverityLow": "Leve",
+  "moderationSeverityMedium": "Media",
+  "moderationSeverityHigh": "Grave",
+  "moderationSeverityCritical": "Crítica",
+  "moderationRejectReasonLabel": "Motivo",
+  "moderationRejectReasonHate": "Odio o discriminación",
+  "moderationRejectReasonPersonalData": "Datos personales",
+  "moderationNoteLabel": "Nota interna (opcional)",
+  "moderationNoteHint": "Contexto para otros moderadores",
+  "moderationReasonAiUnavailable": "La IA no respondió",
+  "moderationReasonRulesUnavailable": "No se pudieron leer las reglas",
+  "moderationReasonPersonalData": "Posibles datos personales",
+  "moderationReasonSpam": "Posible spam o links",
+  "moderationReasonThreat": "Posible amenaza",
+  "moderationReasonAudio": "Audio sin moderar",
+  "moderationReasonTerm": "Término: {term}",
+  "@moderationReasonTerm": {
+    "placeholders": {
+      "term": {
+        "type": "String"
+      }
+    }
+  },
+  "moderationReasonAiScore": "IA: {category}",
+  "@moderationReasonAiScore": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  }
 }

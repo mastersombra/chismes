@@ -2545,6 +2545,342 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Error al detectar ubicación. Intenta de nuevo.'**
   String get locationErrorDetection;
+
+  /// No description provided for @moderationEntryTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Panel de moderación'**
+  String get moderationEntryTitle;
+
+  /// No description provided for @moderationEntrySubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Revisa el contenido pendiente'**
+  String get moderationEntrySubtitle;
+
+  /// No description provided for @moderationTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Moderación'**
+  String get moderationTitle;
+
+  /// No description provided for @moderationTabPending.
+  ///
+  /// In es, this message translates to:
+  /// **'Pendientes'**
+  String get moderationTabPending;
+
+  /// No description provided for @moderationTabApproved.
+  ///
+  /// In es, this message translates to:
+  /// **'Aprobados'**
+  String get moderationTabApproved;
+
+  /// No description provided for @moderationTabRejected.
+  ///
+  /// In es, this message translates to:
+  /// **'Rechazados'**
+  String get moderationTabRejected;
+
+  /// No description provided for @moderationEmptyPending.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay nada pendiente'**
+  String get moderationEmptyPending;
+
+  /// No description provided for @moderationEmptyPendingHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Lo que la IA o los reportes manden a revisión aparecerá aquí'**
+  String get moderationEmptyPendingHint;
+
+  /// No description provided for @moderationEmptyHistory.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay decisiones aquí'**
+  String get moderationEmptyHistory;
+
+  /// No description provided for @moderationLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo cargar la cola'**
+  String get moderationLoadError;
+
+  /// No description provided for @moderationForbidden.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu cuenta no tiene permisos de moderación'**
+  String get moderationForbidden;
+
+  /// No description provided for @moderationHighPriority.
+  ///
+  /// In es, this message translates to:
+  /// **'Prioridad alta'**
+  String get moderationHighPriority;
+
+  /// No description provided for @moderationSourceAiReview.
+  ///
+  /// In es, this message translates to:
+  /// **'IA'**
+  String get moderationSourceAiReview;
+
+  /// No description provided for @moderationSourceAiUnavailable.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin veredicto automático'**
+  String get moderationSourceAiUnavailable;
+
+  /// No description provided for @moderationSourceReports.
+  ///
+  /// In es, this message translates to:
+  /// **'Reportes'**
+  String get moderationSourceReports;
+
+  /// No description provided for @moderationReportCount.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =1{1 reporte} other{{count} reportes}}'**
+  String moderationReportCount(int count);
+
+  /// No description provided for @moderationInteractions.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =1{1 interacción} other{{count} interacciones}}'**
+  String moderationInteractions(int count);
+
+  /// No description provided for @moderationAutoHidden.
+  ///
+  /// In es, this message translates to:
+  /// **'Oculto por reportes'**
+  String get moderationAutoHidden;
+
+  /// No description provided for @moderationAuthorLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Autor'**
+  String get moderationAuthorLabel;
+
+  /// No description provided for @moderationAuthorNoName.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin nombre de perfil'**
+  String get moderationAuthorNoName;
+
+  /// No description provided for @moderationAnonymousAuthor.
+  ///
+  /// In es, this message translates to:
+  /// **'Publicado como anónimo: solo moderación ve el autor'**
+  String get moderationAnonymousAuthor;
+
+  /// No description provided for @moderationReasonsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Por qué está aquí'**
+  String get moderationReasonsTitle;
+
+  /// No description provided for @moderationHasAudio.
+  ///
+  /// In es, this message translates to:
+  /// **'Tiene audio (todavía no se puede escuchar aquí)'**
+  String get moderationHasAudio;
+
+  /// No description provided for @moderationImageUnavailable.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo cargar la imagen'**
+  String get moderationImageUnavailable;
+
+  /// No description provided for @moderationQueuedAt.
+  ///
+  /// In es, this message translates to:
+  /// **'En la cola desde {date}'**
+  String moderationQueuedAt(String date);
+
+  /// No description provided for @moderationDecidedAt.
+  ///
+  /// In es, this message translates to:
+  /// **'Decidido el {date}'**
+  String moderationDecidedAt(String date);
+
+  /// No description provided for @moderationDecisionTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Decisión'**
+  String get moderationDecisionTitle;
+
+  /// No description provided for @moderationNoteTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nota interna'**
+  String get moderationNoteTitle;
+
+  /// No description provided for @moderationApprove.
+  ///
+  /// In es, this message translates to:
+  /// **'Aprobar'**
+  String get moderationApprove;
+
+  /// No description provided for @moderationReject.
+  ///
+  /// In es, this message translates to:
+  /// **'Rechazar'**
+  String get moderationReject;
+
+  /// No description provided for @moderationApproveConfirmTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Aprobar y publicar?'**
+  String get moderationApproveConfirmTitle;
+
+  /// No description provided for @moderationApproveConfirmBody.
+  ///
+  /// In es, this message translates to:
+  /// **'El chisme quedará visible para todos.'**
+  String get moderationApproveConfirmBody;
+
+  /// No description provided for @moderationApprovedMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Aprobado y publicado'**
+  String get moderationApprovedMessage;
+
+  /// No description provided for @moderationRejectedMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Rechazado: el chisme quedó oculto'**
+  String get moderationRejectedMessage;
+
+  /// No description provided for @moderationAlreadyDecided.
+  ///
+  /// In es, this message translates to:
+  /// **'Ya no está pendiente: otro moderador lo decidió'**
+  String get moderationAlreadyDecided;
+
+  /// No description provided for @moderationDecisionError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo aplicar la decisión. Intenta de nuevo.'**
+  String get moderationDecisionError;
+
+  /// No description provided for @moderationRejectTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Rechazar contenido'**
+  String get moderationRejectTitle;
+
+  /// No description provided for @moderationRejectHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Se oculta, no se borra: queda para una apelación.'**
+  String get moderationRejectHint;
+
+  /// No description provided for @moderationSeverityLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Gravedad'**
+  String get moderationSeverityLabel;
+
+  /// No description provided for @moderationSeverityLow.
+  ///
+  /// In es, this message translates to:
+  /// **'Leve'**
+  String get moderationSeverityLow;
+
+  /// No description provided for @moderationSeverityMedium.
+  ///
+  /// In es, this message translates to:
+  /// **'Media'**
+  String get moderationSeverityMedium;
+
+  /// No description provided for @moderationSeverityHigh.
+  ///
+  /// In es, this message translates to:
+  /// **'Grave'**
+  String get moderationSeverityHigh;
+
+  /// No description provided for @moderationSeverityCritical.
+  ///
+  /// In es, this message translates to:
+  /// **'Crítica'**
+  String get moderationSeverityCritical;
+
+  /// No description provided for @moderationRejectReasonLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Motivo'**
+  String get moderationRejectReasonLabel;
+
+  /// No description provided for @moderationRejectReasonHate.
+  ///
+  /// In es, this message translates to:
+  /// **'Odio o discriminación'**
+  String get moderationRejectReasonHate;
+
+  /// No description provided for @moderationRejectReasonPersonalData.
+  ///
+  /// In es, this message translates to:
+  /// **'Datos personales'**
+  String get moderationRejectReasonPersonalData;
+
+  /// No description provided for @moderationNoteLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Nota interna (opcional)'**
+  String get moderationNoteLabel;
+
+  /// No description provided for @moderationNoteHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Contexto para otros moderadores'**
+  String get moderationNoteHint;
+
+  /// No description provided for @moderationReasonAiUnavailable.
+  ///
+  /// In es, this message translates to:
+  /// **'La IA no respondió'**
+  String get moderationReasonAiUnavailable;
+
+  /// No description provided for @moderationReasonRulesUnavailable.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudieron leer las reglas'**
+  String get moderationReasonRulesUnavailable;
+
+  /// No description provided for @moderationReasonPersonalData.
+  ///
+  /// In es, this message translates to:
+  /// **'Posibles datos personales'**
+  String get moderationReasonPersonalData;
+
+  /// No description provided for @moderationReasonSpam.
+  ///
+  /// In es, this message translates to:
+  /// **'Posible spam o links'**
+  String get moderationReasonSpam;
+
+  /// No description provided for @moderationReasonThreat.
+  ///
+  /// In es, this message translates to:
+  /// **'Posible amenaza'**
+  String get moderationReasonThreat;
+
+  /// No description provided for @moderationReasonAudio.
+  ///
+  /// In es, this message translates to:
+  /// **'Audio sin moderar'**
+  String get moderationReasonAudio;
+
+  /// No description provided for @moderationReasonTerm.
+  ///
+  /// In es, this message translates to:
+  /// **'Término: {term}'**
+  String moderationReasonTerm(String term);
+
+  /// No description provided for @moderationReasonAiScore.
+  ///
+  /// In es, this message translates to:
+  /// **'IA: {category}'**
+  String moderationReasonAiScore(String category);
 }
 
 class _AppLocalizationsDelegate

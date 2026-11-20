@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../moderation/presentation/screens/moderation_queue_screen.dart';
 import '../controllers/profile_controller.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/profile_stats_card.dart';
@@ -133,6 +134,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 const SizedBox(height: AppSpacing.xl),
 
+                // Panel de moderación: solo se muestra a moderadores (el
+                // servidor valida el rol en cada llamada)
+                if (user.isModerator) ...[
+                  _buildModerationEntry(context),
+                  const SizedBox(height: AppSpacing.xl),
+                ],
+
                 // Configuraciones
                 if (_controller.settings != null)
                   SettingsSection(
@@ -150,6 +158,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildModerationEntry(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      child: ListTile(
+        key: const Key('moderationEntry'),
+        leading: const Icon(Icons.shield_outlined),
+        title: Text(context.l10n.moderationEntryTitle),
+        subtitle: Text(context.l10n.moderationEntrySubtitle),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const ModerationQueueScreen()),
+        ),
       ),
     );
   }

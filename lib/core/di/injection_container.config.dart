@@ -90,6 +90,19 @@ import '../../features/location/domain/usecases/get_regions_by_country.dart'
 import '../../features/location/domain/usecases/search_cities.dart' as _i108;
 import '../../features/location/presentation/managers/location_manager.dart'
     as _i491;
+import '../../features/moderation/data/datasources/moderation_remote_data_source.dart'
+    as _i200;
+import '../../features/moderation/data/repositories/moderation_repository_impl.dart'
+    as _i378;
+import '../../features/moderation/domain/repositories/moderation_repository.dart'
+    as _i106;
+import '../../features/moderation/domain/usecases/decide_review.dart' as _i98;
+import '../../features/moderation/domain/usecases/get_moderation_queue.dart'
+    as _i191;
+import '../../features/moderation/presentation/controllers/moderation_queue_controller.dart'
+    as _i674;
+import '../../features/moderation/presentation/controllers/review_decision_controller.dart'
+    as _i305;
 import '../../features/profile/data/datasources/profile_remote_datasource.dart'
     as _i327;
 import '../../features/profile/data/repositories/profile_repository_impl.dart'
@@ -171,9 +184,21 @@ _i174.GetIt $initGetIt(
       gh<_i482.AppLogger>(),
     ),
   );
+  gh.singleton<_i200.ModerationRemoteDataSource>(
+    () => _i200.ModerationRemoteDataSource(
+      gh<_i454.SupabaseClient>(),
+      gh<_i482.AppLogger>(),
+    ),
+  );
   gh.singleton<_i327.ProfileRemoteDataSource>(
     () => _i327.ProfileRemoteDataSource(
       gh<_i454.SupabaseClient>(),
+      gh<_i482.AppLogger>(),
+    ),
+  );
+  gh.singleton<_i106.ModerationRepository>(
+    () => _i378.ModerationRepositoryImpl(
+      gh<_i200.ModerationRemoteDataSource>(),
       gh<_i482.AppLogger>(),
     ),
   );
@@ -217,6 +242,15 @@ _i174.GetIt $initGetIt(
     () => _i859.SupabaseLocationRepository(
       gh<_i852.SupabaseLocationRemoteDataSource>(),
     ),
+  );
+  gh.factory<_i98.DecideReview>(
+    () => _i98.DecideReview(gh<_i106.ModerationRepository>()),
+  );
+  gh.factory<_i191.GetModerationQueue>(
+    () => _i191.GetModerationQueue(gh<_i106.ModerationRepository>()),
+  );
+  gh.factory<_i305.ReviewDecisionController>(
+    () => _i305.ReviewDecisionController(gh<_i98.DecideReview>()),
   );
   gh.singleton<_i865.GossipRepository>(
     () => _i263.GossipRepositoryImpl(
@@ -267,6 +301,12 @@ _i174.GetIt $initGetIt(
     () => _i745.AuthService(
       gh<_i787.AuthRepository>(),
       gh<_i454.SupabaseClient>(),
+      gh<_i482.AppLogger>(),
+    ),
+  );
+  gh.factory<_i674.ModerationQueueController>(
+    () => _i674.ModerationQueueController(
+      gh<_i191.GetModerationQueue>(),
       gh<_i482.AppLogger>(),
     ),
   );

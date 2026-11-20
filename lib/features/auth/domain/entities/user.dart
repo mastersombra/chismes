@@ -14,6 +14,12 @@ class User {
   final DateTime createdAt;
   final DateTime? updatedAt;
 
+  /// `app_metadata.role == 'moderator'` (solo lo asigna el backend).
+  ///
+  /// Solo sirve para mostrar u ocultar la entrada al panel de moderación:
+  /// quien autoriza es el servidor (`moderation-review` responde 403).
+  final bool isModerator;
+
   const User({
     required this.id,
     required this.email,
@@ -25,6 +31,7 @@ class User {
     required this.profileCompleted,
     required this.createdAt,
     this.updatedAt,
+    this.isModerator = false,
   });
 
   /// Retorna el nombre a mostrar en UI
@@ -72,6 +79,7 @@ class User {
     bool? profileCompleted,
     DateTime? createdAt,
     DateTime? updatedAt,
+    bool? isModerator,
   }) {
     return User(
       id: id ?? this.id,
@@ -84,6 +92,7 @@ class User {
       profileCompleted: profileCompleted ?? this.profileCompleted,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      isModerator: isModerator ?? this.isModerator,
     );
   }
 

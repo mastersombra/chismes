@@ -393,6 +393,21 @@ void main() {
     });
 
     group('copyWith', () {
+      test('isModerator: false por defecto y copyWith lo cambia o lo conserva', () {
+        final original = User(
+          id: tId,
+          email: tEmail,
+          emailVerified: true,
+          profileCompleted: false,
+          createdAt: tCreatedAt,
+        );
+
+        expect(original.isModerator, isFalse);
+        final moderator = original.copyWith(isModerator: true);
+        expect(moderator.isModerator, isTrue);
+        expect(moderator.copyWith(bio: 'x').isModerator, isTrue);
+      });
+
       test('debe crear copia con todos los campos actualizados', () {
         // Arrange
         final original = User(

@@ -575,5 +575,103 @@
       }
     }
   },
-  "locationErrorDetection": "Error detecting location. Try again."
+  "locationErrorDetection": "Error detecting location. Try again.",
+  "moderationEntryTitle": "Moderation panel",
+  "moderationEntrySubtitle": "Review pending content",
+  "moderationTitle": "Moderation",
+  "moderationTabPending": "Pending",
+  "moderationTabApproved": "Approved",
+  "moderationTabRejected": "Rejected",
+  "moderationEmptyPending": "Nothing pending",
+  "moderationEmptyPendingHint": "Content flagged by AI or reports will show up here",
+  "moderationEmptyHistory": "No decisions here yet",
+  "moderationLoadError": "Couldn't load the queue",
+  "moderationForbidden": "Your account doesn't have moderation permissions",
+  "moderationHighPriority": "High priority",
+  "moderationSourceAiReview": "AI",
+  "moderationSourceAiUnavailable": "No automatic verdict",
+  "moderationSourceReports": "Reports",
+  "moderationReportCount": "{count, plural, =1{1 report} other{{count} reports}}",
+  "@moderationReportCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moderationInteractions": "{count, plural, =1{1 interaction} other{{count} interactions}}",
+  "@moderationInteractions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moderationAutoHidden": "Hidden by reports",
+  "moderationAuthorLabel": "Author",
+  "moderationAuthorNoName": "No profile name",
+  "moderationAnonymousAuthor": "Posted anonymously: only moderators see the author",
+  "moderationReasonsTitle": "Why it's here",
+  "moderationHasAudio": "Has audio (can't be played here yet)",
+  "moderationImageUnavailable": "Couldn't load the image",
+  "moderationQueuedAt": "In queue since {date}",
+  "@moderationQueuedAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "moderationDecidedAt": "Decided on {date}",
+  "@moderationDecidedAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "moderationDecisionTitle": "Decision",
+  "moderationNoteTitle": "Internal note",
+  "moderationApprove": "Approve",
+  "moderationReject": "Reject",
+  "moderationApproveConfirmTitle": "Approve and publish?",
+  "moderationApproveConfirmBody": "The gossip will be visible to everyone.",
+  "moderationApprovedMessage": "Approved and published",
+  "moderationRejectedMessage": "Rejected: the gossip is now hidden",
+  "moderationAlreadyDecided": "No longer pending: another moderator decided it",
+  "moderationDecisionError": "Couldn't apply the decision. Try again.",
+  "moderationRejectTitle": "Reject content",
+  "moderationRejectHint": "It's hidden, not deleted: it stays for an appeal.",
+  "moderationSeverityLabel": "Severity",
+  "moderationSeverityLow": "Low",
+  "moderationSeverityMedium": "Medium",
+  "moderationSeverityHigh": "High",
+  "moderationSeverityCritical": "Critical",
+  "moderationRejectReasonLabel": "Reason",
+  "moderationRejectReasonHate": "Hate or discrimination",
+  "moderationRejectReasonPersonalData": "Personal data",
+  "moderationNoteLabel": "Internal note (optional)",
+  "moderationNoteHint": "Context for other moderators",
+  "moderationReasonAiUnavailable": "AI didn't respond",
+  "moderationReasonRulesUnavailable": "Rules couldn't be loaded",
+  "moderationReasonPersonalData": "Possible personal data",
+  "moderationReasonSpam": "Possible spam or links",
+  "moderationReasonThreat": "Possible threat",
+  "moderationReasonAudio": "Unmoderated audio",
+  "moderationReasonTerm": "Term: {term}",
+  "@moderationReasonTerm": {
+    "placeholders": {
+      "term": {
+        "type": "String"
+      }
+    }
+  },
+  "moderationReasonAiScore": "AI: {category}",
+  "@moderationReasonAiScore": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  }
 }

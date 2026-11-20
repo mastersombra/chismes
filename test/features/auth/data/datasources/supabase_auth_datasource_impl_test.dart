@@ -31,6 +31,7 @@ void main() {
     mockAuth = MockGoTrueClient();
     mockLogger = MockAppLogger();
     mockUser = MockUser();
+    when(mockUser.appMetadata).thenReturn({});
 
     // Configurar auth mock básico
     when(mockSupabase.auth).thenReturn(mockAuth);
