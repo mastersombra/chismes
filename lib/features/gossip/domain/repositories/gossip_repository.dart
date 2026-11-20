@@ -57,7 +57,8 @@ abstract class GossipRepository {
   ///
   /// Envía el reporte al Edge Function que:
   /// 1. Valida que el usuario esté autenticado
-  /// 2. Registra el reporte en la tabla `gossip_reports`
+  /// 2. Registra el reporte en la tabla `content_reports` (el umbral de
+  ///    reportes y la cola de revisión los aplica el servidor)
   /// 3. Incrementa `report_count` en el gossip
   /// 4. Si llega a 3+ reportes únicos, marca el gossip como 'flagged'
   ///

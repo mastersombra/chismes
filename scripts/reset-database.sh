@@ -116,7 +116,8 @@ echo ""
 # Verificar si hay funciones para deployar
 if [ -d "supabase/functions" ] && [ "$(ls -A supabase/functions 2>/dev/null)" ]; then
     # Listar funciones disponibles (excluyendo archivos no-directorio)
-    FUNCTIONS=$(find supabase/functions -maxdepth 1 -mindepth 1 -type d -exec basename {} \;)
+    # Excluye carpetas que empiezan con "_" (código compartido, p. ej. _shared/)
+    FUNCTIONS=$(find supabase/functions -maxdepth 1 -mindepth 1 -type d ! -name '_*' -exec basename {} \;)
 
     if [ -n "$FUNCTIONS" ]; then
         echo "Funciones encontradas:"
@@ -284,8 +285,8 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 echo "✅ Base de datos reseteada (migraciones + seeds aplicados)"
 echo "✅ Edge Functions deployed:"
-echo "   - moderate-gossip: Moderación de contenido"
-echo "   - log-error: Logging seguro con sanitización"
+echo "   - moderate-gossip, report-gossip, moderation-review, delete-account,"
+echo "     log-error, search-cities, cleanup-media"
 echo "✅ Schedulers configurados (pg_cron):"
 echo "   - error-logs-cleanup: Domingos 3 AM UTC"
 if [ "$SKIP_IMPORT" = false ]; then

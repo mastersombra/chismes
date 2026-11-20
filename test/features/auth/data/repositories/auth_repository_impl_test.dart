@@ -425,6 +425,45 @@ void main() {
       });
     });
 
+    group('validateSession', () {
+      test('retorna Success(true) cuando la sesión es válida', () async {
+        when(mockDataSource.validateSession()).thenAnswer((_) async => true);
+
+        final result = await repository.validateSession();
+
+        expect(result.isSuccess, isTrue);
+        result.when(
+          onFailure: (_) => fail('Should not fail'),
+          onSuccess: (isValid) => expect(isValid, isTrue),
+        );
+      });
+
+      test('retorna Success(false) cuando el servidor rechaza la sesión',
+          () async {
+        when(mockDataSource.validateSession()).thenAnswer((_) async => false);
+
+        final result = await repository.validateSession();
+
+        result.when(
+          onFailure: (_) => fail('Should not fail'),
+          onSuccess: (isValid) => expect(isValid, isFalse),
+        );
+      });
+
+      test('retorna Failure y loguea warning si no es concluyente', () async {
+        final error = Exception('sin red');
+        when(mockDataSource.validateSession()).thenThrow(error);
+
+        final result = await repository.validateSession();
+
+        expect(result.isFailure, isTrue);
+        verify(mockLogger.w('Session validation inconclusive', error: error))
+            .called(1);
+        verifyNever(mockLogger.e(any,
+            error: anyNamed('error'), stackTrace: anyNamed('stackTrace')));
+      });
+    });
+
     group('getCurrentUser', () {
       test('debe retornar usuario cuando hay sesión activa', () async {
         // Arrange

@@ -76,8 +76,10 @@ class Gossip extends Equatable implements Auditable {
   
   @override
   final DateTime createdAt;
+  /// Autor. `null` cuando el servidor lo oculta: chisme anónimo de otro
+  /// usuario (ver vista `public_gossips`).
   @override
-  final String createdBy;
+  final String? createdBy;
   @override
   final DateTime? modifiedAt;
   @override

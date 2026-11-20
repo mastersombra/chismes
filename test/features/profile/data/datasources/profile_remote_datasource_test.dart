@@ -47,7 +47,7 @@ void main() {
         final stats = await dataSource.getUserStats(testUserId);
 
         final params = fake.lastRequest.url.queryParameters;
-        expect(fake.lastRequest.url.path, '/rest/v1/gossips');
+        expect(fake.lastRequest.url.path, '/rest/v1/public_gossips');
         expect(params['select'], 'id');
         expect(params['created_by'], 'eq.$testUserId');
         expect(params['status'], 'neq.deleted');

@@ -3,7 +3,7 @@
 **Fecha de creación:** 2026-10-22  
 **Objetivo:** Verificar que el proyecto está listo para producción  
 **Estado:** 📋 EN PROGRESO
-**Última revisión:** 2026-11-19
+**Última revisión:** 2026-11-20
 
 ---
 
@@ -26,17 +26,27 @@ Orden sugerido. El detalle de cada ítem está en su sección.
 | 9 | Apple Sign-In: código listo, falta config externa (ver `docs/google_sign_in_setup.md`) | 🟡 | Externo | Apple Developer (USD 99/año) |
 
 
-### ⏭️ Siguiente sesión (dejado 2026-11-19)
+### ⏭️ Siguiente sesión (dejado 2026-11-20)
 
-Hecho en esta sesión: Google Sign-In con el App ID nuevo (Android debug + iOS),
-feed por anillos de cercanía (`feed_settings`), GRANTs explícitos por tabla
-(el remoto no da privilegios por defecto; ver `supabase/tests/README.md`),
-idioma solo local, fixes de ubicación/Following/Buscar.
+Hecho 2026-11-19/20 (aplicado a `chismes-dev` con `scripts/reset-database.sh`):
+AuthGate valida la sesión con el servidor; lectura de chismes solo vía la vista
+`public_gossips`; moderación de imagen con fail-closed; reportes con umbral
+configurable y cola de revisión humana (`moderation-review`). El reset borró los
+usuarios: el usuario del mantenedor (Google) se re-registró y tiene
+`app_metadata.role = moderator`.
 
-1. 🔴 **AuthGate debe validar la sesión con el servidor** al iniciar (`auth.getUser()`) y cerrar sesión si el usuario ya no existe. Hoy confía en la sesión guardada: tras un reset de BD, una cuenta eliminada en otro dispositivo o un usuario bloqueado, la app sigue "logueada" hasta que vence el token y las Edge Functions responden 401.
-2. 🔴 **Privacidad de la tabla `gossips`:** revisar qué columnas quedan expuestas en la lectura directa por la API (RLS es por filas, no por columnas) y restringirlas. Los RPC del feed ya filtran lo necesario.
+**Probar en la app (no verificado aún en el remoto):** publicar con imagen
+(confirma que `OPENAI_API_KEY` funciona: si todo queda en revisión, la key
+falla), reportar un chisme ajeno (debe mostrar éxito), y listar la cola con
+`moderation-review`.
+
+**Siguiente recomendado:** C (reglas de moderación en tabla), panel de
+moderación (ítem 4 de la hoja de ruta) o sanciones (ítem 7).
+
+1. ~~**AuthGate debe validar la sesión con el servidor**~~ ✅ (2026-11-19) `AuthRepository.validateSession()` (`GET /auth/v1/user`) en segundo plano al iniciar y al volver a primer plano (máx. cada 5 min). Cierra sesión solo si GoTrue responde `user_not_found`, `session_not_found`, `user_banned` o `bad_jwt` (o 401/403 sin código); sin red/timeout/5xx conserva la sesión. Con el access token vencido no valida: lo resuelve el refresh. Mejora posterior 🟢: cerrar sesión ante cualquier 401 de Edge Functions/PostgREST, y avisar en Login "tu sesión expiró".
+2. ~~**Privacidad de la tabla `gossips`**~~ ✅ (2026-11-19, en 001/008/009) Los clientes ya no leen la tabla: leen la vista `public_gossips` (columnas explícitas, autor de anónimos oculto salvo para su autor). Feed y `search_gossips` leen la vista; `search_gossips` solo `authenticated`. `report-gossip` adaptada. Test: `supabase/tests/004_anonymous_author_privacy_test.sql`. Aplicado a `chismes-dev` (2026-11-20).
 3. 🔴 **Ítem 4 (App ID):** keystore de release, cliente OAuth Android de release (SHA-1 de la llave de release + Play App Signing), registrar App ID en Apple, beta (TestFlight / internal track).
-4. 🟡 **Pendientes de este checklist:** moderación de imagen/audio y cola de revisión humana (ver "Hoja de ruta de moderación"), tests E2E de Edge Functions, backups/PITR.
+4. 🟡 **Pendientes de este checklist:** tests E2E de Edge Functions (automatizar el E2E local que se hizo a mano), backups/PITR. Moderación de imagen, reportes y cola: ✅ (ver "Hoja de ruta de moderación").
 
 ### 🛡️ Hoja de ruta de moderación (decidida 2026-11-19)
 
@@ -44,11 +54,13 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 (se puede saltar modificando el APK, y expondría las reglas).
 
 1. 🔴 **Reglas en tabla** (`moderation_rules`: términos, patrones, umbrales) leídas por `moderate-gossip`, editables sin deploy ni release de app.
-2. 🔴 **Cola de revisión humana** para el veredicto `review` (hoy queda en `draft+pending` sin herramienta para revisarlo).
-3. 🔴 **Reportes → cola**: conectar `report-gossip` a la misma cola, con auto-ocultar tras N reportes.
-4. 🟡 **Panel de moderación** (aprobar/rechazar, historial, apelaciones).
-5. 🔴 **Moderación de imagen/audio**: hoy `moderateContent()` solo recibe asunto y contenido, y la media pasa a los buckets públicos según el veredicto del **texto**. Una imagen inapropiada con texto inocente se publica. Mínimo: pasar la imagen por `omni-moderation-latest` (acepta imágenes) antes de `moveToPublicBucket()`; audio: transcribir y moderar el texto, o mandarlo a `review`.
+2. ~~**Cola de revisión humana**~~ ✅ (2026-11-19, backend) `013_moderation.sql` + Edge Function `moderation-review` (solo `app_metadata.role = 'moderator'`): `list` con URL firmada de la media en cuarentena; `decide` aprobar (publica la media) / rechazar (oculta, no borra; gravedad obligatoria). El veredicto `review` de `moderate-gossip` se encola con la ruta de su media, y `cleanup-media` no la borra mientras esté pendiente. Cada decisión guarda autor, gravedad y motivo (base de sanciones). Genérica por tipo de contenido (lista para comentarios). Tests: `005_moderation_test.sql`, `moderation-review/logic.test.ts`, E2E local.
+3. ~~**Reportes → cola**~~ ✅ (2026-11-19) `content_reports` (genérica, reemplaza a `gossip_reports`) + trigger: entra a la cola con ≥ `report_min_count` reportes de cuentas con ≥ `report_min_account_age_hours`; se auto-oculta si además supera `report_ratio` de las interacciones; desde `report_popular_interactions` nunca se oculta solo (prioridad alta). Todo en `moderation_settings`, editable sin desplegar. Arreglado: el umbral nunca funcionaba (`protect_critical_fields` revertía el UPDATE del trigger; `report-gossip` contaba solo los reportes propios). Además: la app mostraba error al reportar (esperaba 200; la función responde 201) y el autor podía reportar lo propio.
+4. 🟡 **Panel de moderación** (UI sobre `moderation-review`: aprobar/rechazar, historial, apelaciones).
+5. ~~**Moderación de imagen**~~ ✅ (2026-11-19) `moderate-gossip/moderation.ts`: texto + imagen en una sola llamada a `omni-moderation-latest` (imagen como data URL, nunca una URL de cuarentena); imagen marcada → reject y se borra de cuarentena. **Fail-closed:** sin API key, error, timeout (10 s) o respuesta inválida → `review`, nunca se publica. **Audio → `review` siempre** (no se modera automáticamente; la UI sigue oculta). Tests: `moderation.test.ts` (Deno, OpenAI simulado). Pendiente 🟡: texto dentro de la imagen (OCR → mismas reglas de datos personales), detección de CSAM por hash, audio con transcripción + moderación del texto y duración máxima.
 6. 🟢 **Aviso previo en la app** vía un endpoint de pre-validación del servidor (no copiando reglas).
+7. 🟡 **Sanciones al usuario** (faltas/strikes por gravedad → advertencia → restricción temporal para publicar/comentar → suspensión; lo crítico suspende directo; apelación). Los datos ya se guardan: `moderation_queue.content_author_id`, `decision_severity`, `decision_reason`. Falta: tabla de sanciones, reglas de duración, bloqueo en el servidor (`moderate-gossip`) y aviso en la app.
+8. 🟢 **Comentarios:** al implementarlos, reutilizar reportes y cola agregando `comment_id` (ver cabecera de `013_moderation.sql`) y moderarlos con la misma lógica (`moderation.ts`) antes de publicar.
 
 ---
 
@@ -69,7 +81,7 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 - [x] ✅ Autenticación JWT obligatoria en `log-error`
 - [x] ✅ Sanitización de datos sensibles (allowlist/denylist)
 - [x] ✅ Rate limiting implementado (50/hora, 200/día)
-- [ ] 🔴 Configurar OpenAI API key en Supabase Secrets (no en código)
+- [x] ✅ OpenAI API key en Supabase Secrets (`OPENAI_API_KEY`, desde 2026-10-17)
 - [ ] 🟡 Configurar timeouts de Edge Functions (10s default ok)
 - [ ] 🟡 Configurar CORS apropiado
 
@@ -199,7 +211,7 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 - [x] ✅ `moderate-gossip` deployed
 - [x] ✅ `log-error` deployed
 - [ ] 🔴 Variables de entorno configuradas en Supabase Dashboard
-  - [ ] `OPENAI_API_KEY`
+  - [x] `OPENAI_API_KEY`
   - [ ] `MODERATION_THRESHOLD` (si aplica)
 - [ ] 🟡 Logs de Edge Functions monitoreados
 - [ ] 🟡 Alertas configuradas (errores >X por hora)

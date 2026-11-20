@@ -2,6 +2,7 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../helpers/supabase_test_client.dart';
 
 /// Tests de contrato para verificar que todas las migraciones se aplicaron
@@ -107,31 +108,27 @@ void main() {
       }
     });
 
-    test('tabla gossip_reports existe (migración 010)', () async {
+    test('content_reports existe y es privada (013_moderation)', () async {
       final client = SupabaseTestClient.client;
       try {
-        await client.from('gossip_reports').select().limit(0);
-      } on Exception catch (e) {
-        fail('Tabla gossip_reports no existe. Migración 010 no aplicada: $e');
+        await client.from('content_reports').select('id').limit(0);
+        fail('content_reports no debe ser legible por clientes');
+      } on PostgrestException catch (e) {
+        // 42501 = permission denied (existe pero es privada).
+        // PGRST205 = la tabla no existe (migración 013 no aplicada).
+        expect(e.code, '42501',
+            reason: 'content_reports debe existir y negar acceso: $e');
       }
     });
 
-    test('tabla gossip_reports tiene columnas esperadas', () async {
+    test('moderation_queue existe y es privada (013_moderation)', () async {
       final client = SupabaseTestClient.client;
       try {
-        await client.from('gossip_reports').select('''
-          id,
-          gossip_id,
-          reporter_id,
-          reason,
-          details,
-          created_at
-        ''').limit(0);
-      } on Exception catch (e) {
-        final error = e.toString().toLowerCase();
-        if (error.contains('column')) {
-          fail('Columnas de gossip_reports no encontradas: $e');
-        }
+        await client.from('moderation_queue').select('id').limit(0);
+        fail('moderation_queue no debe ser legible por clientes');
+      } on PostgrestException catch (e) {
+        expect(e.code, '42501',
+            reason: 'moderation_queue debe existir y negar acceso: $e');
       }
     });
 

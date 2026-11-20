@@ -53,7 +53,7 @@ INSERT INTO feed_settings (key, value, description) VALUES
 -- =====================================================
 
 -- Interacciones ponderadas: likes*1 + comentarios*2 + compartidos*3
-CREATE OR REPLACE FUNCTION feed_engagement(g gossips)
+CREATE OR REPLACE FUNCTION feed_engagement(g public_gossips)
 RETURNS NUMERIC
 LANGUAGE sql
 IMMUTABLE
@@ -64,7 +64,7 @@ AS $$
 $$;
 
 -- Edad en horas
-CREATE OR REPLACE FUNCTION feed_age_hours(g gossips)
+CREATE OR REPLACE FUNCTION feed_age_hours(g public_gossips)
 RETURNS NUMERIC
 LANGUAGE sql
 STABLE
@@ -73,7 +73,7 @@ AS $$
 $$;
 
 -- Velocity: interacciones ponderadas por hora (+2h para no premiar lo recién publicado)
-CREATE OR REPLACE FUNCTION feed_velocity(g gossips)
+CREATE OR REPLACE FUNCTION feed_velocity(g public_gossips)
 RETURNS NUMERIC
 LANGUAGE sql
 STABLE
@@ -108,7 +108,8 @@ $$;
 --   - Relleno: si hay menos de backfill_min_items cercanos (o el usuario no
 --     tiene ninguna ubicación), entra todo, ordenado por score
 --
--- Privacidad: created_by es NULL en chismes anónimos (salvo para su autor).
+-- Privacidad: lee de public_gossips, que deja created_by NULL en chismes
+-- anónimos (salvo para su autor). SECURITY INVOKER: no necesita más permisos.
 -- Paginación: cursor (score, id). Retorna JSON con data, has_more, next_cursor.
 -- =====================================================
 
@@ -166,7 +167,7 @@ BEGIN
     trend_min
   )
   INTO trend_threshold
-  FROM gossips g
+  FROM public_gossips g
   WHERE
     g.status = 'published' AND
     g.moderation_status = 'approved' AND
@@ -178,7 +179,7 @@ BEGIN
   IF has_location THEN
     SELECT COUNT(*)
     INTO nearby_count
-    FROM gossips g
+    FROM public_gossips g
     WHERE
       g.status = 'published' AND
       g.moderation_status = 'approved' AND
@@ -205,7 +206,7 @@ BEGIN
       feed_engagement(g) AS engagement,
       feed_velocity(g) AS velocity,
       feed_age_hours(g) AS age_hours
-    FROM gossips g
+    FROM public_gossips g
     WHERE
       g.status = 'published' AND
       g.moderation_status = 'approved' AND
@@ -261,12 +262,8 @@ BEGIN
           'comments', COALESCE(pg.comment_count, 0),
           'shares', COALESCE(pg.share_count, 0),
           'published_as', pg.published_as,
-          -- Privacidad: no revelar el autor de un chisme anónimo
-          'created_by', CASE
-            WHEN pg.published_as = 'anonymous' AND pg.created_by IS DISTINCT FROM auth.uid()
-              THEN NULL
-            ELSE pg.created_by
-          END,
+          -- Ya enmascarado por public_gossips (NULL en anónimos ajenos)
+          'created_by', pg.created_by,
           'image_url', pg.image_url,
           'score', pg.score_final,
           'proximity', pg.proximity,
@@ -333,17 +330,12 @@ BEGIN
       COALESCE(g.comment_count, 0) AS comments,
       COALESCE(g.share_count, 0) AS shares,
       g.published_as,
-      -- Privacidad: no revelar el autor de un chisme anónimo
-      CASE
-        WHEN g.published_as = 'anonymous' AND g.created_by IS DISTINCT FROM auth.uid()
-          THEN NULL
-        ELSE g.created_by
-      END AS created_by,
+      g.created_by,  -- Ya enmascarado por public_gossips
       g.image_url,
       0::NUMERIC AS score,  -- No usamos score en Following
       TRUE AS is_from_my_city,  -- Placeholder
       FALSE AS is_trending  -- Placeholder
-    FROM gossips g
+    FROM public_gossips g
     WHERE
       g.status = 'published' AND
       g.moderation_status = 'approved' AND
@@ -429,7 +421,7 @@ DECLARE
 BEGIN
   SELECT COUNT(*)
   INTO new_count
-  FROM gossips g
+  FROM public_gossips g
   WHERE
     g.status = 'published' AND
     g.moderation_status = 'approved' AND
@@ -459,9 +451,9 @@ COMMENT ON FUNCTION check_new_gossips IS
 GRANT EXECUTE ON FUNCTION get_popular_feed TO authenticated;
 GRANT EXECUTE ON FUNCTION get_following_feed TO authenticated;
 GRANT EXECUTE ON FUNCTION check_new_gossips TO authenticated;
-GRANT EXECUTE ON FUNCTION feed_engagement(gossips) TO authenticated;
-GRANT EXECUTE ON FUNCTION feed_age_hours(gossips) TO authenticated;
-GRANT EXECUTE ON FUNCTION feed_velocity(gossips) TO authenticated;
+GRANT EXECUTE ON FUNCTION feed_engagement(public_gossips) TO authenticated;
+GRANT EXECUTE ON FUNCTION feed_age_hours(public_gossips) TO authenticated;
+GRANT EXECUTE ON FUNCTION feed_velocity(public_gossips) TO authenticated;
 
 -- ❌ NO otorgar a 'anon' porque AuthGate requiere login obligatorio
 -- Si en el futuro se permite navegación sin login, agregar:

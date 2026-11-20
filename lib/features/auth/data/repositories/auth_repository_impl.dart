@@ -154,6 +154,17 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Result<Failure, bool>> validateSession() async {
+    try {
+      return Result.success(await _dataSource.validateSession());
+    } catch (error, stackTrace) {
+      // No concluyente (típicamente sin red): warning, no error remoto.
+      _logger.w('Session validation inconclusive', error: error);
+      return Result.failure(ErrorHandler.handleError(error, stackTrace));
+    }
+  }
+
+  @override
   Future<Result<Failure, User>> updateProfile({
     String? username,
     String? displayName,

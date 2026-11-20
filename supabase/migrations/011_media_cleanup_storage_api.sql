@@ -10,13 +10,15 @@
 -- inaccesibles ocupando espacio. Además nunca se programaron.
 --
 -- Ahora:
---   1. get_media_cleanup_candidates() solo LISTA qué borrar (lectura).
+--   1. get_media_cleanup_candidates() solo LISTA qué borrar (lectura;
+--      definida en 013_moderation.sql).
 --   2. La Edge Function cleanup-media borra con storage.remove().
 --   3. Un job diario de pg_cron llama a la Edge Function vía pg_net.
 --
 -- Reglas (las mismas de 006):
 --   - images-quarantine / audio-quarantine: archivos con más de 24 h
---     (nunca se movieron a público: moderación rechazada o proceso cortado).
+--     (nunca se movieron a público: moderación rechazada o proceso cortado),
+--     salvo la media de chismes pendientes en la cola de revisión (013).
 --   - images / audio: archivos con más de 7 días que ningún gossip referencia
 --     (storage_path, thumbnail_storage_path, audio_storage_path).
 --
@@ -35,50 +37,10 @@ DROP FUNCTION IF EXISTS cleanup_orphaned_images();
 DROP FUNCTION IF EXISTS cleanup_audio_quarantine_files();
 DROP FUNCTION IF EXISTS cleanup_orphaned_audio();
 
--- 2. Candidatos a borrar (solo lectura)
-CREATE OR REPLACE FUNCTION get_media_cleanup_candidates(p_limit INTEGER DEFAULT 1000)
-RETURNS TABLE (bucket_id TEXT, name TEXT)
-LANGUAGE sql
-STABLE
-SECURITY DEFINER
-SET search_path = ''
-AS $$
-  SELECT o.bucket_id, o.name
-  FROM storage.objects o
-  WHERE o.name NOT LIKE '%.emptyFolderPlaceholder'
-    AND (
-      (
-        o.bucket_id IN ('images-quarantine', 'audio-quarantine')
-        AND o.created_at < NOW() - INTERVAL '24 hours'
-      )
-      OR (
-        o.bucket_id = 'images'
-        AND o.created_at < NOW() - INTERVAL '7 days'
-        AND NOT EXISTS (
-          SELECT 1 FROM public.gossips g
-          WHERE g.storage_path = o.name
-             OR g.thumbnail_storage_path = o.name
-        )
-      )
-      OR (
-        o.bucket_id = 'audio'
-        AND o.created_at < NOW() - INTERVAL '7 days'
-        AND NOT EXISTS (
-          SELECT 1 FROM public.gossips g
-          WHERE g.audio_storage_path = o.name
-        )
-      )
-    )
-  ORDER BY o.created_at
-  LIMIT LEAST(GREATEST(p_limit, 1), 1000);
-$$;
-
-COMMENT ON FUNCTION get_media_cleanup_candidates IS
-'Lista archivos de media a borrar (cuarentena >24 h, públicos huérfanos >7 días). '
-'No borra nada: el borrado lo hace la Edge Function cleanup-media con la Storage API.';
-
-REVOKE ALL ON FUNCTION get_media_cleanup_candidates(INTEGER) FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION get_media_cleanup_candidates(INTEGER) TO service_role;
+-- 2. Candidatos a borrar: get_media_cleanup_candidates() está en
+--    013_moderation.sql, porque excluye la media en cuarentena de los
+--    chismes pendientes en la cola de revisión (tabla creada en 013).
+--    El job de abajo solo la invoca al ejecutarse.
 
 -- 3. Programar la Edge Function a diario a las 4:00 AM UTC
 --    (error-logs-cleanup: domingos 3:00; idempotency-keys-cleanup: 3:30)

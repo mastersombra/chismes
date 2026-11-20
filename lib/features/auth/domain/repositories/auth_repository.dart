@@ -111,6 +111,17 @@ abstract class AuthRepository {
   /// - Failure: NetworkFailure, etc.
   Future<Result<Failure, User?>> getCurrentUser();
 
+  /// Confirma con el servidor que la sesión guardada sigue vigente
+  ///
+  /// La sesión local puede sobrevivir a una cuenta eliminada, una sesión
+  /// revocada o un usuario bloqueado hasta que vence el token.
+  ///
+  /// Returns:
+  /// - Success(true): sesión válida (o nada que validar)
+  /// - Success(false): el servidor rechazó la sesión; hay que cerrarla
+  /// - Failure: no se pudo confirmar (red, timeout); conservar la sesión
+  Future<Result<Failure, bool>> validateSession();
+
   /// Actualiza el perfil del usuario actual
   ///
   /// Solo actualiza los campos que no son null.

@@ -283,8 +283,9 @@ class GossipModel {
   /// **Mapeo a Entity:** String → String (sin conversión)
   ///
   /// **Validación:**
-  /// - Campo requerido
-  final String createdBy;
+  /// - Opcional: `null` cuando el servidor oculta al autor (chisme anónimo
+  ///   de otro usuario, ver vista `public_gossips`)
+  final String? createdBy;
 
   /// Timestamp de cuándo fue modificado el chisme por última vez
   ///
@@ -395,8 +396,9 @@ class GossipModel {
     if (createdAt is! String) throw FormatException('Invalid type for created_at: expected String, got ${createdAt.runtimeType}');
 
     final createdBy = json['created_by'];
-    if (createdBy == null) throw const FormatException('Missing required field: created_by');
-    if (createdBy is! String) throw FormatException('Invalid type for created_by: expected String, got ${createdBy.runtimeType}');
+    if (createdBy != null && createdBy is! String) {
+      throw FormatException('Invalid type for created_by: expected String or null, got ${createdBy.runtimeType}');
+    }
 
     // Validar campos opcionales con tipo correcto
     final audioUrl = json['audio_url'];
@@ -475,7 +477,7 @@ class GossipModel {
       deletedBy: deletedBy,
       visibility: visibility,
       createdAt: createdAt,
-      createdBy: createdBy,
+      createdBy: createdBy as String?,
       modifiedAt: modifiedAt,
       modifiedBy: modifiedBy,
     );

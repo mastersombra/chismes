@@ -77,6 +77,31 @@ void main() {
       });
     });
 
+    group('validateSession (sesión vencida)', () {
+      test('con el access token vencido retorna true sin llamar getUser',
+          () async {
+        String b64(String v) =>
+            base64Url.encode(utf8.encode(v)).replaceAll('=', '');
+        final expiredJwt =
+            '${b64('{"alg":"HS256","typ":"JWT"}')}.${b64('{"exp":1}')}.sig';
+        final user = User.fromJson({
+          'id': 'user-123',
+          'aud': 'authenticated',
+          'created_at': '2024-01-01T00:00:00Z',
+          'app_metadata': <String, dynamic>{},
+          'user_metadata': <String, dynamic>{},
+        })!;
+        when(mockAuth.currentSession).thenReturn(Session(
+          accessToken: expiredJwt,
+          tokenType: 'bearer',
+          user: user,
+        ));
+
+        expect(await dataSource.validateSession(), isTrue);
+        verifyNever(mockAuth.getUser());
+      });
+    });
+
     group('signOut', () {
       test('debe completarse exitosamente cuando sign out funciona', () async {
         // Arrange
@@ -870,6 +895,76 @@ void main() {
                 stackTrace: anyNamed('stackTrace'),
                 context: {'email': tEmail}))
             .called(1);
+      });
+    });
+    group('validateSession', () {
+      http.Response userError(http.Request req, int status, String? code) =>
+          json(req, {
+            if (code != null) 'error_code': code,
+            'msg': 'rejected',
+          }, status: status);
+
+      test('sin sesión retorna true sin consultar al servidor', () async {
+        expect(await ds.validateSession(), isTrue);
+        expect(requestsTo('GET', '/auth/v1/user'), isEmpty);
+      });
+
+      test('retorna true cuando el servidor confirma el usuario', () async {
+        await signIn();
+        routes['GET /auth/v1/user'] = (req) => json(req, userJson);
+
+        expect(await ds.validateSession(), isTrue);
+        final req = requestsTo('GET', '/auth/v1/user').single;
+        expect(req.headers['Authorization'], 'Bearer access-token');
+      });
+
+      for (final code in [
+        'user_not_found',
+        'session_not_found',
+        'user_banned',
+        'bad_jwt',
+      ]) {
+        test('retorna false y loguea warning con $code', () async {
+          await signIn();
+          routes['GET /auth/v1/user'] = (req) => userError(req, 403, code);
+
+          expect(await ds.validateSession(), isFalse);
+          verify(logger.w('Session rejected by server',
+                  context: {'code': code, 'statusCode': '403'}))
+              .called(1);
+        });
+      }
+
+      test('servidor sin códigos: 401 cuenta como rechazo', () async {
+        await signIn();
+        routes['GET /auth/v1/user'] = (req) => userError(req, 401, null);
+
+        expect(await ds.validateSession(), isFalse);
+      });
+
+      test('otro código de error no es concluyente: relanza', () async {
+        await signIn();
+        routes['GET /auth/v1/user'] =
+            (req) => userError(req, 429, 'over_request_rate_limit');
+
+        await expectLater(
+            ds.validateSession(), throwsA(isA<AuthApiException>()));
+      });
+
+      test('5xx no es concluyente: relanza', () async {
+        await signIn();
+        routes['GET /auth/v1/user'] = (req) => userError(req, 503, null);
+
+        await expectLater(ds.validateSession(),
+            throwsA(isA<AuthRetryableFetchException>()));
+      });
+
+      test('error de red no es concluyente: relanza', () async {
+        await signIn();
+        routes['GET /auth/v1/user'] =
+            (req) => throw http.ClientException('sin red');
+
+        await expectLater(ds.validateSession(), throwsA(isA<AuthException>()));
       });
     });
   });

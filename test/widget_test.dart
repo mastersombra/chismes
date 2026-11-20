@@ -5,6 +5,8 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:chismes/core/result/result.dart';
+import 'package:chismes/core/error/failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
@@ -34,6 +36,7 @@ void main() {
   setUpAll(() {
     // Provide dummy values for complex types
     provideDummy<AuthState>(const AuthInitial());
+    provideDummy<Result<Failure, bool>>(Result.success(true));
   });
 
   setUp(() async {
@@ -45,6 +48,8 @@ void main() {
 
     // Configurar mock de AuthRepository
     mockAuthRepository = MockAuthRepository();
+    when(mockAuthRepository.validateSession())
+        .thenAnswer((_) async => Result.success(true));
     when(mockAuthRepository.authStateChanges).thenAnswer((_) => Stream.value(null));
     if (getIt.isRegistered<AuthRepository>()) {
       getIt.unregister<AuthRepository>();

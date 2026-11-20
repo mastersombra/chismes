@@ -9,9 +9,9 @@
 
 ### 001_gossips.sql
 **Contenido consolidado:**
-- ✅ Tabla `gossips` (principal)
+- ✅ Tabla `gossips` (principal; **no legible por clientes**)
+- ✅ Vista `public_gossips`: única lectura de chismes para la app (oculta el autor de los anónimos)
 - ✅ Idempotencia atómica (fix race condition)
-- ✅ Tabla `gossip_reports` (reportes de contenido)
 - ✅ RLS policies completas
 - ✅ Rate limiting integrado
 - ✅ Triggers y funciones
@@ -93,8 +93,8 @@
 
 ### 007–009
 - `007_check_email_exists.sql`: RPC `check_email_exists_and_confirmed`
-- `008_home_feed_functions.sql`: feed de Home. `get_popular_feed` por anillos de cercanía (ciudad 100 / región 60 / país 25 / otro país 0) + popularidad + frescura, tendencia relativa (percentil 95 de interacciones/hora en 48 h) y relleno cuando hay pocos chismes cercanos. Pesos y umbrales en la tabla `feed_settings` (editable sin deploy). También `get_following_feed` y `check_new_gossips`. Ambos feeds ocultan `created_by` en chismes anónimos. Test: `supabase/tests/002_popular_feed_test.sql`
-- `009_search_gossips_function.sql`: RPC `search_gossips`
+- `008_home_feed_functions.sql`: feed de Home. `get_popular_feed` por anillos de cercanía (ciudad 100 / región 60 / país 25 / otro país 0) + popularidad + frescura, tendencia relativa (percentil 95 de interacciones/hora en 48 h) y relleno cuando hay pocos chismes cercanos. Pesos y umbrales en la tabla `feed_settings` (editable sin deploy). También `get_following_feed` y `check_new_gossips`. Los feeds leen la vista `public_gossips` (definida en 001), que oculta `created_by` en chismes anónimos. Test: `supabase/tests/002_popular_feed_test.sql`
+- `009_search_gossips_function.sql`: RPC `search_gossips` (SECURITY INVOKER sobre `public_gossips`, solo `authenticated`). Test de privacidad: `supabase/tests/004_anonymous_author_privacy_test.sql`
 
 ---
 
@@ -104,7 +104,7 @@
 
 ### 011_media_cleanup_storage_api.sql
 - ✅ Borra las 4 funciones `cleanup_*` de 006 (hacían `DELETE FROM storage.objects`: quitaban la metadata pero dejaban el archivo)
-- ✅ RPC `get_media_cleanup_candidates()` (solo `service_role`): cuarentena >24 h y públicos huérfanos >7 días
+- ✅ `get_media_cleanup_candidates()` vive en 013 (excluye la media pendiente de revisión)
 - ✅ Job pg_cron `media-cleanup` (diario 4:00 UTC) → Edge Function `cleanup-media` vía `net.http_post`
 - ⚠️ Requiere secrets en Vault y en la función: ver `supabase/functions/README.md` → "Limpieza de media"
 
@@ -112,6 +112,15 @@
 - 🔴 Fix de seguridad: quita EXECUTE a `anon`/`authenticated` en 9 funciones SECURITY DEFINER solo de servidor (`upsert_gossip_idempotent`, `create_gossip_draft`, rate limit, limpiezas, `check_error_log_rate`, `calculate_profile_completion`)
 - Antes, sin login se podía publicar un chisme aprobado a nombre de otro usuario vía `/rest/v1/rpc/upsert_gossip_idempotent`
 - Regresión: `supabase/tests/001_gossip_creation_security_test.sql`
+
+### 013_moderation.sql
+- ✅ `moderation_settings`: umbrales de reportes editables desde el dashboard (sin desplegar)
+- ✅ `content_reports`: reportes genéricos (hoy `gossip_id`; a futuro `comment_id`) con la regla "exactamente una referencia"; reemplaza a `gossip_reports`
+- ✅ `moderation_queue`: cola de revisión humana + historial (autor, gravedad, motivo: base de sanciones futuras); media pendiente protegida de la limpieza
+- ✅ Trigger de reportes: mínimo de reportes, cuentas nuevas no cuentan, umbral relativo a las interacciones, lo popular no se oculta solo
+- ✅ RPCs solo `service_role`: `enqueue_moderation()` (moderate-gossip), `apply_moderation_decision()` (moderation-review); vista `moderation_queue_items`
+- ✅ En 001: `protect_critical_fields` es `SECURITY INVOKER` y protege solo ante clientes directos (antes revertía en silencio el UPDATE del trigger de reportes)
+- Tests: `supabase/tests/005_moderation_test.sql`
 
 ---
 
@@ -200,7 +209,9 @@ Los números de línea citados en esos docs (`archivo.sql:11`) ya no aplican.
 
 ### Tablas principales
 - `gossips` - Publicaciones de usuarios
-- `gossip_reports` - Reportes de contenido
+- `content_reports` - Reportes de contenido (genéricos)
+- `moderation_queue` - Cola de revisión humana e historial de decisiones
+- `moderation_settings` - Umbrales de moderación (editables)
 - `profiles` - Perfiles de usuarios
 - `location_countries` - Países
 - `location_regions` - Regiones/estados

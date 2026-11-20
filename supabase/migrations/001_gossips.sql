@@ -200,9 +200,11 @@ WITH CHECK (
 -- de SELECT en la tabla. Las políticas RLS filtran QUÉ filas pueden ver.
 -- Sin estos GRANT, incluso con políticas RLS correctas, obtendrás "permission denied".
 
--- Permitir SELECT solo a usuarios autenticados
--- Las políticas RLS arriba controlan QUÉ gossips pueden ver
-GRANT SELECT ON gossips TO authenticated;
+-- 🔒 Los clientes (anon/authenticated) NO leen la tabla: RLS filtra filas,
+-- no columnas, y la tabla tiene el autor real (created_by) de los chismes
+-- anónimos. La app lee la vista public_gossips (abajo), que lo oculta.
+-- REVOKE explícito: el Supabase local sí da privilegios por defecto.
+REVOKE ALL ON TABLE gossips FROM anon, authenticated;
 
 -- ⚠️ El proyecto remoto NO da privilegios por defecto a los roles de la API
 -- en tablas nuevas (solo TRUNCATE/REFERENCES/TRIGGER). Todo acceso de la app
@@ -212,12 +214,78 @@ GRANT SELECT ON gossips TO authenticated;
 -- moderación y limpieza de media.
 GRANT ALL ON TABLE gossips TO service_role;
 
--- ❌ NO otorgar a 'anon' porque AuthGate requiere login obligatorio
--- Si en el futuro se permite navegación sin login, agregar:
--- GRANT SELECT ON gossips TO anon;
-
 -- No otorgar INSERT/UPDATE/DELETE directo
 -- Esas operaciones solo via funciones RPC (create_gossip_draft, etc.)
+
+-- =====================================================
+-- VISTA: public_gossips (única lectura de chismes para clientes)
+-- =====================================================
+-- Único punto donde se oculta al autor de un chisme anónimo: la app, los
+-- RPC del feed y search_gossips leen de aquí, nunca de la tabla.
+--
+-- Filas: publicados+aprobados+públicos+no eliminados, y los propios (el
+-- autor ve sus drafts/ocultos para su perfil). Replica las políticas RLS de
+-- SELECT porque la vista corre con los permisos de su dueño.
+--
+-- Columnas: lista explícita (seguro por defecto: una columna nueva en la
+-- tabla no se expone hasta agregarla aquí). Fuera: modified_by/deleted_by
+-- (revelan al autor), report_count, idempotency_key.
+--
+-- created_by: NULL en anónimos salvo para su autor. Como el valor ya viene
+-- enmascarado, filtrar por created_by no sirve para des-anonimizar.
+--
+-- security_invoker = false (a propósito): el cliente no tiene SELECT en la
+-- tabla. El linter de Supabase lo marca como "security definer view"; es
+-- intencional. security_barrier: los filtros del cliente no se evalúan antes
+-- que el WHERE de la vista.
+--
+-- El equipo administrador ve todo con service_role (dashboard, Edge Functions).
+CREATE VIEW public_gossips
+WITH (security_invoker = false, security_barrier = true)
+AS
+SELECT
+  g.id,
+  g.country_id,
+  g.region_id,
+  g.city_id,
+  g.subject,
+  g.content,
+  g.audio_url,
+  g.image_url,
+  g.thumbnail_url,
+  g.published_as,
+  g.status,
+  g.moderation_status,
+  g.visibility,
+  g.is_trending_national,
+  CASE
+    WHEN g.published_as = 'anonymous' AND g.created_by IS DISTINCT FROM auth.uid()
+      THEN NULL
+    ELSE g.created_by
+  END AS created_by,
+  g.created_at,
+  g.modified_at,
+  g.view_count,
+  g.like_count,
+  g.comment_count,
+  g.share_count,
+  g.deleted_at
+FROM gossips g
+WHERE
+  (
+    g.status = 'published'
+    AND g.moderation_status = 'approved'
+    AND g.visibility = 'public'
+    AND g.deleted_at IS NULL
+  )
+  OR g.created_by = auth.uid();
+
+COMMENT ON VIEW public_gossips IS
+'Lectura de chismes para clientes. Oculta el autor de los anónimos (salvo para su autor). La tabla gossips no es accesible para anon/authenticated.';
+
+REVOKE ALL ON TABLE public_gossips FROM anon, authenticated;
+GRANT SELECT ON TABLE public_gossips TO authenticated, service_role;
+-- ❌ NO otorgar a 'anon': AuthGate requiere login obligatorio
 
 -- =====================================================
 -- TRIGGERS PARA PROTEGER CAMPOS CRÍTICOS
@@ -263,8 +331,10 @@ RETURNS TRIGGER AS $$
 BEGIN
   NEW.modified_at = NOW();
 
-  -- Si hay usuario autenticado, usar su ID
-  IF auth.uid() IS NOT NULL THEN
+  -- Si hay usuario autenticado, usar su ID. Salvo en cambios del sistema
+  -- disparados por otro trigger (p. ej. un reporte oculta el chisme): ahí
+  -- auth.uid() es quien reportó, no quien modificó el chisme.
+  IF auth.uid() IS NOT NULL AND pg_trigger_depth() <= 1 THEN
     NEW.modified_by = auth.uid();
   END IF;
 
@@ -291,9 +361,14 @@ BEGIN
     RETURN NEW;
   END IF;
 
-  -- En UPDATE desde cliente: preservar valores originales de campos críticos
-  -- Solo Edge Functions con service_role pueden modificarlos
-  IF TG_OP = 'UPDATE' AND current_setting('request.jwt.claims', true)::json->>'role' != 'service_role' THEN
+  -- En UPDATE desde un cliente directo (anon/authenticated): preservar los
+  -- valores originales de campos críticos.
+  -- SECURITY INVOKER: current_user es el rol que ejecuta la sentencia. El
+  -- backend (service_role) y las funciones del servidor (SECURITY DEFINER,
+  -- p. ej. el trigger de reportes, que corren como su dueño) sí pueden.
+  -- No se mira el rol del JWT: un trigger disparado por el reporte de un
+  -- usuario veía 'authenticated' y su UPDATE se revertía en silencio.
+  IF TG_OP = 'UPDATE' AND current_user IN ('anon', 'authenticated') THEN
     -- Proteger contadores
     NEW.view_count = OLD.view_count;
     NEW.like_count = OLD.like_count;
@@ -315,7 +390,7 @@ BEGIN
 
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY INVOKER;
 
 CREATE TRIGGER gossips_protect_critical_fields
   BEFORE INSERT OR UPDATE ON gossips
@@ -738,191 +813,8 @@ COMMENT ON INDEX idx_gossips_idempotency_cleanup IS
 'Índice parcial para optimizar limpieza de idempotency_key.
 Solo indexa filas con idempotency_key NOT NULL.';
 
-
-
 -- =====================================================
--- REPORTES DE GOSSIPS (de 010_create_gossip_reports.sql)
+-- REPORTES
 -- =====================================================
--- **Cambios:**
--- 1. Tabla gossip_reports con constraint de duplicados
--- 2. Check constraint para razones válidas
--- 3. RLS policies para protección de privacidad
--- 4. Índices para queries eficientes
--- 5. Función para auto-incrementar report_count
---
--- **Razones de reporte válidas:**
--- - spam: Contenido spam o repetitivo
--- - harassment: Acoso o bullying
--- - violence: Contenido violento
--- - sexual_content: Contenido sexual inapropiado
--- - misinformation: Desinformación o fake news
--- - other: Otra razón
---
--- **Threshold:** 3 reportes únicos → auto-increment gossip.report_count
--- =====================================================
-
--- =====================================================
--- 1. Crear tabla gossip_reports
--- =====================================================
-
-CREATE TABLE IF NOT EXISTS public.gossip_reports (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  gossip_id UUID NOT NULL REFERENCES public.gossips(id) ON DELETE CASCADE,
-  reported_by UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  reason TEXT NOT NULL,
-  details TEXT,
-  status TEXT NOT NULL DEFAULT 'pending',
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  reviewed_at TIMESTAMPTZ,
-  reviewed_by UUID REFERENCES auth.users(id),
-
-  -- Constraints
-  CONSTRAINT gossip_reports_reason_check CHECK (
-    reason IN ('spam', 'harassment', 'violence', 'sexual_content', 'misinformation', 'other')
-  ),
-  CONSTRAINT gossip_reports_status_check CHECK (
-    status IN ('pending', 'reviewed', 'dismissed', 'actioned')
-  ),
-
-  -- Prevenir duplicados: un usuario solo puede reportar un gossip una vez
-  CONSTRAINT gossip_reports_unique_user_gossip UNIQUE (gossip_id, reported_by)
-);
-
--- =====================================================
--- 2. Índices para performance
--- =====================================================
-
--- Índice para buscar reportes de un gossip específico
-CREATE INDEX IF NOT EXISTS idx_gossip_reports_gossip_id
-  ON public.gossip_reports(gossip_id);
-
--- Índice para buscar reportes pendientes
-CREATE INDEX IF NOT EXISTS idx_gossip_reports_status_created
-  ON public.gossip_reports(status, created_at DESC);
-
--- Índice para buscar reportes por razón (análisis)
-CREATE INDEX IF NOT EXISTS idx_gossip_reports_reason
-  ON public.gossip_reports(reason);
-
--- =====================================================
--- 3. RLS Policies
--- =====================================================
-
--- Habilitar RLS
-ALTER TABLE public.gossip_reports ENABLE ROW LEVEL SECURITY;
-
--- Policy: Usuarios pueden crear reportes
-CREATE POLICY "Users can create reports"
-  ON public.gossip_reports
-  FOR INSERT
-  WITH CHECK (auth.uid() = reported_by);
-
--- Policy: Usuarios pueden ver sus propios reportes
-CREATE POLICY "Users can view own reports"
-  ON public.gossip_reports
-  FOR SELECT
-  USING (auth.uid() = reported_by);
-
--- Policy: Solo service_role puede actualizar reportes (moderación)
--- (No crear policy SELECT para moderadores - usar service_role)
-
--- GRANTs (ver nota en la sección de gossips): report-gossip usa el JWT del
--- usuario (authenticated) para leer/crear sus reportes; delete-account y la
--- moderación usan service_role.
-GRANT SELECT, INSERT ON TABLE public.gossip_reports TO authenticated;
-GRANT ALL ON TABLE public.gossip_reports TO service_role;
-
--- =====================================================
--- 4. Función para auto-incrementar report_count
--- =====================================================
-
-CREATE OR REPLACE FUNCTION increment_gossip_report_count()
-RETURNS TRIGGER AS $$
-DECLARE
-  unique_reports_count INTEGER;
-  threshold INTEGER := 3; -- Threshold para auto-increment
-BEGIN
-  -- Contar reportes únicos (distintos usuarios) para este gossip
-  SELECT COUNT(DISTINCT reported_by)
-  INTO unique_reports_count
-  FROM public.gossip_reports
-  WHERE gossip_id = NEW.gossip_id
-    AND status = 'pending';
-
-  -- Si alcanza el threshold, incrementar report_count en gossips
-  IF unique_reports_count >= threshold THEN
-    UPDATE public.gossips
-    SET
-      report_count = report_count + 1,
-      moderation_status = 'flagged'
-    WHERE id = NEW.gossip_id;
-  END IF;
-
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- =====================================================
--- 5. Trigger para auto-incrementar
--- =====================================================
-
-CREATE TRIGGER trigger_increment_gossip_report_count
-  AFTER INSERT ON public.gossip_reports
-  FOR EACH ROW
-  EXECUTE FUNCTION increment_gossip_report_count();
-
--- =====================================================
--- 6. Comentarios de documentación
--- =====================================================
-
-COMMENT ON TABLE public.gossip_reports IS
-'Reportes de contenido inapropiado.
-- Usuarios reportan gossips con razón específica
-- Un usuario solo puede reportar un gossip una vez (constraint)
-- Threshold: 3 reportes únicos → auto-increment gossip.report_count
-- GDPR compliant: reportes se eliminan si se elimina el gossip (CASCADE)';
-
-COMMENT ON COLUMN public.gossip_reports.reason IS
-'Razón del reporte: spam, harassment, violence, sexual_content, misinformation, other';
-
-COMMENT ON COLUMN public.gossip_reports.status IS
-'Estado del reporte: pending, reviewed, dismissed, actioned';
-
-COMMENT ON COLUMN public.gossip_reports.details IS
-'Detalles adicionales del reporte (opcional)';
-
--- =====================================================
--- 7. Vista para análisis de reportes (moderadores)
--- =====================================================
-
-CREATE OR REPLACE VIEW gossip_reports_summary AS
-SELECT
-  g.id AS gossip_id,
-  g.subject,
-  g.status AS gossip_status,
-  g.moderation_status,
-  g.report_count,
-  COUNT(DISTINCT gr.reported_by) AS unique_reporters,
-  COUNT(*) AS total_reports,
-  array_agg(DISTINCT gr.reason) AS reported_reasons,
-  MIN(gr.created_at) AS first_reported_at,
-  MAX(gr.created_at) AS last_reported_at
-FROM public.gossips g
-INNER JOIN public.gossip_reports gr ON g.id = gr.gossip_id
-WHERE gr.status = 'pending'
-GROUP BY g.id, g.subject, g.status, g.moderation_status, g.report_count
-ORDER BY unique_reporters DESC, last_reported_at DESC;
-
--- Solo backend: la vista corre con permisos de su dueño (ve todos los reportes)
-GRANT SELECT ON gossip_reports_summary TO service_role;
-
-COMMENT ON VIEW gossip_reports_summary IS
-'Vista de análisis de reportes para moderadores.
-- Agrupa reportes por gossip
-- Muestra razones, reportadores únicos, timestamps
-- Solo reportes pendientes
-- Ordenado por número de reportadores (más críticos primero)';
-
--- =====================================================
--- FIN DE MIGRACIÓN 014
--- =====================================================
+-- Los reportes (genéricos: chismes y, a futuro, comentarios), la cola de
+-- revisión humana y su configuración están en 013_moderation.sql.

@@ -26,7 +26,7 @@ class ProfileRemoteDataSource {
 
       // Contar gossips del usuario
       final response = await _supabase
-          .from('gossips')
+          .from('public_gossips') // Incluye los propios (anónimos y drafts)
           .select('id')
           .eq('created_by', userId)
           .neq('status', 'deleted');

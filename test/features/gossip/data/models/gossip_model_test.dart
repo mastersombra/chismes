@@ -411,6 +411,22 @@ void main() {
       expect(() => GossipModel.fromJson(invalidJson), throwsA(isA<FormatException>()));
     });
 
+    test('fromJson debe aceptar created_by null (autor oculto por public_gossips)', () {
+      final json = {...validJson, 'created_by': null};
+
+      final model = GossipModel.fromJson(json);
+
+      expect(model.createdBy, isNull);
+      expect(model.toEntity().createdBy, isNull);
+      expect(model.toJson()['created_by'], isNull);
+    });
+
+    test('fromJson debe lanzar FormatException con tipo incorrecto en created_by', () {
+      final json = {...validJson, 'created_by': 123};
+
+      expect(() => GossipModel.fromJson(json), throwsA(isA<FormatException>()));
+    });
+
     test('fromJson debe aceptar viewCount como null', () {
       final jsonWithNull = Map<String, dynamic>.from(validJson);
       jsonWithNull['view_count'] = null;

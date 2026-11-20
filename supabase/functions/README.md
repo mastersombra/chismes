@@ -6,8 +6,9 @@ Funciones Deno que corren en Supabase. Cada carpeta es una función (`index.ts`)
 
 | Función | Qué hace |
 |---|---|
-| `moderate-gossip` | Crea chismes: valida input, rate limit, modera y sube media a cuarentena. Escribe con el RPC `upsert_gossip_idempotent()` (la app nunca hace INSERT directo, ver `.claude/SECURITY.md`). |
-| `report-gossip` | Permite reportar chismes inapropiados. |
+| `moderate-gossip` | Crea chismes: valida input, rate limit, modera texto e imagen (`moderation.ts`) y sube media a cuarentena; el veredicto `review` va a la cola con la ruta de su media. Escribe con el RPC `upsert_gossip_idempotent()` (la app nunca hace INSERT directo, ver `.claude/SECURITY.md`). |
+| `report-gossip` | Reporta un chisme visible (no el propio). Guarda en `content_reports`; el umbral (cola + auto-ocultar) lo aplica un trigger con los valores de `moderation_settings`. |
+| `moderation-review` | Cola de revisión humana, **solo moderadores** (`app_metadata.role = 'moderator'`). `list` (con URL firmada de la media en cuarentena) y `decide` (aprobar publica la media; rechazar oculta y exige gravedad). Ver "Moderadores". |
 | `delete-account` | Borra la cuenta del usuario y todos sus datos (GDPR). |
 | `log-error` | Recibe logs de error de la app (autenticado, sanitiza el contexto). |
 | `search-cities` | Autocomplete remoto de ciudades. |
@@ -90,6 +91,29 @@ WHERE jobname = 'media-cleanup'`) y revisar
 `SELECT status_code, content FROM net._http_response ORDER BY created DESC LIMIT 1;`
 → `200` con `{"success":true,...}`. `SELECT * FROM get_media_cleanup_candidates(10);`
 muestra qué se borraría.
+
+## 🛡️ Moderadores
+
+Un moderador es un usuario con `app_metadata.role = 'moderator'`. Solo el
+equipo puede asignarlo (el usuario no puede escribir su `app_metadata`):
+
+- **Dashboard:** Authentication → Users → el usuario → editar *Raw app meta data* → `{"role": "moderator"}`
+- **Script (service role):** `PUT /auth/v1/admin/users/<id>` con `{"app_metadata": {"role": "moderator"}}`
+
+`moderation-review` lee el rol del servidor en cada llamada (`auth.getUser()`),
+así que asignarlo o quitarlo aplica **de inmediato**, sin volver a iniciar
+sesión. (El JWT también lo trae, pero solo después de refrescar la sesión: no
+usar el claim del JWT para autorizar.) Para quitarlo, borrar la clave `role`.
+
+Umbrales de reportes: tabla `moderation_settings` (Table Editor). Código
+compartido de media: `_shared/media.ts`. Tests (Deno):
+
+```bash
+docker run --rm -v "$PWD/supabase/functions:/fn" -w /fn denoland/deno:2.1.4 \
+  deno test moderate-gossip/moderation.test.ts moderation-review/logic.test.ts
+```
+
+---
 
 ## 🔐 Secrets
 

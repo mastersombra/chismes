@@ -3,7 +3,7 @@
 ## 🎯 Objetivo
 
 **Función TODO-EN-UNO** para máxima seguridad:
-1. **Moderar contenido** (reglas + OpenAI)
+1. **Moderar contenido** (reglas + OpenAI `omni-moderation-latest`: texto **e imagen** en una llamada; audio → revisión). Lógica en `moderation.ts`, tests en `moderation.test.ts`
 2. **Decidir estados** internamente (cliente NO participa)
 3. **Crear gossip** en DB con service_role
 4. **Retornar gossip** ya creado
@@ -199,6 +199,17 @@ supabase functions logs moderate-gossip --filter error
 | `harassment/threatening` | Acoso con amenazas |
 | `violence` | Violencia |
 
+**En imágenes** OpenAI solo evalúa `sexual`, `violence`, `violence/graphic` y `self-harm*`. El resultado indica qué entrada marcó cada categoría (`category_applied_input_types`: `text` / `image`), y se loguea.
+
+## 🧪 Tests
+
+```bash
+deno test supabase/functions/moderate-gossip/moderation.test.ts
+# Sin Deno instalado:
+docker run --rm -v "$PWD/supabase/functions:/fn" -w /fn denoland/deno:2.1.4 \
+  deno test moderate-gossip/moderation.test.ts
+```
+
 ## 🔧 Troubleshooting
 
 ### Error: "Missing Authorization header"
@@ -215,11 +226,11 @@ supabase functions logs moderate-gossip --filter error
 1. Verifica logs: `supabase functions logs moderate-gossip`
 2. Verifica que la función esté desplegada: `supabase functions list`
 
-### Warning: "OPENAI_API_KEY not configured"
+### Warning: "AI moderation unavailable (...) → review"
 
-**Causa:** No se configuró la API key de OpenAI
+**Causa:** sin `OPENAI_API_KEY`, error HTTP de OpenAI, timeout (10 s) o respuesta inválida (la causa va entre paréntesis)
 
-**Efecto:** La función solo usará reglas locales (sin análisis de IA)
+**Efecto (fail-closed):** el chisme **no se publica**: queda en `draft` + `pending` (revisión). Solo las amenazas explícitas se siguen rechazando con reglas locales. Si todos los chismes nuevos quedan en revisión, revisar la key
 
 **Solución:** Configura `OPENAI_API_KEY` en secrets (ver arriba)
 

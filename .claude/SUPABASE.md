@@ -694,6 +694,12 @@ USING (
 
 -- ⚠️ IMPORTANTE: El SELECT de arriba devuelve created_by.
 -- Para proteger el anonimato, usamos una VIEW que oculta created_by si es anónimo.
+--
+-- ✅ IMPLEMENTADO (2026-11-19): la definición real está en
+-- supabase/migrations/001_gossips.sql (vista public_gossips). Diferencias con
+-- este ejemplo: la tabla NO es legible por anon/authenticated (REVOKE), el
+-- autor ve sus propios anónimos, no expone report_count/modified_by/deleted_by,
+-- y feed + search_gossips leen de la vista. El ejemplo de abajo es ilustrativo.
 
 CREATE OR REPLACE VIEW public_gossips AS
 SELECT 

@@ -9,6 +9,8 @@ y el seed aplicados. Cada uno corre en una transacción con `ROLLBACK` y falla
 | `001_gossip_creation_security_test.sql` | Los clientes no pueden crear chismes saltándose la Edge Function |
 | `002_popular_feed_test.sql` | Ranking del feed por anillos de cercanía, tendencia, relleno, paginación |
 | `003_api_grants_test.sql` | Permisos de cada rol (`anon`, `authenticated`, `service_role`) en cada camino real |
+| `004_anonymous_author_privacy_test.sql` | Nadie salvo el autor y `service_role` ve el autor de un chisme anónimo (tabla, vista, filtros, búsqueda, feed) |
+| `005_moderation_test.sql` | Umbral de reportes (mínimo, cuentas nuevas, relativo, popular, configurable) y cola de revisión (encolar, media protegida, aprobar/rechazar, historial) |
 
 ## ⚠️ Imitar los privilegios del remoto
 

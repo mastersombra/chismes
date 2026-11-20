@@ -6,6 +6,17 @@ import {
   RequestValidationError,
   type CreateGossipRequest,
 } from './validation.ts'
+import { moderateContent } from './moderation.ts'
+import {
+  deleteAudioFromPublicBucket,
+  deleteAudioFromQuarantine,
+  deleteFromPublicBucket,
+  deleteFromQuarantine,
+  moveAudioToPublicBucket,
+  moveToPublicBucket,
+  type PublicAudioResult,
+  type PublicImageResult,
+} from '../_shared/media.ts'
 
 /**
  * Edge Function: Moderación Híbrida + Upload Seguro de Media (Imagen y Audio)
@@ -14,7 +25,7 @@ import {
  * 1. Upload → Cuarentena (buckets privados)
  * 2. Validar MIME real (no solo extensión del cliente)
  * 3. Validar dimensiones/tamaño
- * 4. Moderar contenido de texto
+ * 4. Moderar texto + imagen (OpenAI omni); audio → review (moderation.ts)
  * 5. Si aprueba: Mover a buckets públicos + INSERT gossip
  * 6. Si rechaza: Eliminar de cuarentena
  *
@@ -22,10 +33,11 @@ import {
  * - images-quarantine (privado) → images (público)
  * - audio-quarantine (privado) → audio (público)
  *
- * Estrategia de moderación:
+ * Estrategia de moderación (ver moderation.ts):
  * 1. Reglas locales rápidas (10ms) → Detectar amenazas obvias
- * 2. OpenAI Moderation API (200ms) → Análisis contextual con IA
+ * 2. OpenAI omni-moderation-latest → texto e imagen en una llamada
  * 3. Reglas complementarias → Datos personales, spam
+ * 4. Fail-closed: sin veredicto de la IA → review (nunca se publica)
  *
  * Seguridad:
  * - ✅ Cuarentena privada (archivos no públicos hasta aprobar)
@@ -43,15 +55,6 @@ import {
 // ============================================
 // CONFIGURACIÓN
 // ============================================
-
-const REVIEW_TERMS = new Set([
-  'gonorrea',
-  'hijueputa',
-  'malparido',
-  'marica',
-  'perra',
-  'puta',
-])
 
 const IMAGE_VALIDATION = {
   MAX_SIZE_BYTES: 5 * 1024 * 1024, // 5 MB
@@ -82,38 +85,11 @@ const RATE_LIMITS = {
 
 interface QuarantineUploadResult {
   quarantinePath: string  // Path en bucket de cuarentena
+  mimeType: string        // MIME real (magic bytes), para moderar la imagen
 }
 
-interface PublicImageResult {
-  fullUrl: string
-  thumbnailUrl: string
-  storagePath: string
-}
-
-interface PublicAudioResult {
-  audioUrl: string
-  storagePath: string
-  thumbnailStoragePath: string
-}
-
-interface ModerationResult {
-  verdict: 'publish' | 'review' | 'reject'
-  reasons: string[]
-  source: 'local_rules' | 'openai' | 'hybrid'
-  details?: {
-    openai_categories?: Record<string, boolean>
-    openai_scores?: Record<string, number>
-  }
-}
-
-interface OpenAIModerationResponse {
-  id: string
-  model: string
-  results: Array<{
-    flagged: boolean
-    categories: Record<string, boolean>
-    category_scores: Record<string, number>
-  }>
+interface AudioQuarantineUploadResult {
+  quarantinePath: string  // Path en bucket de cuarentena de audio
 }
 
 // ============================================
@@ -122,6 +98,7 @@ interface OpenAIModerationResponse {
 
 serve(async (req) => {
   let quarantinePath: string | null = null
+  let imageMimeType: string | null = null
   let audioQuarantinePath: string | null = null
 
   try {
@@ -268,6 +245,7 @@ serve(async (req) => {
           supabaseAdmin
         )
         quarantinePath = quarantineResult.quarantinePath
+        imageMimeType = quarantineResult.mimeType
         console.log(`✅ Image in quarantine: ${quarantinePath}`)
       } catch (uploadError) {
         // Si falla el upload, liberar slot y retornar error
@@ -326,8 +304,17 @@ serve(async (req) => {
       }
     }
 
-    // 3. ✅ PASO 2: MODERAR CONTENIDO
-    const moderationResult = await moderateContent(body.subject, body.content)
+    // 3. ✅ PASO 2: MODERAR CONTENIDO (texto + imagen; audio → review)
+    // La imagen va como data URL (ya validada por magic bytes): OpenAI no
+    // recibe ninguna URL de la cuarentena.
+    const moderationResult = await moderateContent({
+      subject: body.subject,
+      content: body.content,
+      imageDataUrl: quarantinePath && imageMimeType
+        ? `data:${imageMimeType};base64,${body.image_base64}`
+        : null,
+      hasAudio: audioQuarantinePath !== null,
+    })
 
     // 4. Si fue rechazado, limpiar cuarentena y retornar error
     if (moderationResult.verdict === 'reject') {
@@ -440,8 +427,8 @@ serve(async (req) => {
       }
     }
 
-    // Si fue a revisión y hay imagen/audio, dejar en cuarentena
-    // (se moverá cuando admin apruebe manualmente)
+    // Si fue a revisión y hay imagen/audio, dejar en cuarentena: se encola
+    // con su ruta (paso 7b) y moderation-review la publica al aprobar
 
     // 6. Decidir estados basado en veredicto
     const status = moderationResult.verdict === 'review' ? 'draft' : 'published'
@@ -517,6 +504,30 @@ serve(async (req) => {
       console.log(`✅ Gossip created: ${gossip.id}`)
     }
 
+    // 7b. Veredicto 'review' → cola de revisión humana, con la ruta de la
+    // media en cuarentena (cleanup-media no la borra mientras esté pendiente;
+    // moderation-review la publica al aprobar). Solo si el chisme guardado
+    // está pendiente: en un reintento idempotente de un chisme ya publicado
+    // no se encola. Si ya estaba en la cola, enqueue_moderation no hace nada.
+    if (moderationResult.verdict === 'review' && gossip.status === 'draft') {
+      const source = moderationResult.reasons.includes('moderation_unavailable')
+        ? 'ai_unavailable'
+        : 'ai_review'
+      const { error: enqueueError } = await supabaseAdmin.rpc('enqueue_moderation', {
+        p_gossip_id: gossip.id,
+        p_source: source,
+        p_reasons: moderationResult.reasons,
+        p_image_quarantine_path: quarantinePath,
+        p_audio_quarantine_path: audioQuarantinePath,
+      })
+      if (enqueueError) {
+        // El chisme queda en draft (no público): seguro, pero sin revisar
+        console.error('❌ Failed to enqueue gossip for review:', enqueueError)
+      } else {
+        console.log(`📥 Gossip ${gossip.id} queued for review (${source})`)
+      }
+    }
+
     // 8. Retornar gossip creado o existente
     return new Response(
       JSON.stringify({
@@ -545,157 +556,6 @@ serve(async (req) => {
   }
 })
 
-// ============================================
-// MODERACIÓN HÍBRIDA
-// ============================================
-
-async function moderateContent(
-  subject: string,
-  content: string
-): Promise<ModerationResult> {
-  const rawText = `${subject}\n${content}`
-  const normalizedText = normalize(rawText)
-  const reasons: string[] = []
-
-  // FASE 1: Reglas Rápidas
-  if (containsCredibleThreat(normalizedText)) {
-    console.log('🚨 THREAT DETECTED - Rejected by local rules')
-    return {
-      verdict: 'reject',
-      reasons: ['credible_threat'],
-      source: 'local_rules'
-    }
-  }
-
-  // FASE 2: OpenAI Moderation API
-  try {
-    const openaiKey = Deno.env.get('OPENAI_API_KEY')
-
-    if (openaiKey) {
-      const openaiResponse = await fetch('https://api.openai.com/v1/moderations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${openaiKey}`
-        },
-        body: JSON.stringify({ input: rawText })
-      })
-
-      if (openaiResponse.ok) {
-        const moderation: OpenAIModerationResponse = await openaiResponse.json()
-        const result = moderation.results[0]
-
-        if (result.flagged) {
-          const flaggedCategories = Object.entries(result.categories)
-            .filter(([_, flagged]) => flagged)
-            .map(([category]) => category)
-
-          console.log('🤖 FLAGGED BY OPENAI:', flaggedCategories)
-
-          return {
-            verdict: 'reject',
-            reasons: flaggedCategories,
-            source: 'openai',
-            details: {
-              openai_categories: result.categories,
-              openai_scores: result.category_scores
-            }
-          }
-        }
-
-        console.log('✅ APPROVED BY OPENAI')
-      } else {
-        console.warn('⚠️ OpenAI API failed, falling back to local rules only')
-      }
-    } else {
-      console.warn('⚠️ OPENAI_API_KEY not configured, using local rules only')
-    }
-  } catch (error) {
-    console.error('❌ Error calling OpenAI API:', error)
-  }
-
-  // FASE 3: Reglas Complementarias
-  if (containsPersonalData(rawText)) {
-    reasons.push('potential_personal_data')
-  }
-
-  if (containsSpam(rawText, normalizedText)) {
-    reasons.push('potential_spam')
-  }
-
-  if (containsReviewTerm(normalizedText)) {
-    reasons.push('potential_profanity')
-  }
-
-  // Si hay razones menores, mandar a REVISIÓN
-  if (reasons.length > 0) {
-    console.log('⚠️ SENT TO REVIEW:', reasons)
-    return {
-      verdict: 'review',
-      reasons: reasons,
-      source: 'local_rules'
-    }
-  }
-
-  console.log('✅ APPROVED - Content is clean')
-  return {
-    verdict: 'publish',
-    reasons: [],
-    source: 'hybrid'
-  }
-}
-
-// ============================================
-// FUNCIONES AUXILIARES DE MODERACIÓN
-// ============================================
-
-function normalize(text: string): string {
-  const accents = 'áéíóúüñ'
-  const replacements = 'aeiouun'
-  let normalized = text.toLowerCase()
-
-  for (let i = 0; i < accents.length; i++) {
-    normalized = normalized.replaceAll(accents[i], replacements[i])
-  }
-
-  return normalized
-    .replaceAll('0', 'o')
-    .replaceAll('1', 'i')
-    .replaceAll('3', 'e')
-    .replaceAll('4', 'a')
-    .replaceAll('5', 's')
-    .replace(/[^a-z0-9\s]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-}
-
-function containsPersonalData(text: string): boolean {
-  const hasEmail = /\b[\w.!#$%&'*+/=?^`{|}~-]+@[\w](?:[\w-]{0,61}[\w])?(?:\.[\w](?:[\w-]{0,61}[\w])?)+\b/.test(text)
-  const hasPhone = /(?<!\d)(?:\+?57[\s.-]?)?3\d{2}[\s.-]?\d{3}[\s.-]?\d{4}(?!\d)/.test(text)
-  return hasEmail || hasPhone
-}
-
-function containsSpam(rawText: string, normalizedText: string): boolean {
-  const hasUrl = /\b(?:https?:\/\/|www\.)/i.test(rawText)
-  const hasLongRepeated = /([a-z])\1{6,}/.test(normalizedText)
-  return hasUrl || hasLongRepeated
-}
-
-function containsReviewTerm(normalizedText: string): boolean {
-  return Array.from(REVIEW_TERMS).some(term => {
-    const normalizedTerm = normalize(term)
-    const pattern = new RegExp(`(?:^|\\s)${escapeRegex(normalizedTerm)}(?:\\s|$)`)
-    return pattern.test(normalizedText)
-  })
-}
-
-function containsCredibleThreat(text: string): boolean {
-  return /\b(?:te|lo|la|los|las)\s+(?:voy|vamos)\s+a\s+(?:matar|golpear|atacar|violar)\b/.test(text)
-}
-
-function escapeRegex(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-}
 
 // ============================================
 // SECURE IMAGE UPLOAD (Cuarentena → Público)
@@ -761,155 +621,13 @@ async function uploadToQuarantine(
 
     console.log(`✅ Image uploaded to quarantine: ${quarantinePath}`)
 
-    return { quarantinePath }
+    return { quarantinePath, mimeType }
   } catch (error) {
     console.error('❌ Upload to quarantine failed:', error)
     throw error
   }
 }
 
-/**
- * PASO 2: Mover de cuarentena a público
- *
- * Copia archivo de cuarentena a bucket público
- * Crea thumbnail (por ahora, copia misma imagen)
- * Elimina de cuarentena
- *
- * Security:
- * - ✅ Solo se ejecuta después de aprobar moderación
- * - ✅ Transaccional: elimina de cuarentena solo si copia exitosa
- */
-async function moveToPublicBucket(
-  quarantinePath: string,
-  gossipId: string,
-  supabaseClient: any
-): Promise<PublicImageResult> {
-  try {
-    // 1. Descargar de cuarentena
-    const { data: imageData, error: downloadError } = await supabaseClient.storage
-      .from('images-quarantine')
-      .download(quarantinePath)
-
-    if (downloadError || !imageData) {
-      throw new Error(`Failed to download from quarantine: ${downloadError?.message}`)
-    }
-
-    // 2. Paths en bucket público
-    const timestamp = Date.now()
-    const extension = quarantinePath.split('.').pop()
-    const fileName = `${gossipId}_${timestamp}.${extension}`
-    const fullPath = `gossips/full/${fileName}`
-    const thumbPath = `gossips/thumb/${fileName}`
-
-    // 3. Convertir Blob a Uint8Array
-    const arrayBuffer = await imageData.arrayBuffer()
-    const uint8Array = new Uint8Array(arrayBuffer)
-
-    // 4. Subir a bucket público (full)
-    const { error: fullError } = await supabaseClient.storage
-      .from('images')
-      .upload(fullPath, uint8Array, {
-        contentType: imageData.type,
-        cacheControl: '3600',
-        upsert: false
-      })
-
-    if (fullError) {
-      throw new Error(`Failed to upload full image: ${fullError.message}`)
-    }
-
-    console.log(`✅ Full image uploaded to public: ${fullPath}`)
-
-    // 5. Subir thumbnail (por ahora, misma imagen)
-    // TODO: Implementar generación real de thumbnail
-    const { error: thumbError } = await supabaseClient.storage
-      .from('images')
-      .upload(thumbPath, uint8Array, {
-        contentType: imageData.type,
-        cacheControl: '3600',
-        upsert: false
-      })
-
-    if (thumbError) {
-      // Rollback: eliminar full
-      await supabaseClient.storage.from('images').remove([fullPath])
-      throw new Error(`Failed to upload thumbnail: ${thumbError.message}`)
-    }
-
-    console.log(`✅ Thumbnail uploaded to public: ${thumbPath}`)
-
-    // 6. Eliminar de cuarentena (cleanup)
-    await deleteFromQuarantine(quarantinePath, supabaseClient)
-
-    // 7. Generar URLs públicas
-    const { data: { publicUrl: fullUrl } } = supabaseClient.storage
-      .from('images')
-      .getPublicUrl(fullPath)
-
-    const { data: { publicUrl: thumbUrl } } = supabaseClient.storage
-      .from('images')
-      .getPublicUrl(thumbPath)
-
-    return {
-      fullUrl,
-      thumbnailUrl: thumbUrl,
-      storagePath: fullPath,
-      thumbnailStoragePath: thumbPath
-    }
-  } catch (error) {
-    console.error('❌ Move to public bucket failed:', error)
-    throw error
-  }
-}
-
-/**
- * Eliminar de cuarentena (cleanup)
- */
-async function deleteFromQuarantine(
-  quarantinePath: string,
-  supabaseClient: any
-): Promise<void> {
-  try {
-    const { error } = await supabaseClient.storage
-      .from('images-quarantine')
-      .remove([quarantinePath])
-
-    if (error) {
-      console.error('⚠️ Failed to delete from quarantine:', error)
-    } else {
-      console.log(`♻️ Deleted from quarantine: ${quarantinePath}`)
-    }
-  } catch (error) {
-    console.error('⚠️ Unexpected error deleting from quarantine:', error)
-  }
-}
-
-/**
- * Eliminar de bucket público (rollback)
- */
-async function deleteFromPublicBucket(
-  fullPath: string,
-  thumbPath: string,
-  supabaseClient: any
-): Promise<void> {
-  try {
-    const pathsToDelete = [fullPath, thumbPath].filter(p => p)
-
-    if (pathsToDelete.length === 0) return
-
-    const { error } = await supabaseClient.storage
-      .from('images')
-      .remove(pathsToDelete)
-
-    if (error) {
-      console.error('⚠️ Failed to delete from public bucket:', error)
-    } else {
-      console.log(`♻️ Deleted from public bucket: ${pathsToDelete.join(', ')}`)
-    }
-  } catch (error) {
-    console.error('⚠️ Unexpected error deleting from public bucket:', error)
-  }
-}
 
 /**
  * Detectar MIME type real de imagen (validación de primeros bytes)
@@ -993,7 +711,7 @@ async function uploadAudioToQuarantine(
   idempotencyKey: string,
   audioBase64: string,
   supabaseClient: any
-): Promise<QuarantineUploadResult> {
+): Promise<AudioQuarantineUploadResult> {
   try {
     // 1. Decodificar base64
     const audioData = Uint8Array.from(atob(audioBase64), c => c.charCodeAt(0))
@@ -1039,116 +757,4 @@ async function uploadAudioToQuarantine(
   }
 }
 
-/**
- * PASO 2: Mover audio de cuarentena a público
- *
- * Copia archivo de cuarentena a bucket público
- * Elimina de cuarentena
- *
- * Security:
- * - ✅ Solo se ejecuta después de aprobar moderación
- * - ✅ Transaccional: elimina de cuarentena solo si copia exitosa
- */
-async function moveAudioToPublicBucket(
-  quarantinePath: string,
-  gossipId: string,
-  supabaseClient: any
-): Promise<PublicAudioResult> {
-  try {
-    // 1. Descargar de cuarentena
-    const { data: audioData, error: downloadError } = await supabaseClient.storage
-      .from('audio-quarantine')
-      .download(quarantinePath)
 
-    if (downloadError || !audioData) {
-      throw new Error(`Failed to download audio from quarantine: ${downloadError?.message}`)
-    }
-
-    // 2. Path en bucket público
-    const timestamp = Date.now()
-    const extension = quarantinePath.split('.').pop()
-    const fileName = `${gossipId}_${timestamp}.${extension}`
-    const publicPath = `gossips/${fileName}`
-
-    // 3. Convertir Blob a Uint8Array
-    const arrayBuffer = await audioData.arrayBuffer()
-    const uint8Array = new Uint8Array(arrayBuffer)
-
-    // 4. Subir a bucket público
-    const { error: uploadError } = await supabaseClient.storage
-      .from('audio')
-      .upload(publicPath, uint8Array, {
-        contentType: audioData.type,
-        cacheControl: '3600',
-        upsert: false
-      })
-
-    if (uploadError) {
-      throw new Error(`Failed to upload audio to public: ${uploadError.message}`)
-    }
-
-    console.log(`✅ Audio uploaded to public: ${publicPath}`)
-
-    // 5. Eliminar de cuarentena (cleanup)
-    await deleteAudioFromQuarantine(quarantinePath, supabaseClient)
-
-    // 6. Generar URL pública
-    const { data: { publicUrl } } = supabaseClient.storage
-      .from('audio')
-      .getPublicUrl(publicPath)
-
-    return {
-      audioUrl: publicUrl,
-      storagePath: publicPath
-    }
-  } catch (error) {
-    console.error('❌ Move audio to public bucket failed:', error)
-    throw error
-  }
-}
-
-/**
- * Eliminar audio de cuarentena (cleanup)
- */
-async function deleteAudioFromQuarantine(
-  quarantinePath: string,
-  supabaseClient: any
-): Promise<void> {
-  try {
-    const { error } = await supabaseClient.storage
-      .from('audio-quarantine')
-      .remove([quarantinePath])
-
-    if (error) {
-      console.error('⚠️ Failed to delete audio from quarantine:', error)
-    } else {
-      console.log(`♻️ Deleted audio from quarantine: ${quarantinePath}`)
-    }
-  } catch (error) {
-    console.error('⚠️ Unexpected error deleting audio from quarantine:', error)
-  }
-}
-
-/**
- * Eliminar audio de bucket público (rollback)
- */
-async function deleteAudioFromPublicBucket(
-  audioPath: string,
-  supabaseClient: any
-): Promise<void> {
-  try {
-    if (!audioPath) return
-
-    const { error } = await supabaseClient.storage
-      .from('audio')
-      .remove([audioPath])
-
-    if (error) {
-      console.error('⚠️ Failed to delete audio from public bucket:', error)
-    } else {
-      console.log(`♻️ Deleted audio from public bucket: ${audioPath}`)
-    }
-  } catch (error) {
-    console.error('⚠️ Unexpected error deleting audio from public bucket:', error)
-  }
-}

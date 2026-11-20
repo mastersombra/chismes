@@ -157,6 +157,14 @@ class MockSupabaseAuthDataSource extends _i1.Mock
           as _i4.Future<_i2.UserModel?>);
 
   @override
+  _i4.Future<bool> validateSession() =>
+      (super.noSuchMethod(
+            Invocation.method(#validateSession, []),
+            returnValue: _i4.Future<bool>.value(false),
+          )
+          as _i4.Future<bool>);
+
+  @override
   _i4.Future<_i2.UserModel> updateProfile({
     String? username,
     String? displayName,
