@@ -11,6 +11,8 @@
 --
 -- Piezas:
 --   1. moderation_settings: umbrales editables sin despliegue (dashboard)
+--  1b. moderation_rules: reglas de contenido de moderate-gossip (términos,
+--      umbrales de IA, reglas fijas on/off), editables sin despliegue
 --   2. content_reports: reportes de usuarios (solo backend escribe/lee)
 --   3. moderation_queue: cola de revisión humana + historial de decisiones
 --      (guarda autor, gravedad y motivo: base para sanciones futuras)
@@ -55,6 +57,99 @@ INSERT INTO moderation_settings (key, value, description) VALUES
 
 COMMENT ON TABLE moderation_settings IS
 'Umbrales de moderación. Editar desde el dashboard (Table Editor); aplica al siguiente reporte, sin desplegar.';
+
+-- =====================================================
+-- 1b. REGLAS DE MODERACIÓN DE CONTENIDO (moderate-gossip)
+-- =====================================================
+-- moderate-gossip las lee en cada publicación: un cambio aplica al siguiente
+-- chisme, sin desplegar ni sacar versión de la app. Si no puede leerlas, el
+-- chisme va a revisión (fail-closed), nunca se publica solo.
+--
+-- Cada fila: "si <target> coincide → <action>". Si varias coinciden, gana
+-- reject. Tipos:
+--   term        palabra o frase. Se compara normalizada (minúsculas, sin
+--               tildes, leet 0→o 1→i 3→e 4→a 5→s) y como palabra completa.
+--   ai_category categoría de OpenAI con puntaje >= min_score. Solo endurece:
+--               lo que OpenAI marca (flagged) se rechaza siempre.
+--   builtin     regla fija del código; aquí se elige su acción o se apaga
+--               (enabled = false): credible_threat, personal_data, spam.
+-- Las regex viven en el código a propósito: una regex editable mal escrita
+-- puede colgar la función o dejar de moderar.
+
+CREATE TABLE moderation_rules (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  kind TEXT NOT NULL CHECK (kind IN ('term', 'ai_category', 'builtin')),
+  target TEXT NOT NULL,
+  action TEXT NOT NULL CHECK (action IN ('review', 'reject')),
+  min_score NUMERIC,
+  enabled BOOLEAN NOT NULL DEFAULT TRUE,
+  note TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+
+  -- Un typo no puede dejar una regla que nunca coincide sin que nadie lo note
+  CONSTRAINT moderation_rules_valid_target CHECK (
+    (kind = 'term' AND char_length(btrim(target)) BETWEEN 2 AND 100)
+    OR (kind = 'builtin' AND target IN ('credible_threat', 'personal_data', 'spam'))
+    OR (kind = 'ai_category' AND target IN (
+      'harassment', 'harassment/threatening', 'hate', 'hate/threatening',
+      'illicit', 'illicit/violent', 'self-harm', 'self-harm/intent',
+      'self-harm/instructions', 'sexual', 'sexual/minors', 'violence',
+      'violence/graphic'
+    ))
+  ),
+  -- min_score solo (y siempre) en ai_category, entre 0 y 1
+  CONSTRAINT moderation_rules_valid_score CHECK (
+    (kind = 'ai_category' AND min_score IS NOT NULL AND min_score > 0 AND min_score <= 1)
+    OR (kind <> 'ai_category' AND min_score IS NULL)
+  )
+);
+
+-- Sin duplicados: un término/categoría por acción; un builtin una sola vez
+CREATE UNIQUE INDEX moderation_rules_unique_rule
+  ON moderation_rules (kind, lower(btrim(target)), action)
+  WHERE kind <> 'builtin';
+CREATE UNIQUE INDEX moderation_rules_unique_builtin
+  ON moderation_rules (target)
+  WHERE kind = 'builtin';
+
+CREATE OR REPLACE FUNCTION touch_moderation_rules_updated_at()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
+BEGIN
+  NEW.updated_at := NOW();
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER moderation_rules_touch_updated_at
+  BEFORE UPDATE ON moderation_rules
+  FOR EACH ROW EXECUTE FUNCTION touch_moderation_rules_updated_at();
+
+REVOKE EXECUTE ON FUNCTION touch_moderation_rules_updated_at() FROM PUBLIC, anon, authenticated;
+
+ALTER TABLE moderation_rules ENABLE ROW LEVEL SECURITY;
+-- Sin políticas: solo service_role (moderate-gossip) y el dashboard. Los
+-- clientes no pueden leerlas: conocer la lista ayuda a esquivarla.
+REVOKE ALL ON TABLE moderation_rules FROM anon, authenticated;
+GRANT ALL ON TABLE moderation_rules TO service_role;
+
+-- Reglas iniciales: el mismo comportamiento que tenía el código
+INSERT INTO moderation_rules (kind, target, action, note) VALUES
+  ('builtin', 'credible_threat', 'reject', 'Amenaza explícita ("te voy a matar"): rechazo sin llamar a la IA'),
+  ('builtin', 'personal_data', 'review', 'Email o celular colombiano en el texto'),
+  ('builtin', 'spam', 'review', 'Links o letras repetidas (aaaaaaa)'),
+  ('term', 'gonorrea', 'review', 'Grosería'),
+  ('term', 'hijueputa', 'review', 'Grosería'),
+  ('term', 'malparido', 'review', 'Grosería'),
+  ('term', 'marica', 'review', 'Grosería (también uso coloquial)'),
+  ('term', 'perra', 'review', 'Grosería'),
+  ('term', 'puta', 'review', 'Grosería');
+
+COMMENT ON TABLE moderation_rules IS
+'Reglas de moderate-gossip (términos, umbrales de IA, reglas fijas on/off). Editar desde el dashboard; aplica al siguiente chisme. Ejemplo de umbral: (ai_category, harassment, review, min_score 0.3).';
 
 -- =====================================================
 -- 2. REPORTES DE CONTENIDO
@@ -114,7 +209,7 @@ CREATE TABLE moderation_queue (
   content_author_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
 
   -- ai_review: la IA/reglas dijeron "revisar" · ai_unavailable: sin veredicto
-  -- de la IA (fail-closed) · reports: llegó al umbral de reportes
+  -- de la IA o sin reglas (fail-closed) · reports: llegó al umbral de reportes
   source TEXT NOT NULL CHECK (source IN ('ai_review', 'ai_unavailable', 'reports')),
   reasons TEXT[] NOT NULL DEFAULT '{}',
   priority TEXT NOT NULL DEFAULT 'normal' CHECK (priority IN ('normal', 'high')),
@@ -407,6 +502,8 @@ GRANT EXECUTE ON FUNCTION apply_moderation_decision(UUID, TEXT, UUID, TEXT, TEXT
 CREATE VIEW moderation_queue_items AS
 SELECT
   q.*,
+  p.username AS author_username,
+  p.display_name AS author_display_name,
   g.subject,
   g.content,
   g.published_as,
@@ -421,6 +518,7 @@ SELECT
   g.created_at AS content_created_at
 FROM moderation_queue q
 JOIN gossips g ON g.id = q.gossip_id
+LEFT JOIN profiles p ON p.id = q.content_author_id
 WHERE NOT (q.status = 'pending' AND (g.deleted_at IS NOT NULL OR g.status = 'deleted'));
 
 REVOKE ALL ON TABLE moderation_queue_items FROM anon, authenticated;

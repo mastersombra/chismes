@@ -44,7 +44,9 @@ backend debe ejecutar reglas, rate limiting y el proveedor de IA, y asignar
 No se debe entregar `OPENAI_API_KEY` ni credenciales de Google Cloud en la app.
 
 La app **no modera**: las reglas (datos personales, spam, términos, amenazas)
-y la llamada a OpenAI viven solo en la Edge Function `moderate-gossip`. La copia
+y la llamada a OpenAI viven solo en la Edge Function `moderate-gossip`; los
+términos, umbrales de la IA y el on/off de las reglas fijas están en la tabla
+`moderation_rules` (editable sin desplegar). La copia
 local en Dart (`MvpContentModerator`) se eliminó el 2026-11-19 para no duplicar
 reglas. En tests, `MockGossipRemoteDataSource` recibe un `ContentModerator`
 (definido en `test/fixtures/mocks/`) para simular el veredicto del backend.

@@ -3,8 +3,10 @@
 // =====================================================
 // Cola de revisión humana: solo moderadores (app_metadata.role = 'moderator').
 //
-// POST { action: 'list', status?: 'pending'|'approved'|'rejected', limit?: 1-50 }
-//   → { items } ordenados: prioridad alta primero, luego los más antiguos.
+// POST { action: 'list', status?: 'pending'|'approved'|'rejected', limit?: 1-50,
+//        offset?: 0-10000 }
+//   → { items }. Pendientes: prioridad alta primero, luego los más antiguos.
+//     Decididos (historial): la decisión más reciente primero.
 //     Incluye el autor real (también de anónimos) y una URL firmada (5 min)
 //     para ver la media que espera en cuarentena.
 //
@@ -110,13 +112,19 @@ async function listQueue(
   request: Extract<ReviewRequest, { action: 'list' }>,
   supabaseAdmin: any
 ): Promise<Response> {
-  const { data, error } = await supabaseAdmin
+  let query = supabaseAdmin
     .from('moderation_queue_items')
     .select('*')
     .eq('status', request.status)
-    .order('priority', { ascending: true }) // 'high' < 'normal'
-    .order('created_at', { ascending: true })
-    .limit(request.limit)
+  query = request.status === 'pending'
+    ? query
+      .order('priority', { ascending: true }) // 'high' < 'normal'
+      .order('created_at', { ascending: true })
+    : query.order('decided_at', { ascending: false })
+  // id desempata: sin orden total, offset puede repetir/saltar filas
+  const { data, error } = await query
+    .order('id', { ascending: true })
+    .range(request.offset, request.offset + request.limit - 1)
 
   if (error) {
     console.error('❌ Failed to list moderation queue:', error)

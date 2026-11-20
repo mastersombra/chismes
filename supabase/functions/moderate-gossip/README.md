@@ -3,10 +3,32 @@
 ## 🎯 Objetivo
 
 **Función TODO-EN-UNO** para máxima seguridad:
-1. **Moderar contenido** (reglas + OpenAI `omni-moderation-latest`: texto **e imagen** en una llamada; audio → revisión). Lógica en `moderation.ts`, tests en `moderation.test.ts`
+1. **Moderar contenido** (reglas de la tabla `moderation_rules` + OpenAI `omni-moderation-latest`: texto **e imagen** en una llamada; audio → revisión). Lógica en `moderation.ts`, tests en `moderation.test.ts`
 2. **Decidir estados** internamente (cliente NO participa)
 3. **Crear gossip** en DB con service_role
 4. **Retornar gossip** ya creado
+
+## 📏 Reglas editables (`moderation_rules`)
+
+Se editan en el dashboard (Table Editor → `moderation_rules`) y aplican **al
+siguiente chisme**, sin desplegar. Cada fila: "si `target` coincide → `action`
+(`review` o `reject`)"; si coinciden varias, gana `reject`.
+
+| `kind` | `target` | Ejemplo |
+|---|---|---|
+| `term` | Palabra o frase. Se compara normalizada (minúsculas, sin tildes, leet `p3rr4` → `perra`) y como palabra completa (`puta` no coincide con `computadora`) | `('term', 'lavado de dólares', 'review')` |
+| `ai_category` | Categoría de OpenAI (`harassment`, `hate`, `sexual`, `violence`…) con `min_score` (0–1) | `('ai_category', 'harassment', 'review', 0.3)` |
+| `builtin` | Regla fija del código: `credible_threat`, `personal_data`, `spam`. Se cambia su acción o se apaga (`enabled = false`) | `('builtin', 'spam', 'reject')` |
+
+- Los umbrales de IA **solo endurecen**: lo que OpenAI marca (`flagged`) se rechaza siempre.
+- Las regex (email, celular, links, amenazas) siguen en el código a propósito: una regex editable mal escrita puede colgar la función o dejar de moderar.
+- Los CHECK de la tabla rechazan typos (categoría inexistente, `min_score` fuera de rango, duplicados).
+- Razones que quedan en la cola: `term:<término>`, `ai_score:<categoría>`, `potential_personal_data`, `potential_spam`, `credible_threat`.
+- Los clientes no pueden leer la tabla (conocer la lista ayuda a esquivarla).
+
+`OPENAI_MODERATION_URL` (opcional) apunta la moderación a otro servidor: **solo
+para el E2E local** (`scripts/e2e.sh`). No configurarlo en el remoto; si está,
+la función lo avisa en los logs.
 
 ## 🔒 Seguridad
 
@@ -233,6 +255,14 @@ docker run --rm -v "$PWD/supabase/functions:/fn" -w /fn denoland/deno:2.1.4 \
 **Efecto (fail-closed):** el chisme **no se publica**: queda en `draft` + `pending` (revisión). Solo las amenazas explícitas se siguen rechazando con reglas locales. Si todos los chismes nuevos quedan en revisión, revisar la key
 
 **Solución:** Configura `OPENAI_API_KEY` en secrets (ver arriba)
+
+### Error: "Could not load moderation_rules" / "Moderation rules unavailable → review"
+
+**Causa:** falló la consulta a `moderation_rules` o una fila no es válida (se loguea cuál).
+
+**Efecto (fail-closed):** el chisme queda en revisión con la razón `rules_unavailable`; lo que OpenAI marca se sigue rechazando.
+
+**Solución:** revisar el log, corregir o borrar la fila inválida. Verificar el `GRANT` a `service_role` (`013_moderation.sql`).
 
 ### La función es muy lenta (>1s)
 
