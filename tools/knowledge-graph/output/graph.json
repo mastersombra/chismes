@@ -235,8 +235,8 @@
       "evidence": [
         "class ProfileRemoteDataSource",
         "method:getUserStats",
-        "method:básicas",
-        "method:UserStatsModel"
+        "method:propios",
+        "method:básicas"
       ],
       "detail": "ProfileRemoteDataSource"
     },
@@ -1334,7 +1334,8 @@
       "evidence": [
         "class AuthRepository",
         "method:password",
-        "method:username",
+        "method:válida",
+        "method:confirmar",
         "returns:Result"
       ],
       "detail": "AuthRepository"
@@ -2028,7 +2029,8 @@
       "layer": "core",
       "feature": "core",
       "evidence": [
-        "class Auditable"
+        "class Auditable",
+        "method:autor"
       ],
       "detail": "Auditable"
     },
@@ -3357,6 +3359,11 @@
     },
     {
       "from": "features.auth.presentation.widgets.auth_gate",
+      "to": "core.result.result",
+      "relation": "imports"
+    },
+    {
+      "from": "features.auth.presentation.widgets.auth_gate",
       "to": "core.theme.app_spacing",
       "relation": "imports"
     },
@@ -3983,7 +3990,7 @@
   ],
   "stats": {
     "total_nodes": 173,
-    "total_edges": 308,
+    "total_edges": 309,
     "files_analyzed": 173
   }
 }
