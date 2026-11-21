@@ -15,8 +15,9 @@
 //        reason?, note? }
 //   approve → copia la media de cuarentena a los buckets públicos, publica el
 //             chisme (restaura lo auto-ocultado) y descarta los reportes
-//   reject  → oculta el chisme (no se borra: queda para apelación), borra la
-//             media de cuarentena y marca los reportes como atendidos
+//   reject  → oculta el chisme (el texto queda para apelación), borra la
+//             media de cuarentena y la PÚBLICA (si ya estaba publicado, su URL
+//             seguiría sirviendo el archivo) y marca los reportes como atendidos
 //   La decisión (autor, gravedad, motivo) queda en moderation_queue: base de
 //   las sanciones futuras.
 //
@@ -234,8 +235,25 @@ async function decide(
   if (item.image_quarantine_path) await deleteFromQuarantine(item.image_quarantine_path, supabaseAdmin)
   if (item.audio_quarantine_path) await deleteAudioFromQuarantine(item.audio_quarantine_path, supabaseAdmin)
 
+  // Rechazado: la base ya desvinculó la media pública; borrar los archivos.
+  // Si falla quedan huérfanos y cleanup-media los borra (> 7 días).
+  const { removed_media: removedMedia, ...decidedItem } = decided ?? {}
+  await removePublicMedia(removedMedia, supabaseAdmin)
+
   console.log(`⚖️ ${request.decision} queue item ${request.queueId} by moderator ${moderatorId}`)
-  return json({ item: decided })
+  return json({ item: decidedItem })
+}
+
+async function removePublicMedia(
+  removed: { images?: unknown; audio?: unknown } | null | undefined,
+  supabaseAdmin: any
+): Promise<void> {
+  const buckets: Array<[string, unknown]> = [['images', removed?.images], ['audio', removed?.audio]]
+  for (const [bucket, paths] of buckets) {
+    if (!Array.isArray(paths) || paths.length === 0) continue
+    const { error } = await supabaseAdmin.storage.from(bucket).remove(paths)
+    if (error) console.error(`❌ Failed to remove rejected media from ${bucket}:`, error.message)
+  }
 }
 
 async function rollbackPublicCopies(

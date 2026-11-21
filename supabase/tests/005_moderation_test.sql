@@ -244,17 +244,40 @@ BEGIN
   RAISE NOTICE '✅ D5: rechazar sin gravedad → error';
 END $$;
 
--- ---------- D6: rechazar oculta (no borra) y registra gravedad ----------
+-- ---------- D6: rechazar oculta (conserva el texto), desvincula la media pública y registra gravedad ----------
 DO $$
-DECLARE v_id UUID; g gossips%ROWTYPE; q moderation_queue%ROWTYPE;
+DECLARE v_id UUID; g gossips%ROWTYPE; q moderation_queue%ROWTYPE; r JSONB;
 BEGIN
+  -- G3 ya estaba publicado con foto y audio en los buckets públicos
+  RESET ROLE;
+  SET LOCAL session_replication_role = replica;
+  UPDATE gossips SET
+    image_url = 'https://x/storage/v1/object/public/images/gossips/full/g3.jpg',
+    thumbnail_url = 'https://x/storage/v1/object/public/images/gossips/thumb/g3.jpg',
+    storage_path = 'gossips/full/g3.jpg', thumbnail_storage_path = 'gossips/thumb/g3.jpg',
+    audio_url = 'https://x/storage/v1/object/public/audio/gossips/g3.m4a',
+    audio_storage_path = 'gossips/g3.m4a'
+  WHERE id = 'c0000000-0000-4000-8000-000000000003';
+  SET LOCAL session_replication_role = origin;
+  SET LOCAL ROLE service_role;
+
   SELECT id INTO v_id FROM moderation_queue
   WHERE gossip_id = 'c0000000-0000-4000-8000-000000000003' AND status = 'pending';
-  PERFORM apply_moderation_decision(v_id, 'reject', 'd0000000-0000-4000-8000-00000000000d', 'high', 'desinformacion');
+  r := apply_moderation_decision(v_id, 'reject', 'd0000000-0000-4000-8000-00000000000d', 'high', 'desinformacion');
+  IF r->'removed_media' <> '{"images": ["gossips/full/g3.jpg", "gossips/thumb/g3.jpg"], "audio": ["gossips/g3.m4a"]}'::jsonb THEN
+    RAISE EXCEPTION 'D6: removed_media = %', r->'removed_media';
+  END IF;
   SELECT * INTO g FROM gossips WHERE id = 'c0000000-0000-4000-8000-000000000003';
   SELECT * INTO q FROM moderation_queue WHERE id = v_id;
   IF g.status <> 'hidden' OR g.moderation_status <> 'rejected' THEN
     RAISE EXCEPTION 'D6: no quedó oculto+rechazado';
+  END IF;
+  IF num_nonnulls(g.image_url, g.thumbnail_url, g.storage_path, g.thumbnail_storage_path,
+                  g.audio_url, g.audio_storage_path) > 0 THEN
+    RAISE EXCEPTION 'D6: la media pública sigue vinculada';
+  END IF;
+  IF g.subject IS NULL OR g.content IS NULL THEN
+    RAISE EXCEPTION 'D6: se borró el texto (debe quedar para apelación)';
   END IF;
   IF EXISTS (SELECT 1 FROM content_reports WHERE gossip_id = g.id AND status <> 'actioned') THEN
     RAISE EXCEPTION 'D6: quedaron reportes sin atender';
@@ -268,7 +291,7 @@ BEGIN
     RAISE EXCEPTION 'D6: permitió decidir dos veces';
   EXCEPTION WHEN SQLSTATE '55000' THEN NULL;
   END;
-  RAISE NOTICE '✅ D6: rechazar → oculto (no borrado), reportes atendidos, gravedad; no se decide dos veces';
+  RAISE NOTICE '✅ D6: rechazar → oculto (texto conservado), media pública desvinculada, reportes atendidos, gravedad; no se decide dos veces';
 END $$;
 
 -- ---------- D7: aprobar publica la media ----------

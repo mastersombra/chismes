@@ -415,8 +415,12 @@ GRANT EXECUTE ON FUNCTION enqueue_moderation(UUID, TEXT, TEXT[], TEXT, TEXT) TO 
 -- públicos por moderation-review (al aprobar) y llega en p_media.
 --   approve → publicado+aprobado (restaura lo auto-ocultado), media pública,
 --             reportes 'dismissed'
---   reject  → oculto+rechazado (no se borra: queda para apelación),
---             reportes 'actioned', gravedad obligatoria
+--   reject  → oculto+rechazado (el texto no se borra: queda para apelación),
+--             reportes 'actioned', gravedad obligatoria. La media PÚBLICA se
+--             desvincula (sin esto su URL seguiría sirviendo el archivo para
+--             siempre) y sus rutas vuelven en 'removed_media' para que
+--             moderation-review las borre; si ese borrado falla, quedan
+--             huérfanas y cleanup-media las borra (> 7 días).
 -- Un chisme eliminado por su autor no se vuelve a publicar.
 
 CREATE OR REPLACE FUNCTION apply_moderation_decision(
@@ -435,6 +439,7 @@ SET search_path = ''
 AS $$
 DECLARE
   v_item public.moderation_queue%ROWTYPE;
+  v_removed JSONB := '{}'::JSONB;
 BEGIN
   IF p_decision NOT IN ('approve', 'reject') THEN
     RAISE EXCEPTION 'invalid_decision' USING ERRCODE = '22023';
@@ -466,9 +471,26 @@ BEGIN
     SET status = 'dismissed', reviewed_at = NOW(), reviewed_by = p_moderator_id
     WHERE gossip_id = v_item.gossip_id AND status = 'pending';
   ELSE
-    UPDATE public.gossips
-    SET status = 'hidden', moderation_status = 'rejected'
-    WHERE id = v_item.gossip_id AND status <> 'deleted';
+    -- Rutas públicas antes de desvincularlas (bloqueo de fila: sin carreras)
+    SELECT jsonb_strip_nulls(jsonb_build_object(
+      'images', NULLIF(array_remove(ARRAY[g.storage_path, g.thumbnail_storage_path], NULL), '{}'),
+      'audio', NULLIF(array_remove(ARRAY[g.audio_storage_path], NULL), '{}')
+    ))
+    INTO v_removed
+    FROM public.gossips g
+    WHERE g.id = v_item.gossip_id
+    FOR UPDATE;
+
+    UPDATE public.gossips SET
+      status = CASE WHEN status = 'deleted' THEN status ELSE 'hidden' END,
+      moderation_status = CASE WHEN status = 'deleted' THEN moderation_status ELSE 'rejected' END,
+      image_url = NULL,
+      thumbnail_url = NULL,
+      storage_path = NULL,
+      thumbnail_storage_path = NULL,
+      audio_url = NULL,
+      audio_storage_path = NULL
+    WHERE id = v_item.gossip_id;
 
     UPDATE public.content_reports
     SET status = 'actioned', reviewed_at = NOW(), reviewed_by = p_moderator_id
@@ -486,7 +508,7 @@ BEGIN
   WHERE id = p_queue_id
   RETURNING * INTO v_item;
 
-  RETURN to_jsonb(v_item);
+  RETURN to_jsonb(v_item) || jsonb_build_object('removed_media', COALESCE(v_removed, '{}'::JSONB));
 END;
 $$;
 
