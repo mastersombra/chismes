@@ -7,6 +7,7 @@
 export const MODERATOR_ROLE = 'moderator'
 export const SEVERITIES = ['low', 'medium', 'high', 'critical'] as const
 export const QUEUE_STATUSES = ['pending', 'approved', 'rejected'] as const
+export const APPEAL_STATUSES = ['pending', 'accepted', 'rejected'] as const
 export const LIST_DEFAULT_LIMIT = 20
 export const LIST_MAX_LIMIT = 50
 export const LIST_MAX_OFFSET = 10_000
@@ -15,6 +16,7 @@ export const NOTE_MAX_LENGTH = 1000
 
 export type Severity = typeof SEVERITIES[number]
 export type QueueStatus = typeof QUEUE_STATUSES[number]
+export type AppealStatus = typeof APPEAL_STATUSES[number]
 
 export type ReviewRequest =
   | { action: 'list'; status: QueueStatus; limit: number; offset: number }
@@ -26,6 +28,8 @@ export type ReviewRequest =
     reason: string | null
     note: string | null
   }
+  | { action: 'list_appeals'; status: AppealStatus; limit: number; offset: number }
+  | { action: 'decide_appeal'; appealId: string; decision: 'accept' | 'reject'; note: string | null }
 
 export type ParseResult =
   | { ok: true; value: ReviewRequest }
@@ -49,23 +53,31 @@ export function parseReviewRequest(body: unknown): ParseResult {
   }
   const b = body as Record<string, unknown>
 
-  if (b.action === 'list') {
+  if (b.action === 'list' || b.action === 'list_appeals') {
+    const statuses: readonly string[] = b.action === 'list' ? QUEUE_STATUSES : APPEAL_STATUSES
     const status = b.status ?? 'pending'
-    if (!QUEUE_STATUSES.includes(status as QueueStatus)) {
-      return { ok: false, error: `status must be one of ${QUEUE_STATUSES.join(', ')}`, field: 'status' }
+    if (typeof status !== 'string' || !statuses.includes(status)) {
+      return { ok: false, error: `status must be one of ${statuses.join(', ')}`, field: 'status' }
     }
-    const limit = b.limit ?? LIST_DEFAULT_LIMIT
-    if (!Number.isInteger(limit) || (limit as number) < 1 || (limit as number) > LIST_MAX_LIMIT) {
-      return { ok: false, error: `limit must be an integer between 1 and ${LIST_MAX_LIMIT}`, field: 'limit' }
+    const page = parsePage(b)
+    if (!page.ok) return page
+    return b.action === 'list'
+      ? { ok: true, value: { action: 'list', status: status as QueueStatus, ...page.value } }
+      : { ok: true, value: { action: 'list_appeals', status: status as AppealStatus, ...page.value } }
+  }
+
+  if (b.action === 'decide_appeal') {
+    if (typeof b.appeal_id !== 'string' || !UUID_RE.test(b.appeal_id)) {
+      return { ok: false, error: 'appeal_id must be a UUID', field: 'appeal_id' }
     }
-    const offset = b.offset ?? 0
-    if (!Number.isInteger(offset) || (offset as number) < 0 || (offset as number) > LIST_MAX_OFFSET) {
-      return { ok: false, error: `offset must be an integer between 0 and ${LIST_MAX_OFFSET}`, field: 'offset' }
+    if (b.decision !== 'accept' && b.decision !== 'reject') {
+      return { ok: false, error: "decision must be 'accept' or 'reject'", field: 'decision' }
     }
-    return {
-      ok: true,
-      value: { action: 'list', status: status as QueueStatus, limit: limit as number, offset: offset as number },
+    const note = optionalText(b.note, NOTE_MAX_LENGTH)
+    if (note === undefined) {
+      return { ok: false, error: `note must be a string of at most ${NOTE_MAX_LENGTH} chars`, field: 'note' }
     }
+    return { ok: true, value: { action: 'decide_appeal', appealId: b.appeal_id, decision: b.decision, note } }
   }
 
   if (b.action === 'decide') {
@@ -105,7 +117,35 @@ export function parseReviewRequest(body: unknown): ParseResult {
     }
   }
 
-  return { ok: false, error: "action must be 'list' or 'decide'", field: 'action' }
+  return {
+    ok: false,
+    error: "action must be 'list', 'decide', 'list_appeals' or 'decide_appeal'",
+    field: 'action',
+  }
+}
+
+function parsePage(
+  b: Record<string, unknown>,
+): { ok: true; value: { limit: number; offset: number } } | { ok: false; error: string; field: string } {
+  const limit = b.limit ?? LIST_DEFAULT_LIMIT
+  if (!Number.isInteger(limit) || (limit as number) < 1 || (limit as number) > LIST_MAX_LIMIT) {
+    return { ok: false, error: `limit must be an integer between 1 and ${LIST_MAX_LIMIT}`, field: 'limit' }
+  }
+  const offset = b.offset ?? 0
+  if (!Number.isInteger(offset) || (offset as number) < 0 || (offset as number) > LIST_MAX_OFFSET) {
+    return { ok: false, error: `offset must be an integer between 0 and ${LIST_MAX_OFFSET}`, field: 'offset' }
+  }
+  return { ok: true, value: { limit: limit as number, offset: offset as number } }
+}
+
+/** Error de decide_appeal → respuesta HTTP */
+export function appealDecisionErrorResponse(message: string): { status: number; error: string; code?: string } {
+  if (message.includes('appeal_not_found')) return { status: 404, error: 'Appeal not found' }
+  if (message.includes('appeal_already_decided')) return { status: 409, error: 'Appeal already decided' }
+  if (message.includes('appeal_same_moderator')) {
+    return { status: 409, error: 'Appeal must be decided by another moderator', code: 'same_moderator' }
+  }
+  return { status: 500, error: 'Failed to decide appeal' }
 }
 
 /** null si no viene o viene vacío; undefined si es inválido. */
