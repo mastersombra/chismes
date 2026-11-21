@@ -3,7 +3,7 @@
 **Fecha de creación:** 2026-10-22  
 **Objetivo:** Verificar que el proyecto está listo para producción  
 **Estado:** 📋 EN PROGRESO
-**Última revisión:** 2026-11-20 (backend en el CI: tests SQL + E2E; limpieza de ítems ya hechos; eliminación de cuenta desde la app; RLS de storage)
+**Última revisión:** 2026-11-21 (sanciones + apelaciones + reincidentes; antes: backend en el CI, eliminación de cuenta, RLS de storage)
 
 ---
 
@@ -48,8 +48,24 @@ También 2026-11-20: panel de moderación en la app (ítem 4). **Probar en la ap
 con el usuario moderador: Perfil → Panel de moderación (requiere desplegar
 `moderation-review` y el reset con la 013 modificada).
 
-**Siguiente recomendado:** sanciones (ítem 7) + apelaciones, o los pendientes
-🔴 del ítem 4 (App ID / release).
+**Hecho 2026-11-21:** sanciones, apelaciones y reincidentes (ítem 7 de la hoja
+de ruta). **Aplicar a `chismes-dev`:** reset con la 015
+(`scripts/reset-database.sh`) + desplegar `account-status`, `moderate-gossip`,
+`report-gossip` y `moderation-review`. **Probar en la app:** rechazar con
+gravedad alta un chisme de una cuenta de prueba → no puede publicar → apela
+desde Perfil → Estado de la cuenta → el moderador acepta en Apelaciones → puede
+publicar otra vez.
+
+También 2026-11-21: la app no mostraba los errores específicos de
+`moderate-gossip` (rate limit, contenido rechazado, imagen inválida): todo salía
+como error genérico porque `functions.invoke` lanza `FunctionException` en
+respuestas no 2xx. Arreglado en `SupabaseGossipRemoteDataSource.edgeFunctionFailure`.
+
+Deuda 🟢: Perfil importa pantallas de `features/moderation` (panel y estado de
+la cuenta); lo limpio es navegar por rutas registradas en `core/`.
+
+**Siguiente recomendado:** los pendientes 🔴 del ítem 4 (App ID / release) o
+los links a las políticas legales en la app.
 
 1. ~~**AuthGate debe validar la sesión con el servidor**~~ ✅ (2026-11-19) `AuthRepository.validateSession()` (`GET /auth/v1/user`) en segundo plano al iniciar y al volver a primer plano (máx. cada 5 min). Cierra sesión solo si GoTrue responde `user_not_found`, `session_not_found`, `user_banned` o `bad_jwt` (o 401/403 sin código); sin red/timeout/5xx conserva la sesión. Con el access token vencido no valida: lo resuelve el refresh. Mejora posterior 🟢: cerrar sesión ante cualquier 401 de Edge Functions/PostgREST, y avisar en Login "tu sesión expiró".
 2. ~~**Privacidad de la tabla `gossips`**~~ ✅ (2026-11-19, en 001/008/009) Los clientes ya no leen la tabla: leen la vista `public_gossips` (columnas explícitas, autor de anónimos oculto salvo para su autor). Feed y `search_gossips` leen la vista; `search_gossips` solo `authenticated`. `report-gossip` adaptada. Test: `supabase/tests/004_anonymous_author_privacy_test.sql`. Aplicado a `chismes-dev` (2026-11-20).
@@ -64,10 +80,10 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 1. ~~**Reglas en tabla**~~ ✅ (2026-11-20) `moderation_rules` en `013_moderation.sql`, leída por `moderate-gossip` en cada chisme: términos (normalizados, palabra completa), umbrales por categoría de OpenAI (`min_score` → review/reject; solo endurecen, lo `flagged` se rechaza siempre) y on/off + acción de las reglas fijas (amenaza, datos personales, spam). Las regex siguen en el código a propósito (ReDoS). **Fail-closed:** si no se pueden leer o hay una fila inválida → review (`rules_unavailable`). CHECK contra typos; clientes sin acceso. Tests: `moderation.test.ts` (32), `005_moderation_test.sql` (R1–R5), `003_api_grants_test.sql`. Pendiente 🟢: definir umbrales iniciales de IA (hoy ninguno: mismo comportamiento que antes).
 2. ~~**Cola de revisión humana**~~ ✅ (2026-11-19, backend) `013_moderation.sql` + Edge Function `moderation-review` (solo `app_metadata.role = 'moderator'`): `list` con URL firmada de la media en cuarentena; `decide` aprobar (publica la media) / rechazar (oculta y conserva el texto; borra la media pública, ver nota de storage; gravedad obligatoria). El veredicto `review` de `moderate-gossip` se encola con la ruta de su media, y `cleanup-media` no la borra mientras esté pendiente. Cada decisión guarda autor, gravedad y motivo (base de sanciones). Genérica por tipo de contenido (lista para comentarios). Tests: `005_moderation_test.sql`, `moderation-review/logic.test.ts`, E2E local.
 3. ~~**Reportes → cola**~~ ✅ (2026-11-19) `content_reports` (genérica, reemplaza a `gossip_reports`) + trigger: entra a la cola con ≥ `report_min_count` reportes de cuentas con ≥ `report_min_account_age_hours`; se auto-oculta si además supera `report_ratio` de las interacciones; desde `report_popular_interactions` nunca se oculta solo (prioridad alta). Todo en `moderation_settings`, editable sin desplegar. Arreglado: el umbral nunca funcionaba (`protect_critical_fields` revertía el UPDATE del trigger; `report-gossip` contaba solo los reportes propios). Además: la app mostraba error al reportar (esperaba 200; la función responde 201) y el autor podía reportar lo propio.
-4. ~~**Panel de moderación**~~ ✅ (2026-11-20) En la app (`lib/features/moderation`), entrada en Perfil visible solo si `app_metadata.role = 'moderator'` (el servidor igual exige el rol: sin él, 403 → "sin permisos"). Pestañas Pendientes / Aprobados / Rechazados con scroll infinito; detalle con contenido, imagen en cuarentena (URL firmada), razones traducidas, reportes, autor real (también de anónimos); aprobar (con confirmación) o rechazar (gravedad obligatoria, motivo predefinido, nota interna). Si otro moderador ya decidió (409/404) avisa y lo saca de la lista. Backend: `list` acepta `offset`, el historial se ordena por `decided_at` desc y la vista trae `author_username`/`author_display_name`. Tests: 71 Flutter (100% en casi todo el módulo), `logic.test.ts`, `005` D3. Pendiente 🟡: **apelaciones** (con sanciones, ítem 7) y reproducir el **audio** en el panel (hoy solo indica que hay audio).
+4. ~~**Panel de moderación**~~ ✅ (2026-11-20) En la app (`lib/features/moderation`), entrada en Perfil visible solo si `app_metadata.role = 'moderator'` (el servidor igual exige el rol: sin él, 403 → "sin permisos"). Pestañas Pendientes / Aprobados / Rechazados con scroll infinito; detalle con contenido, imagen en cuarentena (URL firmada), razones traducidas, reportes, autor real (también de anónimos); aprobar (con confirmación) o rechazar (gravedad obligatoria, motivo predefinido, nota interna). Si otro moderador ya decidió (409/404) avisa y lo saca de la lista. Backend: `list` acepta `offset`, el historial se ordena por `decided_at` desc y la vista trae `author_username`/`author_display_name`. Tests: 71 Flutter (100% en casi todo el módulo), `logic.test.ts`, `005` D3. Apelaciones: ✅ pestaña propia (ítem 7). Pendiente 🟡: reproducir el **audio** en el panel (hoy solo indica que hay audio).
 5. ~~**Moderación de imagen**~~ ✅ (2026-11-19) `moderate-gossip/moderation.ts`: texto + imagen en una sola llamada a `omni-moderation-latest` (imagen como data URL, nunca una URL de cuarentena); imagen marcada → reject y se borra de cuarentena. **Fail-closed:** sin API key, error, timeout (10 s) o respuesta inválida → `review`, nunca se publica. **Audio → `review` siempre** (no se modera automáticamente; la UI sigue oculta). Tests: `moderation.test.ts` (Deno, OpenAI simulado). Pendiente 🟡: texto dentro de la imagen (OCR → mismas reglas de datos personales), detección de CSAM por hash, audio con transcripción + moderación del texto y duración máxima.
 6. 🟢 **Aviso previo en la app** vía un endpoint de pre-validación del servidor (no copiando reglas).
-7. 🟡 **Sanciones al usuario** (faltas/strikes por gravedad → advertencia → restricción temporal para publicar/comentar → suspensión; lo crítico suspende directo; apelación). Los datos ya se guardan: `moderation_queue.content_author_id`, `decision_severity`, `decision_reason`. Falta: tabla de sanciones, reglas de duración, bloqueo en el servidor (`moderate-gossip`) y aviso en la app.
+7. ~~**Sanciones al usuario + apelaciones**~~ ✅ (2026-11-21) `015_sanctions.sql`. Falta = rechazo humano no anulado (la IA no sanciona). Puntos leve 1 · media 2 · alta 4 · crítica suspende; vencen a los 90 días; 3 pts → 24 h sin publicar ni reportar, 6 → 7 días, 10 → suspensión indefinida. Calculadas del historial (no se guardan). Bloqueo en `moderate-gossip` y `report-gossip` (403 `account_restricted`, antes del rate limit, fail-closed). Apelación: una por rechazo en 14 días; aceptada → falta anulada y texto republicado (la media no vuelve). Reincidentes: heredan faltas por la huella del email (`ACCOUNT_HASH_SECRET`). App: Perfil → **Estado de la cuenta** (estado, puntos, rechazos, apelar) y pestaña **Apelaciones** en el panel. Todo configurable en `moderation_settings`. Tests: `007` SQL, `sanctions_e2e` (4), Deno, Flutter. Pendiente 🟢: notificar al usuario (push/email) cuando lo sancionan o se decide su apelación; `appeal_different_moderator = 1` cuando haya más de un moderador; una suspensión heredada no se puede apelar (el contenido se borró con la cuenta).
 8. 🟢 **Comentarios:** al implementarlos, reutilizar reportes y cola agregando `comment_id` (ver cabecera de `013_moderation.sql`) y moderarlos con la misma lógica (`moderation.ts`) antes de publicar.
 
 ---
@@ -113,7 +129,7 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 - [ ] 🟡 Configurar GDPR consent para usuarios EU
 - [ ] 🟡 Implementar data export (GDPR portabilidad)
 - [x] ✅ **Eliminación de cuenta desde la app** (2026-11-20; App Store 5.1.1(v) y Google Play): Perfil → Eliminar cuenta, doble confirmación (explicación + escribir ELIMINAR). Inmediata: borra cuenta, perfil, todos los chismes y su media (pública y cuarentena); guarda solo un registro anónimo de faltas si las hubo (`014_account_deletion.sql`, huella HMAC con `ACCOUNT_HASH_SECRET`). Política de privacidad actualizada (v1.1, revisar con abogado). Tests: Flutter, `006`, E2E
-- [ ] 🔴 Aplicar 014 + `supabase secrets set ACCOUNT_HASH_SECRET=...` + desplegar `delete-account` (ver `supabase/functions/README.md`)
+- [x] ✅ 014 aplicada + `ACCOUNT_HASH_SECRET` configurado en `chismes-dev` (2026-11-21). Confirmar que `delete-account` está desplegada
 - [ ] 🔴 **Página web para pedir la eliminación sin la app** (Google Play la exige en Play Console → Data safety): depende de hospedar las políticas (chismes.app)
 - [ ] 🟡 Revocar el token de Apple al eliminar la cuenta (obligatorio solo si se activa Sign in with Apple)
 - [ ] 🟢 Código muerto: `PrivacySettingsScreen` (muestra "cuenta eliminada" sin borrar) y `PrivacyConsentScreen` (no guarda el consentimiento) no están en ninguna ruta: eliminar o conectar
@@ -195,7 +211,8 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 
 ### Database
 
-- [x] ✅ Migraciones aplicadas en `chismes-dev` (001-013)
+- [x] ✅ Migraciones aplicadas en `chismes-dev` (001-014)
+- [ ] 🔴 Aplicar 015 (sanciones) en `chismes-dev` + desplegar `account-status`, `moderate-gossip`, `report-gossip`, `moderation-review`
 - [x] ✅ Seeds aplicados (países, regiones, ciudades)
 - [x] ✅ pg_cron configurado (error logs cleanup)
 - [x] ✅ Limpieza de media programada: job `media-cleanup` → Edge Function `cleanup-media` (migración 011)
