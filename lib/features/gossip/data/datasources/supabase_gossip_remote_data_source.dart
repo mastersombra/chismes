@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/error/error_codes.dart' as error_codes;
@@ -28,6 +29,47 @@ import 'gossip_remote_data_source.dart';
 /// - Políticas RLS adicionales para UPDATE/DELETE
 @Singleton(as: GossipRemoteDataSource) // ✅ ACTIVADO: RPC obligatorio para creación
 class SupabaseGossipRemoteDataSource implements GossipRemoteDataSource {
+  /// Failure específico para una respuesta no 2xx de una Edge Function de
+  /// chismes, o null si no hay uno (el llamador usa el genérico)
+  @visibleForTesting
+  static Failure? edgeFunctionFailure(int status, dynamic data) {
+    final restricted = AccountRestrictedFailure.fromResponse(status, data);
+    if (restricted != null) return restricted;
+
+    final map = data is Map ? data : const {};
+    final error = map['error'] as String?;
+    final message = map['message'] as String?;
+
+    if (status == 401) {
+      return AuthFailure(
+        code: error_codes.ErrorCode.unauthorized,
+        technicalMessage: message ?? error ?? 'Unauthorized',
+      );
+    }
+    if (status == 429) {
+      return RateLimitFailure(
+        code: error_codes.ErrorCode.rateLimitExceeded,
+        technicalMessage: message ?? 'Rate limit exceeded',
+        message: message,
+        retryAfter: (map['retryAfter'] as num?)?.toInt(),
+      );
+    }
+    if (error == 'Content rejected by moderation') {
+      final reasons = map['reasons'] as List<dynamic>?;
+      return ValidationFailure(
+        code: error_codes.ErrorCode.moderationRejected,
+        technicalMessage: 'Content rejected: ${reasons?.join(', ')}',
+      );
+    }
+    if (error == 'Image upload failed') {
+      return ValidationFailure(
+        code: error_codes.ErrorCode.mediaUploadFailed,
+        technicalMessage: message ?? 'Image upload failed',
+      );
+    }
+    return null;
+  }
+
   final SupabaseClient _supabase;
   final AppLogger _logger;
 
@@ -199,50 +241,18 @@ class SupabaseGossipRemoteDataSource implements GossipRemoteDataSource {
         },
       );
 
-      // Verificar respuesta
+      // Verificar respuesta (normalmente invoke ya lanza FunctionException
+      // si no es 2xx: se mapea igual en el catch)
       if (response.status != 200) {
         _logger.e('Edge Function failed', context: {
           'status': response.status,
           'data': response.data,
         });
-
-        // Manejar errores específicos
-        final data = response.data;
-        if (data is Map<String, dynamic>) {
-          final error = data['error'] as String?;
-          final message = data['message'] as String?;
-
-          // Rate limit exceeded
-          if (response.status == 429) {
-            throw RateLimitFailure(
-              code: error_codes.ErrorCode.rateLimitExceeded,
-              technicalMessage: message ?? 'Rate limit exceeded',
+        throw edgeFunctionFailure(response.status, response.data) ??
+            ServerFailure(
+              code: error_codes.ErrorCode.serverError,
+              technicalMessage: 'Edge Function failed with status ${response.status}',
             );
-          }
-
-          // Content rejected by moderation
-          if (error == 'Content rejected by moderation') {
-            final reasons = data['reasons'] as List<dynamic>?;
-            throw ValidationFailure(
-              code: error_codes.ErrorCode.moderationRejected,
-              technicalMessage: 'Content rejected: ${reasons?.join(', ')}',
-            );
-          }
-
-          // Image upload failed
-          if (error == 'Image upload failed') {
-            throw ValidationFailure(
-              code: error_codes.ErrorCode.mediaUploadFailed,
-              technicalMessage: message ?? 'Image upload failed',
-            );
-          }
-        }
-
-        // Error genérico
-        throw ServerFailure(
-          code: error_codes.ErrorCode.serverError,
-          technicalMessage: 'Edge Function failed with status ${response.status}',
-        );
       }
 
       // Parsear respuesta exitosa
@@ -269,6 +279,15 @@ class SupabaseGossipRemoteDataSource implements GossipRemoteDataSource {
       // Si ya es un Failure, re-throw
       if (e is Failure) {
         rethrow;
+      }
+
+      // Respuesta no 2xx de la Edge Function (rate limit, rechazo, sanción...)
+      if (e is FunctionException) {
+        throw edgeFunctionFailure(e.status, e.details) ??
+            ServerFailure(
+              code: error_codes.ErrorCode.serverError,
+              technicalMessage: 'moderate-gossip failed with status ${e.status}: ${e.details}',
+            );
       }
 
       // Manejar errores de autenticación
@@ -336,6 +355,12 @@ class SupabaseGossipRemoteDataSource implements GossipRemoteDataSource {
       });
     } catch (e, stackTrace) {
       _logger.e('Error reportar gossip', error: e, stackTrace: stackTrace);
+
+      // Cuenta restringida (403) o rate limit: el motivo exacto
+      if (e is FunctionException) {
+        final failure = edgeFunctionFailure(e.status, e.details);
+        if (failure is AccountRestrictedFailure || failure is RateLimitFailure) throw failure!;
+      }
 
       // Manejar errores de autenticación
       final errorMessage = e.toString().toLowerCase();

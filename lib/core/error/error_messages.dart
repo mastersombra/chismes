@@ -1,6 +1,7 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 import 'error_codes.dart';
+import 'failure.dart';
 import 'package:chismes/core/l10n/l10n.dart';
 
 /// Mensajes de error centralizados con i18n
@@ -117,11 +118,32 @@ class ErrorMessages {
       case ErrorCode.rateLimitExceeded:
         return params?['message'] as String? ??
             context.l10n.errorsBusinessRateLimitExceeded;
+      case ErrorCode.accountRestricted:
+        return context.l10n.errorsAccountRestricted;
+      case ErrorCode.accountSuspended:
+        return context.l10n.errorsAccountSuspended;
 
       // Errores desconocidos
       case ErrorCode.unknownError:
         return context.l10n.errorsUnknown;
     }
+  }
+
+  /// Mensaje para un [Failure] concreto: usa los datos que trae (fecha de
+  /// fin de una restricción, mensaje del servidor) y si no, el del código
+  static String forFailure(BuildContext context, Failure failure) {
+    if (failure is AccountRestrictedFailure &&
+        failure.code == ErrorCode.accountRestricted &&
+        failure.restrictedUntil != null) {
+      final local = failure.restrictedUntil!.toLocal();
+      final material = MaterialLocalizations.of(context);
+      final date = '${material.formatShortDate(local)} · '
+          '${material.formatTimeOfDay(TimeOfDay.fromDateTime(local))}';
+      return context.l10n.errorsAccountRestrictedUntil(date);
+    }
+    if (failure is ServerFailure && failure.message != null) return failure.message!;
+    if (failure is RateLimitFailure && failure.message != null) return failure.message!;
+    return getMessage(context, failure.code);
   }
 
   /// Obtiene el título del error para mostrar en diálogos
@@ -170,6 +192,8 @@ class ErrorMessages {
       case ErrorCode.moderationRejected:
       case ErrorCode.mediaUploadFailed:
       case ErrorCode.rateLimitExceeded:
+      case ErrorCode.accountRestricted:
+      case ErrorCode.accountSuspended:
         return context.l10n.errorsTitlesGeneral;
       case ErrorCode.unknownError:
         return context.l10n.errorsTitlesUnexpected;

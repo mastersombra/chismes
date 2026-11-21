@@ -693,5 +693,147 @@
         "type": "String"
       }
     }
-  }
+  },
+  "errorsAccountRestricted": "Tu cuenta no puede publicar ni reportar por ahora. Revisa Perfil → Estado de la cuenta.",
+  "errorsAccountSuspended": "Tu cuenta está suspendida: no puede publicar ni reportar. Puedes apelar en Perfil → Estado de la cuenta.",
+  "errorsAccountRestrictedUntil": "Tu cuenta no puede publicar ni reportar hasta el {date}. Revisa Perfil → Estado de la cuenta.",
+  "@errorsAccountRestrictedUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "accountStatusEntryTitle": "Estado de la cuenta",
+  "accountStatusEntrySubtitle": "Faltas, sanciones y apelaciones",
+  "accountStatusTitle": "Estado de la cuenta",
+  "accountStatusLoadError": "No se pudo cargar el estado de tu cuenta",
+  "accountStatusOkTitle": "Tu cuenta está en orden",
+  "accountStatusOkBody": "Puedes publicar y reportar con normalidad.",
+  "accountStatusRestrictedTitle": "Sin publicar hasta el {date}",
+  "@accountStatusRestrictedTitle": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "accountStatusRestrictedTitleNoDate": "Tu cuenta está restringida",
+  "accountStatusRestrictedBody": "Por tus faltas recientes no puedes publicar ni reportar por un tiempo. Puedes seguir leyendo.",
+  "accountStatusSuspendedTitle": "Tu cuenta está suspendida",
+  "accountStatusSuspendedBody": "No puedes publicar ni reportar. Si crees que fue un error, apela el contenido rechazado.",
+  "accountStatusPendingAppeal": "Tienes una apelación en revisión.",
+  "accountStatusPointsTitle": "Puntos de faltas",
+  "accountStatusPointsValue": "{points} de {limit}",
+  "@accountStatusPointsValue": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "accountStatusPointsExplanation": "Con {short} puntos tu cuenta se restringe por un tiempo, con {long} por más tiempo y con {suspension} se suspende. Los puntos de cada falta vencen a los {days} días.",
+  "@accountStatusPointsExplanation": {
+    "placeholders": {
+      "short": {
+        "type": "int"
+      },
+      "long": {
+        "type": "int"
+      },
+      "suspension": {
+        "type": "int"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "accountStatusInheritedTitle": "Faltas de una cuenta anterior",
+  "accountStatusInheritedBody": "Una cuenta eliminada con tu email tenía faltas: {points} puntos, vigentes hasta el {date}.",
+  "@accountStatusInheritedBody": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "accountStatusRejectionsTitle": "Contenido rechazado",
+  "accountStatusNoRejections": "No tienes contenido rechazado.",
+  "accountStatusSanctionWarning": "Advertencia",
+  "accountStatusSanctionRestriction": "Restricción",
+  "accountStatusSanctionSuspension": "Suspensión",
+  "accountStatusOverturned": "Anulado por apelación",
+  "accountStatusRejectedOn": "Rechazado el {date}",
+  "@accountStatusRejectedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "accountStatusPointsUntil": "{points, plural, =1{1 punto} other{{points} puntos}} hasta el {date}",
+  "@accountStatusPointsUntil": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "accountStatusAppealUntil": "Puedes apelar hasta el {date}",
+  "@accountStatusAppealUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "accountStatusAppealClosed": "El plazo para apelar venció",
+  "appealButton": "Apelar",
+  "appealSheetTitle": "Apelar el rechazo",
+  "appealSheetHint": "Cuéntanos por qué crees que fue un error. Lo revisará una persona del equipo de moderación. Solo puedes apelar una vez.",
+  "appealMessageLabel": "Tu apelación",
+  "appealMessageHint": "Ej.: era un chiste entre amigos, no un insulto",
+  "appealSubmit": "Enviar apelación",
+  "appealSentMessage": "Apelación enviada. Te avisaremos aquí cuando se revise.",
+  "appealNotAllowedMessage": "Este rechazo ya no se puede apelar",
+  "appealErrorMessage": "No se pudo enviar la apelación",
+  "appealStatusPending": "Apelación en revisión",
+  "appealStatusAccepted": "Apelación aceptada",
+  "appealStatusRejected": "Apelación rechazada",
+  "appealFilterAccepted": "Aceptadas",
+  "appealFilterRejected": "Rechazadas",
+  "moderationTabAppeals": "Apelaciones",
+  "appealsEmptyPending": "No hay apelaciones pendientes",
+  "appealDetailTitle": "Apelación",
+  "appealUserMessageTitle": "Lo que dice el usuario",
+  "appealSentAt": "Enviada el {date}",
+  "@appealSentAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "appealOriginalDecisionTitle": "Rechazo original",
+  "appealDecisionTitle": "Decisión de la apelación",
+  "appealAccept": "Aceptar apelación",
+  "appealReject": "Mantener rechazo",
+  "appealAcceptConfirmTitle": "¿Aceptar la apelación?",
+  "appealAcceptConfirmBody": "Se anula la falta (la sanción se recalcula) y el texto vuelve a publicarse. La imagen o el audio no vuelven: se borraron al rechazarlo.",
+  "appealRejectConfirmTitle": "¿Mantener el rechazo?",
+  "appealRejectConfirmBody": "La falta sigue contando. El usuario no puede volver a apelar este contenido.",
+  "appealAcceptedMessage": "Apelación aceptada: falta anulada",
+  "appealRejectedMessage": "Rechazo mantenido",
+  "appealAlreadyDecided": "Otro moderador ya decidió esta apelación",
+  "appealNeedsAnotherModerator": "Esta apelación la debe revisar otro moderador (tú hiciste el rechazo)"
 }

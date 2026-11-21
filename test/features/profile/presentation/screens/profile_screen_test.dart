@@ -357,7 +357,10 @@ void main() {
 
     Future<void> openDialog(WidgetTester tester, AppLocalizations l10n) async {
       final button = find.text(l10n.profileScreenSignOutButton);
-      await tester.ensureVisible(button);
+      await tester.scrollUntilVisible(button, 200, scrollable: find.byType(Scrollable).first);
+      // Que quede entero en pantalla (no solo asomado) antes de tocarlo
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, -200));
+      await tester.pumpAndSettle();
       await tester.tap(button);
       await tester.pumpAndSettle();
       expect(find.byType(AlertDialog), findsOneWidget);
@@ -407,7 +410,7 @@ void main() {
           AppLocalizations.of(tester.element(find.byType(ProfileScreen)))!;
 
       final label = find.text(l10n.profileScreenSigningOut);
-      await tester.ensureVisible(label);
+      await tester.scrollUntilVisible(label, 200, scrollable: find.byType(Scrollable).first);
       expect(label, findsOneWidget);
       expect(find.text(l10n.profileScreenSignOutButton), findsNothing);
       expect(find.byIcon(Icons.logout), findsNothing);
@@ -443,6 +446,19 @@ void main() {
       await tester.pump();
 
       expect(find.byKey(const Key('moderationEntry')), findsNothing);
+    });
+
+    testWidgets('todos ven la entrada a Estado de la cuenta', (tester) async {
+      when(mockController.state).thenReturn(ProfileState.loaded);
+      when(mockController.currentUser).thenReturn(mockUser);
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+      final l10n = AppLocalizations.of(tester.element(find.byType(ProfileScreen)))!;
+
+      expect(find.byKey(const Key('accountStatusEntry')), findsOneWidget);
+      expect(find.text(l10n.accountStatusEntryTitle), findsOneWidget);
+      expect(find.text(l10n.accountStatusEntrySubtitle), findsOneWidget);
     });
   });
 
@@ -481,7 +497,7 @@ void main() {
       final l10n = await pumpLoaded(tester);
 
       final button = find.byKey(const Key('deleteAccountButton'));
-      await tester.ensureVisible(button);
+      await tester.scrollUntilVisible(button, 200, scrollable: find.byType(Scrollable).first);
       expect(find.text(l10n.profileDeleteAccountButton), findsOneWidget);
     });
 
@@ -525,7 +541,7 @@ void main() {
       final l10n = AppLocalizations.of(tester.element(find.byType(ProfileScreen)))!;
 
       final label = find.text(l10n.profileDeleteAccountDeleting);
-      await tester.ensureVisible(label);
+      await tester.scrollUntilVisible(label, 200, scrollable: find.byType(Scrollable).first);
       expect(label, findsOneWidget);
       final deleteButton = tester.widget<ButtonStyleButton>(find.ancestor(
         of: label,

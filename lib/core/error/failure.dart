@@ -106,3 +106,35 @@ class RateLimitFailure extends Failure {
   @override
   List<Object?> get props => [code, technicalMessage, message, retryAfter];
 }
+
+/// La cuenta tiene una sanción vigente (restricción o suspensión) y el
+/// servidor no la deja publicar ni reportar (`403 account_restricted`).
+///
+/// code: [ErrorCode.accountRestricted] o [ErrorCode.accountSuspended]
+class AccountRestrictedFailure extends Failure {
+  /// Fin de la restricción (null en una suspensión: es indefinida)
+  final DateTime? restrictedUntil;
+
+  const AccountRestrictedFailure({
+    required super.code,
+    super.technicalMessage,
+    this.restrictedUntil,
+  });
+
+  /// Desde el body del 403 (`{ code, state, restricted_until }`), o null si
+  /// no es una respuesta de cuenta restringida
+  static AccountRestrictedFailure? fromResponse(int status, dynamic details) {
+    if (status != 403 || details is! Map || details['code'] != 'account_restricted') {
+      return null;
+    }
+    final until = details['restricted_until'];
+    return AccountRestrictedFailure(
+      code: details['state'] == 'suspended' ? ErrorCode.accountSuspended : ErrorCode.accountRestricted,
+      technicalMessage: 'account ${details['state']}',
+      restrictedUntil: until is String ? DateTime.tryParse(until) : null,
+    );
+  }
+
+  @override
+  List<Object?> get props => [code, technicalMessage, restrictedUntil];
+}

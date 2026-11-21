@@ -4,7 +4,9 @@ import 'package:supabase_flutter/supabase_flutter.dart' hide ErrorCode;
 import '../../../../core/error/error_codes.dart';
 import '../../../../core/error/failure.dart';
 import '../../../../core/logging/logging.dart';
+import '../../domain/entities/moderation_appeal.dart';
 import '../../domain/entities/review_decision.dart';
+import '../models/moderation_appeal_model.dart';
 import '../models/moderation_item_model.dart';
 
 /// Cliente de la Edge Function `moderation-review`
@@ -13,7 +15,8 @@ import '../models/moderation_item_model.dart';
 /// - 401 → [AuthFailure] `unauthorized`
 /// - 403 → [PermissionFailure] `forbidden` (no es moderador)
 /// - 404 → [DataFailure] `notFound`
-/// - 409 → [DataFailure] `conflict` (otro moderador ya decidió)
+/// - 409 → [DataFailure] `conflict` (otro moderador ya decidió); con
+///   `code: same_moderator` → [PermissionFailure] `insufficientPermissions`
 /// - 400 → [ValidationFailure] `validationError`
 /// - resto → [ServerFailure] `serverError`
 @singleton
@@ -37,7 +40,7 @@ class ModerationRemoteDataSource {
       'offset': offset,
     });
 
-    final items = (data as Map<String, dynamic>?)?['items'];
+    final items = data is Map<String, dynamic> ? data['items'] : null;
     if (items is! List) {
       throw const ServerFailure(
         code: ErrorCode.serverError,
@@ -57,6 +60,40 @@ class ModerationRemoteDataSource {
       'decision': decision.approve ? 'approve' : 'reject',
       if (decision.severity != null) 'severity': decision.severity!.value,
       if (decision.reason != null) 'reason': decision.reason!.value,
+      if (note != null && note.isNotEmpty) 'note': note,
+    });
+  }
+
+  Future<List<ModerationAppealModel>> getAppeals({
+    required String status,
+    required int limit,
+    required int offset,
+  }) async {
+    final data = await _invoke({
+      'action': 'list_appeals',
+      'status': status,
+      'limit': limit,
+      'offset': offset,
+    });
+
+    final items = data is Map<String, dynamic> ? data['items'] : null;
+    if (items is! List) {
+      throw const ServerFailure(
+        code: ErrorCode.serverError,
+        technicalMessage: 'moderation-review list_appeals: missing items',
+      );
+    }
+    return items
+        .map((item) => ModerationAppealModel.fromJson(item as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<void> decideAppeal(AppealDecision decision) async {
+    final note = decision.note?.trim();
+    await _invoke({
+      'action': 'decide_appeal',
+      'appeal_id': decision.appealId,
+      'decision': decision.accept ? 'accept' : 'reject',
       if (note != null && note.isNotEmpty) 'note': note,
     });
   }
@@ -99,6 +136,9 @@ class ModerationRemoteDataSource {
       case 404:
         return DataFailure(code: ErrorCode.notFound, technicalMessage: message);
       case 409:
+        if (details is Map && details['code'] == 'same_moderator') {
+          return PermissionFailure(code: ErrorCode.insufficientPermissions, technicalMessage: message);
+        }
         return DataFailure(code: ErrorCode.conflict, technicalMessage: message);
       case 400:
         return ValidationFailure(code: ErrorCode.validationError, technicalMessage: message);

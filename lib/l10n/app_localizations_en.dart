@@ -1615,4 +1615,230 @@ class AppLocalizationsEn extends AppLocalizations {
   String moderationReasonAiScore(String category) {
     return 'AI: $category';
   }
+
+  @override
+  String get errorsAccountRestricted =>
+      'Your account can\'t post or report right now. Check Profile → Account status.';
+
+  @override
+  String get errorsAccountSuspended =>
+      'Your account is suspended: it can\'t post or report. You can appeal in Profile → Account status.';
+
+  @override
+  String errorsAccountRestrictedUntil(String date) {
+    return 'Your account can\'t post or report until $date. Check Profile → Account status.';
+  }
+
+  @override
+  String get accountStatusEntryTitle => 'Account status';
+
+  @override
+  String get accountStatusEntrySubtitle =>
+      'Violations, restrictions and appeals';
+
+  @override
+  String get accountStatusTitle => 'Account status';
+
+  @override
+  String get accountStatusLoadError => 'Couldn\'t load your account status';
+
+  @override
+  String get accountStatusOkTitle => 'Your account is in good standing';
+
+  @override
+  String get accountStatusOkBody => 'You can post and report as usual.';
+
+  @override
+  String accountStatusRestrictedTitle(String date) {
+    return 'No posting until $date';
+  }
+
+  @override
+  String get accountStatusRestrictedTitleNoDate => 'Your account is restricted';
+
+  @override
+  String get accountStatusRestrictedBody =>
+      'Because of recent violations you can\'t post or report for a while. You can still read.';
+
+  @override
+  String get accountStatusSuspendedTitle => 'Your account is suspended';
+
+  @override
+  String get accountStatusSuspendedBody =>
+      'You can\'t post or report. If you think this is a mistake, appeal the rejected content.';
+
+  @override
+  String get accountStatusPendingAppeal => 'You have an appeal under review.';
+
+  @override
+  String get accountStatusPointsTitle => 'Violation points';
+
+  @override
+  String accountStatusPointsValue(int points, int limit) {
+    return '$points of $limit';
+  }
+
+  @override
+  String accountStatusPointsExplanation(
+    int short,
+    int long,
+    int suspension,
+    int days,
+  ) {
+    return 'At $short points your account is restricted for a while, at $long for longer, and at $suspension it is suspended. Each violation\'s points expire after $days days.';
+  }
+
+  @override
+  String get accountStatusInheritedTitle =>
+      'Violations from a previous account';
+
+  @override
+  String accountStatusInheritedBody(int points, String date) {
+    return 'A deleted account with your email had violations: $points points, active until $date.';
+  }
+
+  @override
+  String get accountStatusRejectionsTitle => 'Rejected content';
+
+  @override
+  String get accountStatusNoRejections => 'You have no rejected content.';
+
+  @override
+  String get accountStatusSanctionWarning => 'Warning';
+
+  @override
+  String get accountStatusSanctionRestriction => 'Restriction';
+
+  @override
+  String get accountStatusSanctionSuspension => 'Suspension';
+
+  @override
+  String get accountStatusOverturned => 'Overturned on appeal';
+
+  @override
+  String accountStatusRejectedOn(String date) {
+    return 'Rejected on $date';
+  }
+
+  @override
+  String accountStatusPointsUntil(int points, String date) {
+    String _temp0 = intl.Intl.pluralLogic(
+      points,
+      locale: localeName,
+      other: '$points points',
+      one: '1 point',
+    );
+    return '$_temp0 until $date';
+  }
+
+  @override
+  String accountStatusAppealUntil(String date) {
+    return 'You can appeal until $date';
+  }
+
+  @override
+  String get accountStatusAppealClosed => 'The appeal period has ended';
+
+  @override
+  String get appealButton => 'Appeal';
+
+  @override
+  String get appealSheetTitle => 'Appeal the rejection';
+
+  @override
+  String get appealSheetHint =>
+      'Tell us why you think this was a mistake. A person on the moderation team will review it. You can only appeal once.';
+
+  @override
+  String get appealMessageLabel => 'Your appeal';
+
+  @override
+  String get appealMessageHint =>
+      'E.g.: it was a joke between friends, not an insult';
+
+  @override
+  String get appealSubmit => 'Send appeal';
+
+  @override
+  String get appealSentMessage =>
+      'Appeal sent. You\'ll see the result here once it\'s reviewed.';
+
+  @override
+  String get appealNotAllowedMessage =>
+      'This rejection can no longer be appealed';
+
+  @override
+  String get appealErrorMessage => 'Couldn\'t send the appeal';
+
+  @override
+  String get appealStatusPending => 'Appeal under review';
+
+  @override
+  String get appealStatusAccepted => 'Appeal accepted';
+
+  @override
+  String get appealStatusRejected => 'Appeal rejected';
+
+  @override
+  String get appealFilterAccepted => 'Accepted';
+
+  @override
+  String get appealFilterRejected => 'Rejected';
+
+  @override
+  String get moderationTabAppeals => 'Appeals';
+
+  @override
+  String get appealsEmptyPending => 'No pending appeals';
+
+  @override
+  String get appealDetailTitle => 'Appeal';
+
+  @override
+  String get appealUserMessageTitle => 'What the user says';
+
+  @override
+  String appealSentAt(String date) {
+    return 'Sent on $date';
+  }
+
+  @override
+  String get appealOriginalDecisionTitle => 'Original rejection';
+
+  @override
+  String get appealDecisionTitle => 'Appeal decision';
+
+  @override
+  String get appealAccept => 'Accept appeal';
+
+  @override
+  String get appealReject => 'Uphold rejection';
+
+  @override
+  String get appealAcceptConfirmTitle => 'Accept the appeal?';
+
+  @override
+  String get appealAcceptConfirmBody =>
+      'The violation is removed (the restriction is recalculated) and the text is published again. The image or audio doesn\'t come back: it was deleted on rejection.';
+
+  @override
+  String get appealRejectConfirmTitle => 'Uphold the rejection?';
+
+  @override
+  String get appealRejectConfirmBody =>
+      'The violation still counts. The user can\'t appeal this content again.';
+
+  @override
+  String get appealAcceptedMessage => 'Appeal accepted: violation removed';
+
+  @override
+  String get appealRejectedMessage => 'Rejection upheld';
+
+  @override
+  String get appealAlreadyDecided =>
+      'Another moderator already decided this appeal';
+
+  @override
+  String get appealNeedsAnotherModerator =>
+      'Another moderator must review this appeal (you made the rejection)';
 }

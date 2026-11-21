@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:chismes/core/l10n/l10n.dart';
+import '../../domain/entities/account_status.dart';
 import '../../domain/entities/moderation_item.dart';
 import '../../domain/entities/review_decision.dart';
 
@@ -73,6 +74,39 @@ class ModerationLabels {
   static String decisionReason(BuildContext context, String value) {
     final reason = RejectReason.fromValue(value);
     return reason != null ? rejectReason(context, reason) : value;
+  }
+
+  static String sanction(BuildContext context, SanctionKind kind) {
+    final l10n = context.l10n;
+    return switch (kind) {
+      SanctionKind.warning => l10n.accountStatusSanctionWarning,
+      SanctionKind.restriction => l10n.accountStatusSanctionRestriction,
+      SanctionKind.suspension => l10n.accountStatusSanctionSuspension,
+    };
+  }
+
+  static String appealStatus(BuildContext context, AppealStatus status) {
+    final l10n = context.l10n;
+    return switch (status) {
+      AppealStatus.pending => l10n.appealStatusPending,
+      AppealStatus.accepted => l10n.appealStatusAccepted,
+      AppealStatus.rejected => l10n.appealStatusRejected,
+    };
+  }
+
+  /// Filtro de la pestaña Apelaciones (plural: "Aceptadas")
+  static String appealFilter(BuildContext context, AppealStatus status) {
+    final l10n = context.l10n;
+    return switch (status) {
+      AppealStatus.pending => l10n.moderationTabPending,
+      AppealStatus.accepted => l10n.appealFilterAccepted,
+      AppealStatus.rejected => l10n.appealFilterRejected,
+    };
+  }
+
+  /// Fecha corta en el idioma de la app
+  static String date(BuildContext context, DateTime value) {
+    return MaterialLocalizations.of(context).formatShortDate(value.toLocal());
   }
 
   /// Fecha + hora corta en el idioma de la app

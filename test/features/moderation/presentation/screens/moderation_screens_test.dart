@@ -3,10 +3,14 @@ import 'package:chismes/core/error/error_codes.dart';
 import 'package:chismes/core/error/failure.dart';
 import 'package:chismes/core/logging/logging.dart';
 import 'package:chismes/core/result/result.dart';
+import 'package:chismes/features/moderation/domain/entities/account_status.dart';
+import 'package:chismes/features/moderation/domain/entities/moderation_appeal.dart';
 import 'package:chismes/features/moderation/domain/entities/moderation_item.dart';
 import 'package:chismes/features/moderation/domain/entities/review_decision.dart';
 import 'package:chismes/features/moderation/domain/usecases/decide_review.dart';
+import 'package:chismes/features/moderation/domain/usecases/get_appeals.dart';
 import 'package:chismes/features/moderation/domain/usecases/get_moderation_queue.dart';
+import 'package:chismes/features/moderation/presentation/controllers/appeals_controller.dart';
 import 'package:chismes/features/moderation/presentation/controllers/moderation_queue_controller.dart';
 import 'package:chismes/features/moderation/presentation/controllers/review_decision_controller.dart';
 import 'package:chismes/features/moderation/presentation/screens/moderation_item_screen.dart';
@@ -21,6 +25,13 @@ import '../../../../helpers/fake_network_image.dart';
 import '../../../../helpers/widget_test_wrapper.dart';
 import '../../moderation_fixtures.dart';
 import 'moderation_screens_test.mocks.dart';
+
+/// La pestaña Apelaciones (sin apelaciones): se prueba en appeals_screens_test
+class _NoAppeals implements GetAppeals {
+  @override
+  Future<Result<Failure, List<ModerationAppeal>>> call({required AppealStatus status, int offset = 0}) async =>
+      Result.success(const []);
+}
 
 @GenerateNiceMocks([
   MockSpec<GetModerationQueue>(),
@@ -41,13 +52,16 @@ void main() {
     decide = MockDecideReview();
     if (getIt.isRegistered<ModerationQueueController>()) getIt.unregister<ModerationQueueController>();
     if (getIt.isRegistered<ReviewDecisionController>()) getIt.unregister<ReviewDecisionController>();
+    if (getIt.isRegistered<AppealsController>()) getIt.unregister<AppealsController>();
     getIt.registerFactory(() => ModerationQueueController(getQueue, MockAppLogger()));
+    getIt.registerFactory(() => AppealsController(_NoAppeals(), MockAppLogger()));
     getIt.registerFactory(() => ReviewDecisionController(decide));
   });
 
   tearDown(() {
     getIt.unregister<ModerationQueueController>();
     getIt.unregister<ReviewDecisionController>();
+    getIt.unregister<AppealsController>();
   });
 
   void queueAnswers(Map<ModerationQueueStatus, Result<Failure, List<ModerationItem>>> answers) {
