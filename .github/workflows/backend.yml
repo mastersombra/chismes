@@ -1,0 +1,57 @@
+name: Backend CI
+
+# Migraciones, tests SQL y Edge Functions contra un Supabase LOCAL temporal.
+# No usa secrets ni toca el proyecto remoto (OpenAI falso, ver supabase/tests/README.md).
+# Solo corre si cambia el backend: no es un check requerido para PRs de solo Flutter.
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'supabase/**'
+      - 'scripts/e2e.sh'
+      - '.github/workflows/backend.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'supabase/**'
+      - 'scripts/e2e.sh'
+      - '.github/workflows/backend.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit:
+    name: Edge Functions unit tests (Deno)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+
+    - name: 🦕 Setup Deno
+      uses: denoland/setup-deno@v2
+      with:
+        deno-version: v2.1.4
+
+    - name: 🧪 Run unit tests
+      working-directory: supabase/functions
+      run: deno test --allow-env --no-lock moderate-gossip/moderation.test.ts moderation-review/logic.test.ts delete-account/logic.test.ts
+
+  e2e:
+    name: SQL tests + E2E (Supabase local)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+
+    - name: 🟢 Setup Supabase CLI
+      uses: supabase/setup-cli@v1
+      with:
+        version: 2.121.0
+
+    - name: 🧪 Run scripts/e2e.sh
+      run: ./scripts/e2e.sh

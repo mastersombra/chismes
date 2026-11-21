@@ -7,7 +7,8 @@
 #    remoto (sin GRANT por defecto: ver supabase/tests/README.md).
 # 2. Levanta un OpenAI falso (supabase/tests/e2e/fake_openai.ts).
 # 3. Sirve las funciones con `supabase functions serve`.
-# 4. Corre supabase/tests/e2e/*.test.ts (Deno en Docker).
+# 4. Corre los tests SQL (supabase/tests/0*.sql) y supabase/tests/e2e/*.test.ts
+#    (Deno en Docker). SQL_TESTS=0 para saltar los SQL.
 # 5. Apaga y borra todo, pase o falle.
 #
 # Requisitos: Docker y Supabase CLI. No toca el proyecto remoto.
@@ -72,6 +73,14 @@ ANON_KEY="$(json ANON_KEY)"
 SERVICE_KEY="$(json SERVICE_ROLE_KEY)"
 HOST_API="$(json API_URL)"
 
+# ---------- Tests SQL (antes de crear datos de prueba: cada uno hace ROLLBACK) ----------
+if [[ "${SQL_TESTS:-1}" == "1" ]]; then
+  for t in "$REPO"/supabase/tests/0*.sql; do
+    log "SQL: $(basename "$t")"
+    docker exec -i "supabase_db_${PROJECT}" psql -U postgres -q -v ON_ERROR_STOP=1 <"$t" >/dev/null
+  done
+fi
+
 # Ciudad de prueba (el seed no trae ciudades: se importan de GeoNames)
 docker exec -i "supabase_db_${PROJECT}" psql -U postgres -q -v ON_ERROR_STOP=1 <<'SQL'
 INSERT INTO cities (id, region_id, country_id, name, lat, lon)
@@ -92,6 +101,7 @@ cat > "$WORK/e2e.env" <<ENV
 OPENAI_API_KEY=sk-e2e-fake
 OPENAI_MODERATION_URL=http://${OPENAI_CONTAINER}:8000/v1/moderations
 MEDIA_CLEANUP_SECRET=e2e-secret
+ACCOUNT_HASH_SECRET=e2e-hash-secret
 ENV
 supabase functions serve --env-file "$WORK/e2e.env" >"$SERVE_LOG" 2>&1 &
 SERVE_PID=$!
@@ -112,6 +122,7 @@ docker run --rm --network "$NETWORK" \
   -e E2E_ANON_KEY="$ANON_KEY" \
   -e E2E_SERVICE_KEY="$SERVICE_KEY" \
   -e E2E_FAKE_OPENAI_URL="http://${OPENAI_CONTAINER}:8000" \
+  -e E2E_ACCOUNT_HASH_SECRET=e2e-hash-secret \
   -e E2E_COUNTRY_ID=CO -e E2E_REGION_ID=co-antioquia -e E2E_CITY_ID=e2e-city \
   "$DENO_IMAGE" test --allow-net --allow-env --no-lock /e2e/
 
