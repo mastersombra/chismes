@@ -4,12 +4,16 @@ import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/error/error_codes.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../domain/entities/moderation_appeal.dart';
 import '../../domain/entities/moderation_item.dart';
+import '../controllers/appeals_controller.dart';
 import '../controllers/moderation_queue_controller.dart';
+import '../widgets/appeals_tab.dart';
 import '../widgets/moderation_item_card.dart';
+import 'appeal_item_screen.dart';
 import 'moderation_item_screen.dart';
 
-/// Panel de moderación: pendientes, aprobados y rechazados.
+/// Panel de moderación: pendientes, aprobados, rechazados y apelaciones.
 ///
 /// Solo se muestra la entrada a moderadores, pero quien autoriza es el
 /// servidor: a cualquier otro usuario `moderation-review` le responde 403 y
@@ -25,14 +29,19 @@ class _ModerationQueueScreenState extends State<ModerationQueueScreen>
     with SingleTickerProviderStateMixin {
   static const _statuses = ModerationQueueStatus.values;
 
+  /// Índice de la pestaña Apelaciones (después de las de la cola)
+  static final _appealsTab = _statuses.length;
+
   late final ModerationQueueController _controller;
+  late final AppealsController _appealsController;
   late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _controller = getIt<ModerationQueueController>();
-    _tabController = TabController(length: _statuses.length, vsync: this)
+    _appealsController = getIt<AppealsController>();
+    _tabController = TabController(length: _statuses.length + 1, vsync: this)
       ..addListener(_onTabChanged);
     _controller.ensureLoaded(ModerationQueueStatus.pending);
   }
@@ -43,12 +52,29 @@ class _ModerationQueueScreenState extends State<ModerationQueueScreen>
       ..removeListener(_onTabChanged)
       ..dispose();
     _controller.dispose();
+    _appealsController.dispose();
     super.dispose();
   }
 
   void _onTabChanged() {
     if (_tabController.indexIsChanging) return;
-    _controller.ensureLoaded(_statuses[_tabController.index]);
+    final index = _tabController.index;
+    if (index == _appealsTab) {
+      _appealsController.select(_appealsController.selected);
+    } else {
+      _controller.ensureLoaded(_statuses[index]);
+    }
+  }
+
+  Future<void> _openAppeal(ModerationAppeal appeal) async {
+    final leftPending = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => AppealItemScreen(appeal: appeal)),
+    );
+    if (leftPending == true) {
+      _appealsController.onAppealDecided(appeal.id);
+      // Aceptar anula un rechazo: el historial de la cola cambió
+      _controller.invalidateHistory();
+    }
   }
 
   Future<void> _open(ModerationItem item) async {
@@ -67,10 +93,14 @@ class _ModerationQueueScreenState extends State<ModerationQueueScreen>
         title: Text(l10n.moderationTitle),
         bottom: TabBar(
           controller: _tabController,
+          // 4 pestañas no entran en 320 px con letra grande
+          isScrollable: true,
+          tabAlignment: TabAlignment.start,
           tabs: [
             Tab(text: l10n.moderationTabPending),
             Tab(text: l10n.moderationTabApproved),
             Tab(text: l10n.moderationTabRejected),
+            Tab(text: l10n.moderationTabAppeals),
           ],
         ),
       ),
@@ -87,6 +117,7 @@ class _ModerationQueueScreenState extends State<ModerationQueueScreen>
                 onLoadMore: () => _controller.loadMore(status),
                 onOpen: _open,
               ),
+            AppealsTab(controller: _appealsController, onOpen: _openAppeal),
           ],
         ),
       ),

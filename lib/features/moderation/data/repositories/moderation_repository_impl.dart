@@ -5,6 +5,8 @@ import '../../../../core/error/error_handler.dart';
 import '../../../../core/error/failure.dart';
 import '../../../../core/logging/logging.dart';
 import '../../../../core/result/result.dart';
+import '../../domain/entities/account_status.dart';
+import '../../domain/entities/moderation_appeal.dart';
 import '../../domain/entities/moderation_item.dart';
 import '../../domain/entities/review_decision.dart';
 import '../../domain/repositories/moderation_repository.dart';
@@ -65,6 +67,58 @@ class ModerationRepositoryImpl implements ModerationRepository {
           error: error,
           stackTrace: stackTrace,
           context: {'queueId': decision.queueId},
+        );
+      }
+      return Result.failure(failure);
+    }
+  }
+
+  @override
+  Future<Result<Failure, List<ModerationAppeal>>> getAppeals({
+    required AppealStatus status,
+    required int limit,
+    int offset = 0,
+  }) async {
+    try {
+      final models = await _remoteDataSource.getAppeals(
+        status: status.value,
+        limit: limit,
+        offset: offset,
+      );
+      return Result.success(models.map((m) => m.toEntity()).toList());
+    } catch (error, stackTrace) {
+      _logger.e(
+        'Error loading appeals',
+        error: error,
+        stackTrace: stackTrace,
+        context: {'status': status.value, 'offset': offset},
+      );
+      return Result.failure(ErrorHandler.handleError(error, stackTrace));
+    }
+  }
+
+  @override
+  Future<Result<Failure, void>> decideAppeal(AppealDecision decision) async {
+    try {
+      await _remoteDataSource.decideAppeal(decision);
+      _logger.i('Appeal decision applied', context: {
+        'appealId': decision.appealId,
+        'decision': decision.accept ? 'accept' : 'reject',
+      });
+      return Result.success(null);
+    } catch (error, stackTrace) {
+      final failure = ErrorHandler.handleError(error, stackTrace);
+      if (failure.code == ErrorCode.conflict || failure.code == ErrorCode.insufficientPermissions) {
+        _logger.w('Appeal decision not applied', context: {
+          'appealId': decision.appealId,
+          'code': failure.code.name,
+        });
+      } else {
+        _logger.e(
+          'Error applying appeal decision',
+          error: error,
+          stackTrace: stackTrace,
+          context: {'appealId': decision.appealId},
         );
       }
       return Result.failure(failure);

@@ -78,9 +78,13 @@ export interface TestUser {
   token: string
 }
 
-/** Crea un usuario confirmado e inicia sesión (JWT real de GoTrue) */
-export async function createUser(name: string, appMetadata: Record<string, unknown> = {}): Promise<TestUser> {
-  const email = `${name}-${crypto.randomUUID().slice(0, 8)}@e2e.test`
+/** Crea un usuario confirmado e inicia sesión (JWT real de GoTrue). fixedEmail: re-registro */
+export async function createUser(
+  name: string,
+  appMetadata: Record<string, unknown> = {},
+  fixedEmail?: string,
+): Promise<TestUser> {
+  const email = fixedEmail ?? `${name}-${crypto.randomUUID().slice(0, 8)}@e2e.test`
   const password = `E2e-${crypto.randomUUID()}`
 
   const created = await http('/auth/v1/admin/users', {

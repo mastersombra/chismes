@@ -38,7 +38,7 @@ jobs:
 
     - name: 🧪 Run unit tests
       working-directory: supabase/functions
-      run: deno test --allow-env --no-lock moderate-gossip/moderation.test.ts moderation-review/logic.test.ts delete-account/logic.test.ts
+      run: deno test --allow-env --no-lock moderate-gossip/moderation.test.ts moderation-review/logic.test.ts delete-account/logic.test.ts account-status/logic.test.ts _shared/sanctions.test.ts
 
   e2e:
     name: SQL tests + E2E (Supabase local)

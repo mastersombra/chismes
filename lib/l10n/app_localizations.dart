@@ -2941,6 +2941,377 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'IA: {category}'**
   String moderationReasonAiScore(String category);
+
+  /// No description provided for @errorsAccountRestricted.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu cuenta no puede publicar ni reportar por ahora. Revisa Perfil → Estado de la cuenta.'**
+  String get errorsAccountRestricted;
+
+  /// No description provided for @errorsAccountSuspended.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu cuenta está suspendida: no puede publicar ni reportar. Puedes apelar en Perfil → Estado de la cuenta.'**
+  String get errorsAccountSuspended;
+
+  /// No description provided for @errorsAccountRestrictedUntil.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu cuenta no puede publicar ni reportar hasta el {date}. Revisa Perfil → Estado de la cuenta.'**
+  String errorsAccountRestrictedUntil(String date);
+
+  /// No description provided for @accountStatusEntryTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Estado de la cuenta'**
+  String get accountStatusEntryTitle;
+
+  /// No description provided for @accountStatusEntrySubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Faltas, sanciones y apelaciones'**
+  String get accountStatusEntrySubtitle;
+
+  /// No description provided for @accountStatusTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Estado de la cuenta'**
+  String get accountStatusTitle;
+
+  /// No description provided for @accountStatusLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo cargar el estado de tu cuenta'**
+  String get accountStatusLoadError;
+
+  /// No description provided for @accountStatusOkTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu cuenta está en orden'**
+  String get accountStatusOkTitle;
+
+  /// No description provided for @accountStatusOkBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Puedes publicar y reportar con normalidad.'**
+  String get accountStatusOkBody;
+
+  /// No description provided for @accountStatusRestrictedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin publicar hasta el {date}'**
+  String accountStatusRestrictedTitle(String date);
+
+  /// No description provided for @accountStatusRestrictedTitleNoDate.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu cuenta está restringida'**
+  String get accountStatusRestrictedTitleNoDate;
+
+  /// No description provided for @accountStatusRestrictedBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Por tus faltas recientes no puedes publicar ni reportar por un tiempo. Puedes seguir leyendo.'**
+  String get accountStatusRestrictedBody;
+
+  /// No description provided for @accountStatusSuspendedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu cuenta está suspendida'**
+  String get accountStatusSuspendedTitle;
+
+  /// No description provided for @accountStatusSuspendedBody.
+  ///
+  /// In es, this message translates to:
+  /// **'No puedes publicar ni reportar. Si crees que fue un error, apela el contenido rechazado.'**
+  String get accountStatusSuspendedBody;
+
+  /// No description provided for @accountStatusPendingAppeal.
+  ///
+  /// In es, this message translates to:
+  /// **'Tienes una apelación en revisión.'**
+  String get accountStatusPendingAppeal;
+
+  /// No description provided for @accountStatusPointsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Puntos de faltas'**
+  String get accountStatusPointsTitle;
+
+  /// No description provided for @accountStatusPointsValue.
+  ///
+  /// In es, this message translates to:
+  /// **'{points} de {limit}'**
+  String accountStatusPointsValue(int points, int limit);
+
+  /// No description provided for @accountStatusPointsExplanation.
+  ///
+  /// In es, this message translates to:
+  /// **'Con {short} puntos tu cuenta se restringe por un tiempo, con {long} por más tiempo y con {suspension} se suspende. Los puntos de cada falta vencen a los {days} días.'**
+  String accountStatusPointsExplanation(
+    int short,
+    int long,
+    int suspension,
+    int days,
+  );
+
+  /// No description provided for @accountStatusInheritedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Faltas de una cuenta anterior'**
+  String get accountStatusInheritedTitle;
+
+  /// No description provided for @accountStatusInheritedBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Una cuenta eliminada con tu email tenía faltas: {points} puntos, vigentes hasta el {date}.'**
+  String accountStatusInheritedBody(int points, String date);
+
+  /// No description provided for @accountStatusRejectionsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Contenido rechazado'**
+  String get accountStatusRejectionsTitle;
+
+  /// No description provided for @accountStatusNoRejections.
+  ///
+  /// In es, this message translates to:
+  /// **'No tienes contenido rechazado.'**
+  String get accountStatusNoRejections;
+
+  /// No description provided for @accountStatusSanctionWarning.
+  ///
+  /// In es, this message translates to:
+  /// **'Advertencia'**
+  String get accountStatusSanctionWarning;
+
+  /// No description provided for @accountStatusSanctionRestriction.
+  ///
+  /// In es, this message translates to:
+  /// **'Restricción'**
+  String get accountStatusSanctionRestriction;
+
+  /// No description provided for @accountStatusSanctionSuspension.
+  ///
+  /// In es, this message translates to:
+  /// **'Suspensión'**
+  String get accountStatusSanctionSuspension;
+
+  /// No description provided for @accountStatusOverturned.
+  ///
+  /// In es, this message translates to:
+  /// **'Anulado por apelación'**
+  String get accountStatusOverturned;
+
+  /// No description provided for @accountStatusRejectedOn.
+  ///
+  /// In es, this message translates to:
+  /// **'Rechazado el {date}'**
+  String accountStatusRejectedOn(String date);
+
+  /// No description provided for @accountStatusPointsUntil.
+  ///
+  /// In es, this message translates to:
+  /// **'{points, plural, =1{1 punto} other{{points} puntos}} hasta el {date}'**
+  String accountStatusPointsUntil(int points, String date);
+
+  /// No description provided for @accountStatusAppealUntil.
+  ///
+  /// In es, this message translates to:
+  /// **'Puedes apelar hasta el {date}'**
+  String accountStatusAppealUntil(String date);
+
+  /// No description provided for @accountStatusAppealClosed.
+  ///
+  /// In es, this message translates to:
+  /// **'El plazo para apelar venció'**
+  String get accountStatusAppealClosed;
+
+  /// No description provided for @appealButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Apelar'**
+  String get appealButton;
+
+  /// No description provided for @appealSheetTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Apelar el rechazo'**
+  String get appealSheetTitle;
+
+  /// No description provided for @appealSheetHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuéntanos por qué crees que fue un error. Lo revisará una persona del equipo de moderación. Solo puedes apelar una vez.'**
+  String get appealSheetHint;
+
+  /// No description provided for @appealMessageLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu apelación'**
+  String get appealMessageLabel;
+
+  /// No description provided for @appealMessageHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ej.: era un chiste entre amigos, no un insulto'**
+  String get appealMessageHint;
+
+  /// No description provided for @appealSubmit.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviar apelación'**
+  String get appealSubmit;
+
+  /// No description provided for @appealSentMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Apelación enviada. Te avisaremos aquí cuando se revise.'**
+  String get appealSentMessage;
+
+  /// No description provided for @appealNotAllowedMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Este rechazo ya no se puede apelar'**
+  String get appealNotAllowedMessage;
+
+  /// No description provided for @appealErrorMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo enviar la apelación'**
+  String get appealErrorMessage;
+
+  /// No description provided for @appealStatusPending.
+  ///
+  /// In es, this message translates to:
+  /// **'Apelación en revisión'**
+  String get appealStatusPending;
+
+  /// No description provided for @appealStatusAccepted.
+  ///
+  /// In es, this message translates to:
+  /// **'Apelación aceptada'**
+  String get appealStatusAccepted;
+
+  /// No description provided for @appealStatusRejected.
+  ///
+  /// In es, this message translates to:
+  /// **'Apelación rechazada'**
+  String get appealStatusRejected;
+
+  /// No description provided for @appealFilterAccepted.
+  ///
+  /// In es, this message translates to:
+  /// **'Aceptadas'**
+  String get appealFilterAccepted;
+
+  /// No description provided for @appealFilterRejected.
+  ///
+  /// In es, this message translates to:
+  /// **'Rechazadas'**
+  String get appealFilterRejected;
+
+  /// No description provided for @moderationTabAppeals.
+  ///
+  /// In es, this message translates to:
+  /// **'Apelaciones'**
+  String get moderationTabAppeals;
+
+  /// No description provided for @appealsEmptyPending.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay apelaciones pendientes'**
+  String get appealsEmptyPending;
+
+  /// No description provided for @appealDetailTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Apelación'**
+  String get appealDetailTitle;
+
+  /// No description provided for @appealUserMessageTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Lo que dice el usuario'**
+  String get appealUserMessageTitle;
+
+  /// No description provided for @appealSentAt.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviada el {date}'**
+  String appealSentAt(String date);
+
+  /// No description provided for @appealOriginalDecisionTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Rechazo original'**
+  String get appealOriginalDecisionTitle;
+
+  /// No description provided for @appealDecisionTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Decisión de la apelación'**
+  String get appealDecisionTitle;
+
+  /// No description provided for @appealAccept.
+  ///
+  /// In es, this message translates to:
+  /// **'Aceptar apelación'**
+  String get appealAccept;
+
+  /// No description provided for @appealReject.
+  ///
+  /// In es, this message translates to:
+  /// **'Mantener rechazo'**
+  String get appealReject;
+
+  /// No description provided for @appealAcceptConfirmTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Aceptar la apelación?'**
+  String get appealAcceptConfirmTitle;
+
+  /// No description provided for @appealAcceptConfirmBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Se anula la falta (la sanción se recalcula) y el texto vuelve a publicarse. La imagen o el audio no vuelven: se borraron al rechazarlo.'**
+  String get appealAcceptConfirmBody;
+
+  /// No description provided for @appealRejectConfirmTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Mantener el rechazo?'**
+  String get appealRejectConfirmTitle;
+
+  /// No description provided for @appealRejectConfirmBody.
+  ///
+  /// In es, this message translates to:
+  /// **'La falta sigue contando. El usuario no puede volver a apelar este contenido.'**
+  String get appealRejectConfirmBody;
+
+  /// No description provided for @appealAcceptedMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Apelación aceptada: falta anulada'**
+  String get appealAcceptedMessage;
+
+  /// No description provided for @appealRejectedMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Rechazo mantenido'**
+  String get appealRejectedMessage;
+
+  /// No description provided for @appealAlreadyDecided.
+  ///
+  /// In es, this message translates to:
+  /// **'Otro moderador ya decidió esta apelación'**
+  String get appealAlreadyDecided;
+
+  /// No description provided for @appealNeedsAnotherModerator.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta apelación la debe revisar otro moderador (tú hiciste el rechazo)'**
+  String get appealNeedsAnotherModerator;
 }
 
 class _AppLocalizationsDelegate

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../moderation/presentation/screens/account_status_screen.dart';
 import '../../../moderation/presentation/screens/moderation_queue_screen.dart';
 import '../controllers/profile_controller.dart';
 import '../widgets/delete_account_dialog.dart';
@@ -135,6 +136,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 const SizedBox(height: AppSpacing.xl),
 
+                // Estado de la cuenta (sanciones y apelaciones): todos
+                _buildAccountStatusEntry(context),
+                const SizedBox(height: AppSpacing.md),
+
                 // Panel de moderación: solo se muestra a moderadores (el
                 // servidor valida el rol en cada llamada)
                 if (user.isModerator) ...[
@@ -164,6 +169,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildAccountStatusEntry(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      child: ListTile(
+        key: const Key('accountStatusEntry'),
+        leading: const Icon(Icons.verified_user_outlined),
+        title: Text(context.l10n.accountStatusEntryTitle),
+        subtitle: Text(context.l10n.accountStatusEntrySubtitle),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const AccountStatusScreen()),
+        ),
       ),
     );
   }

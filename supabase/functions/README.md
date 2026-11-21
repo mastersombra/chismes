@@ -6,10 +6,11 @@ Funciones Deno que corren en Supabase. Cada carpeta es una función (`index.ts`)
 
 | Función | Qué hace |
 |---|---|
-| `moderate-gossip` | Crea chismes: valida input, rate limit, modera texto e imagen (`moderation.ts`) y sube media a cuarentena; el veredicto `review` va a la cola con la ruta de su media. Escribe con el RPC `upsert_gossip_idempotent()` (la app nunca hace INSERT directo, ver `.claude/SECURITY.md`). |
-| `report-gossip` | Reporta un chisme visible (no el propio). Guarda en `content_reports`; el umbral (cola + auto-ocultar) lo aplica un trigger con los valores de `moderation_settings`. |
-| `moderation-review` | Cola de revisión humana, **solo moderadores** (`app_metadata.role = 'moderator'`). `list` (paginado con `limit`/`offset`; pendientes por prioridad y antigüedad, historial por decisión más reciente; con URL firmada de la media en cuarentena y nombre del autor) y `decide` (aprobar publica la media; rechazar oculta el chisme, conserva el texto para apelación, borra su media pública y exige gravedad). La usa el panel de moderación de la app (`lib/features/moderation`). Ver "Moderadores". |
+| `moderate-gossip` | Crea chismes: valida input, sanción vigente (403 `account_restricted`), rate limit, modera texto e imagen (`moderation.ts`) y sube media a cuarentena; el veredicto `review` va a la cola con la ruta de su media. Escribe con el RPC `upsert_gossip_idempotent()` (la app nunca hace INSERT directo, ver `.claude/SECURITY.md`). |
+| `report-gossip` | Reporta un chisme visible (no el propio; con sanción vigente → 403 `account_restricted`). Guarda en `content_reports`; el umbral (cola + auto-ocultar) lo aplica un trigger con los valores de `moderation_settings`. |
+| `moderation-review` | Cola de revisión humana, **solo moderadores** (`app_metadata.role = 'moderator'`). `list` (paginado con `limit`/`offset`; pendientes por prioridad y antigüedad, historial por decisión más reciente; con URL firmada de la media en cuarentena y nombre del autor) y `decide` (aprobar publica la media; rechazar oculta el chisme, conserva el texto para apelación, borra su media pública y exige gravedad); `list_appeals` / `decide_appeal` para apelaciones (aceptar anula la falta y republica el texto). La usa el panel de moderación de la app (`lib/features/moderation`). Ver "Moderadores". |
 | `delete-account` | Elimina de inmediato la cuenta del usuario autenticado (exige `confirmation: "DELETE_MY_ACCOUNT"`): borra su media pública y en cuarentena, y en una transacción guarda el registro anónimo de faltas (solo si tuvo rechazos) y borra `auth.users`, que arrastra chismes, perfil y reportes (migración 014). La usa Perfil → Eliminar cuenta. Requiere el secret `ACCOUNT_HASH_SECRET` (ver "Eliminación de cuenta"). |
+| `account-status` | Estado de la cuenta del usuario autenticado (cualquier usuario, sobre sí): sanción vigente, puntos, rechazos y apelaciones (`status`), y apelar un rechazo propio (`appeal`). Revisa reincidentes antes de responder. La usa Perfil → Estado de la cuenta (migración 015). |
 | `log-error` | Recibe logs de error de la app (autenticado, sanitiza el contexto). |
 | `search-cities` | Autocomplete remoto de ciudades. |
 | `cleanup-media` | Borra con la Storage API la media en cuarentena (>24 h) y la pública huérfana (>7 días). La llama solo el job pg_cron `media-cleanup`; exige el header `x-cleanup-secret`. |
@@ -105,6 +106,20 @@ supabase functions deploy delete-account
 `account_deletion_records`; con otra llave, las cuentas eliminadas con faltas
 dejan de reconocerse. Guardarlo en el gestor de secretos del equipo. Sin el
 secret la función responde 500 y **no** borra nada.
+
+El mismo secret lo usan `moderate-gossip`, `report-gossip` y `account-status`
+para reconocer reincidentes (migración 015). Sin él no fallan: solo no
+heredan faltas (queda un warning en los logs).
+
+### Sanciones y apelaciones (migración 015)
+
+```bash
+supabase functions deploy account-status moderate-gossip report-gossip moderation-review
+```
+
+Umbrales en `moderation_settings` (Table Editor, sin desplegar): `strike_points_*`,
+`strike_expiry_days`, `restriction_*`, `suspension_points`, `appeal_window_days`,
+`appeal_different_moderator`. Cambiarlos recalcula también el historial.
 
 ## 🛡️ Moderadores
 

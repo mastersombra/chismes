@@ -7,6 +7,10 @@ import 'dart:async' as _i3;
 
 import 'package:chismes/core/error/failure.dart' as _i5;
 import 'package:chismes/core/result/result.dart' as _i4;
+import 'package:chismes/features/moderation/domain/entities/account_status.dart'
+    as _i10;
+import 'package:chismes/features/moderation/domain/entities/moderation_appeal.dart'
+    as _i9;
 import 'package:chismes/features/moderation/domain/entities/moderation_item.dart'
     as _i6;
 import 'package:chismes/features/moderation/domain/entities/review_decision.dart'
@@ -98,6 +102,73 @@ class MockModerationRepository extends _i1.Mock
                   _i7.dummyValue<_i4.Result<_i5.Failure, void>>(
                     this,
                     Invocation.method(#decide, [decision]),
+                  ),
+                ),
+          )
+          as _i3.Future<_i4.Result<_i5.Failure, void>>);
+
+  @override
+  _i3.Future<_i4.Result<_i5.Failure, List<_i9.ModerationAppeal>>> getAppeals({
+    required _i10.AppealStatus? status,
+    required int? limit,
+    int? offset = 0,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#getAppeals, [], {
+              #status: status,
+              #limit: limit,
+              #offset: offset,
+            }),
+            returnValue:
+                _i3.Future<
+                  _i4.Result<_i5.Failure, List<_i9.ModerationAppeal>>
+                >.value(
+                  _i7.dummyValue<
+                    _i4.Result<_i5.Failure, List<_i9.ModerationAppeal>>
+                  >(
+                    this,
+                    Invocation.method(#getAppeals, [], {
+                      #status: status,
+                      #limit: limit,
+                      #offset: offset,
+                    }),
+                  ),
+                ),
+            returnValueForMissingStub:
+                _i3.Future<
+                  _i4.Result<_i5.Failure, List<_i9.ModerationAppeal>>
+                >.value(
+                  _i7.dummyValue<
+                    _i4.Result<_i5.Failure, List<_i9.ModerationAppeal>>
+                  >(
+                    this,
+                    Invocation.method(#getAppeals, [], {
+                      #status: status,
+                      #limit: limit,
+                      #offset: offset,
+                    }),
+                  ),
+                ),
+          )
+          as _i3.Future<_i4.Result<_i5.Failure, List<_i9.ModerationAppeal>>>);
+
+  @override
+  _i3.Future<_i4.Result<_i5.Failure, void>> decideAppeal(
+    _i9.AppealDecision? decision,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#decideAppeal, [decision]),
+            returnValue: _i3.Future<_i4.Result<_i5.Failure, void>>.value(
+              _i7.dummyValue<_i4.Result<_i5.Failure, void>>(
+                this,
+                Invocation.method(#decideAppeal, [decision]),
+              ),
+            ),
+            returnValueForMissingStub:
+                _i3.Future<_i4.Result<_i5.Failure, void>>.value(
+                  _i7.dummyValue<_i4.Result<_i5.Failure, void>>(
+                    this,
+                    Invocation.method(#decideAppeal, [decision]),
                   ),
                 ),
           )

@@ -5,11 +5,15 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i3;
 
-import 'package:chismes/core/logging/logging.dart' as _i6;
+import 'package:chismes/core/logging/logging.dart' as _i8;
 import 'package:chismes/features/moderation/data/datasources/moderation_remote_data_source.dart'
     as _i2;
+import 'package:chismes/features/moderation/data/models/moderation_appeal_model.dart'
+    as _i6;
 import 'package:chismes/features/moderation/data/models/moderation_item_model.dart'
     as _i4;
+import 'package:chismes/features/moderation/domain/entities/moderation_appeal.dart'
+    as _i7;
 import 'package:chismes/features/moderation/domain/entities/review_decision.dart'
     as _i5;
 import 'package:mockito/mockito.dart' as _i1;
@@ -64,12 +68,43 @@ class MockModerationRemoteDataSource extends _i1.Mock
             returnValueForMissingStub: _i3.Future<void>.value(),
           )
           as _i3.Future<void>);
+
+  @override
+  _i3.Future<List<_i6.ModerationAppealModel>> getAppeals({
+    required String? status,
+    required int? limit,
+    required int? offset,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#getAppeals, [], {
+              #status: status,
+              #limit: limit,
+              #offset: offset,
+            }),
+            returnValue: _i3.Future<List<_i6.ModerationAppealModel>>.value(
+              <_i6.ModerationAppealModel>[],
+            ),
+            returnValueForMissingStub:
+                _i3.Future<List<_i6.ModerationAppealModel>>.value(
+                  <_i6.ModerationAppealModel>[],
+                ),
+          )
+          as _i3.Future<List<_i6.ModerationAppealModel>>);
+
+  @override
+  _i3.Future<void> decideAppeal(_i7.AppealDecision? decision) =>
+      (super.noSuchMethod(
+            Invocation.method(#decideAppeal, [decision]),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
 }
 
 /// A class which mocks [AppLogger].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAppLogger extends _i1.Mock implements _i6.AppLogger {
+class MockAppLogger extends _i1.Mock implements _i8.AppLogger {
   @override
   void setUserId(String? userId) => super.noSuchMethod(
     Invocation.method(#setUserId, [userId]),

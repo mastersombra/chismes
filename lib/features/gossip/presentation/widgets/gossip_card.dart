@@ -11,6 +11,7 @@ import '../../../../core/theme/app_radius.dart';
 import '../../../../core/services/deep_link_service.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/result/result.dart';
+import '../../../../core/error/error_messages.dart';
 import '../../../../core/error/failure.dart';
 import 'report_gossip_dialog.dart';
 
@@ -92,6 +93,7 @@ $deepLink
         onFailure: (failure) {
           // Obtener mensaje según tipo de Failure
           final message = switch (failure) {
+            AccountRestrictedFailure() => ErrorMessages.forFailure(context, failure),
             ServerFailure(:final message) =>
               message ?? context.l10n.gossipCardReportError,
             RateLimitFailure(:final message) =>

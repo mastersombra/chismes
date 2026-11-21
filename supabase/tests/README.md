@@ -12,6 +12,7 @@ y el seed aplicados. Cada uno corre en una transacción con `ROLLBACK` y falla
 | `004_anonymous_author_privacy_test.sql` | Nadie salvo el autor y `service_role` ve el autor de un chisme anónimo (tabla, vista, filtros, búsqueda, feed) |
 | `005_moderation_test.sql` | Umbral de reportes (mínimo, cuentas nuevas, relativo, popular, configurable), cola de revisión (encolar, media protegida, aprobar/rechazar, historial) y reglas de contenido (`moderation_rules`: validación, duplicados) |
 | `006_account_deletion_test.sql` | Eliminación de cuenta: media a borrar, borrado en cascada sin tocar datos de otros, registro anónimo de faltas (solo con faltas, acumula por email, sin email no guarda), usuario inexistente, sin acceso de clientes |
+| `007_sanctions_test.sql` | Sanciones (advertencia, restricción 24 h / 7 días, suspensión, vencimiento, umbrales editables), apelaciones (dueño, plazo, duplicado, aceptar anula y republica, otro moderador), estado de la cuenta sin datos internos, reincidentes, eliminación sin faltas anuladas, sin acceso de clientes |
 
 ## 🔁 E2E de Edge Functions (`e2e/`)
 
@@ -30,6 +31,7 @@ levantado). No toca el proyecto remoto. Tarda ~1–2 min.
 | Reportes y cola | Propio / motivo / inexistente / duplicado; 3 reportes → cola; rechazar exige gravedad, oculta y no se decide dos veces; historial y paginación |
 | Eliminar cuenta (`delete_account_e2e.test.ts`) | Sin usuario → 401; sin confirmación → 400 y la cuenta sigue; borra auth, chismes, perfil y media (pública y cuarentena); con faltas guarda el registro anónimo por gravedad; el token viejo deja de servir |
 | Storage (`storage_rls_e2e.test.ts`) | Acceso directo de clientes (anon y usuario) a los 4 buckets: no escriben, mueven, copian, borran ni listan; la cuarentena no se lee ni se firma; lo público se ve solo por URL; nadie administra buckets |
+| Sanciones (`sanctions_e2e.test.ts`) | `account-status` (auth, estado); rechazo alto → no publica ni reporta (403); apelar (validación, ajeno, duplicado), el panel la lista, aceptar → desbloquea y republica; leve → advertencia; reincidente con crítica que elimina la cuenta y vuelve con el mismo email → sigue suspendido |
 
 El OpenAI falso responde según marcadores en el texto: `[[ai:down]]`,
 `[[ai:flag=<cat>]]`, `[[ai:flag-image=<cat>]]`, `[[ai:score=<cat>:<n>]]`.

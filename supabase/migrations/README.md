@@ -130,6 +130,15 @@
 - ✅ Solo `service_role` (Edge Function `delete-account`); requiere el secret `ACCOUNT_HASH_SECRET`
 - Tests: `supabase/tests/006_account_deletion_test.sql`, E2E `supabase/tests/e2e/delete_account_e2e.test.ts`
 
+### 015_sanctions.sql
+- ✅ Sanciones por puntos: falta = rechazo humano no anulado (los automáticos de la IA no cuentan). Leve 1 · media 2 · alta 4 · crítica suspende directo; vencen a los 90 días. 3 pts → 24 h sin publicar/reportar, 6 → 7 días, 10 → suspensión indefinida (solo la levanta una apelación). Todo en `moderation_settings`
+- ✅ No se guardan: `get_user_strikes()` / `get_user_sanction_status()` las calculan del historial (anular una falta o cambiar un umbral recalcula solo)
+- ✅ `moderation_appeals`: una apelación por rechazo, dentro de 14 días. `submit_appeal()` / `decide_appeal()` (aceptar anula la falta con `moderation_queue.overturned_at` y republica el texto); `appeal_different_moderator` (0 por defecto) exige otro moderador. Vista `moderation_appeal_items`
+- ✅ Reincidentes: `inherited_strikes` + `claim_inherited_strikes()` (la huella la calcula el servidor con `ACCOUNT_HASH_SECRET`); `get_account_status()` para la app
+- ✅ `delete_user_account()` redefinida: no cuenta faltas anuladas
+- ✅ Solo `service_role` (moderate-gossip, report-gossip, account-status, moderation-review)
+- Tests: `supabase/tests/007_sanctions_test.sql`, E2E `supabase/tests/e2e/sanctions_e2e.test.ts`
+
 ---
 
 ## 🔄 Cómo usar

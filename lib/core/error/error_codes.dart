@@ -50,6 +50,8 @@ enum ErrorCode {
   moderationRejected, // Contenido rechazado por moderación
   mediaUploadFailed, // Fallo al subir imagen/audio
   rateLimitExceeded, // Rate limit excedido (específico de gossip)
+  accountRestricted, // Sanción temporal: no puede publicar ni reportar
+  accountSuspended, // Suspensión: no puede publicar ni reportar hasta apelar
 
   // Errores desconocidos
   unknownError,

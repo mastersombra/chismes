@@ -140,6 +140,12 @@ class ModerationQueueController extends ChangeNotifier {
     _tabs[ModerationQueueStatus.pending] = pending.copyWith(
       items: pending.items.where((i) => i.id != queueId).toList(),
     );
+    invalidateHistory();
+  }
+
+  /// El historial cambió (p. ej. una apelación aceptada anuló un rechazo):
+  /// aprobados y rechazados se recargan la próxima vez que se abran
+  void invalidateHistory() {
     _tabs[ModerationQueueStatus.approved] = const ModerationTabState();
     _tabs[ModerationQueueStatus.rejected] = const ModerationTabState();
     _notify();

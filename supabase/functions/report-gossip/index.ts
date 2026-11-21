@@ -12,12 +12,17 @@
 //    moderation_settings.
 // 4. Moderadores deciden con moderation-review
 //
+// Cuenta restringida o suspendida (015_sanctions.sql) → 403
+// { code: 'account_restricted', state, restricted_until }. Fail-closed: si no
+// se puede leer el estado → 503.
+//
 // Fecha: 2026-10-22
 // Autor: Alejo + Claude Code
 // =====================================================
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { isBlocked, loadSanctionStatus, restrictedResponseBody } from '../_shared/sanctions.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -132,6 +137,21 @@ serve(async (req) => {
       supabaseUrl,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     )
+
+    // Sanción vigente → no puede reportar
+    const sanction = await loadSanctionStatus(supabaseAdmin, user, Deno.env.get('ACCOUNT_HASH_SECRET'))
+    if (!sanction) {
+      return new Response(
+        JSON.stringify({ error: 'Service temporarily unavailable' }),
+        { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+    if (isBlocked(sanction)) {
+      return new Response(
+        JSON.stringify(restrictedResponseBody(sanction)),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
 
     const { data: report, error: reportError } = await supabaseAdmin
       .from('content_reports')

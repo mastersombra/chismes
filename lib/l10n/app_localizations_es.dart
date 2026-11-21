@@ -1640,4 +1640,228 @@ class AppLocalizationsEs extends AppLocalizations {
   String moderationReasonAiScore(String category) {
     return 'IA: $category';
   }
+
+  @override
+  String get errorsAccountRestricted =>
+      'Tu cuenta no puede publicar ni reportar por ahora. Revisa Perfil → Estado de la cuenta.';
+
+  @override
+  String get errorsAccountSuspended =>
+      'Tu cuenta está suspendida: no puede publicar ni reportar. Puedes apelar en Perfil → Estado de la cuenta.';
+
+  @override
+  String errorsAccountRestrictedUntil(String date) {
+    return 'Tu cuenta no puede publicar ni reportar hasta el $date. Revisa Perfil → Estado de la cuenta.';
+  }
+
+  @override
+  String get accountStatusEntryTitle => 'Estado de la cuenta';
+
+  @override
+  String get accountStatusEntrySubtitle => 'Faltas, sanciones y apelaciones';
+
+  @override
+  String get accountStatusTitle => 'Estado de la cuenta';
+
+  @override
+  String get accountStatusLoadError =>
+      'No se pudo cargar el estado de tu cuenta';
+
+  @override
+  String get accountStatusOkTitle => 'Tu cuenta está en orden';
+
+  @override
+  String get accountStatusOkBody =>
+      'Puedes publicar y reportar con normalidad.';
+
+  @override
+  String accountStatusRestrictedTitle(String date) {
+    return 'Sin publicar hasta el $date';
+  }
+
+  @override
+  String get accountStatusRestrictedTitleNoDate => 'Tu cuenta está restringida';
+
+  @override
+  String get accountStatusRestrictedBody =>
+      'Por tus faltas recientes no puedes publicar ni reportar por un tiempo. Puedes seguir leyendo.';
+
+  @override
+  String get accountStatusSuspendedTitle => 'Tu cuenta está suspendida';
+
+  @override
+  String get accountStatusSuspendedBody =>
+      'No puedes publicar ni reportar. Si crees que fue un error, apela el contenido rechazado.';
+
+  @override
+  String get accountStatusPendingAppeal => 'Tienes una apelación en revisión.';
+
+  @override
+  String get accountStatusPointsTitle => 'Puntos de faltas';
+
+  @override
+  String accountStatusPointsValue(int points, int limit) {
+    return '$points de $limit';
+  }
+
+  @override
+  String accountStatusPointsExplanation(
+    int short,
+    int long,
+    int suspension,
+    int days,
+  ) {
+    return 'Con $short puntos tu cuenta se restringe por un tiempo, con $long por más tiempo y con $suspension se suspende. Los puntos de cada falta vencen a los $days días.';
+  }
+
+  @override
+  String get accountStatusInheritedTitle => 'Faltas de una cuenta anterior';
+
+  @override
+  String accountStatusInheritedBody(int points, String date) {
+    return 'Una cuenta eliminada con tu email tenía faltas: $points puntos, vigentes hasta el $date.';
+  }
+
+  @override
+  String get accountStatusRejectionsTitle => 'Contenido rechazado';
+
+  @override
+  String get accountStatusNoRejections => 'No tienes contenido rechazado.';
+
+  @override
+  String get accountStatusSanctionWarning => 'Advertencia';
+
+  @override
+  String get accountStatusSanctionRestriction => 'Restricción';
+
+  @override
+  String get accountStatusSanctionSuspension => 'Suspensión';
+
+  @override
+  String get accountStatusOverturned => 'Anulado por apelación';
+
+  @override
+  String accountStatusRejectedOn(String date) {
+    return 'Rechazado el $date';
+  }
+
+  @override
+  String accountStatusPointsUntil(int points, String date) {
+    String _temp0 = intl.Intl.pluralLogic(
+      points,
+      locale: localeName,
+      other: '$points puntos',
+      one: '1 punto',
+    );
+    return '$_temp0 hasta el $date';
+  }
+
+  @override
+  String accountStatusAppealUntil(String date) {
+    return 'Puedes apelar hasta el $date';
+  }
+
+  @override
+  String get accountStatusAppealClosed => 'El plazo para apelar venció';
+
+  @override
+  String get appealButton => 'Apelar';
+
+  @override
+  String get appealSheetTitle => 'Apelar el rechazo';
+
+  @override
+  String get appealSheetHint =>
+      'Cuéntanos por qué crees que fue un error. Lo revisará una persona del equipo de moderación. Solo puedes apelar una vez.';
+
+  @override
+  String get appealMessageLabel => 'Tu apelación';
+
+  @override
+  String get appealMessageHint =>
+      'Ej.: era un chiste entre amigos, no un insulto';
+
+  @override
+  String get appealSubmit => 'Enviar apelación';
+
+  @override
+  String get appealSentMessage =>
+      'Apelación enviada. Te avisaremos aquí cuando se revise.';
+
+  @override
+  String get appealNotAllowedMessage => 'Este rechazo ya no se puede apelar';
+
+  @override
+  String get appealErrorMessage => 'No se pudo enviar la apelación';
+
+  @override
+  String get appealStatusPending => 'Apelación en revisión';
+
+  @override
+  String get appealStatusAccepted => 'Apelación aceptada';
+
+  @override
+  String get appealStatusRejected => 'Apelación rechazada';
+
+  @override
+  String get appealFilterAccepted => 'Aceptadas';
+
+  @override
+  String get appealFilterRejected => 'Rechazadas';
+
+  @override
+  String get moderationTabAppeals => 'Apelaciones';
+
+  @override
+  String get appealsEmptyPending => 'No hay apelaciones pendientes';
+
+  @override
+  String get appealDetailTitle => 'Apelación';
+
+  @override
+  String get appealUserMessageTitle => 'Lo que dice el usuario';
+
+  @override
+  String appealSentAt(String date) {
+    return 'Enviada el $date';
+  }
+
+  @override
+  String get appealOriginalDecisionTitle => 'Rechazo original';
+
+  @override
+  String get appealDecisionTitle => 'Decisión de la apelación';
+
+  @override
+  String get appealAccept => 'Aceptar apelación';
+
+  @override
+  String get appealReject => 'Mantener rechazo';
+
+  @override
+  String get appealAcceptConfirmTitle => '¿Aceptar la apelación?';
+
+  @override
+  String get appealAcceptConfirmBody =>
+      'Se anula la falta (la sanción se recalcula) y el texto vuelve a publicarse. La imagen o el audio no vuelven: se borraron al rechazarlo.';
+
+  @override
+  String get appealRejectConfirmTitle => '¿Mantener el rechazo?';
+
+  @override
+  String get appealRejectConfirmBody =>
+      'La falta sigue contando. El usuario no puede volver a apelar este contenido.';
+
+  @override
+  String get appealAcceptedMessage => 'Apelación aceptada: falta anulada';
+
+  @override
+  String get appealRejectedMessage => 'Rechazo mantenido';
+
+  @override
+  String get appealAlreadyDecided => 'Otro moderador ya decidió esta apelación';
+
+  @override
+  String get appealNeedsAnotherModerator =>
+      'Esta apelación la debe revisar otro moderador (tú hiciste el rechazo)';
 }

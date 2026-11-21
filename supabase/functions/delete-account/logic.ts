@@ -1,6 +1,6 @@
 /**
  * Lógica pura de delete-account (sin red): validación del request, huella
- * del email y limpieza de las rutas de media a borrar. Tests: logic.test.ts
+ * del email (en _shared/email_hash.ts) y limpieza de las rutas de media a borrar. Tests: logic.test.ts
  */
 
 /** Texto que la app debe enviar: evita borrados por llamadas accidentales */
@@ -25,36 +25,8 @@ export function parseDeleteRequest(body: unknown): ParsedRequest {
   return { ok: true, reason: trimmed || null }
 }
 
-/** Email normalizado para la huella: sin espacios y en minúsculas */
-export function normalizeEmail(email: string | null | undefined): string | null {
-  const normalized = (email ?? '').trim().toLowerCase()
-  return normalized.length > 0 ? normalized : null
-}
-
-/**
- * Huella HMAC-SHA256 (hex) del email normalizado, o null si no hay email.
- * Con HMAC (y no SHA-256 solo) nadie sin el secret puede probar emails
- * conocidos contra la tabla.
- */
-export async function emailHash(
-  email: string | null | undefined,
-  secret: string,
-): Promise<string | null> {
-  const normalized = normalizeEmail(email)
-  if (!normalized) return null
-  const encoder = new TextEncoder()
-  const key = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign'],
-  )
-  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(normalized))
-  return Array.from(new Uint8Array(signature))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
-}
+// Huella del email: compartida con la detección de reincidentes
+export { emailHash, normalizeEmail } from '../_shared/email_hash.ts'
 
 /** Rutas válidas (strings no vacíos, sin '..', sin duplicados) */
 export function cleanPaths(paths: unknown[]): string[] {

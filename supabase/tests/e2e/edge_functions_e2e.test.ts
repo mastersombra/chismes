@@ -382,7 +382,9 @@ Deno.test('reportes → cola → el moderador rechaza con gravedad → oculto', 
 })
 
 Deno.test('rechazar un chisme publicado con foto → la foto deja de ser pública', async () => {
-  const published = await createGossip(author, { subject: 'Foto para rechazar', image_base64: PNG_BASE64 })
+  // Autor propio: `author` ya tiene un rechazo alto (restringido, 015_sanctions)
+  const photoAuthor = await createUser('photo-author')
+  const published = await createGossip(photoAuthor, { subject: 'Foto para rechazar', image_base64: PNG_BASE64 })
   assertEquals(published.status, 200)
   const gossipId = published.body.gossip.id
   const before = await mustGossipRow(gossipId)

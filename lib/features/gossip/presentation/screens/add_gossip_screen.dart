@@ -105,13 +105,9 @@ class _AddGossipScreenState extends State<AddGossipScreen> {
               builder: (context, failure, child) {
                 if (failure == null) return const SizedBox.shrink();
 
-                // Usar mensaje personalizado del servidor si está disponible (ej: rate limiting)
-                String message;
-                if (failure is ServerFailure) {
-                  message = failure.message ?? ErrorMessages.getMessage(context, failure.code);
-                } else {
-                  message = ErrorMessages.getMessage(context, failure.code);
-                }
+                // Mensaje del servidor (rate limit) o con datos del failure
+                // (fin de una restricción de la cuenta) si los hay
+                final message = ErrorMessages.forFailure(context, failure);
 
                 return Column(
                   children: [

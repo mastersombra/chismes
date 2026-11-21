@@ -19,7 +19,18 @@
 //             media de cuarentena y la PÚBLICA (si ya estaba publicado, su URL
 //             seguiría sirviendo el archivo) y marca los reportes como atendidos
 //   La decisión (autor, gravedad, motivo) queda en moderation_queue: base de
-//   las sanciones futuras.
+//   las sanciones (015_sanctions.sql).
+//
+// POST { action: 'list_appeals', status?: 'pending'|'accepted'|'rejected',
+//        limit?, offset? }
+//   → { items }. Pendientes: las más antiguas primero. Decididas: la más
+//     reciente primero. Con el contenido y la decisión original.
+//
+// POST { action: 'decide_appeal', appeal_id, decision: 'accept'|'reject', note? }
+//   accept → anula la falta (la sanción se recalcula) y republica el texto
+//   reject → la falta sigue
+//   409 si ya se decidió o (con appeal_different_moderator = 1) si la decide
+//   el mismo moderador que rechazó (code: 'same_moderator').
 //
 // Orden seguro al aprobar: copiar a público SIN borrar la cuarentena →
 // aplicar la decisión en la base (atómico) → borrar la cuarentena. Si la base
@@ -38,7 +49,7 @@ import {
   type PublicAudioResult,
   type PublicImageResult,
 } from '../_shared/media.ts'
-import { isModerator, parseReviewRequest, type ReviewRequest } from './logic.ts'
+import { appealDecisionErrorResponse, isModerator, parseReviewRequest, type ReviewRequest } from './logic.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -96,9 +107,16 @@ serve(async (req) => {
 
     const supabaseAdmin = createClient(supabaseUrl, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
 
-    return parsed.value.action === 'list'
-      ? await listQueue(parsed.value, supabaseAdmin)
-      : await decide(parsed.value, user.id, supabaseAdmin)
+    switch (parsed.value.action) {
+      case 'list':
+        return await listQueue(parsed.value, supabaseAdmin)
+      case 'decide':
+        return await decide(parsed.value, user.id, supabaseAdmin)
+      case 'list_appeals':
+        return await listAppeals(parsed.value, supabaseAdmin)
+      case 'decide_appeal':
+        return await decideAppeal(parsed.value, user.id, supabaseAdmin)
+    }
   } catch (error) {
     console.error('❌ Error in moderation-review:', error)
     return json({ error: 'Internal server error' }, 500)
@@ -263,4 +281,52 @@ async function rollbackPublicCopies(
 ): Promise<void> {
   if (image) await deleteFromPublicBucket(image.storagePath, image.thumbnailStoragePath, supabaseAdmin)
   if (audio) await deleteAudioFromPublicBucket(audio.storagePath, supabaseAdmin)
+}
+
+// =====================================================
+// APELACIONES
+// =====================================================
+
+async function listAppeals(
+  request: Extract<ReviewRequest, { action: 'list_appeals' }>,
+  supabaseAdmin: any
+): Promise<Response> {
+  let query = supabaseAdmin
+    .from('moderation_appeal_items')
+    .select('*')
+    .eq('status', request.status)
+  query = request.status === 'pending'
+    ? query.order('created_at', { ascending: true })
+    : query.order('decided_at', { ascending: false })
+  const { data, error } = await query
+    .order('id', { ascending: true })
+    .range(request.offset, request.offset + request.limit - 1)
+
+  if (error) {
+    console.error('❌ Failed to list appeals:', error)
+    return json({ error: 'Failed to list appeals' }, 500)
+  }
+  return json({ items: data ?? [] })
+}
+
+async function decideAppeal(
+  request: Extract<ReviewRequest, { action: 'decide_appeal' }>,
+  moderatorId: string,
+  supabaseAdmin: any
+): Promise<Response> {
+  const { data, error } = await supabaseAdmin.rpc('decide_appeal', {
+    p_appeal_id: request.appealId,
+    p_decision: request.decision,
+    p_moderator_id: moderatorId,
+    p_note: request.note,
+  })
+
+  if (error) {
+    const mapped = appealDecisionErrorResponse(error.message ?? '')
+    if (mapped.status === 500) console.error('❌ decide_appeal failed:', error)
+    return json({ error: mapped.error, ...(mapped.code ? { code: mapped.code } : {}) }, mapped.status)
+  }
+
+  console.log(`⚖️ appeal ${request.decision} ${request.appealId} by moderator ${moderatorId}`)
+  return json({ appeal: data })
 }

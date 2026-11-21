@@ -17,6 +17,7 @@ import {
   type PublicAudioResult,
   type PublicImageResult,
 } from '../_shared/media.ts'
+import { isBlocked, loadSanctionStatus, restrictedResponseBody } from '../_shared/sanctions.ts'
 
 /**
  * Edge Function: Moderación Híbrida + Upload Seguro de Media (Imagen y Audio)
@@ -42,6 +43,7 @@ import {
  * 4. Fail-closed: sin veredicto de la IA o sin reglas → review (nunca se publica)
  *
  * Seguridad:
+ * - ✅ Cuenta restringida/suspendida no publica (403 account_restricted)
  * - ✅ Cuarentena privada (archivos no públicos hasta aprobar)
  * - ✅ Validación MIME real de imagen Y audio (magic bytes)
  * - ✅ Validación de dimensiones/tamaño (prevenir archivos gigantes)
@@ -188,6 +190,27 @@ serve(async (req) => {
     }
 
     console.log(`✅ Location validated: ${body.country_id}/${body.region_id}/${body.city_id}`)
+
+    // 2.4. ✅ SANCIONES (015_sanctions.sql): restringido o suspendido no
+    // publica. Antes del rate limit para no gastar slot. Fail-closed: si no
+    // se puede leer el estado → 503.
+    const sanction = await loadSanctionStatus(supabaseAdmin, user, Deno.env.get('ACCOUNT_HASH_SECRET'))
+    if (!sanction) {
+      return new Response(
+        JSON.stringify({
+          error: 'Service temporarily unavailable',
+          message: 'Unable to process your request at this time. Please try again in a moment.',
+        }),
+        { status: 503, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
+    if (isBlocked(sanction)) {
+      console.log(`🚫 Account ${sanction.state}: ${userId}`)
+      return new Response(
+        JSON.stringify(restrictedResponseBody(sanction)),
+        { status: 403, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
 
     // 2.5. ✅ RESERVAR SLOT DE RATE LIMITING (ATÓMICO)
     // NOTA: Idempotencia se maneja al final con upsert atómico (Fix P1-03)
