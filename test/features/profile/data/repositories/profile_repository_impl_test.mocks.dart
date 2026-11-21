@@ -96,6 +96,15 @@ class MockProfileRemoteDataSource extends _i1.Mock
             returnValueForMissingStub: _i5.Future<void>.value(),
           )
           as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> deleteAccount() =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteAccount, []),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
 }
 
 /// A class which mocks [AppLogger].

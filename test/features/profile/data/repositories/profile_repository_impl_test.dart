@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:chismes/core/error/error_codes.dart';
 import 'package:chismes/core/error/failure.dart';
 import 'package:chismes/core/logging/logging.dart';
 import 'package:chismes/core/result/result.dart';
@@ -518,6 +519,39 @@ void main() {
         // Assert
         expect(result.isFailure, isTrue);
       });
+    });
+  });
+
+  group('deleteAccount', () {
+    test('éxito: retorna success', () async {
+      when(mockRemoteDataSource.deleteAccount()).thenAnswer((_) async {});
+
+      final result = await repository.deleteAccount();
+
+      expect(result.isSuccess, isTrue);
+      verify(mockRemoteDataSource.deleteAccount()).called(1);
+    });
+
+    test('Failure del datasource → Result.failure con el mismo tipo', () async {
+      when(mockRemoteDataSource.deleteAccount()).thenThrow(
+        const ServerFailure(code: ErrorCode.serverError, technicalMessage: 'delete-account 500'),
+      );
+
+      final result = await repository.deleteAccount();
+
+      expect(result.isFailure, isTrue);
+      result.when(
+        onFailure: (failure) => expect(failure, isA<ServerFailure>()),
+        onSuccess: (_) => fail('Should be failure'),
+      );
+    });
+
+    test('excepción genérica → Result.failure (nunca lanza)', () async {
+      when(mockRemoteDataSource.deleteAccount()).thenThrow(Exception('network'));
+
+      final result = await repository.deleteAccount();
+
+      expect(result.isFailure, isTrue);
     });
   });
 }

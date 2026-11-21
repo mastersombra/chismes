@@ -80,7 +80,7 @@
 ### 006_media_security.sql
 **Contenido consolidado:**
 - ✅ Buckets de cuarentena (images + audio)
-- ✅ Políticas de storage seguras
+- ✅ Políticas de storage: solo `service_role` escribe; los buckets públicos sirven por URL pública pero no se pueden listar (sin política SELECT para clientes). Regresión: `supabase/tests/e2e/storage_rls_e2e.test.ts`
 - ✅ Funciones de validación
 - ✅ Proceso de 2 pasos: quarantine → production
 - ✅ Límites de tamaño y formato
@@ -119,9 +119,16 @@
 - ✅ `content_reports`: reportes genéricos (hoy `gossip_id`; a futuro `comment_id`) con la regla "exactamente una referencia"; reemplaza a `gossip_reports`
 - ✅ `moderation_queue`: cola de revisión humana + historial (autor, gravedad, motivo: base de sanciones futuras); media pendiente protegida de la limpieza
 - ✅ Trigger de reportes: mínimo de reportes, cuentas nuevas no cuentan, umbral relativo a las interacciones, lo popular no se oculta solo
-- ✅ RPCs solo `service_role`: `enqueue_moderation()` (moderate-gossip), `apply_moderation_decision()` (moderation-review); vista `moderation_queue_items`
+- ✅ RPCs solo `service_role`: `enqueue_moderation()` (moderate-gossip), `apply_moderation_decision()` (moderation-review; al rechazar desvincula la media pública y devuelve sus rutas en `removed_media` para borrarla); vista `moderation_queue_items`
 - ✅ En 001: `protect_critical_fields` es `SECURITY INVOKER` y protege solo ante clientes directos (antes revertía en silencio el UPDATE del trigger de reportes)
 - Tests: `supabase/tests/005_moderation_test.sql`
+
+### 014_account_deletion.sql
+- ✅ `account_deletion_records`: registro anónimo de faltas de cuentas eliminadas (huella HMAC del email + rechazos por gravedad; sin user_id ni contenido). Solo si tuvo faltas; si vuelve a pasar con el mismo email, acumula
+- ✅ `get_account_deletion_media()`: rutas de la media del usuario (buckets públicos + cuarentena) para borrarla con la Storage API
+- ✅ `delete_user_account()`: en una transacción guarda el registro y borra `auth.users` (cascada: chismes, perfil, reportes, cola) y `rate_limits` (sin FK)
+- ✅ Solo `service_role` (Edge Function `delete-account`); requiere el secret `ACCOUNT_HASH_SECRET`
+- Tests: `supabase/tests/006_account_deletion_test.sql`, E2E `supabase/tests/e2e/delete_account_e2e.test.ts`
 
 ---
 

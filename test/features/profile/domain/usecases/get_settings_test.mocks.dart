@@ -99,4 +99,17 @@ class MockProfileRepository extends _i1.Mock implements _i2.ProfileRepository {
             ),
           )
           as _i3.Future<_i4.Result<_i5.Failure, void>>);
+
+  @override
+  _i3.Future<_i4.Result<_i5.Failure, void>> deleteAccount() =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteAccount, []),
+            returnValue: _i3.Future<_i4.Result<_i5.Failure, void>>.value(
+              _i7.dummyValue<_i4.Result<_i5.Failure, void>>(
+                this,
+                Invocation.method(#deleteAccount, []),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Result<_i5.Failure, void>>);
 }

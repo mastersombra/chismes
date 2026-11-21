@@ -381,6 +381,44 @@ Deno.test('reportes → cola → el moderador rechaza con gravedad → oculto', 
   assertEquals(item.decided_by, moderator.id)
 })
 
+Deno.test('rechazar un chisme publicado con foto → la foto deja de ser pública', async () => {
+  const published = await createGossip(author, { subject: 'Foto para rechazar', image_base64: PNG_BASE64 })
+  assertEquals(published.status, 200)
+  const gossipId = published.body.gossip.id
+  const before = await mustGossipRow(gossipId)
+  assert(await objectExists('images', before.storage_path))
+  const publicUrl = `${API}/storage/v1/object/public/images/${before.storage_path}`
+
+  for (const reporter of reporters) {
+    const r = await callFunction('report-gossip', {
+      token: reporter.token,
+      body: { gossip_id: gossipId, reason: 'harassment' },
+    })
+    assertEquals(r.status, 201)
+  }
+  const entry = await mustQueueEntry(gossipId)
+
+  const rejected = await review({
+    action: 'decide',
+    queue_id: entry.id,
+    decision: 'reject',
+    severity: 'critical',
+    reason: 'personal_data',
+  })
+  assertEquals(rejected.status, 200)
+  assert(!('removed_media' in rejected.body.item), 'la respuesta no debe exponer rutas internas')
+
+  const after = await mustGossipRow(gossipId)
+  assertEquals(after.status, 'hidden')
+  assertEquals(after.subject, 'Foto para rechazar', 'el texto debe quedar para apelación')
+  assertEquals([after.image_url, after.storage_path, after.thumbnail_storage_path], [null, null, null])
+  assert(!(await objectExists('images', before.storage_path)), 'la foto sigue en el bucket público')
+  assert(!(await objectExists('images', before.thumbnail_storage_path)), 'el thumbnail sigue')
+  const r = await fetch(publicUrl)
+  await r.body?.cancel()
+  assert(r.status >= 400, `la URL pública sigue respondiendo ${r.status}`)
+})
+
 Deno.test('cola: paginación con offset sin repetir ítems', async () => {
   const page1 = await review({ action: 'list', status: 'pending', limit: 2, offset: 0 })
   const page2 = await review({ action: 'list', status: 'pending', limit: 2, offset: 2 })

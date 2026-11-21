@@ -62,10 +62,11 @@ ON CONFLICT (id) DO UPDATE SET
   file_size_limit = EXCLUDED.file_size_limit,
   allowed_mime_types = EXCLUDED.allowed_mime_types;
 
--- Cualquiera puede VER imágenes públicas
-CREATE POLICY "Public can view approved images"
-ON storage.objects FOR SELECT
-USING (bucket_id = 'images');
+-- Sin política de SELECT para clientes, a propósito: un bucket público sirve
+-- cada archivo por su URL pública (/object/public/...) sin pasar por RLS.
+-- Una política SELECT solo agregaría LISTAR el bucket (enumerar todos los
+-- archivos, incluidos los de chismes ocultos). Regresión:
+-- supabase/tests/e2e/storage_rls_e2e.test.ts
 
 -- Service role puede subir/eliminar (para mover desde cuarentena)
 CREATE POLICY "Service role can manage public images"
@@ -345,10 +346,8 @@ ON CONFLICT (id) DO UPDATE SET
   file_size_limit = EXCLUDED.file_size_limit,
   allowed_mime_types = EXCLUDED.allowed_mime_types;
 
--- Cualquiera puede VER audios públicos
-CREATE POLICY "Public can view approved audio"
-ON storage.objects FOR SELECT
-USING (bucket_id = 'audio');
+-- Sin política de SELECT para clientes (ver bucket 'images'): la URL pública
+-- sirve el archivo; listar el bucket queda bloqueado.
 
 -- Service role puede subir/eliminar (para mover desde cuarentena)
 CREATE POLICY "Service role can manage public audio"

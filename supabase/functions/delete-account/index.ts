@@ -1,51 +1,60 @@
 // =====================================================
 // EDGE FUNCTION: delete-account
 // =====================================================
-// Elimina cuenta de usuario y todos sus datos (GDPR compliant)
+// Elimina la cuenta del usuario autenticado y todos sus datos, de inmediato
+// (requisito de App Store 5.1.1(v) y Google Play; GDPR art. 17).
 //
 // Flujo:
-// 1. Usuario autenticado solicita eliminación
-// 2. Soft-delete de gossips (anonymizar autor)
-// 3. Eliminar datos personales (email, etc.)
-// 4. Eliminar cuenta de auth.users
+// 1. Auth + confirmación ("DELETE_MY_ACCOUNT"): la app pide doble confirmación
+// 2. get_account_deletion_media(): media de sus chismes (pública + cuarentena)
+// 3. Borra esa media con la Storage API, más todo lo que tenga en
+//    quarantine/<user_id>/ (subidas que no llegaron a la cola). Los errores
+//    se loguean y no bloquean: cleanup-media borra lo huérfano (> 7 días)
+// 4. delete_user_account() (migración 014), en una transacción: registro
+//    anónimo de faltas (solo si tuvo rechazos) + borrar auth.users. Por
+//    cascada se van chismes, perfil, reportes e historial de moderación
 //
-// ⚠️ IRREVERSIBLE - Requiere confirmación doble en UI
+// Qué se conserva: solo account_deletion_records (huella HMAC del email +
+// conteo de rechazos por gravedad), si tuvo faltas. Ver PRIVACY_POLICY.md.
 //
-// Fecha: 2026-10-22
-// Autor: Alejo + Claude Code
+// Secrets: ACCOUNT_HASH_SECRET (obligatorio: sin él responde 500 y no borra).
+// No rotarlo: cambiar el secret invalida las huellas guardadas.
+//
+// Respuestas: 200 { deleted: true } · 400 confirmación/body · 401 sin usuario
+//             · 405 método · 500 error (la cuenta sigue existiendo)
 // =====================================================
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { cleanPaths, emailHash, parseDeleteRequest } from './logic.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-interface DeleteAccountRequest {
-  confirmation: string  // User must send "DELETE_MY_ACCOUNT"
-  reason?: string       // Optional feedback
+const QUARANTINE_BUCKETS = ['images-quarantine', 'audio-quarantine'] as const
+
+function json(status: number, body: Record<string, unknown>): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  })
 }
 
 serve(async (req) => {
-  // =====================================================
-  // CORS Preflight
-  // =====================================================
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
+  if (req.method !== 'POST') {
+    return json(405, { error: 'Method not allowed' })
+  }
 
   try {
-    // =====================================================
-    // PASO 1: Autenticación (REQUERIDA)
-    // =====================================================
+    // ---------- 1. Auth ----------
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Missing Authorization header' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+      return json(401, { error: 'Missing Authorization header' })
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
@@ -53,199 +62,98 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
     const supabaseAnon = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } }
+      global: { headers: { Authorization: authHeader } },
     })
-
     const { data: { user }, error: authError } = await supabaseAnon.auth.getUser()
-
     if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized', details: authError?.message }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+      return json(401, { error: 'Unauthorized' })
     }
 
-    // =====================================================
-    // PASO 2: Parsear Body
-    // =====================================================
-    const body: DeleteAccountRequest = await req.json()
-
-    // =====================================================
-    // PASO 3: Validar Confirmación
-    // =====================================================
-    if (body.confirmation !== 'DELETE_MY_ACCOUNT') {
-      return new Response(
-        JSON.stringify({
-          error: 'Invalid confirmation',
-          message: 'You must send confirmation: "DELETE_MY_ACCOUNT"'
-        }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+    // ---------- Confirmación ----------
+    let body: unknown
+    try {
+      body = await req.json()
+    } catch {
+      return json(400, { error: 'Invalid JSON body' })
+    }
+    const parsed = parseDeleteRequest(body)
+    if (!parsed.ok) {
+      return json(400, { error: parsed.error })
     }
 
-    // =====================================================
-    // PASO 4: Usar Service Role (para bypass RLS)
-    // =====================================================
-    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
-
-    // =====================================================
-    // PASO 5: Soft-Delete Gossips (Anonymizar)
-    // =====================================================
-    // Estrategia: No eliminar gossips (pueden tener comentarios/interacciones)
-    // En su lugar, anonymizar el autor
-    //
-    // Opciones:
-    // A) Cambiar created_by a UUID anónimo
-    // B) Cambiar status a 'deleted'
-    // C) Mantener pero marcar como [deleted user]
-    const { error: gossipsError } = await supabaseAdmin
-      .from('gossips')
-      .update({
-        deleted_at: new Date().toISOString(),
-        deleted_by: user.id,
-        // Opcionalmente: anonymizar created_by
-        // created_by: '00000000-0000-0000-0000-000000000000',
-      })
-      .eq('created_by', user.id)
-      .is('deleted_at', null)  // Solo los no eliminados
-
-    if (gossipsError) {
-      console.error('Error deleting gossips:', gossipsError)
-      // Continue anyway - no queremos bloquear la eliminación de cuenta
+    const hashSecret = Deno.env.get('ACCOUNT_HASH_SECRET')
+    if (!hashSecret) {
+      console.error('ACCOUNT_HASH_SECRET is not configured: account not deleted')
+      return json(500, { error: 'Server misconfigured' })
     }
 
-    // =====================================================
-    // PASO 6: Eliminar Otros Datos
-    // =====================================================
+    const admin = createClient(supabaseUrl, supabaseServiceKey)
 
-    // A) Eliminar reportes del usuario
-    const { error: reportsError } = await supabaseAdmin
-      .from('content_reports')
-      .delete()
-      .eq('reported_by', user.id)
-
-    if (reportsError) {
-      console.error('Error deleting reports:', reportsError)
-    }
-
-    // B) Eliminar rate limits
-    const { error: rateLimitsError } = await supabaseAdmin
-      .from('rate_limits')
-      .delete()
-      .eq('user_id', user.id)
-
-    if (rateLimitsError) {
-      console.error('Error deleting rate limits:', rateLimitsError)
-    }
-
-    // C) Eliminar ubicación por defecto (si existe tabla user_preferences)
-    // await supabaseAdmin
-    //   .from('user_preferences')
-    //   .delete()
-    //   .eq('user_id', user.id)
-
-    // =====================================================
-    // PASO 7: Guardar Feedback (Opcional)
-    // =====================================================
-    if (body.reason) {
-      // Solo a los logs de la función (sin user_id, GDPR). No existe tabla de
-      // feedback: antes se insertaba en `account_deletion_feedback` (inexistente)
-      // con `.catch()`, que el query builder de supabase-js no tiene → TypeError
-      // que abortaba la eliminación justo cuando el usuario daba un motivo.
-      // TODO: tabla de analytics si se quiere medir motivos de baja.
-      console.log('Account deletion reason:', String(body.reason).slice(0, 200))
-    }
-
-    // =====================================================
-    // PASO 8: Eliminar Usuario de Auth (IRREVERSIBLE)
-    // =====================================================
-    const { error: deleteAuthError } = await supabaseAdmin.auth.admin.deleteUser(user.id)
-
-    if (deleteAuthError) {
-      console.error('Error deleting auth user:', deleteAuthError)
-      return new Response(
-        JSON.stringify({
-          error: 'Failed to delete account',
-          details: deleteAuthError.message,
-          message: 'Your data was deleted but account still exists. Please contact support.'
-        }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    // =====================================================
-    // PASO 9: Retornar Success
-    // =====================================================
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: 'Your account has been permanently deleted.',
-        deleted_at: new Date().toISOString(),
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
+    // ---------- 2. Media a borrar ----------
+    const { data: media, error: mediaError } = await admin.rpc(
+      'get_account_deletion_media',
+      { p_user_id: user.id },
     )
+    if (mediaError) {
+      console.error('get_account_deletion_media failed:', mediaError.message)
+      return json(500, { error: 'Failed to delete account' })
+    }
 
+    // ---------- 3. Borrar media (best effort) ----------
+    const toRemove: Record<string, string[]> = {
+      'images': cleanPaths(media?.image_paths ?? []),
+      'audio': cleanPaths(media?.audio_paths ?? []),
+      'images-quarantine': cleanPaths(media?.image_quarantine_paths ?? []),
+      'audio-quarantine': cleanPaths(media?.audio_quarantine_paths ?? []),
+    }
+
+    for (const bucket of QUARANTINE_BUCKETS) {
+      const prefix = `quarantine/${user.id}`
+      const { data: files, error } = await admin.storage.from(bucket).list(prefix, { limit: 1000 })
+      if (error) {
+        console.error(`list ${bucket}/${prefix} failed:`, error.message)
+        continue
+      }
+      for (const file of files ?? []) {
+        const path = `${prefix}/${file.name}`
+        if (!toRemove[bucket].includes(path)) toRemove[bucket].push(path)
+      }
+    }
+
+    let removed = 0
+    for (const [bucket, paths] of Object.entries(toRemove)) {
+      if (paths.length === 0) continue
+      const { error } = await admin.storage.from(bucket).remove(paths)
+      if (error) {
+        // No bloquea: cleanup-media borra lo huérfano
+        console.error(`remove from ${bucket} failed:`, error.message)
+      } else {
+        removed += paths.length
+      }
+    }
+
+    // ---------- 4. Registro de faltas + borrar cuenta (atómico) ----------
+    const hash = await emailHash(user.email, hashSecret)
+    const { data: recorded, error: deleteError } = await admin.rpc('delete_user_account', {
+      p_user_id: user.id,
+      p_email_hash: hash,
+    })
+    if (deleteError) {
+      console.error('delete_user_account failed:', deleteError.message)
+      return json(500, { error: 'Failed to delete account' })
+    }
+
+    // Sin user_id ni email en los logs
+    console.log(
+      `Account deleted (media files removed: ${removed}, offense record: ${recorded === true})`,
+    )
+    if (parsed.reason) {
+      console.log('Account deletion reason:', parsed.reason)
+    }
+
+    return json(200, { deleted: true })
   } catch (error) {
-    console.error('Unexpected error:', error)
-    return new Response(
-      JSON.stringify({
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error'
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
-    )
+    console.error('delete-account unexpected error:', error instanceof Error ? error.message : error)
+    return json(500, { error: 'Failed to delete account' })
   }
 })
-
-// =====================================================
-// NOTAS DE IMPLEMENTACIÓN
-// =====================================================
-//
-// 1. GDPR Compliance:
-//    - Usuario debe poder eliminar todos sus datos
-//    - Eliminar en máximo 30 días (nosotros inmediato)
-//    - Guardar logs de eliminación (sin datos personales)
-//
-// 2. Estrategia de Eliminación:
-//    - Gossips: Soft-delete (anonymizar autor, mantener contenido)
-//    - Comentarios: Si existen, anonymizar
-//    - Reportes: Hard-delete (no relevantes sin usuario)
-//    - Auth: Hard-delete (Supabase Auth)
-//
-// 3. Testing:
-//    curl -X POST "https://xxx.supabase.co/functions/v1/delete-account" \
-//      -H "Authorization: Bearer USER_TOKEN" \
-//      -H "Content-Type: application/json" \
-//      -d '{"confirmation":"DELETE_MY_ACCOUNT","reason":"No longer need it"}'
-//
-// 4. UI Flow:
-//    a) Botón "Eliminar cuenta" en Settings
-//    b) Dialog de confirmación #1: Explicar consecuencias
-//    c) Dialog de confirmación #2: Escribir "DELETE_MY_ACCOUNT"
-//    d) Llamar a Edge Function
-//    e) Sign out + Redirect a landing page
-//
-// 5. Backup/Restore:
-//    - NO implementar restore (GDPR requiere eliminación permanente)
-//    - Backup automático de BD antes de eliminación (infra)
-//
-// 6. Mejoras Futuras:
-//    - Rate limit (1 eliminación por usuario - obvio)
-//    - Email de confirmación antes de eliminar
-//    - Grace period de 7 días (soft-delete, luego hard-delete)
-//    - Export de datos antes de eliminar (GDPR "right to portability")
-//
-// 7. Tabla de Feedback (Opcional):
-//    CREATE TABLE account_deletion_feedback (
-//      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-//      reason TEXT,
-//      deleted_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-//      -- NO incluir user_id (GDPR)
-//    );
-// =====================================================

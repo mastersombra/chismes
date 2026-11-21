@@ -1,6 +1,8 @@
 import 'package:injectable/injectable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/error/error_codes.dart' as error_codes;
+import '../../../../core/error/failure.dart';
 import '../../../../core/logging/logging.dart';
 import '../models/profile_settings_model.dart';
 import '../models/user_stats_model.dart';
@@ -128,6 +130,65 @@ class ProfileRemoteDataSource {
         stackTrace: stackTrace,
       );
       rethrow;
+    }
+  }
+
+  /// Elimina la cuenta del usuario y todos sus datos (Edge Function
+  /// `delete-account`) y cierra la sesión local.
+  ///
+  /// Irreversible: la UI debe pedir doble confirmación antes de llamar.
+  /// Lanza [Failure] si el servidor no confirmó el borrado (la cuenta sigue).
+  Future<void> deleteAccount() async {
+    final session = _supabase.auth.currentSession;
+    if (session == null) {
+      throw const AuthFailure(
+        code: error_codes.ErrorCode.unauthorized,
+        technicalMessage: 'No active session',
+      );
+    }
+
+    _logger.i('Deleting account');
+    try {
+      final response = await _supabase.functions.invoke(
+        deleteAccountFunction,
+        body: const {'confirmation': deleteAccountConfirmation},
+        headers: {'Authorization': 'Bearer ${session.accessToken}'},
+      );
+      if (response.status < 200 || response.status >= 300) {
+        throw _deleteFailure(response.status, response.data);
+      }
+    } on FunctionException catch (error) {
+      _logger.w('delete-account failed', context: {'status': error.status});
+      throw _deleteFailure(error.status, error.details);
+    }
+    _logger.i('Account deleted');
+
+    // La cuenta ya no existe en el servidor: basta con limpiar la sesión
+    // local (AuthGate navega al login). Si falla, la validación de sesión
+    // de AuthGate la cierra igual (user_not_found).
+    try {
+      await _supabase.auth.signOut(scope: SignOutScope.local);
+    } catch (error, stackTrace) {
+      _logger.w(
+        'Local sign out after account deletion failed',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  static const deleteAccountFunction = 'delete-account';
+  static const deleteAccountConfirmation = 'DELETE_MY_ACCOUNT';
+
+  static Failure _deleteFailure(int status, dynamic details) {
+    final message = 'delete-account $status: $details';
+    switch (status) {
+      case 401:
+        return AuthFailure(code: error_codes.ErrorCode.unauthorized, technicalMessage: message);
+      case 400:
+        return ValidationFailure(code: error_codes.ErrorCode.validationError, technicalMessage: message);
+      default:
+        return ServerFailure(code: error_codes.ErrorCode.serverError, technicalMessage: message);
     }
   }
 }

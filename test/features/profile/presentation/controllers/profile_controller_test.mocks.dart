@@ -6,14 +6,16 @@
 import 'dart:async' as _i3;
 
 import 'package:chismes/core/error/failure.dart' as _i5;
-import 'package:chismes/core/logging/logging.dart' as _i14;
+import 'package:chismes/core/logging/logging.dart' as _i15;
 import 'package:chismes/core/result/result.dart' as _i4;
-import 'package:chismes/core/services/auth_service.dart' as _i12;
-import 'package:chismes/features/auth/domain/entities/user.dart' as _i13;
+import 'package:chismes/core/services/auth_service.dart' as _i13;
+import 'package:chismes/features/auth/domain/entities/user.dart' as _i14;
 import 'package:chismes/features/profile/domain/entities/profile_settings.dart'
     as _i9;
 import 'package:chismes/features/profile/domain/entities/user_stats.dart'
     as _i6;
+import 'package:chismes/features/profile/domain/usecases/delete_account.dart'
+    as _i12;
 import 'package:chismes/features/profile/domain/usecases/get_settings.dart'
     as _i8;
 import 'package:chismes/features/profile/domain/usecases/get_user_stats.dart'
@@ -134,21 +136,43 @@ class MockSignOut extends _i1.Mock implements _i11.SignOut {
           as _i3.Future<_i4.Result<_i5.Failure, void>>);
 }
 
+/// A class which mocks [DeleteAccount].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockDeleteAccount extends _i1.Mock implements _i12.DeleteAccount {
+  MockDeleteAccount() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i3.Future<_i4.Result<_i5.Failure, void>> call() =>
+      (super.noSuchMethod(
+            Invocation.method(#call, []),
+            returnValue: _i3.Future<_i4.Result<_i5.Failure, void>>.value(
+              _i7.dummyValue<_i4.Result<_i5.Failure, void>>(
+                this,
+                Invocation.method(#call, []),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Result<_i5.Failure, void>>);
+}
+
 /// A class which mocks [AuthService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAuthService extends _i1.Mock implements _i12.AuthService {
+class MockAuthService extends _i1.Mock implements _i13.AuthService {
   MockAuthService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Stream<_i13.User?> get userStream =>
+  _i3.Stream<_i14.User?> get userStream =>
       (super.noSuchMethod(
             Invocation.getter(#userStream),
-            returnValue: _i3.Stream<_i13.User?>.empty(),
+            returnValue: _i3.Stream<_i14.User?>.empty(),
           )
-          as _i3.Stream<_i13.User?>);
+          as _i3.Stream<_i14.User?>);
 
   @override
   bool get isAuthenticated =>
@@ -191,7 +215,7 @@ class MockAuthService extends _i1.Mock implements _i12.AuthService {
 /// A class which mocks [AppLogger].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAppLogger extends _i1.Mock implements _i14.AppLogger {
+class MockAppLogger extends _i1.Mock implements _i15.AppLogger {
   MockAppLogger() {
     _i1.throwOnMissingStub(this);
   }

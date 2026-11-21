@@ -19,4 +19,8 @@ abstract class ProfileRepository {
 
   /// Cierra la sesión del usuario
   Future<Result<Failure, void>> signOut();
+
+  /// Elimina la cuenta y todos los datos del usuario (irreversible) y
+  /// cierra la sesión local
+  Future<Result<Failure, void>> deleteAccount();
 }

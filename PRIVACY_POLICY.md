@@ -1,8 +1,8 @@
 # Política de Privacidad - Chismes
 
 **Fecha de vigencia:** 22 de octubre de 2026  
-**Última actualización:** 22 de octubre de 2026  
-**Versión:** 1.0
+**Última actualización:** 20 de noviembre de 2026  
+**Versión:** 1.1
 
 ---
 
@@ -209,20 +209,27 @@ Puedes corregir datos incorrectos o incompletos en:
 
 ### 5.3. Eliminación ("Derecho al olvido")
 
-Puedes solicitar la eliminación de tus datos.
+Puedes eliminar tu cuenta en cualquier momento desde la app.
 
 **Cómo ejercer:**
-- Contactar: privacy@chismes.app
-- Respuesta: Dentro de 30 días
+- En la app: Perfil → Eliminar cuenta (te pedimos confirmarlo dos veces)
+- Sin la app: escribir a privacy@chismes.app desde el email de tu cuenta
+  (respuesta dentro de 30 días)
 
-**Qué se elimina:**
-- Tu cuenta
-- Tus chismes
-- Tus interacciones
+**Qué se elimina, de inmediato y de forma permanente:**
+- Tu cuenta y tu perfil
+- Todos tus chismes, también los publicados como anónimos, con sus fotos y audios
+- Tus reportes a otros chismes
 
-**Excepciones:**
-- Datos requeridos por ley (retención mínima)
-- Datos agregados/anónimos para estadísticas
+**Qué se conserva:**
+- Si alguno de tus contenidos fue rechazado por moderación, guardamos un
+  registro anónimo de esas faltas: una huella cifrada (no reversible) de tu
+  email y cuántas faltas tuviste según su gravedad. No guarda tu nombre, tu
+  contenido ni tu identificador. Sirve solo para que una cuenta sancionada no
+  pueda borrar su historial y volver a registrarse con el mismo email.
+- Registros técnicos de errores: se desvinculan de tu cuenta.
+- Copias de seguridad: pueden contener tus datos hasta que se renueven en su
+  ciclo normal; no se usan para restaurar cuentas eliminadas.
 
 ### 5.4. Portabilidad
 
@@ -296,11 +303,12 @@ Implementamos medidas técnicas y organizativas para proteger tus datos:
 - Chismes: Indefinidamente (o hasta que los elimines)
 - Ubicación guardada: Hasta que la olvides o cierres cuenta
 
-### 7.2. Cuenta Cerrada
+### 7.2. Cuenta Eliminada
 
-- Datos de cuenta: 30 días (después se eliminan permanentemente)
-- Chismes: Se marcan como "deleted" (soft delete)
-- Logs de auditoría: 90 días (requisito legal)
+- Datos de cuenta, perfil, chismes y su media: se eliminan de inmediato (ver 5.3)
+- Registro anónimo de faltas de moderación (solo si las hubo): mientras sea
+  necesario para prevenir abusos
+- Registros técnicos de errores: desvinculados de la cuenta
 
 ### 7.3. Moderación (OpenAI)
 

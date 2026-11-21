@@ -109,6 +109,7 @@ import '../../features/profile/data/repositories/profile_repository_impl.dart'
     as _i334;
 import '../../features/profile/domain/repositories/profile_repository.dart'
     as _i894;
+import '../../features/profile/domain/usecases/delete_account.dart' as _i457;
 import '../../features/profile/domain/usecases/get_settings.dart' as _i729;
 import '../../features/profile/domain/usecases/get_user_stats.dart' as _i669;
 import '../../features/profile/domain/usecases/sign_out.dart' as _i487;
@@ -277,6 +278,9 @@ _i174.GetIt $initGetIt(
   gh.factory<_i890.GetRecommendedFeed>(
     () => _i890.GetRecommendedFeed(gh<_i0.HomeRepository>()),
   );
+  gh.factory<_i457.DeleteAccount>(
+    () => _i457.DeleteAccount(gh<_i894.ProfileRepository>()),
+  );
   gh.factory<_i729.GetSettings>(
     () => _i729.GetSettings(gh<_i894.ProfileRepository>()),
   );
@@ -355,6 +359,17 @@ _i174.GetIt $initGetIt(
   gh.factory<_i340.UpdateProfileUseCase>(
     () => _i340.UpdateProfileUseCase(gh<_i787.AuthRepository>()),
   );
+  gh.factory<_i658.ProfileController>(
+    () => _i658.ProfileController(
+      gh<_i669.GetUserStats>(),
+      gh<_i729.GetSettings>(),
+      gh<_i862.UpdateSettings>(),
+      gh<_i487.SignOut>(),
+      gh<_i457.DeleteAccount>(),
+      gh<_i745.AuthService>(),
+      gh<_i482.AppLogger>(),
+    ),
+  );
   gh.factory<_i535.ReportGossip>(
     () => _i535.ReportGossip(gh<_i865.GossipRepository>()),
   );
@@ -362,16 +377,6 @@ _i174.GetIt $initGetIt(
     () => _i1052.ProfileSetupController(
       gh<_i340.UpdateProfileUseCase>(),
       gh<_i910.IsUsernameAvailableUseCase>(),
-      gh<_i482.AppLogger>(),
-    ),
-  );
-  gh.factory<_i658.ProfileController>(
-    () => _i658.ProfileController(
-      gh<_i669.GetUserStats>(),
-      gh<_i729.GetSettings>(),
-      gh<_i862.UpdateSettings>(),
-      gh<_i487.SignOut>(),
-      gh<_i745.AuthService>(),
       gh<_i482.AppLogger>(),
     ),
   );

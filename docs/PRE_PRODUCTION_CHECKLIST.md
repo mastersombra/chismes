@@ -3,7 +3,7 @@
 **Fecha de creación:** 2026-10-22  
 **Objetivo:** Verificar que el proyecto está listo para producción  
 **Estado:** 📋 EN PROGRESO
-**Última revisión:** 2026-11-20 (reglas de moderación en tabla, panel de moderación, E2E de Edge Functions)
+**Última revisión:** 2026-11-20 (backend en el CI: tests SQL + E2E; limpieza de ítems ya hechos; eliminación de cuenta desde la app; RLS de storage)
 
 ---
 
@@ -54,7 +54,7 @@ con el usuario moderador: Perfil → Panel de moderación (requiere desplegar
 1. ~~**AuthGate debe validar la sesión con el servidor**~~ ✅ (2026-11-19) `AuthRepository.validateSession()` (`GET /auth/v1/user`) en segundo plano al iniciar y al volver a primer plano (máx. cada 5 min). Cierra sesión solo si GoTrue responde `user_not_found`, `session_not_found`, `user_banned` o `bad_jwt` (o 401/403 sin código); sin red/timeout/5xx conserva la sesión. Con el access token vencido no valida: lo resuelve el refresh. Mejora posterior 🟢: cerrar sesión ante cualquier 401 de Edge Functions/PostgREST, y avisar en Login "tu sesión expiró".
 2. ~~**Privacidad de la tabla `gossips`**~~ ✅ (2026-11-19, en 001/008/009) Los clientes ya no leen la tabla: leen la vista `public_gossips` (columnas explícitas, autor de anónimos oculto salvo para su autor). Feed y `search_gossips` leen la vista; `search_gossips` solo `authenticated`. `report-gossip` adaptada. Test: `supabase/tests/004_anonymous_author_privacy_test.sql`. Aplicado a `chismes-dev` (2026-11-20).
 3. 🔴 **Ítem 4 (App ID):** keystore de release, cliente OAuth Android de release (SHA-1 de la llave de release + Play App Signing), registrar App ID en Apple, beta (TestFlight / internal track).
-4. 🟡 **Pendientes de este checklist:** ~~tests E2E de Edge Functions~~ ✅ (2026-11-20, `./scripts/e2e.sh`: 28 casos con Supabase local + OpenAI falso; pendiente agregarlo al CI), backups/PITR. Moderación de imagen, reportes y cola: ✅ (ver "Hoja de ruta de moderación").
+4. 🟡 **Pendientes de este checklist:** ~~tests E2E de Edge Functions~~ ✅ (2026-11-20, `./scripts/e2e.sh`: 60 casos con Supabase local + OpenAI falso, más los tests SQL; en el CI vía `.github/workflows/backend.yml`), backups/PITR. Moderación de imagen, reportes y cola: ✅ (ver "Hoja de ruta de moderación").
 
 ### 🛡️ Hoja de ruta de moderación (decidida 2026-11-19)
 
@@ -62,7 +62,7 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 (se puede saltar modificando el APK, y expondría las reglas).
 
 1. ~~**Reglas en tabla**~~ ✅ (2026-11-20) `moderation_rules` en `013_moderation.sql`, leída por `moderate-gossip` en cada chisme: términos (normalizados, palabra completa), umbrales por categoría de OpenAI (`min_score` → review/reject; solo endurecen, lo `flagged` se rechaza siempre) y on/off + acción de las reglas fijas (amenaza, datos personales, spam). Las regex siguen en el código a propósito (ReDoS). **Fail-closed:** si no se pueden leer o hay una fila inválida → review (`rules_unavailable`). CHECK contra typos; clientes sin acceso. Tests: `moderation.test.ts` (32), `005_moderation_test.sql` (R1–R5), `003_api_grants_test.sql`. Pendiente 🟢: definir umbrales iniciales de IA (hoy ninguno: mismo comportamiento que antes).
-2. ~~**Cola de revisión humana**~~ ✅ (2026-11-19, backend) `013_moderation.sql` + Edge Function `moderation-review` (solo `app_metadata.role = 'moderator'`): `list` con URL firmada de la media en cuarentena; `decide` aprobar (publica la media) / rechazar (oculta, no borra; gravedad obligatoria). El veredicto `review` de `moderate-gossip` se encola con la ruta de su media, y `cleanup-media` no la borra mientras esté pendiente. Cada decisión guarda autor, gravedad y motivo (base de sanciones). Genérica por tipo de contenido (lista para comentarios). Tests: `005_moderation_test.sql`, `moderation-review/logic.test.ts`, E2E local.
+2. ~~**Cola de revisión humana**~~ ✅ (2026-11-19, backend) `013_moderation.sql` + Edge Function `moderation-review` (solo `app_metadata.role = 'moderator'`): `list` con URL firmada de la media en cuarentena; `decide` aprobar (publica la media) / rechazar (oculta y conserva el texto; borra la media pública, ver nota de storage; gravedad obligatoria). El veredicto `review` de `moderate-gossip` se encola con la ruta de su media, y `cleanup-media` no la borra mientras esté pendiente. Cada decisión guarda autor, gravedad y motivo (base de sanciones). Genérica por tipo de contenido (lista para comentarios). Tests: `005_moderation_test.sql`, `moderation-review/logic.test.ts`, E2E local.
 3. ~~**Reportes → cola**~~ ✅ (2026-11-19) `content_reports` (genérica, reemplaza a `gossip_reports`) + trigger: entra a la cola con ≥ `report_min_count` reportes de cuentas con ≥ `report_min_account_age_hours`; se auto-oculta si además supera `report_ratio` de las interacciones; desde `report_popular_interactions` nunca se oculta solo (prioridad alta). Todo en `moderation_settings`, editable sin desplegar. Arreglado: el umbral nunca funcionaba (`protect_critical_fields` revertía el UPDATE del trigger; `report-gossip` contaba solo los reportes propios). Además: la app mostraba error al reportar (esperaba 200; la función responde 201) y el autor podía reportar lo propio.
 4. ~~**Panel de moderación**~~ ✅ (2026-11-20) En la app (`lib/features/moderation`), entrada en Perfil visible solo si `app_metadata.role = 'moderator'` (el servidor igual exige el rol: sin él, 403 → "sin permisos"). Pestañas Pendientes / Aprobados / Rechazados con scroll infinito; detalle con contenido, imagen en cuarentena (URL firmada), razones traducidas, reportes, autor real (también de anónimos); aprobar (con confirmación) o rechazar (gravedad obligatoria, motivo predefinido, nota interna). Si otro moderador ya decidió (409/404) avisa y lo saca de la lista. Backend: `list` acepta `offset`, el historial se ordena por `decided_at` desc y la vista trae `author_username`/`author_display_name`. Tests: 71 Flutter (100% en casi todo el módulo), `logic.test.ts`, `005` D3. Pendiente 🟡: **apelaciones** (con sanciones, ítem 7) y reproducir el **audio** en el panel (hoy solo indica que hay audio).
 5. ~~**Moderación de imagen**~~ ✅ (2026-11-19) `moderate-gossip/moderation.ts`: texto + imagen en una sola llamada a `omni-moderation-latest` (imagen como data URL, nunca una URL de cuarentena); imagen marcada → reject y se borra de cuarentena. **Fail-closed:** sin API key, error, timeout (10 s) o respuesta inválida → `review`, nunca se publica. **Audio → `review` siempre** (no se modera automáticamente; la UI sigue oculta). Tests: `moderation.test.ts` (Deno, OpenAI simulado). Pendiente 🟡: texto dentro de la imagen (OCR → mismas reglas de datos personales), detección de CSAM por hash, audio con transcripción + moderación del texto y duración máxima.
@@ -101,7 +101,7 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 - [x] ✅ RLS en bucket `image` (público con restricciones)
 - [x] ✅ RLS en bucket `audio-quarantine` (privado)
 - [x] ✅ RLS en bucket `audio` (público con restricciones)
-- [ ] 🔴 Verificar políticas con tests (ver `test/integration/README.md`)
+- [x] ✅ Políticas de tablas verificadas con tests SQL (`supabase/tests/001`–`005`, en el CI). Falta storage: ver "Tests de RLS storage"
 
 ### Datos Sensibles
 
@@ -112,6 +112,11 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 - [x] ✅ Solo ciudad guardada (no coordenadas exactas)
 - [ ] 🟡 Configurar GDPR consent para usuarios EU
 - [ ] 🟡 Implementar data export (GDPR portabilidad)
+- [x] ✅ **Eliminación de cuenta desde la app** (2026-11-20; App Store 5.1.1(v) y Google Play): Perfil → Eliminar cuenta, doble confirmación (explicación + escribir ELIMINAR). Inmediata: borra cuenta, perfil, todos los chismes y su media (pública y cuarentena); guarda solo un registro anónimo de faltas si las hubo (`014_account_deletion.sql`, huella HMAC con `ACCOUNT_HASH_SECRET`). Política de privacidad actualizada (v1.1, revisar con abogado). Tests: Flutter, `006`, E2E
+- [ ] 🔴 Aplicar 014 + `supabase secrets set ACCOUNT_HASH_SECRET=...` + desplegar `delete-account` (ver `supabase/functions/README.md`)
+- [ ] 🔴 **Página web para pedir la eliminación sin la app** (Google Play la exige en Play Console → Data safety): depende de hospedar las políticas (chismes.app)
+- [ ] 🟡 Revocar el token de Apple al eliminar la cuenta (obligatorio solo si se activa Sign in with Apple)
+- [ ] 🟢 Código muerto: `PrivacySettingsScreen` (muestra "cuenta eliminada" sin borrar) y `PrivacyConsentScreen` (no guarda el consentimiento) no están en ninguna ruta: eliminar o conectar
 
 ---
 
@@ -132,8 +137,8 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 - [x] ✅ `AppLogger` configurado con niveles apropiados
 - [x] ✅ Logging remoto solo `error` y `fatal`
 - [x] ✅ `kDebugMode` usado para logs sensibles
-- [ ] 🟡 Buscar y eliminar `debugPrint` innecesarios
-- [ ] 🟡 Buscar y eliminar comentarios de "TODO: spike"
+- [x] ✅ `debugPrint` solo dentro del logging y `ErrorHandler`, bajo `kDebugMode` (ver ítem 7 de próximos pasos)
+- [x] ✅ Sin comentarios "TODO: spike" en `lib/` (verificado 2026-11-20)
 - [ ] 🟡 Revisar logs de producción (no exponer datos sensibles)
 
 ### Validación
@@ -163,15 +168,15 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 - [x] ✅ Tests de domain (validators, use cases)
 - [x] ✅ Tests de data (repositories, models)
 - [x] ✅ Tests de widgets (115 tests)
-- [x] 🟡 Tests de controller (13/61 pasando, 48 rotos)
-- [x] ✅ Cobertura actual: 78.9% (objetivo: >80%)
+- [x] ✅ Tests de controller (suite completa en verde)
+- [x] ✅ Cobertura: 97.58% sin `lib/l10n` (objetivo >85%; el CI falla <88%)
 
 ### Integración
 
 - [x] ✅ Tests de autenticación Edge Functions (`scripts/e2e.sh`, 6 casos, 2026-11-20)
 - [x] ✅ Tests de validación Edge Functions (E2E: 8 casos, incluye rate limit e idempotencia)
 - [x] ✅ Tests de RLS gossips (SQL `001`, `003`, `004`: escritura, grants, privacidad del autor)
-- [ ] 🟡 Tests de RLS storage (el E2E verifica cuarentena/público vía las funciones; falta probar acceso directo de clientes a los buckets)
+- [x] ✅ Tests de RLS storage con acceso directo de clientes (2026-11-20, `supabase/tests/e2e/storage_rls_e2e.test.ts`, 26 casos: anon y usuario × 4 buckets × escribir/mover/copiar/borrar/listar/leer/firmar + administrar buckets). Arreglado: los buckets públicos (`images`, `audio`) se podían **listar** sin sesión (política SELECT innecesaria en `006`; las URLs públicas no la necesitan). Arreglado: al rechazar un chisme ya publicado, su foto/audio seguía accesible por URL pública para siempre; ahora `apply_moderation_decision` la desvincula y `moderation-review` la borra (texto conservado para apelación)
 - [x] ✅ Tests de media validation (E2E: magic bytes, tamaño, imagen marcada, cuarentena → público)
 
 ### E2E
@@ -190,7 +195,7 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 
 ### Database
 
-- [x] ✅ Migraciones aplicadas (001-009, consolidadas)
+- [x] ✅ Migraciones aplicadas en `chismes-dev` (001-013)
 - [x] ✅ Seeds aplicados (países, regiones, ciudades)
 - [x] ✅ pg_cron configurado (error logs cleanup)
 - [x] ✅ Limpieza de media programada: job `media-cleanup` → Edge Function `cleanup-media` (migración 011)
@@ -220,7 +225,7 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 - [x] ✅ `log-error` deployed
 - [ ] 🔴 Variables de entorno configuradas en Supabase Dashboard
   - [x] `OPENAI_API_KEY`
-  - [ ] `MODERATION_THRESHOLD` (si aplica)
+  - [x] ~~`MODERATION_THRESHOLD`~~ no aplica: los umbrales viven en la tabla `moderation_rules`
 - [ ] 🟡 Logs de Edge Functions monitoreados
 - [ ] 🟡 Alertas configuradas (errores >X por hora)
 
@@ -360,9 +365,9 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 
 ### CI/CD
 
-- [ ] 🟡 GitHub Actions configurado
-- [ ] 🟡 Tests automáticos en PR
-- [ ] 🟡 Build automático en merge a main
+- [x] ✅ GitHub Actions configurado (`flutter.yml`, `backend.yml`)
+- [x] ✅ Tests automáticos en PR (Flutter + coverage ≥88%; backend: Deno, tests SQL y E2E cuando cambia `supabase/**`)
+- [x] ✅ Build automático de APK en push/PR a main (artefacto, sin firma de release)
 - [ ] 🟡 Deploy automático a staging
 
 ### Mantenimiento
@@ -380,26 +385,26 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 
 **Estimación total:** 10-14 días
 
-1. **Tests de seguridad** (10 días)
-   - RLS tests
-   - Edge Functions tests
-   - E2E golden paths
-   - Ver: `test/integration/README.md`
+1. **Tests de seguridad**
+   - ~~RLS tests de tablas~~ ✅ · ~~Edge Functions tests~~ ✅ (en el CI)
+   - ~~RLS de storage con acceso directo de clientes~~ ✅
+   - E2E golden paths desde la app (el backend ya está cubierto)
 
 2. **Configuración Supabase** (2 días)
-   - OpenAI API key en Secrets
+   - ~~OpenAI API key en Secrets~~ ✅
    - Email provider
    - Backups automáticos
    - Point-in-time recovery
 
 3. **Build y signing** (1 día)
-   - iOS signing
-   - Android signing
-   - Versión 1.0.0
+   - iOS signing (registrar `com.shadows.chismes`)
+   - Android: generar keystore (`key.properties` ya preparado)
+   - ~~Versión 1.0.0~~ ✅
 
 4. **Legal** (1 día)
    - Hospedar políticas en web
    - Links en app
+   - ~~Eliminación de cuenta desde la app~~ ✅ · falta la página web para pedirla (Google Play)
 
 ---
 
@@ -456,7 +461,8 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 **Mínimo requerido:**
 - ✅ Seguridad básica (RLS, auth)
 - ✅ No crashes críticos
-- 🔴 Tests E2E de golden paths
+- 🔴 Tests E2E de golden paths (backend ✅; falta desde la app)
+- ~~🔴 Eliminación de cuenta desde la app~~ ✅ (falta aplicar 014 + secret en el remoto)
 - 🟡 Monitoreo básico
 
 **Puede esperar:**
@@ -495,15 +501,15 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 grep -i "service_role" .env
 # Esperado: Solo comentarios
 
-# Verificar mocks desactivados
-grep -r "@Singleton" lib/features/gossip/data/datasources/mock_gossip_data_source.dart
-# Esperado: Línea comentada
+# Backend: tests SQL + E2E de Edge Functions (Docker + Supabase CLI)
+./scripts/e2e.sh
+# Esperado: ✅ E2E OK
 
 # Verificar coverage
 flutter test --coverage
 genhtml coverage/lcov.info -o coverage/html
 open coverage/html/index.html
-# Esperado: >78%
+# Esperado: >88% sin lib/l10n (umbral del CI)
 
 # Verificar análisis
 flutter analyze
