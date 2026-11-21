@@ -10,6 +10,7 @@ import '../../../../core/services/auth_service.dart';
 import '../../../auth/domain/entities/user.dart';
 import '../../domain/entities/profile_settings.dart';
 import '../../domain/entities/user_stats.dart';
+import '../../domain/usecases/delete_account.dart';
 import '../../domain/usecases/get_settings.dart';
 import '../../domain/usecases/get_user_stats.dart';
 import '../../domain/usecases/sign_out.dart';
@@ -22,6 +23,7 @@ enum ProfileState {
   loaded,
   error,
   signingOut,
+  deletingAccount,
 }
 
 /// Controlador para la pantalla de perfil
@@ -31,6 +33,7 @@ class ProfileController extends ChangeNotifier {
   final GetSettings _getSettings;
   final UpdateSettings _updateSettings;
   final SignOut _signOut;
+  final DeleteAccount _deleteAccount;
   final AuthService _authService;
   final AppLogger _logger;
 
@@ -39,6 +42,7 @@ class ProfileController extends ChangeNotifier {
     this._getSettings,
     this._updateSettings,
     this._signOut,
+    this._deleteAccount,
     this._authService,
     this._logger,
   );
@@ -179,7 +183,10 @@ class ProfileController extends ChangeNotifier {
 
   /// Cierra la sesión del usuario
   Future<bool> signOut() async {
-    if (_state == ProfileState.signingOut) return false;
+    if (_state == ProfileState.signingOut ||
+        _state == ProfileState.deletingAccount) {
+      return false;
+    }
 
     _state = ProfileState.signingOut;
     _errorCode = null;
@@ -218,6 +225,40 @@ class ProfileController extends ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  /// Elimina la cuenta del usuario (irreversible)
+  ///
+  /// La UI ya pidió doble confirmación. Si tiene éxito la sesión se cierra y
+  /// AuthGate navega al login; si falla la cuenta sigue intacta y el estado
+  /// vuelve a [ProfileState.loaded].
+  Future<bool> deleteAccount() async {
+    if (_state == ProfileState.deletingAccount ||
+        _state == ProfileState.signingOut) {
+      return false;
+    }
+
+    _state = ProfileState.deletingAccount;
+    _errorCode = null;
+    _customErrorKey = null;
+    notifyListeners();
+
+    final result = await _deleteAccount();
+
+    return result.when(
+      onFailure: (failure) {
+        _logger.w('Failed to delete account: ${ErrorMessages.getMessageEnglish(failure.code)}');
+        _errorCode = failure.code;
+        _state = ProfileState.loaded;
+        notifyListeners();
+        return false;
+      },
+      onSuccess: (_) {
+        _logger.i('Account deleted');
+        // Igual que en signOut: AuthService notifica el cambio de sesión
+        return true;
+      },
+    );
   }
 
   /// Refresca los datos del perfil

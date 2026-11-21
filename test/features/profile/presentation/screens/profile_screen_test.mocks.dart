@@ -92,6 +92,15 @@ class MockProfileController extends _i1.Mock implements _i3.ProfileController {
           as _i5.Future<bool>);
 
   @override
+  _i5.Future<bool> deleteAccount() =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteAccount, []),
+            returnValue: _i5.Future<bool>.value(false),
+            returnValueForMissingStub: _i5.Future<bool>.value(false),
+          )
+          as _i5.Future<bool>);
+
+  @override
   _i5.Future<void> refresh() =>
       (super.noSuchMethod(
             Invocation.method(#refresh, []),

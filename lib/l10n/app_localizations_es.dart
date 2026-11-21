@@ -633,6 +633,41 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileScreenSignOutDialogTitle => 'Cerrar sesión';
 
   @override
+  String get profileDeleteAccountButton => 'Eliminar cuenta';
+
+  @override
+  String get profileDeleteAccountDialogTitle => '¿Eliminar tu cuenta?';
+
+  @override
+  String get profileDeleteAccountDialogContent =>
+      'Se borrarán de inmediato y para siempre tu cuenta, tu perfil y todos tus chismes (también los anónimos) con sus fotos. Esto no se puede deshacer.';
+
+  @override
+  String get profileDeleteAccountDialogRetention =>
+      'Si tuviste contenido rechazado por moderación, guardamos solo un registro anónimo de esas faltas para prevenir abusos.';
+
+  @override
+  String get profileDeleteAccountConfirmWord => 'ELIMINAR';
+
+  @override
+  String profileDeleteAccountConfirmLabel(String word) {
+    return 'Escribe $word para confirmar';
+  }
+
+  @override
+  String get profileDeleteAccountConfirmButton => 'Eliminar definitivamente';
+
+  @override
+  String get profileDeleteAccountDeleting => 'Eliminando cuenta...';
+
+  @override
+  String get profileDeleteAccountSuccess => 'Tu cuenta fue eliminada';
+
+  @override
+  String get profileDeleteAccountError =>
+      'No se pudo eliminar la cuenta. Revisa tu conexión e inténtalo de nuevo.';
+
+  @override
   String get profileScreenSigningOut => 'Cerrando sesión...';
 
   @override

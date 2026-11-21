@@ -97,11 +97,9 @@ BEGIN
   PERFORM 1 FROM moderation_settings;
   -- cleanup-media
   PERFORM * FROM get_media_cleanup_candidates(10);
-  -- delete-account
-  DELETE FROM content_reports WHERE reported_by = '11111111-1111-1111-1111-111111111111';
-  DELETE FROM rate_limits WHERE user_id = '11111111-1111-1111-1111-111111111111';
-  UPDATE profiles SET display_name = NULL WHERE id = '11111111-1111-1111-1111-111111111111';
-  DELETE FROM gossips WHERE created_by = '11111111-1111-1111-1111-111111111111';
+  -- delete-account (el borrado en sí: delete_user_account, en 006)
+  PERFORM get_account_deletion_media('11111111-1111-1111-1111-111111111111');
+  PERFORM 1 FROM account_deletion_records;
   -- moderate-gossip (validación de ubicación y reglas de moderación)
   PERFORM 1 FROM countries, regions, cities LIMIT 1;
   PERFORM kind, target, action, min_score FROM moderation_rules WHERE enabled;

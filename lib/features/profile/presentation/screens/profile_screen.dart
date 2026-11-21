@@ -5,6 +5,7 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../moderation/presentation/screens/moderation_queue_screen.dart';
 import '../controllers/profile_controller.dart';
+import '../widgets/delete_account_dialog.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/profile_stats_card.dart';
 import '../widgets/settings_section.dart';
@@ -153,6 +154,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 // Botón de cerrar sesión
                 _buildSignOutButton(context),
 
+                const SizedBox(height: AppSpacing.lg),
+
+                // Eliminar cuenta (requisito de App Store y Google Play)
+                _buildDeleteAccountButton(context),
+
                 const SizedBox(height: AppSpacing.xxxl),
               ],
             ),
@@ -179,11 +185,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  bool get _isBusy =>
+      _controller.state == ProfileState.signingOut ||
+      _controller.state == ProfileState.deletingAccount;
+
   Widget _buildSignOutButton(BuildContext context) {
     final isSigningOut = _controller.state == ProfileState.signingOut;
 
     return ElevatedButton.icon(
-      onPressed: isSigningOut ? null : () => _showSignOutDialog(context),
+      onPressed: _isBusy ? null : () => _showSignOutDialog(context),
       style: ElevatedButton.styleFrom(
         backgroundColor: Theme.of(context).colorScheme.error,
         foregroundColor: Colors.white,
@@ -231,5 +241,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // ✅ AuthGate detectará el cambio automáticamente y navegará a LoginScreen
       // No necesitamos navegar manualmente
     }
+  }
+
+  Widget _buildDeleteAccountButton(BuildContext context) {
+    final isDeleting = _controller.state == ProfileState.deletingAccount;
+    final errorColor = Theme.of(context).colorScheme.error;
+
+    return TextButton.icon(
+      key: const Key('deleteAccountButton'),
+      onPressed: _isBusy ? null : () => _handleDeleteAccount(context),
+      style: TextButton.styleFrom(
+        foregroundColor: errorColor,
+        minimumSize: const Size(double.infinity, 48),
+      ),
+      icon: isDeleting
+          ? SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(errorColor),
+              ),
+            )
+          : const Icon(Icons.delete_forever_outlined),
+      label: Text(
+        isDeleting
+            ? context.l10n.profileDeleteAccountDeleting
+            : context.l10n.profileDeleteAccountButton,
+      ),
+    );
+  }
+
+  Future<void> _handleDeleteAccount(BuildContext context) async {
+    final confirmed = await DeleteAccountDialog.show(context);
+    if (!confirmed || !context.mounted) return;
+
+    // Capturados antes: si se borra, AuthGate reemplaza esta pantalla
+    final messenger = ScaffoldMessenger.of(context);
+    final successText = context.l10n.profileDeleteAccountSuccess;
+    final errorText = context.l10n.profileDeleteAccountError;
+    final errorColor = Theme.of(context).colorScheme.error;
+
+    final deleted = await _controller.deleteAccount();
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(deleted ? successText : errorText),
+        backgroundColor: deleted ? null : errorColor,
+      ),
+    );
   }
 }

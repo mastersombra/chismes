@@ -232,6 +232,23 @@
   "profileScreenSignOutButton": "Sign out",
   "profileScreenSignOutDialogContent": "Are you sure you want to sign out?",
   "profileScreenSignOutDialogTitle": "Sign out",
+  "profileDeleteAccountButton": "Delete account",
+  "profileDeleteAccountDialogTitle": "Delete your account?",
+  "profileDeleteAccountDialogContent": "Your account, profile and all your gossips (including anonymous ones) and their photos will be permanently deleted right away. This can't be undone.",
+  "profileDeleteAccountDialogRetention": "If any of your content was rejected by moderation, we keep only an anonymous record of those violations to prevent abuse.",
+  "profileDeleteAccountConfirmWord": "DELETE",
+  "profileDeleteAccountConfirmLabel": "Type {word} to confirm",
+  "@profileDeleteAccountConfirmLabel": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "profileDeleteAccountConfirmButton": "Delete permanently",
+  "profileDeleteAccountDeleting": "Deleting account...",
+  "profileDeleteAccountSuccess": "Your account was deleted",
+  "profileDeleteAccountError": "Couldn't delete your account. Check your connection and try again.",
   "profileScreenSigningOut": "Signing out...",
   "profileSignOutError": "Error signing out",
   "profileSettingsComments": "Comments",

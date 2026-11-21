@@ -621,6 +621,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileScreenSignOutDialogTitle => 'Sign out';
 
   @override
+  String get profileDeleteAccountButton => 'Delete account';
+
+  @override
+  String get profileDeleteAccountDialogTitle => 'Delete your account?';
+
+  @override
+  String get profileDeleteAccountDialogContent =>
+      'Your account, profile and all your gossips (including anonymous ones) and their photos will be permanently deleted right away. This can\'t be undone.';
+
+  @override
+  String get profileDeleteAccountDialogRetention =>
+      'If any of your content was rejected by moderation, we keep only an anonymous record of those violations to prevent abuse.';
+
+  @override
+  String get profileDeleteAccountConfirmWord => 'DELETE';
+
+  @override
+  String profileDeleteAccountConfirmLabel(String word) {
+    return 'Type $word to confirm';
+  }
+
+  @override
+  String get profileDeleteAccountConfirmButton => 'Delete permanently';
+
+  @override
+  String get profileDeleteAccountDeleting => 'Deleting account...';
+
+  @override
+  String get profileDeleteAccountSuccess => 'Your account was deleted';
+
+  @override
+  String get profileDeleteAccountError =>
+      'Couldn\'t delete your account. Check your connection and try again.';
+
+  @override
   String get profileScreenSigningOut => 'Signing out...';
 
   @override

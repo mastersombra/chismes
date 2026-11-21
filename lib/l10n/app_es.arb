@@ -235,6 +235,23 @@
   "profileScreenSignOutButton": "Cerrar sesión",
   "profileScreenSignOutDialogContent": "¿Estás seguro que deseas cerrar sesión?",
   "profileScreenSignOutDialogTitle": "Cerrar sesión",
+  "profileDeleteAccountButton": "Eliminar cuenta",
+  "profileDeleteAccountDialogTitle": "¿Eliminar tu cuenta?",
+  "profileDeleteAccountDialogContent": "Se borrarán de inmediato y para siempre tu cuenta, tu perfil y todos tus chismes (también los anónimos) con sus fotos. Esto no se puede deshacer.",
+  "profileDeleteAccountDialogRetention": "Si tuviste contenido rechazado por moderación, guardamos solo un registro anónimo de esas faltas para prevenir abusos.",
+  "profileDeleteAccountConfirmWord": "ELIMINAR",
+  "profileDeleteAccountConfirmLabel": "Escribe {word} para confirmar",
+  "@profileDeleteAccountConfirmLabel": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "profileDeleteAccountConfirmButton": "Eliminar definitivamente",
+  "profileDeleteAccountDeleting": "Eliminando cuenta...",
+  "profileDeleteAccountSuccess": "Tu cuenta fue eliminada",
+  "profileDeleteAccountError": "No se pudo eliminar la cuenta. Revisa tu conexión e inténtalo de nuevo.",
   "profileScreenSigningOut": "Cerrando sesión...",
   "profileSignOutError": "Error al cerrar sesión",
   "profileSettingsComments": "Comentarios",

@@ -445,4 +445,98 @@ void main() {
       expect(find.byKey(const Key('moderationEntry')), findsNothing);
     });
   });
+
+  group('ProfileScreen - Eliminar cuenta', () {
+    Future<AppLocalizations> pumpLoaded(WidgetTester tester) async {
+      when(mockController.state).thenReturn(ProfileState.loaded);
+      when(mockController.currentUser).thenReturn(mockUser);
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+      return AppLocalizations.of(tester.element(find.byType(ProfileScreen)))!;
+    }
+
+    // Es el último elemento de la lista: scroll de más para que quede entero
+    Future<void> tapDeleteButton(WidgetTester tester) async {
+      final button = find.byKey(const Key('deleteAccountButton'));
+      await tester.scrollUntilVisible(button, 300, scrollable: find.byType(Scrollable).first);
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, -300));
+      await tester.pumpAndSettle();
+      await tester.tap(button);
+    }
+
+    Future<void> openAndConfirm(WidgetTester tester, AppLocalizations l10n) async {
+      await tapDeleteButton(tester);
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.profileDeleteAccountDialogTitle), findsOneWidget);
+      await tester.enterText(
+        find.byKey(const Key('deleteAccountConfirmField')),
+        l10n.profileDeleteAccountConfirmWord,
+      );
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('deleteAccountConfirmButton')));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('muestra el botón de eliminar cuenta', (tester) async {
+      final l10n = await pumpLoaded(tester);
+
+      final button = find.byKey(const Key('deleteAccountButton'));
+      await tester.ensureVisible(button);
+      expect(find.text(l10n.profileDeleteAccountButton), findsOneWidget);
+    });
+
+    testWidgets('cancelar no elimina la cuenta', (tester) async {
+      final l10n = await pumpLoaded(tester);
+
+      await tapDeleteButton(tester);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.commonCancel));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+      verifyNever(mockController.deleteAccount());
+    });
+
+    testWidgets('confirmar elimina y muestra el aviso de éxito', (tester) async {
+      when(mockController.deleteAccount()).thenAnswer((_) async => true);
+      final l10n = await pumpLoaded(tester);
+
+      await openAndConfirm(tester, l10n);
+
+      verify(mockController.deleteAccount()).called(1);
+      expect(find.text(l10n.profileDeleteAccountSuccess), findsOneWidget);
+    });
+
+    testWidgets('si falla muestra el error', (tester) async {
+      when(mockController.deleteAccount()).thenAnswer((_) async => false);
+      final l10n = await pumpLoaded(tester);
+
+      await openAndConfirm(tester, l10n);
+
+      verify(mockController.deleteAccount()).called(1);
+      expect(find.text(l10n.profileDeleteAccountError), findsOneWidget);
+    });
+
+    testWidgets('eliminando: botones deshabilitados con spinner y texto', (tester) async {
+      when(mockController.state).thenReturn(ProfileState.deletingAccount);
+      when(mockController.currentUser).thenReturn(mockUser);
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+      final l10n = AppLocalizations.of(tester.element(find.byType(ProfileScreen)))!;
+
+      final label = find.text(l10n.profileDeleteAccountDeleting);
+      await tester.ensureVisible(label);
+      expect(label, findsOneWidget);
+      final deleteButton = tester.widget<ButtonStyleButton>(find.ancestor(
+        of: label,
+        matching: find.byWidgetPredicate((w) => w is ButtonStyleButton),
+      ));
+      expect(deleteButton.onPressed, isNull);
+      final signOutButton = tester.widget<ButtonStyleButton>(find.ancestor(
+        of: find.text(l10n.profileScreenSignOutButton),
+        matching: find.byWidgetPredicate((w) => w is ButtonStyleButton),
+      ));
+      expect(signOutButton.onPressed, isNull);
+    });
+  });
 }

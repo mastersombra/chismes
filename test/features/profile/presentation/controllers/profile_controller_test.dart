@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chismes/core/error/error_codes.dart';
 import 'package:chismes/core/error/failure.dart';
 import 'package:chismes/core/logging/logging.dart';
@@ -6,6 +8,7 @@ import 'package:chismes/core/services/auth_service.dart';
 import 'package:chismes/features/auth/domain/entities/user.dart';
 import 'package:chismes/features/profile/domain/entities/profile_settings.dart';
 import 'package:chismes/features/profile/domain/entities/user_stats.dart';
+import 'package:chismes/features/profile/domain/usecases/delete_account.dart';
 import 'package:chismes/features/profile/domain/usecases/get_settings.dart';
 import 'package:chismes/features/profile/domain/usecases/get_user_stats.dart';
 import 'package:chismes/features/profile/domain/usecases/sign_out.dart';
@@ -22,6 +25,7 @@ import 'profile_controller_test.mocks.dart';
   GetSettings,
   UpdateSettings,
   SignOut,
+  DeleteAccount,
   AuthService,
   AppLogger,
 ])
@@ -31,6 +35,7 @@ void main() {
   late MockGetSettings mockGetSettings;
   late MockUpdateSettings mockUpdateSettings;
   late MockSignOut mockSignOut;
+  late MockDeleteAccount mockDeleteAccount;
   late MockAuthService mockAuthService;
   late MockAppLogger mockLogger;
 
@@ -70,6 +75,7 @@ void main() {
     mockGetSettings = MockGetSettings();
     mockUpdateSettings = MockUpdateSettings();
     mockSignOut = MockSignOut();
+    mockDeleteAccount = MockDeleteAccount();
     mockAuthService = MockAuthService();
     mockLogger = MockAppLogger();
 
@@ -82,6 +88,7 @@ void main() {
       mockGetSettings,
       mockUpdateSettings,
       mockSignOut,
+      mockDeleteAccount,
       mockAuthService,
       mockLogger,
     );
@@ -521,6 +528,71 @@ void main() {
       expect(controller.state, ProfileState.error);
       // getErrorMessage requiere BuildContext real con localizaciones,
       // por lo que solo verificamos el estado aquí
+    });
+  });
+
+  group('ProfileController - deleteAccount', () {
+    test('éxito: retorna true y pasa por deletingAccount', () async {
+      // Arrange
+      when(mockDeleteAccount()).thenAnswer((_) async => Result.success(null));
+      final states = <ProfileState>[];
+      controller.addListener(() => states.add(controller.state));
+
+      // Act
+      final result = await controller.deleteAccount();
+
+      // Assert
+      expect(result, isTrue);
+      expect(states, [ProfileState.deletingAccount]);
+      verify(mockDeleteAccount()).called(1);
+    });
+
+    test('falla: retorna false y vuelve a loaded (la cuenta sigue)', () async {
+      // Arrange
+      when(mockDeleteAccount()).thenAnswer(
+        (_) async => Result.failure(
+          const ServerFailure(code: ErrorCode.serverError),
+        ),
+      );
+
+      // Act
+      final result = await controller.deleteAccount();
+
+      // Assert
+      expect(result, isFalse);
+      expect(controller.state, ProfileState.loaded);
+    });
+
+    test('ignora una segunda llamada mientras elimina', () async {
+      // Arrange: la primera llamada queda en curso
+      final pending = Completer<Result<Failure, void>>();
+      when(mockDeleteAccount()).thenAnswer((_) => pending.future);
+
+      // Act
+      final first = controller.deleteAccount();
+      final second = await controller.deleteAccount();
+      pending.complete(Result.success(null));
+
+      // Assert
+      expect(second, isFalse);
+      expect(await first, isTrue);
+      verify(mockDeleteAccount()).called(1);
+    });
+
+    test('no cierra sesión mientras elimina la cuenta', () async {
+      // Arrange
+      final pending = Completer<Result<Failure, void>>();
+      when(mockDeleteAccount()).thenAnswer((_) => pending.future);
+
+      // Act
+      final deleting = controller.deleteAccount();
+      final signedOut = await controller.signOut();
+      pending.complete(Result.success(null));
+      await deleting;
+
+      // Assert
+      expect(signedOut, isFalse);
+      verifyNever(mockSignOut());
     });
   });
 }

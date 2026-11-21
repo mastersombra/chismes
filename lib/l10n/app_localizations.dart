@@ -1190,6 +1190,66 @@ abstract class AppLocalizations {
   /// **'Cerrar sesión'**
   String get profileScreenSignOutDialogTitle;
 
+  /// No description provided for @profileDeleteAccountButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar cuenta'**
+  String get profileDeleteAccountButton;
+
+  /// No description provided for @profileDeleteAccountDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Eliminar tu cuenta?'**
+  String get profileDeleteAccountDialogTitle;
+
+  /// No description provided for @profileDeleteAccountDialogContent.
+  ///
+  /// In es, this message translates to:
+  /// **'Se borrarán de inmediato y para siempre tu cuenta, tu perfil y todos tus chismes (también los anónimos) con sus fotos. Esto no se puede deshacer.'**
+  String get profileDeleteAccountDialogContent;
+
+  /// No description provided for @profileDeleteAccountDialogRetention.
+  ///
+  /// In es, this message translates to:
+  /// **'Si tuviste contenido rechazado por moderación, guardamos solo un registro anónimo de esas faltas para prevenir abusos.'**
+  String get profileDeleteAccountDialogRetention;
+
+  /// No description provided for @profileDeleteAccountConfirmWord.
+  ///
+  /// In es, this message translates to:
+  /// **'ELIMINAR'**
+  String get profileDeleteAccountConfirmWord;
+
+  /// No description provided for @profileDeleteAccountConfirmLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe {word} para confirmar'**
+  String profileDeleteAccountConfirmLabel(String word);
+
+  /// No description provided for @profileDeleteAccountConfirmButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar definitivamente'**
+  String get profileDeleteAccountConfirmButton;
+
+  /// No description provided for @profileDeleteAccountDeleting.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminando cuenta...'**
+  String get profileDeleteAccountDeleting;
+
+  /// No description provided for @profileDeleteAccountSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu cuenta fue eliminada'**
+  String get profileDeleteAccountSuccess;
+
+  /// No description provided for @profileDeleteAccountError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo eliminar la cuenta. Revisa tu conexión e inténtalo de nuevo.'**
+  String get profileDeleteAccountError;
+
   /// No description provided for @profileScreenSigningOut.
   ///
   /// In es, this message translates to:

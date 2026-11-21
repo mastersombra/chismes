@@ -105,4 +105,19 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Result.failure(ErrorHandler.handleError(error));
     }
   }
+
+  @override
+  Future<Result<Failure, void>> deleteAccount() async {
+    try {
+      await _remoteDataSource.deleteAccount();
+      return Result.success(null);
+    } catch (error, stackTrace) {
+      _logger.e(
+        'Error deleting account',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      return Result.failure(ErrorHandler.handleError(error));
+    }
+  }
 }
