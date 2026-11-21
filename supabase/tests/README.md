@@ -11,12 +11,13 @@ y el seed aplicados. Cada uno corre en una transacción con `ROLLBACK` y falla
 | `003_api_grants_test.sql` | Permisos de cada rol (`anon`, `authenticated`, `service_role`) en cada camino real |
 | `004_anonymous_author_privacy_test.sql` | Nadie salvo el autor y `service_role` ve el autor de un chisme anónimo (tabla, vista, filtros, búsqueda, feed) |
 | `005_moderation_test.sql` | Umbral de reportes (mínimo, cuentas nuevas, relativo, popular, configurable), cola de revisión (encolar, media protegida, aprobar/rechazar, historial) y reglas de contenido (`moderation_rules`: validación, duplicados) |
+| `006_account_deletion_test.sql` | Eliminación de cuenta: media a borrar, borrado en cascada sin tocar datos de otros, registro anónimo de faltas (solo con faltas, acumula por email, sin email no guarda), usuario inexistente, sin acceso de clientes |
 
 ## 🔁 E2E de Edge Functions (`e2e/`)
 
 `./scripts/e2e.sh` levanta un Supabase local temporal (migraciones + seed +
 Edge Functions del repo, imitando los privilegios del remoto), un OpenAI
-falso (`e2e/fake_openai.ts`) y corre `e2e/edge_functions_e2e.test.ts` con
+falso (`e2e/fake_openai.ts`) y corre `e2e/*.test.ts` con
 requests HTTP reales. Al terminar apaga y borra todo (`KEEP=1` para dejarlo
 levantado). No toca el proyecto remoto. Tarda ~1–2 min.
 
@@ -27,11 +28,20 @@ levantado). No toca el proyecto remoto. Tarda ~1–2 min.
 | Moderación | Limpio → publicado y visible; marcado → 400; IA caída → cola `ai_unavailable`; términos y umbrales de `moderation_rules` (editables en caliente) |
 | Media | Imagen → bucket público y cuarentena vacía (OpenAI recibe data URL); PDF disfrazado y >5 MB → 400; imagen marcada → borrada de cuarentena; en revisión queda en cuarentena y al aprobar se publica |
 | Reportes y cola | Propio / motivo / inexistente / duplicado; 3 reportes → cola; rechazar exige gravedad, oculta y no se decide dos veces; historial y paginación |
+| Eliminar cuenta (`delete_account_e2e.test.ts`) | Sin usuario → 401; sin confirmación → 400 y la cuenta sigue; borra auth, chismes, perfil y media (pública y cuarentena); con faltas guarda el registro anónimo por gravedad; el token viejo deja de servir |
+| Storage (`storage_rls_e2e.test.ts`) | Acceso directo de clientes (anon y usuario) a los 4 buckets: no escriben, mueven, copian, borran ni listan; la cuarentena no se lee ni se firma; lo público se ve solo por URL; nadie administra buckets |
 
 El OpenAI falso responde según marcadores en el texto: `[[ai:down]]`,
 `[[ai:flag=<cat>]]`, `[[ai:flag-image=<cat>]]`, `[[ai:score=<cat>:<n>]]`.
 `moderate-gossip` lo usa por la variable `OPENAI_MODERATION_URL`, que **solo**
 se define en el E2E (nunca en el remoto).
+
+Antes del E2E, el script corre también los tests SQL de esta carpeta
+(`SQL_TESTS=0` para saltarlos): un solo comando valida migraciones, permisos
+y funciones.
+
+**CI:** `.github/workflows/backend.yml` corre los tests unitarios de Deno y
+`./scripts/e2e.sh` en cada PR/push a `main` que toque `supabase/**`.
 
 Correrlo antes de desplegar Edge Functions o migraciones.
 

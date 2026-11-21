@@ -8,8 +8,8 @@ Funciones Deno que corren en Supabase. Cada carpeta es una función (`index.ts`)
 |---|---|
 | `moderate-gossip` | Crea chismes: valida input, rate limit, modera texto e imagen (`moderation.ts`) y sube media a cuarentena; el veredicto `review` va a la cola con la ruta de su media. Escribe con el RPC `upsert_gossip_idempotent()` (la app nunca hace INSERT directo, ver `.claude/SECURITY.md`). |
 | `report-gossip` | Reporta un chisme visible (no el propio). Guarda en `content_reports`; el umbral (cola + auto-ocultar) lo aplica un trigger con los valores de `moderation_settings`. |
-| `moderation-review` | Cola de revisión humana, **solo moderadores** (`app_metadata.role = 'moderator'`). `list` (paginado con `limit`/`offset`; pendientes por prioridad y antigüedad, historial por decisión más reciente; con URL firmada de la media en cuarentena y nombre del autor) y `decide` (aprobar publica la media; rechazar oculta y exige gravedad). La usa el panel de moderación de la app (`lib/features/moderation`). Ver "Moderadores". |
-| `delete-account` | Borra la cuenta del usuario y todos sus datos (GDPR). |
+| `moderation-review` | Cola de revisión humana, **solo moderadores** (`app_metadata.role = 'moderator'`). `list` (paginado con `limit`/`offset`; pendientes por prioridad y antigüedad, historial por decisión más reciente; con URL firmada de la media en cuarentena y nombre del autor) y `decide` (aprobar publica la media; rechazar oculta el chisme, conserva el texto para apelación, borra su media pública y exige gravedad). La usa el panel de moderación de la app (`lib/features/moderation`). Ver "Moderadores". |
+| `delete-account` | Elimina de inmediato la cuenta del usuario autenticado (exige `confirmation: "DELETE_MY_ACCOUNT"`): borra su media pública y en cuarentena, y en una transacción guarda el registro anónimo de faltas (solo si tuvo rechazos) y borra `auth.users`, que arrastra chismes, perfil y reportes (migración 014). La usa Perfil → Eliminar cuenta. Requiere el secret `ACCOUNT_HASH_SECRET` (ver "Eliminación de cuenta"). |
 | `log-error` | Recibe logs de error de la app (autenticado, sanitiza el contexto). |
 | `search-cities` | Autocomplete remoto de ciudades. |
 | `cleanup-media` | Borra con la Storage API la media en cuarentena (>24 h) y la pública huérfana (>7 días). La llama solo el job pg_cron `media-cleanup`; exige el header `x-cleanup-secret`. |
@@ -91,6 +91,20 @@ WHERE jobname = 'media-cleanup'`) y revisar
 `SELECT status_code, content FROM net._http_response ORDER BY created DESC LIMIT 1;`
 → `200` con `{"success":true,...}`. `SELECT * FROM get_media_cleanup_candidates(10);`
 muestra qué se borraría.
+
+### Eliminación de cuenta (`delete-account`, migración 014)
+
+Setup único por proyecto (el valor **nunca** va al repo):
+
+```bash
+supabase secrets set ACCOUNT_HASH_SECRET=$(openssl rand -hex 32)
+supabase functions deploy delete-account
+```
+
+⚠️ **No rotar** `ACCOUNT_HASH_SECRET`: es la llave de las huellas de
+`account_deletion_records`; con otra llave, las cuentas eliminadas con faltas
+dejan de reconocerse. Guardarlo en el gestor de secretos del equipo. Sin el
+secret la función responde 500 y **no** borra nada.
 
 ## 🛡️ Moderadores
 
