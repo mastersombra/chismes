@@ -3204,6 +3204,108 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Estás siguiendo a muchas personas muy rápido. Intenta más tarde.'**
   String get errorsFollowRateLimited;
+
+  /// No description provided for @notificationsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Notificaciones'**
+  String get notificationsTitle;
+
+  /// No description provided for @notificationsBellUnreadLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Notificaciones: {count} sin leer'**
+  String notificationsBellUnreadLabel(String count);
+
+  /// No description provided for @notificationsEmptyTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'No tienes notificaciones'**
+  String get notificationsEmptyTitle;
+
+  /// No description provided for @notificationsEmptyMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Aquí verás tus nuevos seguidores y las novedades de tus chismes.'**
+  String get notificationsEmptyMessage;
+
+  /// No description provided for @notificationsNewFollower.
+  ///
+  /// In es, this message translates to:
+  /// **'{name} empezó a seguirte'**
+  String notificationsNewFollower(String name);
+
+  /// No description provided for @notificationsFollowRequest.
+  ///
+  /// In es, this message translates to:
+  /// **'{name} quiere seguirte'**
+  String notificationsFollowRequest(String name);
+
+  /// No description provided for @notificationsFollowAccepted.
+  ///
+  /// In es, this message translates to:
+  /// **'{name} aceptó tu solicitud'**
+  String notificationsFollowAccepted(String name);
+
+  /// No description provided for @notificationsGossipApproved.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu chisme \"{subject}\" fue aprobado'**
+  String notificationsGossipApproved(String subject);
+
+  /// No description provided for @notificationsGossipRejected.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu chisme \"{subject}\" fue rechazado'**
+  String notificationsGossipRejected(String subject);
+
+  /// No description provided for @notificationsGossipRejectedWithReason.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu chisme \"{subject}\" fue rechazado: {reason}'**
+  String notificationsGossipRejectedWithReason(String subject, String reason);
+
+  /// No description provided for @notificationsAppealAccepted.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu apelación de \"{subject}\" fue aceptada: el chisme volvió a publicarse'**
+  String notificationsAppealAccepted(String subject);
+
+  /// No description provided for @notificationsAppealRejected.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu apelación de \"{subject}\" fue rechazada'**
+  String notificationsAppealRejected(String subject);
+
+  /// No description provided for @notificationsReasonGeneric.
+  ///
+  /// In es, this message translates to:
+  /// **'no cumple las normas de la comunidad'**
+  String get notificationsReasonGeneric;
+
+  /// No description provided for @notificationsTimeNow.
+  ///
+  /// In es, this message translates to:
+  /// **'ahora'**
+  String get notificationsTimeNow;
+
+  /// No description provided for @notificationsTimeMinutes.
+  ///
+  /// In es, this message translates to:
+  /// **'{count} min'**
+  String notificationsTimeMinutes(int count);
+
+  /// No description provided for @notificationsTimeHours.
+  ///
+  /// In es, this message translates to:
+  /// **'{count} h'**
+  String notificationsTimeHours(int count);
+
+  /// No description provided for @notificationsTimeDays.
+  ///
+  /// In es, this message translates to:
+  /// **'{count} d'**
+  String notificationsTimeDays(int count);
 }
 
 class _AppLocalizationsDelegate

@@ -7,6 +7,7 @@ import '../../../gossip/presentation/controllers/add_gossip_controller.dart';
 import '../../../profile/presentation/screens/profile_screen.dart';
 import 'home_screen.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/navigation/notifications_navigator.dart';
 import '../../../../core/theme/app_theme.dart';
 import 'package:chismes/core/l10n/l10n.dart';
 
@@ -28,12 +29,15 @@ class MainNavigationScreenState extends State<MainNavigationScreen> {
   // Lista de pantallas para navegación (usa el controller de arriba)
   late final List<Widget> _screens;
 
+  late final NotificationsNavigator _notificationsNavigator;
+
   @override
   void initState() {
     super.initState();
 
     // ✅ Resolver dependencias de Injectable/GetIt
     _addGossipController = getIt<AddGossipController>();
+    _notificationsNavigator = getIt<NotificationsNavigator>();
     _screens = [
       const HomeScreen(),
       const SearchScreen(),
@@ -65,6 +69,8 @@ class MainNavigationScreenState extends State<MainNavigationScreen> {
           setState(() {
             _currentIndex = index;
           });
+          // Sin Realtime: cambiar de pestaña refresca la campana (con throttle)
+          _notificationsNavigator.refreshUnreadCount();
         },
         type: BottomNavigationBarType.fixed,
         selectedItemColor: AppTheme.accentBlue,

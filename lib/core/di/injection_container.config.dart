@@ -120,6 +120,26 @@ import '../../features/moderation/presentation/controllers/moderation_queue_cont
     as _i674;
 import '../../features/moderation/presentation/controllers/review_decision_controller.dart'
     as _i305;
+import '../../features/moderation/presentation/navigation/account_navigator_impl.dart'
+    as _i928;
+import '../../features/notifications/data/datasources/supabase_notifications_remote_data_source.dart'
+    as _i508;
+import '../../features/notifications/data/repositories/notifications_repository_impl.dart'
+    as _i201;
+import '../../features/notifications/domain/repositories/notifications_repository.dart'
+    as _i563;
+import '../../features/notifications/domain/usecases/get_notifications.dart'
+    as _i163;
+import '../../features/notifications/domain/usecases/get_unread_notifications_count.dart'
+    as _i43;
+import '../../features/notifications/domain/usecases/mark_notifications_read.dart'
+    as _i263;
+import '../../features/notifications/presentation/controllers/notifications_badge_controller.dart'
+    as _i462;
+import '../../features/notifications/presentation/controllers/notifications_controller.dart'
+    as _i332;
+import '../../features/notifications/presentation/navigation/notifications_navigator_impl.dart'
+    as _i211;
 import '../../features/profile/data/datasources/profile_remote_datasource.dart'
     as _i327;
 import '../../features/profile/data/repositories/profile_repository_impl.dart'
@@ -175,6 +195,8 @@ import '../logging/device_info_provider.dart' as _i966;
 import '../logging/logging.dart' as _i482;
 import '../logging/remote_logger.dart' as _i332;
 import '../media/supabase_storage_service.dart' as _i710;
+import '../navigation/account_navigator.dart' as _i92;
+import '../navigation/notifications_navigator.dart' as _i72;
 import '../navigation/social_navigator.dart' as _i640;
 import '../services/auth_service.dart' as _i745;
 import '../services/deep_link_service.dart' as _i391;
@@ -205,7 +227,11 @@ _i174.GetIt $initGetIt(
   gh.singleton<_i5.ThemeModeNotifier>(
     () => _i5.ThemeModeNotifier(gh<_i460.SharedPreferences>()),
   );
+  gh.singleton<_i92.AccountNavigator>(() => _i928.AccountNavigatorImpl());
   gh.singleton<_i1000.IdGenerator>(() => _i458.TimestampIdGenerator());
+  gh.singleton<_i72.NotificationsNavigator>(
+    () => _i211.NotificationsNavigatorImpl(),
+  );
   gh.singleton<_i640.SocialNavigator>(() => _i318.SocialNavigatorImpl());
   gh.singleton<_i332.RemoteLogger>(
     () => _i332.SupabaseRemoteLogger(gh<_i454.SupabaseClient>()),
@@ -252,6 +278,12 @@ _i174.GetIt $initGetIt(
       gh<_i482.AppLogger>(),
     ),
   );
+  gh.singleton<_i508.SupabaseNotificationsRemoteDataSource>(
+    () => _i508.SupabaseNotificationsRemoteDataSource(
+      gh<_i454.SupabaseClient>(),
+      gh<_i482.AppLogger>(),
+    ),
+  );
   gh.singleton<_i327.ProfileRemoteDataSource>(
     () => _i327.ProfileRemoteDataSource(
       gh<_i454.SupabaseClient>(),
@@ -278,6 +310,12 @@ _i174.GetIt $initGetIt(
   );
   gh.singleton<_i669.LocationService>(
     () => _i669.LocationService(gh<_i482.AppLogger>()),
+  );
+  gh.singleton<_i563.NotificationsRepository>(
+    () => _i201.NotificationsRepositoryImpl(
+      gh<_i508.SupabaseNotificationsRemoteDataSource>(),
+      gh<_i482.AppLogger>(),
+    ),
   );
   gh.singleton<_i0.HomeRepository>(
     () => _i76.HomeRepositoryImpl(
@@ -334,6 +372,15 @@ _i174.GetIt $initGetIt(
   );
   gh.factory<_i191.GetModerationQueue>(
     () => _i191.GetModerationQueue(gh<_i106.ModerationRepository>()),
+  );
+  gh.factory<_i163.GetNotifications>(
+    () => _i163.GetNotifications(gh<_i563.NotificationsRepository>()),
+  );
+  gh.factory<_i43.GetUnreadNotificationsCount>(
+    () => _i43.GetUnreadNotificationsCount(gh<_i563.NotificationsRepository>()),
+  );
+  gh.factory<_i263.MarkNotificationsRead>(
+    () => _i263.MarkNotificationsRead(gh<_i563.NotificationsRepository>()),
   );
   gh.factory<_i305.ReviewDecisionController>(
     () => _i305.ReviewDecisionController(gh<_i98.DecideReview>()),
@@ -588,6 +635,14 @@ _i174.GetIt $initGetIt(
       gh<_i482.AppLogger>(),
     ),
   );
+  gh.lazySingleton<_i462.NotificationsBadgeController>(
+    () => _i462.NotificationsBadgeController(
+      gh<_i43.GetUnreadNotificationsCount>(),
+      gh<_i745.AuthService>(),
+      gh<_i482.AppLogger>(),
+    ),
+    dispose: (i) => i.dispose(),
+  );
   gh.factory<_i609.FollowListController>(
     () => _i609.FollowListController(
       gh<_i824.GetFollowList>(),
@@ -602,6 +657,14 @@ _i174.GetIt $initGetIt(
       gh<_i692.SignInWithGoogleUseCase>(),
       gh<_i263.SignInWithAppleUseCase>(),
       gh<_i1066.ResetPasswordUseCase>(),
+      gh<_i482.AppLogger>(),
+    ),
+  );
+  gh.factory<_i332.NotificationsController>(
+    () => _i332.NotificationsController(
+      gh<_i163.GetNotifications>(),
+      gh<_i263.MarkNotificationsRead>(),
+      gh<_i462.NotificationsBadgeController>(),
       gh<_i482.AppLogger>(),
     ),
   );

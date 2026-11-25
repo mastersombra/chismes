@@ -733,5 +733,22 @@
   "socialSearchUsersHint": "Search by @username or name...",
   "socialSearchUsersPrompt": "Type at least 2 letters to search for people",
   "socialSearchUsersNoResults": "No users found",
-  "errorsFollowRateLimited": "You're following a lot of people very quickly. Try again later."
+  "errorsFollowRateLimited": "You're following a lot of people very quickly. Try again later.",
+  "notificationsTitle": "Notifications",
+  "notificationsBellUnreadLabel": "Notifications: {count} unread",
+  "notificationsEmptyTitle": "You have no notifications",
+  "notificationsEmptyMessage": "New followers and updates about your gossips will show up here.",
+  "notificationsNewFollower": "{name} started following you",
+  "notificationsFollowRequest": "{name} wants to follow you",
+  "notificationsFollowAccepted": "{name} accepted your request",
+  "notificationsGossipApproved": "Your gossip \"{subject}\" was approved",
+  "notificationsGossipRejected": "Your gossip \"{subject}\" was rejected",
+  "notificationsGossipRejectedWithReason": "Your gossip \"{subject}\" was rejected: {reason}",
+  "notificationsAppealAccepted": "Your appeal for \"{subject}\" was accepted: the gossip is published again",
+  "notificationsAppealRejected": "Your appeal for \"{subject}\" was rejected",
+  "notificationsReasonGeneric": "it doesn't follow the community guidelines",
+  "notificationsTimeNow": "now",
+  "notificationsTimeMinutes": "{count}m",
+  "notificationsTimeHours": "{count}h",
+  "notificationsTimeDays": "{count}d"
 }

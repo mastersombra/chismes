@@ -30,6 +30,9 @@ import 'package:chismes/core/services/location_service.dart';
 import '../../../../helpers/mock_add_gossip_controller_helper.dart';
 import '../../../../helpers/test_di_helper.dart';
 import '../../../../helpers/widget_test_wrapper.dart';
+import '../../../notifications/notifications_di_helper.dart';
+import '../../../notifications/notifications_test_mocks.mocks.dart'
+    show MockNotificationsNavigator;
 import 'main_navigation_screen_test.mocks.dart';
 
 @GenerateNiceMocks([
@@ -57,8 +60,10 @@ void main() {
   late MockAuthRepository mockAuthRepository;
   late MockSearchHistoryService mockSearchHistoryService;
   late MockLocationService mockLocationService;
+  late MockNotificationsNavigator mockNotificationsNavigator;
 
   setUp(() async {
+    mockNotificationsNavigator = registerNotificationsNavigatorStub();
     // Inicializar DI para tests (LocaleNotifier, SharedPreferences, etc.)
     await setupTestDI();
 
@@ -216,6 +221,7 @@ void main() {
   });
 
   tearDown(() async {
+    unregisterNotificationsNavigatorStub();
     if (getIt.isRegistered<AddGossipController>()) {
       getIt.unregister<AddGossipController>();
     }
@@ -333,6 +339,19 @@ void main() {
 
       final indexedStack = tester.widget<IndexedStack>(find.byType(IndexedStack));
       expect(indexedStack.index, 1);
+    });
+
+    testWidgets('cambiar de pestaña refresca el contador de notificaciones', (tester) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+      verifyNever(mockNotificationsNavigator.refreshUnreadCount());
+
+      await tester.tap(find.byIcon(Icons.search_outlined));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Icons.home_outlined));
+      await tester.pumpAndSettle();
+
+      verify(mockNotificationsNavigator.refreshUnreadCount()).called(2);
     });
 
     testWidgets('debe ser StatefulWidget', (tester) async {

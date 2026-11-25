@@ -1777,4 +1777,81 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorsFollowRateLimited =>
       'You\'re following a lot of people very quickly. Try again later.';
+
+  @override
+  String get notificationsTitle => 'Notifications';
+
+  @override
+  String notificationsBellUnreadLabel(String count) {
+    return 'Notifications: $count unread';
+  }
+
+  @override
+  String get notificationsEmptyTitle => 'You have no notifications';
+
+  @override
+  String get notificationsEmptyMessage =>
+      'New followers and updates about your gossips will show up here.';
+
+  @override
+  String notificationsNewFollower(String name) {
+    return '$name started following you';
+  }
+
+  @override
+  String notificationsFollowRequest(String name) {
+    return '$name wants to follow you';
+  }
+
+  @override
+  String notificationsFollowAccepted(String name) {
+    return '$name accepted your request';
+  }
+
+  @override
+  String notificationsGossipApproved(String subject) {
+    return 'Your gossip \"$subject\" was approved';
+  }
+
+  @override
+  String notificationsGossipRejected(String subject) {
+    return 'Your gossip \"$subject\" was rejected';
+  }
+
+  @override
+  String notificationsGossipRejectedWithReason(String subject, String reason) {
+    return 'Your gossip \"$subject\" was rejected: $reason';
+  }
+
+  @override
+  String notificationsAppealAccepted(String subject) {
+    return 'Your appeal for \"$subject\" was accepted: the gossip is published again';
+  }
+
+  @override
+  String notificationsAppealRejected(String subject) {
+    return 'Your appeal for \"$subject\" was rejected';
+  }
+
+  @override
+  String get notificationsReasonGeneric =>
+      'it doesn\'t follow the community guidelines';
+
+  @override
+  String get notificationsTimeNow => 'now';
+
+  @override
+  String notificationsTimeMinutes(int count) {
+    return '${count}m';
+  }
+
+  @override
+  String notificationsTimeHours(int count) {
+    return '${count}h';
+  }
+
+  @override
+  String notificationsTimeDays(int count) {
+    return '${count}d';
+  }
 }

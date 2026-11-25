@@ -1793,4 +1793,81 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get errorsFollowRateLimited =>
       'Estás siguiendo a muchas personas muy rápido. Intenta más tarde.';
+
+  @override
+  String get notificationsTitle => 'Notificaciones';
+
+  @override
+  String notificationsBellUnreadLabel(String count) {
+    return 'Notificaciones: $count sin leer';
+  }
+
+  @override
+  String get notificationsEmptyTitle => 'No tienes notificaciones';
+
+  @override
+  String get notificationsEmptyMessage =>
+      'Aquí verás tus nuevos seguidores y las novedades de tus chismes.';
+
+  @override
+  String notificationsNewFollower(String name) {
+    return '$name empezó a seguirte';
+  }
+
+  @override
+  String notificationsFollowRequest(String name) {
+    return '$name quiere seguirte';
+  }
+
+  @override
+  String notificationsFollowAccepted(String name) {
+    return '$name aceptó tu solicitud';
+  }
+
+  @override
+  String notificationsGossipApproved(String subject) {
+    return 'Tu chisme \"$subject\" fue aprobado';
+  }
+
+  @override
+  String notificationsGossipRejected(String subject) {
+    return 'Tu chisme \"$subject\" fue rechazado';
+  }
+
+  @override
+  String notificationsGossipRejectedWithReason(String subject, String reason) {
+    return 'Tu chisme \"$subject\" fue rechazado: $reason';
+  }
+
+  @override
+  String notificationsAppealAccepted(String subject) {
+    return 'Tu apelación de \"$subject\" fue aceptada: el chisme volvió a publicarse';
+  }
+
+  @override
+  String notificationsAppealRejected(String subject) {
+    return 'Tu apelación de \"$subject\" fue rechazada';
+  }
+
+  @override
+  String get notificationsReasonGeneric =>
+      'no cumple las normas de la comunidad';
+
+  @override
+  String get notificationsTimeNow => 'ahora';
+
+  @override
+  String notificationsTimeMinutes(int count) {
+    return '$count min';
+  }
+
+  @override
+  String notificationsTimeHours(int count) {
+    return '$count h';
+  }
+
+  @override
+  String notificationsTimeDays(int count) {
+    return '$count d';
+  }
 }

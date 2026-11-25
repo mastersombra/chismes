@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/navigation/notifications_navigator.dart';
 import '../controllers/popular_tab_controller.dart';
 import '../controllers/following_tab_controller.dart';
 import '../states/following_tab_state.dart';
@@ -40,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen>
   late TabController _tabController;
   late PopularTabController _popularController;
   late FollowingTabController _followingController;
+  late final Widget _bellButton;
 
   @override
   void initState() {
@@ -51,6 +53,9 @@ class _HomeScreenState extends State<HomeScreen>
     // Obtener controllers del DI
     _popularController = getIt<PopularTabController>();
     _followingController = getIt<FollowingTabController>();
+
+    // Campana de notificaciones (feature notifications vía interfaz de core)
+    _bellButton = getIt<NotificationsNavigator>().buildBellButton();
 
     // Cargar feed inicial del tab activo (Populares)
     _popularController.loadFeed();
@@ -84,6 +89,7 @@ class _HomeScreenState extends State<HomeScreen>
       appBar: AppBar(
         title: Text(context.l10n.homeDiscoverHeader),
         centerTitle: true,
+        actions: [_bellButton],
         bottom: TabBar(
           controller: _tabController,
           tabs: [

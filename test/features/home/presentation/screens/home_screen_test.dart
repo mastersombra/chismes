@@ -16,6 +16,9 @@ import 'package:chismes/core/error/failure.dart';
 import 'package:chismes/core/di/injection_container.dart';
 
 import '../../../../helpers/widget_test_wrapper.dart';
+import '../../../notifications/notifications_di_helper.dart';
+import '../../../notifications/notifications_test_mocks.mocks.dart'
+    show MockNotificationsNavigator;
 import 'home_screen_test.mocks.dart';
 
 @GenerateNiceMocks([
@@ -27,8 +30,10 @@ void main() {
   late MockGetGossips mockGetGossips;
   late MockPopularTabController mockPopularTabController;
   late MockFollowingTabController mockFollowingTabController;
+  late MockNotificationsNavigator mockNotificationsNavigator;
 
   setUp(() {
+    mockNotificationsNavigator = registerNotificationsNavigatorStub();
     mockGetGossips = MockGetGossips();
     mockPopularTabController = MockPopularTabController();
     mockFollowingTabController = MockFollowingTabController();
@@ -73,6 +78,7 @@ void main() {
   });
 
   tearDown(() {
+    unregisterNotificationsNavigatorStub();
     // Limpiar después de cada test
     if (getIt.isRegistered<GetGossips>()) {
       getIt.unregister<GetGossips>();
@@ -187,6 +193,16 @@ void main() {
 
       expect(find.text('Descubre 👀'), findsOneWidget);
       expect(find.byType(AppBar), findsOneWidget);
+    });
+
+    testWidgets('muestra la campana de notificaciones en el AppBar', (tester) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      final appBar = tester.widget<AppBar>(find.byType(AppBar));
+      expect(appBar.actions, hasLength(1));
+      expect(find.byKey(kBellStubKey), findsOneWidget);
+      verify(mockNotificationsNavigator.buildBellButton()).called(1);
     });
 
     testWidgets('debe renderizar Scaffold', (tester) async {

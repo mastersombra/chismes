@@ -886,5 +886,109 @@
   "socialSearchUsersHint": "Buscar por @usuario o nombre...",
   "socialSearchUsersPrompt": "Escribe al menos 2 letras para buscar personas",
   "socialSearchUsersNoResults": "No encontramos usuarios",
-  "errorsFollowRateLimited": "Estás siguiendo a muchas personas muy rápido. Intenta más tarde."
+  "errorsFollowRateLimited": "Estás siguiendo a muchas personas muy rápido. Intenta más tarde.",
+  "notificationsTitle": "Notificaciones",
+  "notificationsBellUnreadLabel": "Notificaciones: {count} sin leer",
+  "@notificationsBellUnreadLabel": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsEmptyTitle": "No tienes notificaciones",
+  "notificationsEmptyMessage": "Aquí verás tus nuevos seguidores y las novedades de tus chismes.",
+  "notificationsNewFollower": "{name} empezó a seguirte",
+  "@notificationsNewFollower": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsFollowRequest": "{name} quiere seguirte",
+  "@notificationsFollowRequest": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsFollowAccepted": "{name} aceptó tu solicitud",
+  "@notificationsFollowAccepted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsGossipApproved": "Tu chisme \"{subject}\" fue aprobado",
+  "@notificationsGossipApproved": {
+    "placeholders": {
+      "subject": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsGossipRejected": "Tu chisme \"{subject}\" fue rechazado",
+  "@notificationsGossipRejected": {
+    "placeholders": {
+      "subject": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsGossipRejectedWithReason": "Tu chisme \"{subject}\" fue rechazado: {reason}",
+  "@notificationsGossipRejectedWithReason": {
+    "placeholders": {
+      "subject": {
+        "type": "String"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsAppealAccepted": "Tu apelación de \"{subject}\" fue aceptada: el chisme volvió a publicarse",
+  "@notificationsAppealAccepted": {
+    "placeholders": {
+      "subject": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsAppealRejected": "Tu apelación de \"{subject}\" fue rechazada",
+  "@notificationsAppealRejected": {
+    "placeholders": {
+      "subject": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsReasonGeneric": "no cumple las normas de la comunidad",
+  "notificationsTimeNow": "ahora",
+  "notificationsTimeMinutes": "{count} min",
+  "@notificationsTimeMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsTimeHours": "{count} h",
+  "@notificationsTimeHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsTimeDays": "{count} d",
+  "@notificationsTimeDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }
