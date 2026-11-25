@@ -99,6 +99,31 @@ void main() {
           ..writeAsBytesSync(List.filled(3 * 1024 * 1024, 1));
       });
 
+      test('compressAvatar comprime a JPEG 400x400 @80 en memoria', () async {
+        // Arrange
+        compress.outputBytes = (_) => 50 * 1024;
+
+        // Act
+        final bytes = await ImageCompressor.compressAvatar(original);
+
+        // Assert
+        final call = compress.calls.single;
+        expect(call.path, original.absolute.path);
+        expect(call.minWidth, 400);
+        expect(call.minHeight, 400);
+        expect(call.quality, 80);
+        expect(call.format, CompressFormat.jpeg);
+        expect(bytes, hasLength(50 * 1024));
+      });
+
+      test('compressAvatar retorna null si el plugin falla', () async {
+        // Arrange
+        compress.outputBytes = (_) => null;
+
+        // Act & Assert
+        expect(await ImageCompressor.compressAvatar(original), isNull);
+      });
+
       test('compressGossipImage comprime a JPEG 800x800 @75 en _compressed.jpg',
           () async {
         final result = await ImageCompressor.compressGossipImage(original);

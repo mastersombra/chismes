@@ -470,5 +470,58 @@ void main() {
         expect(result, isNotNull);
       });
     });
+
+    group('username', () {
+      Future<BuildContext> ctx(WidgetTester tester) async {
+        await tester.pumpWidget(testApp);
+        return tester.element(find.byType(Container));
+      }
+
+      testWidgets('acepta minúsculas, números y guion bajo (3-30)', (tester) async {
+        // Arrange
+        final context = await ctx(tester);
+
+        // Act & Assert
+        expect(FormValidators.username(context, 'abc'), isNull);
+        expect(FormValidators.username(context, 'chismoso_2024'), isNull);
+        expect(FormValidators.username(context, 'a' * 30), isNull);
+      });
+
+      testWidgets('null o vacío → requerido', (tester) async {
+        // Arrange
+        final context = await ctx(tester);
+
+        // Act & Assert
+        expect(FormValidators.username(context, null), context.l10n.usernameRequired);
+        expect(FormValidators.username(context, ''), context.l10n.usernameRequired);
+      });
+
+      testWidgets('menos de 3 → muy corto', (tester) async {
+        // Arrange
+        final context = await ctx(tester);
+
+        // Act & Assert
+        expect(FormValidators.username(context, 'ab'), context.l10n.usernameTooShort);
+      });
+
+      testWidgets('más de 30 → muy largo', (tester) async {
+        // Arrange
+        final context = await ctx(tester);
+
+        // Act & Assert
+        expect(FormValidators.username(context, 'a' * 31), context.l10n.usernameTooLong);
+      });
+
+      testWidgets('mayúsculas, espacios o símbolos → caracteres inválidos', (tester) async {
+        // Arrange
+        final context = await ctx(tester);
+
+        // Act & Assert
+        for (final value in ['Chismoso', 'con espacio', 'user.name', 'ñandú', 'user-1']) {
+          expect(FormValidators.username(context, value), context.l10n.usernameInvalidChars,
+              reason: value);
+        }
+      });
+    });
   });
 }

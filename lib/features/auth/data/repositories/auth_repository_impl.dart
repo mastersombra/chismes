@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:injectable/injectable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
@@ -168,36 +170,24 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Result<Failure, User>> updateProfile({
     String? username,
     String? displayName,
-    String? avatarUrl,
     String? bio,
+    Uint8List? avatar,
+    bool removeAvatar = false,
   }) async {
     try {
       final userModel = await _dataSource.updateProfile(
         username: username,
         displayName: displayName,
-        avatarUrl: avatarUrl,
         bio: bio,
+        avatar: avatar,
+        removeAvatar: removeAvatar,
       );
       return Result.success(userModel.toEntity());
-    } on supabase.PostgrestException catch (error) {
-      _logger.w('Update profile failed',
-          error: error,
-          context: {'code': error.code, 'message': error.message});
-
-      // Check for unique constraint violation (username already taken)
-      if (error.code == '23505' && error.message.contains('username')) {
-        return Result.failure(
-          DataFailure(
-            code: ErrorCode.usernameAlreadyTaken,
-            technicalMessage: 'Username already taken',
-          ),
-        );
-      }
-
-      return Result.failure(ErrorHandler.handleError(error));
+    } on Failure catch (failure) {
+      // El datasource ya tradujo la respuesta de update-profile
+      return Result.failure(failure);
     } catch (error, stackTrace) {
-      _logger.e('Update profile failed',
-          error: error, stackTrace: stackTrace);
+      _logger.e('Update profile failed', error: error, stackTrace: stackTrace);
       return Result.failure(ErrorHandler.handleError(error, stackTrace));
     }
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/legal/legal_consent_text.dart';
 
 import '../../../../core/di/injection_container.dart';
 import 'package:chismes/core/l10n/l10n.dart';
@@ -215,26 +216,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
                     const SizedBox(height: AppSpacing.xl),
 
-                    // Terms and conditions
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(
-                          Icons.info_outline,
-                          size: 16,
-                          color: Colors.grey,
-                        ),
-                        const SizedBox(width: AppSpacing.xs),
-                        Expanded(
-                          child: Text(
-                            context.l10n.signupTermsMessage,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Aceptación de las políticas (el servidor la registra
+                    // al crear la cuenta)
+                    const LegalConsentText(),
 
                     const SizedBox(height: AppSpacing.xl),
 

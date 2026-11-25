@@ -282,6 +282,22 @@ class MockLocationService extends _i1.Mock implements _i19.LocationService {
             returnValueForMissingStub: _i6.Future<void>.value(),
           )
           as _i6.Future<void>);
+
+  @override
+  _i6.Future<bool> isAnonymousModeEnabled() =>
+      (super.noSuchMethod(
+            Invocation.method(#isAnonymousModeEnabled, []),
+            returnValue: _i6.Future<bool>.value(false),
+          )
+          as _i6.Future<bool>);
+
+  @override
+  _i6.Future<bool> setAnonymousMode(bool? enabled) =>
+      (super.noSuchMethod(
+            Invocation.method(#setAnonymousMode, [enabled]),
+            returnValue: _i6.Future<bool>.value(false),
+          )
+          as _i6.Future<bool>);
 }
 
 /// A class which mocks [LocationManager].

@@ -1346,7 +1346,78 @@ void main() {
       });
     });
   });
+
+  group('LocationService - No guardar ubicación', () {
+    late LocationService service;
+
+    setUp(() {
+      SharedPreferences.setMockInitialValues({});
+      service = LocationService(MockAppLogger());
+    });
+
+    test('isAnonymousModeEnabled es false por defecto', () async {
+      expect(await service.isAnonymousModeEnabled(), isFalse);
+    });
+
+    test('isAnonymousModeEnabled lee la preferencia guardada', () async {
+      SharedPreferences.setMockInitialValues({'anonymous_mode': true});
+
+      expect(await service.isAnonymousModeEnabled(), isTrue);
+    });
+
+    test('activar guarda la preferencia y borra la ciudad guardada', () async {
+      await service.saveDefaultLocation(
+        countryId: 'CO',
+        regionId: 'co-antioquia',
+        cityId: 'medellin',
+        countryName: 'Colombia',
+        regionName: 'Antioquia',
+        cityName: 'Medellín',
+      );
+
+      final ok = await service.setAnonymousMode(true);
+
+      expect(ok, isTrue);
+      expect(await service.isAnonymousModeEnabled(), isTrue);
+      expect(await service.getDefaultLocation(), isNull);
+    });
+
+    test('desactivar guarda la preferencia y vuelve a recordar la ciudad',
+        () async {
+      await service.setAnonymousMode(true);
+
+      final ok = await service.setAnonymousMode(false);
+      await service.saveDefaultLocation(
+        countryId: 'CO',
+        regionId: 'co-antioquia',
+        cityId: 'medellin',
+        countryName: 'Colombia',
+        regionName: 'Antioquia',
+        cityName: 'Medellín',
+      );
+
+      expect(ok, isTrue);
+      expect(await service.isAnonymousModeEnabled(), isFalse);
+      expect((await service.getDefaultLocation())?.cityId, 'medellin');
+    });
+
+    test('con el modo activo no se guarda una ciudad nueva', () async {
+      await service.setAnonymousMode(true);
+
+      await service.saveDefaultLocation(
+        countryId: 'CO',
+        regionId: 'co-antioquia',
+        cityId: 'medellin',
+        countryName: 'Colombia',
+        regionName: 'Antioquia',
+        cityName: 'Medellín',
+      );
+
+      expect(await service.getDefaultLocation(), isNull);
+    });
+  });
 }
+
 
 class _FakeGeocoding extends GeocodingPlatform {
   List<Placemark> result = [];

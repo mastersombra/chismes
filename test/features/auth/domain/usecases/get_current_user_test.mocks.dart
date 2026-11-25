@@ -4,6 +4,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i3;
+import 'dart:typed_data' as _i8;
 
 import 'package:chismes/core/error/failure.dart' as _i6;
 import 'package:chismes/core/result/result.dart' as _i5;
@@ -197,15 +198,17 @@ class MockAuthRepository extends _i1.Mock implements _i2.AuthRepository {
   _i3.Future<_i5.Result<_i6.Failure, _i4.User>> updateProfile({
     String? username,
     String? displayName,
-    String? avatarUrl,
     String? bio,
+    _i8.Uint8List? avatar,
+    bool? removeAvatar = false,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#updateProfile, [], {
               #username: username,
               #displayName: displayName,
-              #avatarUrl: avatarUrl,
               #bio: bio,
+              #avatar: avatar,
+              #removeAvatar: removeAvatar,
             }),
             returnValue: _i3.Future<_i5.Result<_i6.Failure, _i4.User>>.value(
               _i7.dummyValue<_i5.Result<_i6.Failure, _i4.User>>(
@@ -213,8 +216,9 @@ class MockAuthRepository extends _i1.Mock implements _i2.AuthRepository {
                 Invocation.method(#updateProfile, [], {
                   #username: username,
                   #displayName: displayName,
-                  #avatarUrl: avatarUrl,
                   #bio: bio,
+                  #avatar: avatar,
+                  #removeAvatar: removeAvatar,
                 }),
               ),
             ),

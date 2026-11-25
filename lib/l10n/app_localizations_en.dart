@@ -498,110 +498,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileHeaderNoName => 'No name';
 
   @override
-  String get profilePrivacySettingsAccountDeleteSubtitle =>
-      'Delete your account and all your data';
-
-  @override
-  String get profilePrivacySettingsAccountDeleteTitle => 'Delete account';
-
-  @override
-  String get profilePrivacySettingsDialogsDeleteAccountConfirmPlaceholder =>
-      'DELETE';
-
-  @override
-  String get profilePrivacySettingsDialogsDeleteAccountConfirmPrompt =>
-      'To confirm, type DELETE';
-
-  @override
-  String get profilePrivacySettingsDialogsDeleteAccountMessage =>
-      'This will delete:\n• Your account\n• All your gossips\n• All your interactions\n\n⚠️ This action CANNOT be undone.';
-
-  @override
-  String get profilePrivacySettingsDialogsDeleteAccountTitle =>
-      '⚠️ Delete Account';
-
-  @override
-  String get profilePrivacySettingsDialogsDeleteAllDataMessage =>
-      'ALL locally stored data will be erased:\n• Saved location\n• Preferences\n• Cache\n\nAre you sure?';
-
-  @override
-  String get profilePrivacySettingsDialogsDeleteAllDataTitle =>
-      '⚠️ Erase All Data';
-
-  @override
-  String get profilePrivacySettingsDialogsForgetLocationMessage =>
-      'Your saved city will be deleted. Next time you create a gossip, location will be requested again.';
-
-  @override
-  String get profilePrivacySettingsDialogsForgetLocationTitle =>
-      'Forget location?';
-
-  @override
-  String get profilePrivacySettingsDialogsPrivacyPolicyContent =>
-      'The complete privacy policy is available at:\n\nhttps://chismes.app/privacy\n\nOr in the PRIVACY_POLICY.md file of the project.';
-
-  @override
-  String get profilePrivacySettingsDialogsTermsOfUseContent =>
-      'The complete terms of use are available at:\n\nhttps://chismes.app/terms\n\nOr in the TERMS_OF_SERVICE.md file of the project.';
-
-  @override
-  String get profilePrivacySettingsExportComingSoon => 'Export coming soon';
-
-  @override
-  String get profilePrivacySettingsExportDataTooltip => 'Export data';
-
-  @override
-  String get profilePrivacySettingsLocalDataInfoMessage =>
-      'This data is stored only on your phone (SharedPreferences). It is NOT sent to the server.';
-
-  @override
-  String get profilePrivacySettingsLocalDataInfoTitle => 'ℹ️ Local Data';
-
-  @override
-  String get profilePrivacySettingsLocationAnonymousModeDescription =>
-      'With anonymous mode on, location will be requested each time you create a gossip.';
-
-  @override
-  String get profilePrivacySettingsLocationAnonymousModeSubtitle =>
-      'Don\'t save location by default';
-
-  @override
-  String get profilePrivacySettingsLocationForgetTooltip => 'Forget location';
-
-  @override
-  String get profilePrivacySettingsLocationNotSaved => 'Not saved';
-
-  @override
-  String get profilePrivacySettingsNoLocalData => 'No local data saved';
-
-  @override
-  String get profilePrivacySettingsSectionsAccount => '🔒 Account';
-
-  @override
-  String get profilePrivacySettingsSectionsLocation => '📍 Location';
-
-  @override
-  String get profilePrivacySettingsSectionsPolicies => '📄 Policies';
-
-  @override
-  String get profilePrivacySettingsSectionsStoredData => '💾 Stored Data';
-
-  @override
-  String get profilePrivacySettingsSnackbarsAnonymousModeOff =>
-      '✅ Anonymous mode off';
-
-  @override
-  String get profilePrivacySettingsSnackbarsAnonymousModeOn =>
-      '✅ Anonymous mode on';
-
-  @override
-  String get profilePrivacySettingsSnackbarsDataErased => '✅ Data erased';
-
-  @override
-  String get profilePrivacySettingsSnackbarsLocationForgotten =>
-      '✅ Location forgotten';
-
-  @override
   String get profileScreenErrorLoading => 'Error loading profile';
 
   @override
@@ -671,12 +567,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get profileSettingsDailySummarySubtitle =>
       'Receive daily summary by email';
-
-  @override
-  String get profileSettingsDarkMode => 'Dark mode';
-
-  @override
-  String get profileSettingsDarkModeSubtitle => 'Use dark theme in the app';
 
   @override
   String get profileSettingsEmailNotifications => 'Email notifications';
@@ -901,33 +791,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get continueWithGoogle => 'Continue with Google';
 
   @override
-  String get privacyConsentTitle => 'Privacy Settings';
-
-  @override
-  String get privacyConsentDeclineButton => 'Decline';
-
-  @override
-  String get privacySettingsPrivacyPolicy => 'Privacy Policy';
-
-  @override
-  String get privacySettingsTermsOfUse => 'Terms of Use';
-
-  @override
-  String get privacySettingsTitle => 'Privacy';
-
-  @override
-  String get privacySettingsSavedCity => 'Saved city';
-
-  @override
-  String get privacySettingsAnonymousMode => 'Anonymous mode';
-
-  @override
-  String get privacySettingsViewMyData => 'View my data';
-
-  @override
-  String get privacySettingsViewMyDataSubtitle => 'Download your personal data';
-
-  @override
   String get locationChangeDialogTitle => 'Change Location';
 
   @override
@@ -1038,9 +901,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your password has been successfully updated. You can now sign in with your new password';
 
   @override
-  String get permanentlyDelete => 'Permanently delete';
-
-  @override
   String get locationRegionRequired => 'Region is required';
 
   @override
@@ -1051,22 +911,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get locationUseCurrentLocation => 'Use current location';
-
-  @override
-  String get privacySettingsAccountDeleted => 'Account deleted';
-
-  @override
-  String get privacySettingsConfirmDeletion =>
-      'Do you confirm that you want to delete your account?';
-
-  @override
-  String get privacySettingsDeletionCancelled => 'Deletion cancelled';
-
-  @override
-  String get privacySettingsEraseButton => 'Delete account';
-
-  @override
-  String get privacySettingsMyData => 'My data';
 
   @override
   String get resetPasswordSubtitle => 'Create your new password';
@@ -1091,10 +935,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signupDescription => 'Create your account in seconds';
-
-  @override
-  String get signupTermsMessage =>
-      'By creating an account, you agree to our Terms and Conditions and Privacy Policy';
 
   @override
   String get signupPasswordRequired => 'Enter a password';
@@ -1127,129 +967,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get privacyConsentHeader => '🔒 Your privacy matters';
-
-  @override
-  String get privacyConsentSubheader =>
-      'Before we begin, we want you to know how we handle your data.';
-
-  @override
-  String get privacyConsentDataCollectedTitle => '📊 What data do we collect?';
-
-  @override
-  String get privacyConsentDataCollectedItem1 =>
-      'Your email and password (encrypted)';
-
-  @override
-  String get privacyConsentDataCollectedItem2 =>
-      'Only your city (NOT exact coordinates)';
-
-  @override
-  String get privacyConsentDataCollectedItem3 =>
-      'Content of your gossip (text, image, audio)';
-
-  @override
-  String get privacyConsentDataCollectedItem4 =>
-      'Usage statistics (to improve the app)';
-
-  @override
-  String get privacyConsentDataUsageTitle => '🎯 How do we use it?';
-
-  @override
-  String get privacyConsentDataUsageItem1 =>
-      'Provide the service (publish gossip)';
-
-  @override
-  String get privacyConsentDataUsageItem2 =>
-      'Moderate content (keep community safe)';
-
-  @override
-  String get privacyConsentDataUsageItem3 => 'Improve the app (analyze usage)';
-
-  @override
-  String get privacyConsentModerationTitle => '🤖 Content moderation';
-
-  @override
-  String get privacyConsentModerationItem1 => 'We use OpenAI to analyze text';
-
-  @override
-  String get privacyConsentModerationItem2 => 'Only the gossip text is sent';
-
-  @override
-  String get privacyConsentModerationItem3 =>
-      'We do NOT send your name, location or other data';
-
-  @override
-  String get privacyConsentModerationItem4 =>
-      'OpenAI retains text for 30 days, then deletes it';
-
-  @override
-  String get privacyConsentModerationItem5 => 'NOT used to train AI models';
-
-  @override
-  String get privacyConsentLocationTitle => '📍 Your location';
-
-  @override
-  String get privacyConsentLocationItem1 =>
-      'We only detect your city (e.g. \"Bogotá\")';
-
-  @override
-  String get privacyConsentLocationItem2 =>
-      'GPS coordinates are discarded immediately';
-
-  @override
-  String get privacyConsentLocationItem3 =>
-      'We NEVER store or send exact coordinates';
-
-  @override
-  String get privacyConsentLocationItem4 => 'You can manually choose the city';
-
-  @override
-  String get privacyConsentRightsTitle => '✅ Your rights';
-
-  @override
-  String get privacyConsentRightsItem1 => 'Access your data at any time';
-
-  @override
-  String get privacyConsentRightsItem2 => 'Delete your account and data';
-
-  @override
-  String get privacyConsentRightsItem3 => 'Forget your saved location';
-
-  @override
-  String get privacyConsentRightsItem4 => 'Export your data (portability)';
-
-  @override
-  String get privacyConsentCheckboxPrivacy => 'I have read and accept the ';
-
-  @override
-  String get privacyConsentCheckboxPrivacyLink => 'Privacy Policy';
-
-  @override
-  String get privacyConsentCheckboxTerms => 'I have read and accept the ';
-
-  @override
-  String get privacyConsentCheckboxTermsLink => 'Terms of Use';
-
-  @override
-  String get privacyConsentCheckboxModeration =>
-      'I accept that my gossip text will be sent to ';
-
-  @override
-  String get privacyConsentCheckboxModerationBold => 'OpenAI';
-
-  @override
-  String get privacyConsentCheckboxModerationSuffix =>
-      ' for content moderation (30 days retention)';
-
-  @override
-  String get privacyConsentAcceptButton => 'Accept and Continue';
-
-  @override
-  String get privacyConsentDisclaimer =>
-      'By continuing, you accept our policies';
-
-  @override
   String get authOtpResendCode => 'Resend code';
 
   @override
@@ -1269,60 +986,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authOtpCodeMustBe6Digits => 'Code must be 6 digits';
-
-  @override
-  String get privacyConsentDialogPrivacyAvailable =>
-      'The complete privacy policy is available at:';
-
-  @override
-  String get privacyConsentDialogPrivacyUrl => 'https://chismes.app/privacy';
-
-  @override
-  String get privacyConsentDialogPrivacyFile =>
-      'Or in the PRIVACY_POLICY.md file of the project.';
-
-  @override
-  String get privacyConsentDialogPrivacySummary => 'Summary:';
-
-  @override
-  String get privacyConsentDialogPrivacyItem1 =>
-      '• We only collect necessary data';
-
-  @override
-  String get privacyConsentDialogPrivacyItem2 => '• We don\'t sell your data';
-
-  @override
-  String get privacyConsentDialogPrivacyItem3 =>
-      '• You can delete your account at any time';
-
-  @override
-  String get privacyConsentDialogTermsAvailable =>
-      'The complete terms of use are available at:';
-
-  @override
-  String get privacyConsentDialogTermsUrl => 'https://chismes.app/terms';
-
-  @override
-  String get privacyConsentDialogTermsFile =>
-      'Or in the TERMS_OF_SERVICE.md file of the project.';
-
-  @override
-  String get privacyConsentDialogTermsSummary => 'Summary:';
-
-  @override
-  String get privacyConsentDialogTermsItem1 => '• Minimum age: 13 years';
-
-  @override
-  String get privacyConsentDialogTermsItem2 =>
-      '• Do not post inappropriate content';
-
-  @override
-  String get privacyConsentDialogTermsItem3 =>
-      '• Automatic + manual moderation';
-
-  @override
-  String get privacyConsentDialogTermsItem4 =>
-      '• We may suspend accounts that violate rules';
 
   @override
   String get searchRecentSearches => 'Recent searches';
@@ -1841,4 +1504,127 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get appealNeedsAnotherModerator =>
       'Another moderator must review this appeal (you made the rejection)';
+
+  @override
+  String get legalPrivacyPolicyTitle => 'Privacy policy';
+
+  @override
+  String get legalTermsOfServiceTitle => 'Terms of use';
+
+  @override
+  String get legalSectionTitle => 'Legal';
+
+  @override
+  String get legalDocumentLoadError => 'Couldn\'t open the document.';
+
+  @override
+  String legalConsentMessage(String terms, String privacy) {
+    return 'By continuing, you agree to the $terms and the $privacy.';
+  }
+
+  @override
+  String get locationPrivacyTitle => 'Location';
+
+  @override
+  String get locationPrivacySavedCity => 'Saved city';
+
+  @override
+  String get locationPrivacyNotSaved => 'Not saved';
+
+  @override
+  String get locationPrivacyForget => 'Forget location';
+
+  @override
+  String get locationPrivacyForgetDialogTitle => 'Forget your location?';
+
+  @override
+  String get locationPrivacyForgetDialogMessage =>
+      'Your saved city will be deleted. We\'ll ask for it again the next time you post a gossip.';
+
+  @override
+  String get locationPrivacyForgotten => 'Location forgotten';
+
+  @override
+  String get locationPrivacyDontSave => 'Don\'t save location';
+
+  @override
+  String get locationPrivacyDontSaveSubtitle =>
+      'We\'ll ask for your city on every gossip';
+
+  @override
+  String get locationPrivacyError => 'Couldn\'t save the change. Try again.';
+
+  @override
+  String get errorsUsernameChangeCooldown =>
+      'You changed your username recently. You can change it again in a few days.';
+
+  @override
+  String errorsUsernameChangeCooldownUntil(String date) {
+    return 'You changed your username recently. You can change it again on $date.';
+  }
+
+  @override
+  String get errorsUsernameReserved => 'That username isn\'t available.';
+
+  @override
+  String get errorsModerationUnavailable =>
+      'We couldn\'t review the change right now. Try again in a few minutes.';
+
+  @override
+  String get errorsInvalidImage => 'The photo must be JPG, PNG or WebP.';
+
+  @override
+  String get editProfileTitle => 'Edit profile';
+
+  @override
+  String get editProfileSave => 'Save';
+
+  @override
+  String get editProfileSaved => 'Profile updated';
+
+  @override
+  String get editProfileChangePhoto => 'Change profile photo';
+
+  @override
+  String get editProfilePhotoGallery => 'Choose from gallery';
+
+  @override
+  String get editProfilePhotoCamera => 'Take photo';
+
+  @override
+  String get editProfilePhotoRemove => 'Remove photo';
+
+  @override
+  String get editProfilePhotoError =>
+      'Couldn\'t use that photo. Try another one.';
+
+  @override
+  String get editProfileUsernameHelper =>
+      'You can change it once every 30 days';
+
+  @override
+  String get editProfileModerationNote =>
+      'Your photo, name and bio are public: we review them before saving.';
+
+  @override
+  String get editProfileDiscardTitle => 'Discard changes?';
+
+  @override
+  String get editProfileDiscardMessage =>
+      'If you leave now, your changes won\'t be saved.';
+
+  @override
+  String get editProfileDiscard => 'Discard';
+
+  @override
+  String get profileSettingsTheme => 'Theme';
+
+  @override
+  String get profileSettingsThemeSystem => 'Same as phone';
+
+  @override
+  String get profileSettingsThemeLight => 'Light';
+
+  @override
+  String get profileSettingsThemeDark => 'Dark';
 }

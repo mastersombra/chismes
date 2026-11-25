@@ -4,9 +4,10 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i3;
+import 'dart:typed_data' as _i15;
 
 import 'package:chismes/core/error/failure.dart' as _i5;
-import 'package:chismes/core/logging/logging.dart' as _i15;
+import 'package:chismes/core/logging/logging.dart' as _i16;
 import 'package:chismes/core/result/result.dart' as _i4;
 import 'package:chismes/core/services/auth_service.dart' as _i13;
 import 'package:chismes/features/auth/domain/entities/user.dart' as _i14;
@@ -196,6 +197,50 @@ class MockAuthService extends _i1.Mock implements _i13.AuthService {
           as bool);
 
   @override
+  _i3.Future<_i4.Result<_i5.Failure, _i14.User?>> loadCurrentUser() =>
+      (super.noSuchMethod(
+            Invocation.method(#loadCurrentUser, []),
+            returnValue: _i3.Future<_i4.Result<_i5.Failure, _i14.User?>>.value(
+              _i7.dummyValue<_i4.Result<_i5.Failure, _i14.User?>>(
+                this,
+                Invocation.method(#loadCurrentUser, []),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Result<_i5.Failure, _i14.User?>>);
+
+  @override
+  _i3.Future<_i4.Result<_i5.Failure, _i14.User>> updateProfile({
+    String? username,
+    String? displayName,
+    String? bio,
+    _i15.Uint8List? avatar,
+    bool? removeAvatar = false,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateProfile, [], {
+              #username: username,
+              #displayName: displayName,
+              #bio: bio,
+              #avatar: avatar,
+              #removeAvatar: removeAvatar,
+            }),
+            returnValue: _i3.Future<_i4.Result<_i5.Failure, _i14.User>>.value(
+              _i7.dummyValue<_i4.Result<_i5.Failure, _i14.User>>(
+                this,
+                Invocation.method(#updateProfile, [], {
+                  #username: username,
+                  #displayName: displayName,
+                  #bio: bio,
+                  #avatar: avatar,
+                  #removeAvatar: removeAvatar,
+                }),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Result<_i5.Failure, _i14.User>>);
+
+  @override
   Map<String, dynamic> debugSessionStatus() =>
       (super.noSuchMethod(
             Invocation.method(#debugSessionStatus, []),
@@ -215,7 +260,7 @@ class MockAuthService extends _i1.Mock implements _i13.AuthService {
 /// A class which mocks [AppLogger].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAppLogger extends _i1.Mock implements _i15.AppLogger {
+class MockAppLogger extends _i1.Mock implements _i16.AppLogger {
   MockAppLogger() {
     _i1.throwOnMissingStub(this);
   }

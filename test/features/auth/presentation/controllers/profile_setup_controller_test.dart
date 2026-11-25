@@ -52,7 +52,6 @@ void main() {
     const tUsername = 'testuser';
     const tDisplayName = 'Test User';
     const tBio = 'Test bio';
-    const tAvatarUrl = 'https://example.com/avatar.jpg';
     final tUser = User(
       id: '123',
       email: 'test@example.com',
@@ -80,7 +79,6 @@ void main() {
       when(mockUpdateProfile(
         username: tUsername,
         displayName: tDisplayName,
-        avatarUrl: null,
         bio: null,
       )).thenAnswer((_) async => Result.success(tUser));
 
@@ -100,7 +98,6 @@ void main() {
         when(mockUpdateProfile(
           username: tUsername,
           displayName: tDisplayName,
-          avatarUrl: null,
           bio: null,
         )).thenAnswer((_) async => Result.success(tUser));
 
@@ -122,7 +119,6 @@ void main() {
         when(mockUpdateProfile(
           username: tUsername,
           displayName: tDisplayName,
-          avatarUrl: null,
           bio: null,
         )).thenAnswer((_) async => Result.success(tUser));
 
@@ -139,7 +135,6 @@ void main() {
         verify(mockUpdateProfile(
           username: tUsername,
           displayName: tDisplayName,
-          avatarUrl: null,
           bio: null,
         )).called(1);
       });
@@ -153,7 +148,6 @@ void main() {
         when(mockUpdateProfile(
           username: tUsername,
           displayName: null,
-          avatarUrl: null,
           bio: null,
         )).thenAnswer((_) async => Result.failure(tFailure));
 
@@ -171,7 +165,6 @@ void main() {
         when(mockUpdateProfile(
           username: tUsername,
           displayName: tDisplayName,
-          avatarUrl: tAvatarUrl,
           bio: tBio,
         )).thenAnswer((_) async => Result.success(tUser));
 
@@ -179,7 +172,6 @@ void main() {
         await controller.updateProfile(
           username: tUsername,
           displayName: tDisplayName,
-          avatarUrl: tAvatarUrl,
           bio: tBio,
         );
 
@@ -187,7 +179,6 @@ void main() {
         verify(mockUpdateProfile(
           username: tUsername,
           displayName: tDisplayName,
-          avatarUrl: tAvatarUrl,
           bio: tBio,
         )).called(1);
       });
@@ -197,7 +188,6 @@ void main() {
         when(mockUpdateProfile(
           username: tUsername,
           displayName: tDisplayName,
-          avatarUrl: tAvatarUrl,
           bio: tBio,
         )).thenAnswer((_) async => Result.success(tUser));
 
@@ -205,7 +195,6 @@ void main() {
         await controller.updateProfile(
           username: tUsername,
           displayName: tDisplayName,
-          avatarUrl: tAvatarUrl,
           bio: tBio,
         );
 
@@ -229,7 +218,6 @@ void main() {
         when(mockUpdateProfile(
           username: tUsername,
           displayName: null,
-          avatarUrl: null,
           bio: null,
         )).thenAnswer((_) async => Result.failure(tFailure));
 
@@ -413,7 +401,6 @@ void main() {
         when(mockUpdateProfile(
           username: tUsername,
           displayName: null,
-          avatarUrl: null,
           bio: null,
         )).thenAnswer((_) async => Result.failure(
               const ValidationFailure(

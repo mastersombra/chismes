@@ -93,6 +93,10 @@ class ProfileController extends ChangeNotifier {
 
       _logger.d('Loading profile for userId: $userId');
 
+      // Perfil completo (username, nombre, bio, foto): el usuario de la
+      // sesión no lo trae. Si falla, se muestra lo que haya.
+      await _authService.loadCurrentUser();
+
       // Cargar estadísticas y configuraciones en paralelo
       final statsResult = await _getUserStats(userId);
       final settingsResult = await _getSettings(userId);
@@ -262,6 +266,9 @@ class ProfileController extends ChangeNotifier {
   }
 
   /// Refresca los datos del perfil
+  /// Tras guardar en Editar perfil: AuthService ya tiene el usuario nuevo
+  void onProfileEdited() => notifyListeners();
+
   Future<void> refresh() async {
     await loadProfile();
   }

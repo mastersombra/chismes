@@ -52,6 +52,10 @@ enum ErrorCode {
   rateLimitExceeded, // Rate limit excedido (específico de gossip)
   accountRestricted, // Sanción temporal: no puede publicar ni reportar
   accountSuspended, // Suspensión: no puede publicar ni reportar hasta apelar
+  usernameChangeCooldown, // Cambió el @usuario hace menos del plazo (update-profile)
+  usernameReserved, // @usuario reservado (admin, soporte, ...)
+  moderationUnavailable, // La moderación automática no respondió: reintentar más tarde
+  invalidImage, // La foto no es JPEG, PNG ni WebP
 
   // Errores desconocidos
   unknownError,

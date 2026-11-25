@@ -56,26 +56,20 @@ class ProfileRemoteDataSource {
     }
   }
 
-  /// Obtiene configuraciones del usuario desde Supabase
+  /// Lee la configuración del usuario (`user_settings`, 017). La fila la crea
+  /// el servidor al registrarse; si faltara, se usan los valores por defecto
+  /// (los mismos de la tabla).
   Future<ProfileSettingsModel> getSettings(String userId) async {
     try {
-      _logger.d('Fetching settings for userId: $userId');
-
-      // Por ahora retornamos configuración por defecto
-      // TODO: Implementar tabla de configuraciones en Supabase
-      return ProfileSettingsModel.fromJson({
-        'notifications_enabled': true,
-        'email_notifications': true,
-        'push_notifications': true,
-        'comments_notifications': true,
-        'likes_notifications': true,
-        'follow_notifications': true,
-        'language': 'es',
-        'dark_mode': false,
-        'privacy_level': 'public',
-        'show_email': false,
-        'show_activity': true,
-      });
+      final row = await _supabase
+          .from('user_settings')
+          .select()
+          .eq('user_id', userId)
+          .maybeSingle();
+      if (row == null) {
+        _logger.w('user_settings row missing, using defaults', context: {'userId': userId});
+      }
+      return ProfileSettingsModel.fromJson(row ?? const {});
     } catch (error, stackTrace) {
       _logger.e(
         'Error fetching settings',
@@ -87,25 +81,26 @@ class ProfileRemoteDataSource {
     }
   }
 
-  /// Actualiza configuraciones del usuario en Supabase
+  /// Guarda la configuración (RLS: el dueño solo cambia la suya). Si no se
+  /// actualizó ninguna fila, falla: así la UI no muestra un cambio que no se
+  /// guardó.
   Future<void> updateSettings(
     String userId,
     ProfileSettingsModel settings,
   ) async {
     try {
-      _logger.d('Updating settings for userId: $userId');
-
-      // TODO: Implementar actualización en tabla de configuraciones
-      // Por ahora solo logueamos
-      _logger.i(
-        'Settings would be updated',
-        context: {
-          'userId': userId,
-          'settings': settings.toJson(),
-        },
-      );
-
-      await Future.delayed(const Duration(milliseconds: 500)); // Simular latencia
+      final updated = await _supabase
+          .from('user_settings')
+          .update(settings.toJson())
+          .eq('user_id', userId)
+          .select('user_id');
+      if ((updated as List).isEmpty) {
+        throw const DataFailure(
+          code: error_codes.ErrorCode.notFound,
+          technicalMessage: 'user_settings row not found',
+        );
+      }
+      _logger.i('Settings updated', context: {'userId': userId});
     } catch (error, stackTrace) {
       _logger.e(
         'Error updating settings',

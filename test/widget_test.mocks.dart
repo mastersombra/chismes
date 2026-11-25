@@ -4,12 +4,13 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i5;
+import 'dart:typed_data' as _i11;
 import 'dart:ui' as _i6;
 
 import 'package:chismes/core/error/failure.dart' as _i10;
 import 'package:chismes/core/result/result.dart' as _i9;
-import 'package:chismes/core/services/location_service.dart' as _i12;
-import 'package:chismes/core/services/search_history_service.dart' as _i11;
+import 'package:chismes/core/services/location_service.dart' as _i13;
+import 'package:chismes/core/services/search_history_service.dart' as _i12;
 import 'package:chismes/features/auth/domain/entities/user.dart' as _i8;
 import 'package:chismes/features/auth/domain/repositories/auth_repository.dart'
     as _i7;
@@ -17,7 +18,7 @@ import 'package:chismes/features/auth/presentation/controllers/login_controller.
     as _i2;
 import 'package:chismes/features/auth/presentation/state/auth_state.dart'
     as _i3;
-import 'package:geolocator/geolocator.dart' as _i13;
+import 'package:geolocator/geolocator.dart' as _i14;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i4;
 
@@ -302,15 +303,17 @@ class MockAuthRepository extends _i1.Mock implements _i7.AuthRepository {
   _i5.Future<_i9.Result<_i10.Failure, _i8.User>> updateProfile({
     String? username,
     String? displayName,
-    String? avatarUrl,
     String? bio,
+    _i11.Uint8List? avatar,
+    bool? removeAvatar = false,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#updateProfile, [], {
               #username: username,
               #displayName: displayName,
-              #avatarUrl: avatarUrl,
               #bio: bio,
+              #avatar: avatar,
+              #removeAvatar: removeAvatar,
             }),
             returnValue: _i5.Future<_i9.Result<_i10.Failure, _i8.User>>.value(
               _i4.dummyValue<_i9.Result<_i10.Failure, _i8.User>>(
@@ -318,8 +321,9 @@ class MockAuthRepository extends _i1.Mock implements _i7.AuthRepository {
                 Invocation.method(#updateProfile, [], {
                   #username: username,
                   #displayName: displayName,
-                  #avatarUrl: avatarUrl,
                   #bio: bio,
+                  #avatar: avatar,
+                  #removeAvatar: removeAvatar,
                 }),
               ),
             ),
@@ -406,7 +410,7 @@ class MockAuthRepository extends _i1.Mock implements _i7.AuthRepository {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockSearchHistoryService extends _i1.Mock
-    implements _i11.SearchHistoryService {
+    implements _i12.SearchHistoryService {
   MockSearchHistoryService() {
     _i1.throwOnMissingStub(this);
   }
@@ -450,29 +454,29 @@ class MockSearchHistoryService extends _i1.Mock
 /// A class which mocks [LocationService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockLocationService extends _i1.Mock implements _i12.LocationService {
+class MockLocationService extends _i1.Mock implements _i13.LocationService {
   MockLocationService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i5.Future<_i13.Position?> getCurrentPosition() =>
+  _i5.Future<_i14.Position?> getCurrentPosition() =>
       (super.noSuchMethod(
             Invocation.method(#getCurrentPosition, []),
-            returnValue: _i5.Future<_i13.Position?>.value(),
+            returnValue: _i5.Future<_i14.Position?>.value(),
           )
-          as _i5.Future<_i13.Position?>);
+          as _i5.Future<_i14.Position?>);
 
   @override
-  _i5.Future<_i12.DetectedLocation?> getCityFromCoordinates(
+  _i5.Future<_i13.DetectedLocation?> getCityFromCoordinates(
     double? latitude,
     double? longitude,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#getCityFromCoordinates, [latitude, longitude]),
-            returnValue: _i5.Future<_i12.DetectedLocation?>.value(),
+            returnValue: _i5.Future<_i13.DetectedLocation?>.value(),
           )
-          as _i5.Future<_i12.DetectedLocation?>);
+          as _i5.Future<_i13.DetectedLocation?>);
 
   @override
   _i5.Future<void> saveDefaultLocation({
@@ -498,12 +502,12 @@ class MockLocationService extends _i1.Mock implements _i12.LocationService {
           as _i5.Future<void>);
 
   @override
-  _i5.Future<_i12.SavedLocation?> getDefaultLocation() =>
+  _i5.Future<_i13.SavedLocation?> getDefaultLocation() =>
       (super.noSuchMethod(
             Invocation.method(#getDefaultLocation, []),
-            returnValue: _i5.Future<_i12.SavedLocation?>.value(),
+            returnValue: _i5.Future<_i13.SavedLocation?>.value(),
           )
-          as _i5.Future<_i12.SavedLocation?>);
+          as _i5.Future<_i13.SavedLocation?>);
 
   @override
   _i5.Future<void> clearDefaultLocation() =>
@@ -513,4 +517,20 @@ class MockLocationService extends _i1.Mock implements _i12.LocationService {
             returnValueForMissingStub: _i5.Future<void>.value(),
           )
           as _i5.Future<void>);
+
+  @override
+  _i5.Future<bool> isAnonymousModeEnabled() =>
+      (super.noSuchMethod(
+            Invocation.method(#isAnonymousModeEnabled, []),
+            returnValue: _i5.Future<bool>.value(false),
+          )
+          as _i5.Future<bool>);
+
+  @override
+  _i5.Future<bool> setAnonymousMode(bool? enabled) =>
+      (super.noSuchMethod(
+            Invocation.method(#setAnonymousMode, [enabled]),
+            returnValue: _i5.Future<bool>.value(false),
+          )
+          as _i5.Future<bool>);
 }

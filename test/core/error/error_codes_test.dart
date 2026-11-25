@@ -67,6 +67,10 @@ void main() {
       expect(ErrorCode.values, contains(ErrorCode.rateLimitExceeded));
       expect(ErrorCode.values, contains(ErrorCode.accountRestricted));
       expect(ErrorCode.values, contains(ErrorCode.accountSuspended));
+      expect(ErrorCode.values, contains(ErrorCode.usernameChangeCooldown));
+      expect(ErrorCode.values, contains(ErrorCode.usernameReserved));
+      expect(ErrorCode.values, contains(ErrorCode.moderationUnavailable));
+      expect(ErrorCode.values, contains(ErrorCode.invalidImage));
     });
 
     test('debe tener código de error desconocido', () {
@@ -74,9 +78,9 @@ void main() {
       expect(ErrorCode.values, contains(ErrorCode.unknownError));
     });
 
-    test('debe tener exactamente 39 códigos de error', () {
+    test('debe tener exactamente 43 códigos de error', () {
       // Assert
-      expect(ErrorCode.values, hasLength(39));
+      expect(ErrorCode.values, hasLength(43));
     });
 
     test('enum values debe contener solo valores de ErrorCode', () {

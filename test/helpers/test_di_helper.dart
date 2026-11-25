@@ -1,5 +1,6 @@
 import 'package:chismes/core/di/injection_container.dart';
 import 'package:chismes/core/l10n/locale_notifier.dart';
+import 'package:chismes/core/theme/theme_mode_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -48,6 +49,13 @@ Future<void> setupTestDI({Locale initialLocale = const Locale('es')}) async {
     final prefs = await SharedPreferences.getInstance();
     getIt.registerSingleton<SharedPreferences>(prefs);
   }
+
+  // ThemeModeNotifier - lo usan ChismesApp y SettingsSection
+  if (!getIt.isRegistered<ThemeModeNotifier>()) {
+    getIt.registerSingleton<ThemeModeNotifier>(
+      ThemeModeNotifier(getIt<SharedPreferences>()),
+    );
+  }
 }
 
 /// Limpia el DI después de los tests
@@ -57,6 +65,10 @@ Future<void> tearDownTestDI() async {
   // Unregister en orden inverso al registro
   if (getIt.isRegistered<LocaleNotifier>()) {
     await getIt.unregister<LocaleNotifier>();
+  }
+
+  if (getIt.isRegistered<ThemeModeNotifier>()) {
+    await getIt.unregister<ThemeModeNotifier>();
   }
 
   if (getIt.isRegistered<SharedPreferences>()) {

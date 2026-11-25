@@ -508,112 +508,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileHeaderNoName => 'Sin nombre';
 
   @override
-  String get profilePrivacySettingsAccountDeleteSubtitle =>
-      'Elimina tu cuenta y todos tus datos';
-
-  @override
-  String get profilePrivacySettingsAccountDeleteTitle => 'Eliminar cuenta';
-
-  @override
-  String get profilePrivacySettingsDialogsDeleteAccountConfirmPlaceholder =>
-      'ELIMINAR';
-
-  @override
-  String get profilePrivacySettingsDialogsDeleteAccountConfirmPrompt =>
-      'Para confirmar, escribe ELIMINAR';
-
-  @override
-  String get profilePrivacySettingsDialogsDeleteAccountMessage =>
-      'Esto eliminará:\n• Tu cuenta\n• Todos tus chismes\n• Todas tus interacciones\n\n⚠️ Esta acción NO se puede deshacer.';
-
-  @override
-  String get profilePrivacySettingsDialogsDeleteAccountTitle =>
-      '⚠️ Eliminar cuenta';
-
-  @override
-  String get profilePrivacySettingsDialogsDeleteAllDataMessage =>
-      'Se borrarán TODOS los datos guardados localmente:\n• Ubicación guardada\n• Preferencias\n• Cache\n\n¿Estás seguro?';
-
-  @override
-  String get profilePrivacySettingsDialogsDeleteAllDataTitle =>
-      '⚠️ Borrar todos los datos';
-
-  @override
-  String get profilePrivacySettingsDialogsForgetLocationMessage =>
-      'Se borrará tu ciudad guardada. La próxima vez que crees un chisme, se pedirá ubicación de nuevo.';
-
-  @override
-  String get profilePrivacySettingsDialogsForgetLocationTitle =>
-      '¿Olvidar ubicación?';
-
-  @override
-  String get profilePrivacySettingsDialogsPrivacyPolicyContent =>
-      'La política de privacidad completa está disponible en:\n\nhttps://chismes.app/privacy\n\nO en el archivo PRIVACY_POLICY.md del proyecto.';
-
-  @override
-  String get profilePrivacySettingsDialogsTermsOfUseContent =>
-      'Los términos de uso completos están disponibles en:\n\nhttps://chismes.app/terms\n\nO en el archivo TERMS_OF_SERVICE.md del proyecto.';
-
-  @override
-  String get profilePrivacySettingsExportComingSoon =>
-      'Exportación disponible próximamente';
-
-  @override
-  String get profilePrivacySettingsExportDataTooltip => 'Exportar datos';
-
-  @override
-  String get profilePrivacySettingsLocalDataInfoMessage =>
-      'Estos datos se almacenan solo en tu teléfono (SharedPreferences). NO se envían al servidor.';
-
-  @override
-  String get profilePrivacySettingsLocalDataInfoTitle => 'ℹ️ Datos locales';
-
-  @override
-  String get profilePrivacySettingsLocationAnonymousModeDescription =>
-      'Con modo anónimo activado, se pedirá ubicación cada vez que crees un chisme.';
-
-  @override
-  String get profilePrivacySettingsLocationAnonymousModeSubtitle =>
-      'No guardar ubicación por defecto';
-
-  @override
-  String get profilePrivacySettingsLocationForgetTooltip => 'Olvidar ubicación';
-
-  @override
-  String get profilePrivacySettingsLocationNotSaved => 'No guardada';
-
-  @override
-  String get profilePrivacySettingsNoLocalData =>
-      'No hay datos guardados localmente';
-
-  @override
-  String get profilePrivacySettingsSectionsAccount => '🔒 Cuenta';
-
-  @override
-  String get profilePrivacySettingsSectionsLocation => '📍 Ubicación';
-
-  @override
-  String get profilePrivacySettingsSectionsPolicies => '📄 Políticas';
-
-  @override
-  String get profilePrivacySettingsSectionsStoredData => '💾 Datos almacenados';
-
-  @override
-  String get profilePrivacySettingsSnackbarsAnonymousModeOff =>
-      '✅ Modo anónimo desactivado';
-
-  @override
-  String get profilePrivacySettingsSnackbarsAnonymousModeOn =>
-      '✅ Modo anónimo activado';
-
-  @override
-  String get profilePrivacySettingsSnackbarsDataErased => '✅ Datos borrados';
-
-  @override
-  String get profilePrivacySettingsSnackbarsLocationForgotten =>
-      '✅ Ubicación olvidada';
-
-  @override
   String get profileScreenErrorLoading => 'Error al cargar perfil';
 
   @override
@@ -683,13 +577,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get profileSettingsDailySummarySubtitle =>
       'Recibir resumen diario por email';
-
-  @override
-  String get profileSettingsDarkMode => 'Modo oscuro';
-
-  @override
-  String get profileSettingsDarkModeSubtitle =>
-      'Usar tema oscuro en la aplicación';
 
   @override
   String get profileSettingsEmailNotifications => 'Notificaciones por email';
@@ -914,34 +801,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get continueWithGoogle => 'Continuar con Google';
 
   @override
-  String get privacyConsentTitle => 'Configuración de Privacidad';
-
-  @override
-  String get privacyConsentDeclineButton => 'Rechazar';
-
-  @override
-  String get privacySettingsPrivacyPolicy => 'Política de Privacidad';
-
-  @override
-  String get privacySettingsTermsOfUse => 'Términos de Uso';
-
-  @override
-  String get privacySettingsTitle => 'Privacidad';
-
-  @override
-  String get privacySettingsSavedCity => 'Ciudad guardada';
-
-  @override
-  String get privacySettingsAnonymousMode => 'Modo anónimo';
-
-  @override
-  String get privacySettingsViewMyData => 'Ver mis datos';
-
-  @override
-  String get privacySettingsViewMyDataSubtitle =>
-      'Descarga tus datos personales';
-
-  @override
   String get locationChangeDialogTitle => 'Cambiar Ubicación';
 
   @override
@@ -1056,9 +915,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'Tu contraseña ha sido actualizada exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña';
 
   @override
-  String get permanentlyDelete => 'Eliminar permanentemente';
-
-  @override
   String get locationRegionRequired => 'La región es requerida';
 
   @override
@@ -1069,22 +925,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get locationUseCurrentLocation => 'Usar ubicación actual';
-
-  @override
-  String get privacySettingsAccountDeleted => 'Cuenta eliminada';
-
-  @override
-  String get privacySettingsConfirmDeletion =>
-      '¿Confirmas que deseas eliminar tu cuenta?';
-
-  @override
-  String get privacySettingsDeletionCancelled => 'Eliminación cancelada';
-
-  @override
-  String get privacySettingsEraseButton => 'Eliminar cuenta';
-
-  @override
-  String get privacySettingsMyData => 'Mis datos';
 
   @override
   String get resetPasswordSubtitle => 'Crea tu nueva contraseña';
@@ -1109,10 +949,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get signupDescription => 'Crea tu cuenta en segundos';
-
-  @override
-  String get signupTermsMessage =>
-      'Al crear una cuenta, aceptas nuestros Términos y Condiciones y Política de Privacidad';
 
   @override
   String get signupPasswordRequired => 'Ingresa una contraseña';
@@ -1145,134 +981,6 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get privacyConsentHeader => '🔒 Tu privacidad es importante';
-
-  @override
-  String get privacyConsentSubheader =>
-      'Antes de comenzar, queremos que sepas cómo manejamos tus datos.';
-
-  @override
-  String get privacyConsentDataCollectedTitle => '📊 ¿Qué datos recopilamos?';
-
-  @override
-  String get privacyConsentDataCollectedItem1 =>
-      'Tu email y contraseña (encriptada)';
-
-  @override
-  String get privacyConsentDataCollectedItem2 =>
-      'Solo tu ciudad (NO coordenadas exactas)';
-
-  @override
-  String get privacyConsentDataCollectedItem3 =>
-      'Contenido de tus chismes (texto, imagen, audio)';
-
-  @override
-  String get privacyConsentDataCollectedItem4 =>
-      'Estadísticas de uso (para mejorar la app)';
-
-  @override
-  String get privacyConsentDataUsageTitle => '🎯 ¿Cómo los usamos?';
-
-  @override
-  String get privacyConsentDataUsageItem1 =>
-      'Proporcionar el servicio (publicar chismes)';
-
-  @override
-  String get privacyConsentDataUsageItem2 =>
-      'Moderar contenido (mantener comunidad segura)';
-
-  @override
-  String get privacyConsentDataUsageItem3 => 'Mejorar la app (analizar uso)';
-
-  @override
-  String get privacyConsentModerationTitle => '🤖 Moderación de contenido';
-
-  @override
-  String get privacyConsentModerationItem1 =>
-      'Usamos OpenAI para analizar texto';
-
-  @override
-  String get privacyConsentModerationItem2 =>
-      'Solo se envía el texto del chisme';
-
-  @override
-  String get privacyConsentModerationItem3 =>
-      'NO enviamos tu nombre, ubicación ni otros datos';
-
-  @override
-  String get privacyConsentModerationItem4 =>
-      'OpenAI retiene el texto por 30 días, luego lo elimina';
-
-  @override
-  String get privacyConsentModerationItem5 =>
-      'NO se usa para entrenar modelos de IA';
-
-  @override
-  String get privacyConsentLocationTitle => '📍 Tu ubicación';
-
-  @override
-  String get privacyConsentLocationItem1 =>
-      'Solo detectamos tu ciudad (ej: \"Bogotá\")';
-
-  @override
-  String get privacyConsentLocationItem2 =>
-      'Coordenadas GPS se descartan inmediatamente';
-
-  @override
-  String get privacyConsentLocationItem3 =>
-      'NUNCA almacenamos ni enviamos coordenadas exactas';
-
-  @override
-  String get privacyConsentLocationItem4 =>
-      'Puedes elegir la ciudad manualmente';
-
-  @override
-  String get privacyConsentRightsTitle => '✅ Tus derechos';
-
-  @override
-  String get privacyConsentRightsItem1 =>
-      'Acceder a tus datos en cualquier momento';
-
-  @override
-  String get privacyConsentRightsItem2 => 'Eliminar tu cuenta y datos';
-
-  @override
-  String get privacyConsentRightsItem3 => 'Olvidar tu ubicación guardada';
-
-  @override
-  String get privacyConsentRightsItem4 => 'Exportar tus datos (portabilidad)';
-
-  @override
-  String get privacyConsentCheckboxPrivacy => 'He leído y acepto la ';
-
-  @override
-  String get privacyConsentCheckboxPrivacyLink => 'Política de Privacidad';
-
-  @override
-  String get privacyConsentCheckboxTerms => 'He leído y acepto los ';
-
-  @override
-  String get privacyConsentCheckboxTermsLink => 'Términos de Uso';
-
-  @override
-  String get privacyConsentCheckboxModeration =>
-      'Acepto que el texto de mis chismes se envíe a ';
-
-  @override
-  String get privacyConsentCheckboxModerationBold => 'OpenAI';
-
-  @override
-  String get privacyConsentCheckboxModerationSuffix =>
-      ' para moderación de contenido (30 días de retención)';
-
-  @override
-  String get privacyConsentAcceptButton => 'Aceptar y Continuar';
-
-  @override
-  String get privacyConsentDisclaimer =>
-      'Al continuar, aceptas nuestras políticas';
-
-  @override
   String get authOtpResendCode => 'Reenviar código';
 
   @override
@@ -1292,60 +1000,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get authOtpCodeMustBe6Digits => 'El código debe tener 6 dígitos';
-
-  @override
-  String get privacyConsentDialogPrivacyAvailable =>
-      'La política de privacidad completa está disponible en:';
-
-  @override
-  String get privacyConsentDialogPrivacyUrl => 'https://chismes.app/privacy';
-
-  @override
-  String get privacyConsentDialogPrivacyFile =>
-      'O en el archivo PRIVACY_POLICY.md del proyecto.';
-
-  @override
-  String get privacyConsentDialogPrivacySummary => 'Resumen:';
-
-  @override
-  String get privacyConsentDialogPrivacyItem1 =>
-      '• Solo recopilamos datos necesarios';
-
-  @override
-  String get privacyConsentDialogPrivacyItem2 => '• No vendemos tus datos';
-
-  @override
-  String get privacyConsentDialogPrivacyItem3 =>
-      '• Puedes eliminar tu cuenta en cualquier momento';
-
-  @override
-  String get privacyConsentDialogTermsAvailable =>
-      'Los términos de uso completos están disponibles en:';
-
-  @override
-  String get privacyConsentDialogTermsUrl => 'https://chismes.app/terms';
-
-  @override
-  String get privacyConsentDialogTermsFile =>
-      'O en el archivo TERMS_OF_SERVICE.md del proyecto.';
-
-  @override
-  String get privacyConsentDialogTermsSummary => 'Resumen:';
-
-  @override
-  String get privacyConsentDialogTermsItem1 => '• Edad mínima: 13 años';
-
-  @override
-  String get privacyConsentDialogTermsItem2 =>
-      '• No publicar contenido inapropiado';
-
-  @override
-  String get privacyConsentDialogTermsItem3 =>
-      '• Moderación automática + manual';
-
-  @override
-  String get privacyConsentDialogTermsItem4 =>
-      '• Podemos suspender cuentas que violen normas';
 
   @override
   String get searchRecentSearches => 'Búsquedas recientes';
@@ -1864,4 +1518,129 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get appealNeedsAnotherModerator =>
       'Esta apelación la debe revisar otro moderador (tú hiciste el rechazo)';
+
+  @override
+  String get legalPrivacyPolicyTitle => 'Política de privacidad';
+
+  @override
+  String get legalTermsOfServiceTitle => 'Términos de uso';
+
+  @override
+  String get legalSectionTitle => 'Legal';
+
+  @override
+  String get legalDocumentLoadError => 'No se pudo abrir el documento.';
+
+  @override
+  String legalConsentMessage(String terms, String privacy) {
+    return 'Al continuar, aceptas los $terms y la $privacy.';
+  }
+
+  @override
+  String get locationPrivacyTitle => 'Ubicación';
+
+  @override
+  String get locationPrivacySavedCity => 'Ciudad guardada';
+
+  @override
+  String get locationPrivacyNotSaved => 'No guardada';
+
+  @override
+  String get locationPrivacyForget => 'Olvidar ubicación';
+
+  @override
+  String get locationPrivacyForgetDialogTitle => '¿Olvidar tu ubicación?';
+
+  @override
+  String get locationPrivacyForgetDialogMessage =>
+      'Se borrará tu ciudad guardada. La próxima vez que crees un chisme te la pediremos de nuevo.';
+
+  @override
+  String get locationPrivacyForgotten => 'Ubicación olvidada';
+
+  @override
+  String get locationPrivacyDontSave => 'No guardar ubicación';
+
+  @override
+  String get locationPrivacyDontSaveSubtitle =>
+      'Te pediremos la ciudad en cada chisme';
+
+  @override
+  String get locationPrivacyError =>
+      'No se pudo guardar el cambio. Intenta de nuevo.';
+
+  @override
+  String get errorsUsernameChangeCooldown =>
+      'Ya cambiaste tu usuario hace poco. Podrás cambiarlo de nuevo en unos días.';
+
+  @override
+  String errorsUsernameChangeCooldownUntil(String date) {
+    return 'Ya cambiaste tu usuario hace poco. Podrás cambiarlo de nuevo el $date.';
+  }
+
+  @override
+  String get errorsUsernameReserved =>
+      'Ese nombre de usuario no está disponible.';
+
+  @override
+  String get errorsModerationUnavailable =>
+      'No pudimos revisar el cambio ahora. Intenta de nuevo en unos minutos.';
+
+  @override
+  String get errorsInvalidImage => 'La foto debe ser JPG, PNG o WebP.';
+
+  @override
+  String get editProfileTitle => 'Editar perfil';
+
+  @override
+  String get editProfileSave => 'Guardar';
+
+  @override
+  String get editProfileSaved => 'Perfil actualizado';
+
+  @override
+  String get editProfileChangePhoto => 'Cambiar foto de perfil';
+
+  @override
+  String get editProfilePhotoGallery => 'Elegir de la galería';
+
+  @override
+  String get editProfilePhotoCamera => 'Tomar foto';
+
+  @override
+  String get editProfilePhotoRemove => 'Quitar foto';
+
+  @override
+  String get editProfilePhotoError =>
+      'No se pudo usar esa foto. Prueba con otra.';
+
+  @override
+  String get editProfileUsernameHelper =>
+      'Puedes cambiarlo una vez cada 30 días';
+
+  @override
+  String get editProfileModerationNote =>
+      'Tu foto, nombre y bio son públicos: los revisamos antes de guardarlos.';
+
+  @override
+  String get editProfileDiscardTitle => '¿Descartar los cambios?';
+
+  @override
+  String get editProfileDiscardMessage =>
+      'Si sales ahora, no se guardará lo que cambiaste.';
+
+  @override
+  String get editProfileDiscard => 'Descartar';
+
+  @override
+  String get profileSettingsTheme => 'Tema';
+
+  @override
+  String get profileSettingsThemeSystem => 'Igual que el teléfono';
+
+  @override
+  String get profileSettingsThemeLight => 'Claro';
+
+  @override
+  String get profileSettingsThemeDark => 'Oscuro';
 }

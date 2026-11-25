@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
+import '../../../../core/error/error_codes.dart';
+import '../../../../core/error/failure.dart';
 import '../../../../core/logging/logging.dart';
 import '../models/user_model.dart';
 import 'supabase_auth_datasource.dart';
@@ -268,50 +272,96 @@ class SupabaseAuthDataSourceImpl implements SupabaseAuthDataSource {
   Future<UserModel> updateProfile({
     String? username,
     String? displayName,
-    String? avatarUrl,
     String? bio,
+    Uint8List? avatar,
+    bool removeAvatar = false,
   }) async {
+    final supabaseUser = _supabase.auth.currentUser;
+    if (supabaseUser == null) {
+      throw const AuthFailure(
+        code: ErrorCode.userNotAuthenticated,
+        technicalMessage: 'No authenticated user',
+      );
+    }
+
+    final body = <String, dynamic>{
+      if (username != null) 'username': username,
+      if (displayName != null) 'display_name': displayName,
+      if (bio != null) 'bio': bio,
+      if (avatar != null) 'avatar_base64': base64Encode(avatar),
+      if (removeAvatar) 'remove_avatar': true,
+    };
+
+    _logger.i('Updating profile', context: {
+      'userId': supabaseUser.id,
+      'fields': body.keys.where((k) => k != 'avatar_base64').toList(),
+      'hasAvatar': avatar != null,
+    });
+
     try {
-      final userId = _supabase.auth.currentUser?.id;
-      if (userId == null) {
-        throw Exception('No authenticated user');
+      final response = await _supabase.functions.invoke('update-profile', body: body);
+      final data = response.data;
+      if (response.status != 200 || data is! Map || data['profile'] is! Map) {
+        throw profileFunctionFailure(response.status, data);
       }
 
-      _logger.i('Updating profile', context: {
-        'userId': userId,
-        'hasUsername': username != null,
-        'hasDisplayName': displayName != null,
-        'hasAvatar': avatarUrl != null,
-        'hasBio': bio != null,
-      });
-
-      // Construir update data (solo campos no-null)
-      final Map<String, dynamic> updateData = {};
-      if (username != null) updateData['username'] = username;
-      if (displayName != null) updateData['display_name'] = displayName;
-      if (avatarUrl != null) updateData['avatar_url'] = avatarUrl;
-      if (bio != null) updateData['bio'] = bio;
-
-      // Actualizar profile en Supabase
-      await _supabase.from('profiles').update(updateData).eq('id', userId);
-
-      // Obtener profile actualizado
-      final profileData = await _getProfileData(userId);
-      final supabaseUser = _supabase.auth.currentUser!;
-
-      _logger.i('Profile updated successfully', context: {'userId': userId});
-
+      _logger.i('Profile updated successfully', context: {'userId': supabaseUser.id});
       return UserModel.fromSupabase(
         supabaseUser: supabaseUser,
-        profileData: profileData,
+        profileData: Map<String, dynamic>.from(data['profile'] as Map),
       );
-    } on supabase.PostgrestException catch (e) {
-      _logger.w('Update profile failed (PostgrestException)',
-          error: e, context: {'code': e.code, 'message': e.message});
-      rethrow;
-    } catch (e, stackTrace) {
-      _logger.e('Update profile failed', error: e, stackTrace: stackTrace);
-      rethrow;
+    } on supabase.FunctionException catch (e) {
+      final failure = profileFunctionFailure(e.status, e.details);
+      _logger.w('Update profile rejected', context: {
+        'status': e.status,
+        'code': failure.code.name,
+      });
+      throw failure;
+    }
+  }
+
+  /// Respuesta de `update-profile` (no 2xx) → [Failure] con el motivo.
+  /// Público y estático para testearlo sin red.
+  static Failure profileFunctionFailure(int status, dynamic data) {
+    final restricted = AccountRestrictedFailure.fromResponse(status, data);
+    if (restricted != null) return restricted;
+
+    final map = data is Map ? data : const {};
+    final error = map['error'] as String?;
+    final details = map['details'] as String?;
+    final technical = 'update-profile $status: ${error ?? data}';
+
+    switch (status) {
+      case 401:
+        return AuthFailure(code: ErrorCode.unauthorized, technicalMessage: technical);
+      case 409 when error == 'username_cooldown':
+        final at = map['available_at'];
+        return UsernameCooldownFailure(
+          technicalMessage: technical,
+          availableAt: at is String ? DateTime.tryParse(at) : null,
+        );
+      case 409 when error == 'username_taken':
+        return DataFailure(code: ErrorCode.usernameAlreadyTaken, technicalMessage: technical);
+      case 429:
+        return RateLimitFailure(
+          code: ErrorCode.rateLimitExceeded,
+          technicalMessage: technical,
+          retryAfter: (map['retry_after'] as num?)?.toInt(),
+        );
+      case 400 when error == 'content_rejected':
+        return ValidationFailure(code: ErrorCode.moderationRejected, technicalMessage: technical);
+      case 400 when error == 'invalid_image':
+        return ValidationFailure(code: ErrorCode.invalidImage, technicalMessage: technical);
+      case 400 when details == 'username is reserved':
+        return ValidationFailure(code: ErrorCode.usernameReserved, technicalMessage: technical);
+      case 400:
+        return ValidationFailure(code: ErrorCode.validationError, technicalMessage: '$technical ($details)');
+      case 503 when error == 'moderation_unavailable':
+        return ServerFailure(code: ErrorCode.moderationUnavailable, technicalMessage: technical);
+      case 503:
+        return ServerFailure(code: ErrorCode.serviceUnavailable, technicalMessage: technical);
+      default:
+        return ServerFailure(code: ErrorCode.serverError, technicalMessage: technical);
     }
   }
 

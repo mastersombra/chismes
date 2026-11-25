@@ -4,9 +4,10 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i3;
+import 'dart:typed_data' as _i13;
 
 import 'package:chismes/core/error/failure.dart' as _i5;
-import 'package:chismes/core/logging/app_logger.dart' as _i13;
+import 'package:chismes/core/logging/app_logger.dart' as _i14;
 import 'package:chismes/core/result/result.dart' as _i4;
 import 'package:chismes/features/auth/domain/entities/user.dart' as _i12;
 import 'package:chismes/features/auth/domain/repositories/auth_repository.dart'
@@ -299,15 +300,17 @@ class MockAuthRepository extends _i1.Mock implements _i11.AuthRepository {
   _i3.Future<_i4.Result<_i5.Failure, _i12.User>> updateProfile({
     String? username,
     String? displayName,
-    String? avatarUrl,
     String? bio,
+    _i13.Uint8List? avatar,
+    bool? removeAvatar = false,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#updateProfile, [], {
               #username: username,
               #displayName: displayName,
-              #avatarUrl: avatarUrl,
               #bio: bio,
+              #avatar: avatar,
+              #removeAvatar: removeAvatar,
             }),
             returnValue: _i3.Future<_i4.Result<_i5.Failure, _i12.User>>.value(
               _i8.dummyValue<_i4.Result<_i5.Failure, _i12.User>>(
@@ -315,8 +318,9 @@ class MockAuthRepository extends _i1.Mock implements _i11.AuthRepository {
                 Invocation.method(#updateProfile, [], {
                   #username: username,
                   #displayName: displayName,
-                  #avatarUrl: avatarUrl,
                   #bio: bio,
+                  #avatar: avatar,
+                  #removeAvatar: removeAvatar,
                 }),
               ),
             ),
@@ -402,7 +406,7 @@ class MockAuthRepository extends _i1.Mock implements _i11.AuthRepository {
 /// A class which mocks [AppLogger].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAppLogger extends _i1.Mock implements _i13.AppLogger {
+class MockAppLogger extends _i1.Mock implements _i14.AppLogger {
   MockAppLogger() {
     _i1.throwOnMissingStub(this);
   }

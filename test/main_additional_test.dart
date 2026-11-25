@@ -7,6 +7,7 @@ import 'package:mockito/annotations.dart';
 import 'package:chismes/main.dart' as app;
 import 'package:chismes/core/di/injection_container.dart';
 import 'package:chismes/core/theme/app_theme.dart';
+import 'package:chismes/core/theme/theme_mode_notifier.dart';
 import 'package:chismes/core/services/deep_link_service.dart';
 import 'package:chismes/core/logging/app_logger.dart';
 import 'package:chismes/features/auth/presentation/controllers/login_controller.dart';
@@ -179,6 +180,27 @@ void main() {
       expect(lightTheme.textTheme.bodyLarge, isNotNull);
       expect(lightTheme.textTheme.bodyMedium, isNotNull);
       expect(lightTheme.textTheme.bodySmall, isNotNull);
+    });
+  });
+
+  group('Temas - Preferencia del usuario', () {
+    testWidgets('themeMode sigue a ThemeModeNotifier (sistema por defecto)',
+        (WidgetTester tester) async {
+      // Arrange
+      final notifier = getIt<ThemeModeNotifier>();
+      await notifier.setMode(ThemeMode.system);
+      await tester.pumpWidget(const app.ChismesApp());
+      expect(tester.widget<MaterialApp>(find.byType(MaterialApp)).themeMode, ThemeMode.system);
+
+      // Act
+      await notifier.setMode(ThemeMode.dark);
+      await tester.pump();
+
+      // Assert
+      expect(tester.widget<MaterialApp>(find.byType(MaterialApp)).themeMode, ThemeMode.dark);
+
+      // Cleanup
+      await notifier.setMode(ThemeMode.system);
     });
   });
 

@@ -4,6 +4,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i9;
+import 'dart:typed_data' as _i18;
 import 'dart:ui' as _i11;
 
 import 'package:chismes/core/error/failure.dart' as _i8;
@@ -19,8 +20,8 @@ import 'package:chismes/features/gossip/presentation/controllers/add_gossip_cont
 import 'package:chismes/features/gossip/presentation/states/add_gossip_state.dart'
     as _i5;
 import 'package:chismes/features/location/domain/entities/city.dart' as _i14;
-import 'package:chismes/features/location/domain/entities/country.dart' as _i18;
-import 'package:chismes/features/location/domain/entities/region.dart' as _i19;
+import 'package:chismes/features/location/domain/entities/country.dart' as _i19;
+import 'package:chismes/features/location/domain/entities/region.dart' as _i20;
 import 'package:chismes/features/location/domain/usecases/search_cities.dart'
     as _i12;
 import 'package:chismes/features/location/presentation/managers/location_manager.dart'
@@ -646,15 +647,17 @@ class MockAuthRepository extends _i1.Mock implements _i16.AuthRepository {
   _i9.Future<_i13.Result<_i8.Failure, _i17.User>> updateProfile({
     String? username,
     String? displayName,
-    String? avatarUrl,
     String? bio,
+    _i18.Uint8List? avatar,
+    bool? removeAvatar = false,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#updateProfile, [], {
               #username: username,
               #displayName: displayName,
-              #avatarUrl: avatarUrl,
               #bio: bio,
+              #avatar: avatar,
+              #removeAvatar: removeAvatar,
             }),
             returnValue: _i9.Future<_i13.Result<_i8.Failure, _i17.User>>.value(
               _i15.dummyValue<_i13.Result<_i8.Failure, _i17.User>>(
@@ -662,8 +665,9 @@ class MockAuthRepository extends _i1.Mock implements _i16.AuthRepository {
                 Invocation.method(#updateProfile, [], {
                   #username: username,
                   #displayName: displayName,
-                  #avatarUrl: avatarUrl,
                   #bio: bio,
+                  #avatar: avatar,
+                  #removeAvatar: removeAvatar,
                 }),
               ),
             ),
@@ -674,8 +678,9 @@ class MockAuthRepository extends _i1.Mock implements _i16.AuthRepository {
                     Invocation.method(#updateProfile, [], {
                       #username: username,
                       #displayName: displayName,
-                      #avatarUrl: avatarUrl,
                       #bio: bio,
+                      #avatar: avatar,
+                      #removeAvatar: removeAvatar,
                     }),
                   ),
                 ),
@@ -830,7 +835,7 @@ class MockLocationManager extends _i1.Mock implements _i3.LocationManager {
           as _i9.Future<void>);
 
   @override
-  _i9.Future<void> loadRegions(_i18.Country? country) =>
+  _i9.Future<void> loadRegions(_i19.Country? country) =>
       (super.noSuchMethod(
             Invocation.method(#loadRegions, [country]),
             returnValue: _i9.Future<void>.value(),
@@ -839,7 +844,7 @@ class MockLocationManager extends _i1.Mock implements _i3.LocationManager {
           as _i9.Future<void>);
 
   @override
-  _i9.Future<void> loadCities(_i19.Region? region) =>
+  _i9.Future<void> loadCities(_i20.Region? region) =>
       (super.noSuchMethod(
             Invocation.method(#loadCities, [region]),
             returnValue: _i9.Future<void>.value(),

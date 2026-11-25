@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:chismes/core/error/error_codes.dart';
 import 'package:chismes/core/error/failure.dart';
 import 'package:chismes/core/result/result.dart';
@@ -70,7 +72,6 @@ void main() {
         verifyNever(mockRepository.updateProfile(
           username: anyNamed('username'),
           displayName: anyNamed('displayName'),
-          avatarUrl: anyNamed('avatarUrl'),
           bio: anyNamed('bio'),
         ));
       });
@@ -93,7 +94,6 @@ void main() {
         verifyNever(mockRepository.updateProfile(
           username: anyNamed('username'),
           displayName: anyNamed('displayName'),
-          avatarUrl: anyNamed('avatarUrl'),
           bio: anyNamed('bio'),
         ));
       });
@@ -116,7 +116,6 @@ void main() {
         verifyNever(mockRepository.updateProfile(
           username: anyNamed('username'),
           displayName: anyNamed('displayName'),
-          avatarUrl: anyNamed('avatarUrl'),
           bio: anyNamed('bio'),
         ));
       });
@@ -191,27 +190,6 @@ void main() {
     });
 
     group('displayName validation failures', () {
-      test('debe retornar ValidationFailure cuando displayName es empty',
-          () async {
-        // Act
-        final result = await useCase(displayName: '');
-
-        // Assert
-        expect(result.isFailure, isTrue);
-        result.when(
-          onFailure: (error) {
-            expect(error, isA<ValidationFailure>());
-            expect(error.code, ErrorCode.missingRequiredField);
-          },
-          onSuccess: (_) => fail('Should not succeed'),
-        );
-        verifyNever(mockRepository.updateProfile(
-          username: anyNamed('username'),
-          displayName: anyNamed('displayName'),
-          avatarUrl: anyNamed('avatarUrl'),
-          bio: anyNamed('bio'),
-        ));
-      });
 
       test('debe retornar ValidationFailure cuando displayName es solo espacios',
           () async {
@@ -266,7 +244,6 @@ void main() {
         verifyNever(mockRepository.updateProfile(
           username: anyNamed('username'),
           displayName: anyNamed('displayName'),
-          avatarUrl: anyNamed('avatarUrl'),
           bio: anyNamed('bio'),
         ));
       });
@@ -279,7 +256,6 @@ void main() {
         when(mockRepository.updateProfile(
           username: 'newuser',
           displayName: null,
-          avatarUrl: null,
           bio: null,
         )).thenAnswer((_) async => Result.success(tUser));
 
@@ -291,7 +267,6 @@ void main() {
         verify(mockRepository.updateProfile(
           username: 'newuser',
           displayName: null,
-          avatarUrl: null,
           bio: null,
         )).called(1);
         verifyNoMoreInteractions(mockRepository);
@@ -303,7 +278,6 @@ void main() {
         when(mockRepository.updateProfile(
           username: null,
           displayName: 'New Name',
-          avatarUrl: null,
           bio: null,
         )).thenAnswer((_) async => Result.success(tUser));
 
@@ -315,33 +289,63 @@ void main() {
         verify(mockRepository.updateProfile(
           username: null,
           displayName: 'New Name',
-          avatarUrl: null,
           bio: null,
         )).called(1);
       });
 
-      test('debe actualizar solo avatarUrl cuando es el único campo proporcionado',
-          () async {
+      test('debe enviar la foto nueva (bytes) al repositorio', () async {
         // Arrange
-        const newAvatarUrl = 'https://example.com/new-avatar.jpg';
-        when(mockRepository.updateProfile(
-          username: null,
-          displayName: null,
-          avatarUrl: newAvatarUrl,
-          bio: null,
-        )).thenAnswer((_) async => Result.success(tUser));
+        final avatar = Uint8List.fromList([1, 2, 3]);
+        when(mockRepository.updateProfile(avatar: avatar))
+            .thenAnswer((_) async => Result.success(tUser));
 
         // Act
-        final result = await useCase(avatarUrl: newAvatarUrl);
+        final result = await useCase(avatar: avatar);
 
         // Assert
         expect(result.isSuccess, isTrue);
-        verify(mockRepository.updateProfile(
-          username: null,
-          displayName: null,
-          avatarUrl: newAvatarUrl,
-          bio: null,
-        )).called(1);
+        verify(mockRepository.updateProfile(avatar: avatar)).called(1);
+      });
+
+      test('debe pedir quitar la foto con removeAvatar', () async {
+        // Arrange
+        when(mockRepository.updateProfile(removeAvatar: true))
+            .thenAnswer((_) async => Result.success(tUser));
+
+        // Act
+        final result = await useCase(removeAvatar: true);
+
+        // Assert
+        expect(result.isSuccess, isTrue);
+        verify(mockRepository.updateProfile(removeAvatar: true)).called(1);
+      });
+
+      test('displayName vacío (borrar) no pasa por la validación de dominio',
+          () async {
+        // Arrange
+        when(mockRepository.updateProfile(displayName: ''))
+            .thenAnswer((_) async => Result.success(tUser));
+
+        // Act
+        final result = await useCase(displayName: '');
+
+        // Assert
+        expect(result.isSuccess, isTrue);
+        verify(mockRepository.updateProfile(displayName: '')).called(1);
+      });
+
+      test('displayName y bio vacíos se envían para borrarlos', () async {
+        // Arrange
+        when(mockRepository.updateProfile(displayName: '', bio: ''))
+            .thenAnswer((_) async => Result.success(tUser));
+
+        // Act
+        final result = await useCase(displayName: '', bio: '');
+
+        // Assert
+        expect(result.isSuccess, isTrue);
+        verify(mockRepository.updateProfile(displayName: '', bio: ''))
+            .called(1);
       });
 
       test('debe actualizar solo bio cuando es el único campo proporcionado',
@@ -351,7 +355,6 @@ void main() {
         when(mockRepository.updateProfile(
           username: null,
           displayName: null,
-          avatarUrl: null,
           bio: newBio,
         )).thenAnswer((_) async => Result.success(tUser));
 
@@ -363,7 +366,6 @@ void main() {
         verify(mockRepository.updateProfile(
           username: null,
           displayName: null,
-          avatarUrl: null,
           bio: newBio,
         )).called(1);
       });
@@ -374,7 +376,6 @@ void main() {
         when(mockRepository.updateProfile(
           username: 'newuser',
           displayName: 'New Name',
-          avatarUrl: 'https://example.com/avatar.jpg',
           bio: 'New bio',
         )).thenAnswer((_) async => Result.success(tUser));
 
@@ -382,7 +383,6 @@ void main() {
         final result = await useCase(
           username: 'newuser',
           displayName: 'New Name',
-          avatarUrl: 'https://example.com/avatar.jpg',
           bio: 'New bio',
         );
 
@@ -397,7 +397,6 @@ void main() {
         verify(mockRepository.updateProfile(
           username: 'newuser',
           displayName: 'New Name',
-          avatarUrl: 'https://example.com/avatar.jpg',
           bio: 'New bio',
         )).called(1);
       });
@@ -407,7 +406,6 @@ void main() {
         when(mockRepository.updateProfile(
           username: null,
           displayName: null,
-          avatarUrl: null,
           bio: '',
         )).thenAnswer((_) async => Result.success(tUser));
 
@@ -419,7 +417,6 @@ void main() {
         verify(mockRepository.updateProfile(
           username: null,
           displayName: null,
-          avatarUrl: null,
           bio: '',
         )).called(1);
       });
@@ -430,7 +427,6 @@ void main() {
         when(mockRepository.updateProfile(
           username: null,
           displayName: null,
-          avatarUrl: null,
           bio: maxBio,
         )).thenAnswer((_) async => Result.success(tUser));
 
@@ -442,7 +438,6 @@ void main() {
         verify(mockRepository.updateProfile(
           username: null,
           displayName: null,
-          avatarUrl: null,
           bio: maxBio,
         )).called(1);
       });
@@ -454,7 +449,6 @@ void main() {
         when(mockRepository.updateProfile(
           username: null,
           displayName: maxDisplayName,
-          avatarUrl: null,
           bio: null,
         )).thenAnswer((_) async => Result.success(tUser));
 
@@ -466,7 +460,6 @@ void main() {
         verify(mockRepository.updateProfile(
           username: null,
           displayName: maxDisplayName,
-          avatarUrl: null,
           bio: null,
         )).called(1);
       });
@@ -477,7 +470,6 @@ void main() {
         when(mockRepository.updateProfile(
           username: validUsername,
           displayName: null,
-          avatarUrl: null,
           bio: null,
         )).thenAnswer((_) async => Result.success(tUser));
 
@@ -489,7 +481,6 @@ void main() {
         verify(mockRepository.updateProfile(
           username: validUsername,
           displayName: null,
-          avatarUrl: null,
           bio: null,
         )).called(1);
       });
@@ -499,7 +490,6 @@ void main() {
         when(mockRepository.updateProfile(
           username: 'abc',
           displayName: null,
-          avatarUrl: null,
           bio: null,
         )).thenAnswer((_) async => Result.success(tUser));
 
@@ -511,7 +501,6 @@ void main() {
         verify(mockRepository.updateProfile(
           username: 'abc',
           displayName: null,
-          avatarUrl: null,
           bio: null,
         )).called(1);
       });
@@ -522,7 +511,6 @@ void main() {
         when(mockRepository.updateProfile(
           username: maxUsername,
           displayName: null,
-          avatarUrl: null,
           bio: null,
         )).thenAnswer((_) async => Result.success(tUser));
 
@@ -534,7 +522,6 @@ void main() {
         verify(mockRepository.updateProfile(
           username: maxUsername,
           displayName: null,
-          avatarUrl: null,
           bio: null,
         )).called(1);
       });
@@ -551,7 +538,6 @@ void main() {
         when(mockRepository.updateProfile(
           username: 'takenuser',
           displayName: null,
-          avatarUrl: null,
           bio: null,
         )).thenAnswer((_) async => Result.failure(failure));
 
@@ -570,7 +556,6 @@ void main() {
         verify(mockRepository.updateProfile(
           username: 'takenuser',
           displayName: null,
-          avatarUrl: null,
           bio: null,
         )).called(1);
       });
@@ -584,7 +569,6 @@ void main() {
         when(mockRepository.updateProfile(
           username: 'newuser',
           displayName: null,
-          avatarUrl: null,
           bio: null,
         )).thenAnswer((_) async => Result.failure(failure));
 
@@ -611,7 +595,6 @@ void main() {
         when(mockRepository.updateProfile(
           username: null,
           displayName: 'New Name',
-          avatarUrl: null,
           bio: null,
         )).thenAnswer((_) async => Result.failure(failure));
 
@@ -642,7 +625,6 @@ void main() {
         verifyNever(mockRepository.updateProfile(
           username: anyNamed('username'),
           displayName: anyNamed('displayName'),
-          avatarUrl: anyNamed('avatarUrl'),
           bio: anyNamed('bio'),
         ));
       });
@@ -650,7 +632,6 @@ void main() {
       test('no debe llamar al repository si validación de displayName falla',
           () async {
         // Act
-        await useCase(displayName: '');
         await useCase(displayName: '   ');
         await useCase(displayName: 'a' * 51);
 
@@ -658,7 +639,6 @@ void main() {
         verifyNever(mockRepository.updateProfile(
           username: anyNamed('username'),
           displayName: anyNamed('displayName'),
-          avatarUrl: anyNamed('avatarUrl'),
           bio: anyNamed('bio'),
         ));
       });
@@ -671,7 +651,6 @@ void main() {
         verifyNever(mockRepository.updateProfile(
           username: anyNamed('username'),
           displayName: anyNamed('displayName'),
-          avatarUrl: anyNamed('avatarUrl'),
           bio: anyNamed('bio'),
         ));
       });
@@ -681,14 +660,12 @@ void main() {
         when(mockRepository.updateProfile(
           username: null,
           displayName: 'Valid Name',
-          avatarUrl: 'https://example.com/avatar.jpg',
           bio: null,
         )).thenAnswer((_) async => Result.success(tUser));
 
         // Act - Solo displayName y avatarUrl (username no se valida)
         final result = await useCase(
           displayName: 'Valid Name',
-          avatarUrl: 'https://example.com/avatar.jpg',
         );
 
         // Assert
@@ -696,7 +673,6 @@ void main() {
         verify(mockRepository.updateProfile(
           username: null,
           displayName: 'Valid Name',
-          avatarUrl: 'https://example.com/avatar.jpg',
           bio: null,
         )).called(1);
       });
@@ -738,7 +714,6 @@ void main() {
         when(mockRepository.updateProfile(
           username: anyNamed('username'),
           displayName: anyNamed('displayName'),
-          avatarUrl: anyNamed('avatarUrl'),
           bio: anyNamed('bio'),
         )).thenAnswer((_) async => Result.success(tUser));
 
@@ -751,7 +726,6 @@ void main() {
         verify(mockRepository.updateProfile(
           username: anyNamed('username'),
           displayName: anyNamed('displayName'),
-          avatarUrl: anyNamed('avatarUrl'),
           bio: anyNamed('bio'),
         )).called(3);
       });
@@ -762,7 +736,6 @@ void main() {
         when(mockRepository.updateProfile(
           username: null,
           displayName: null,
-          avatarUrl: null,
           bio: null,
         )).thenAnswer((_) async => Result.success(tUser));
 
@@ -774,7 +747,6 @@ void main() {
         verify(mockRepository.updateProfile(
           username: null,
           displayName: null,
-          avatarUrl: null,
           bio: null,
         )).called(1);
       });

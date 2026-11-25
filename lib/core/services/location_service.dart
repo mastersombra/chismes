@@ -57,6 +57,7 @@ class LocationService {
   static const String _keyCountryName = 'default_country_name';
   static const String _keyRegionName = 'default_region_name';
   static const String _keyCityName = 'default_city_name';
+  static const String _keyAnonymousMode = 'anonymous_mode';
 
   /// Límite para la petición de permisos. Si Android descarta la petición
   /// (p. ej. otra ya en curso), geolocator nunca completa el Future y la UI
@@ -235,7 +236,7 @@ class LocationService {
       final prefs = await SharedPreferences.getInstance();
 
       // ✅ MODO ANÓNIMO: No guardar ubicación si está activado
-      final anonymousMode = prefs.getBool('anonymous_mode') ?? false;
+      final anonymousMode = prefs.getBool(_keyAnonymousMode) ?? false;
       if (anonymousMode) {
         _logger.i('Anonymous mode enabled: Not saving location');
         return;
@@ -324,6 +325,36 @@ class LocationService {
       _logger.i('Default location removed');
     } catch (e) {
       _logger.w('Error removing default location', context: {'error': e.toString()});
+    }
+  }
+
+  /// Si está activo el modo "No guardar ubicación" (ver [saveDefaultLocation])
+  Future<bool> isAnonymousModeEnabled() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getBool(_keyAnonymousMode) ?? false;
+    } catch (e) {
+      _logger.w('Error reading anonymous mode', context: {'error': e.toString()});
+      return false;
+    }
+  }
+
+  /// Activa o desactiva "No guardar ubicación".
+  ///
+  /// Al activarlo también borra la ubicación ya guardada: si el usuario pide
+  /// que no se recuerde su ciudad, no debe quedar la anterior.
+  ///
+  /// Retorna `false` si no se pudo guardar la preferencia.
+  Future<bool> setAnonymousMode(bool enabled) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_keyAnonymousMode, enabled);
+      if (enabled) await clearDefaultLocation();
+      _logger.i('Anonymous location mode changed', context: {'enabled': enabled});
+      return true;
+    } catch (e) {
+      _logger.w('Error saving anonymous mode', context: {'error': e.toString()});
+      return false;
     }
   }
 }

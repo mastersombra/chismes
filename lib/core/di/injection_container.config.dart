@@ -148,6 +148,7 @@ import '../services/gossip_events.dart' as _i377;
 import '../services/location_service.dart' as _i669;
 import '../services/profile_service.dart' as _i989;
 import '../services/search_history_service.dart' as _i283;
+import '../theme/theme_mode_notifier.dart' as _i5;
 
 // initializes the registration of main-scope dependencies inside of GetIt
 _i174.GetIt $initGetIt(
@@ -167,6 +168,9 @@ _i174.GetIt $initGetIt(
   gh.lazySingleton<_i454.SupabaseClient>(() => gossipModule.supabaseClient);
   gh.singleton<_i817.LocaleNotifier>(
     () => _i817.LocaleNotifier(gh<_i460.SharedPreferences>()),
+  );
+  gh.singleton<_i5.ThemeModeNotifier>(
+    () => _i5.ThemeModeNotifier(gh<_i460.SharedPreferences>()),
   );
   gh.singleton<_i1000.IdGenerator>(() => _i458.TimestampIdGenerator());
   gh.singleton<_i332.RemoteLogger>(

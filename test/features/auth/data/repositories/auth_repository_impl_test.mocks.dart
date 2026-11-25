@@ -4,8 +4,9 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i4;
+import 'dart:typed_data' as _i5;
 
-import 'package:chismes/core/logging/app_logger.dart' as _i5;
+import 'package:chismes/core/logging/app_logger.dart' as _i6;
 import 'package:chismes/features/auth/data/datasources/supabase_auth_datasource.dart'
     as _i3;
 import 'package:chismes/features/auth/data/models/user_model.dart' as _i2;
@@ -168,15 +169,17 @@ class MockSupabaseAuthDataSource extends _i1.Mock
   _i4.Future<_i2.UserModel> updateProfile({
     String? username,
     String? displayName,
-    String? avatarUrl,
     String? bio,
+    _i5.Uint8List? avatar,
+    bool? removeAvatar = false,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#updateProfile, [], {
               #username: username,
               #displayName: displayName,
-              #avatarUrl: avatarUrl,
               #bio: bio,
+              #avatar: avatar,
+              #removeAvatar: removeAvatar,
             }),
             returnValue: _i4.Future<_i2.UserModel>.value(
               _FakeUserModel_0(
@@ -184,8 +187,9 @@ class MockSupabaseAuthDataSource extends _i1.Mock
                 Invocation.method(#updateProfile, [], {
                   #username: username,
                   #displayName: displayName,
-                  #avatarUrl: avatarUrl,
                   #bio: bio,
+                  #avatar: avatar,
+                  #removeAvatar: removeAvatar,
                 }),
               ),
             ),
@@ -239,7 +243,7 @@ class MockSupabaseAuthDataSource extends _i1.Mock
 /// A class which mocks [AppLogger].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAppLogger extends _i1.Mock implements _i5.AppLogger {
+class MockAppLogger extends _i1.Mock implements _i6.AppLogger {
   MockAppLogger() {
     _i1.throwOnMissingStub(this);
   }

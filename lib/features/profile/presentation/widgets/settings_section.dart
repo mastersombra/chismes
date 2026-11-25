@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/l10n/locale_notifier.dart';
+import '../../../../core/theme/theme_mode_notifier.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/profile_settings.dart';
 import '../controllers/profile_controller.dart';
+import 'settings_card.dart';
 import 'package:chismes/core/l10n/l10n.dart';
 
 /// Widget para la sección de configuraciones
@@ -156,14 +158,15 @@ class SettingsSection extends StatelessWidget {
               onTap: () => _showLanguageDialog(context),
             ),
             const Divider(height: 1),
-            _buildSwitchTile(
-              context,
-              title: context.l10n.profileSettingsDarkMode,
-              subtitle: context.l10n.profileSettingsDarkModeSubtitle,
-              value: settings.darkMode,
-              onChanged: (value) => _updateSettings(
+            // Tema: preferencia del teléfono (ThemeModeNotifier → MaterialApp)
+            ListenableBuilder(
+              listenable: getIt<ThemeModeNotifier>(),
+              builder: (context, _) => _buildListTile(
                 context,
-                settings.copyWith(darkMode: value),
+                title: context.l10n.profileSettingsTheme,
+                subtitle: _themeModeLabel(context, getIt<ThemeModeNotifier>().mode),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _showThemeDialog(context),
               ),
             ),
           ],
@@ -178,36 +181,7 @@ class SettingsSection extends StatelessWidget {
     required IconData icon,
     required List<Widget> children,
   }) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Row(
-              children: [
-                Icon(icon, color: Theme.of(context).colorScheme.primary),
-                const SizedBox(width: AppSpacing.md),
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ],
-            ),
-          ),
-          ...children,
-        ],
-      ),
-    );
+    return SettingsCard(title: title, icon: icon, children: children);
   }
 
   Widget _buildSwitchTile(
@@ -397,5 +371,47 @@ class SettingsSection extends StatelessWidget {
       // remotos aún no se persisten y al recargarlos pisaban esta elección.
       await getIt<LocaleNotifier>().setLocale(Locale(result));
     }
+  }
+
+  String _themeModeLabel(BuildContext context, ThemeMode mode) => switch (mode) {
+        ThemeMode.system => context.l10n.profileSettingsThemeSystem,
+        ThemeMode.light => context.l10n.profileSettingsThemeLight,
+        ThemeMode.dark => context.l10n.profileSettingsThemeDark,
+      };
+
+  Future<void> _showThemeDialog(BuildContext context) async {
+    final notifier = getIt<ThemeModeNotifier>();
+    final selected = await showDialog<ThemeMode>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(context.l10n.profileSettingsTheme),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final mode in ThemeMode.values)
+              ListTile(
+                key: Key('themeOption_${mode.name}'),
+                title: Text(_themeModeLabel(context, mode)),
+                leading: Icon(
+                  notifier.mode == mode
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_unchecked,
+                  color: notifier.mode == mode
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                ),
+                onTap: () => Navigator.pop(dialogContext, mode),
+              ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(context.l10n.commonCancel),
+          ),
+        ],
+      ),
+    );
+    if (selected != null) await notifier.setMode(selected);
   }
 }

@@ -1,8 +1,8 @@
 # Política de Privacidad - Chismes
 
 **Fecha de vigencia:** 22 de octubre de 2026  
-**Última actualización:** 20 de noviembre de 2026  
-**Versión:** 1.1
+**Última actualización:** 24 de noviembre de 2026  
+**Versión:** 1.2
 
 ---
 
@@ -27,7 +27,8 @@ Al usar Chismes, aceptas esta Política de Privacidad.
 
 **Qué recopilamos:**
 - Correo electrónico
-- Nombre de usuario (opcional)
+- Nombre de usuario, nombre a mostrar y bio (opcionales, públicos)
+- Foto de perfil (opcional, pública)
 - Contraseña (encriptada)
 
 **Por qué:**
@@ -116,7 +117,7 @@ Al usar Chismes, aceptas esta Política de Privacidad.
 
 ### 3.2. Moderación de Contenido
 
-Para mantener Chismes seguro, moderamos todo el contenido antes de publicarlo.
+Para mantener Chismes seguro, moderamos todo el contenido antes de publicarlo: chismes y también tu perfil (usuario, nombre, bio y foto).
 
 **Proceso de moderación:**
 
@@ -126,15 +127,16 @@ Para mantener Chismes seguro, moderamos todo el contenido antes de publicarlo.
    - Spam (URLs, repeticiones)
 
 2. **OpenAI Moderation API** (IA, ~200ms):
-   - Análisis contextual de texto
+   - Análisis contextual de texto e imágenes
    - Detección de: odio, acoso, violencia, contenido sexual, etc.
 
 **Datos compartidos con OpenAI:**
-- ✅ Texto del chisme (título + contenido)
-- ❌ **NO** compartimos: tu nombre, ubicación, imagen, audio, ni otros datos personales
+- ✅ Texto e imagen del chisme (título, contenido y foto, si tiene)
+- ✅ Lo que cambias en tu perfil (usuario, nombre, bio y foto)
+- ❌ **NO** compartimos: tu email, ubicación, audio, ni quién eres (no enviamos tu identificador)
 
 **Retención por OpenAI:**
-- OpenAI retiene el texto por **30 días** (monitoreo de abuso)
+- OpenAI retiene lo enviado por **30 días** (monitoreo de abuso)
 - Después se elimina automáticamente
 - **NO se usa para entrenar modelos de IA**
 
@@ -142,7 +144,7 @@ Para mantener Chismes seguro, moderamos todo el contenido antes de publicarlo.
 
 **Decisiones:**
 - **Aprobado:** Se publica inmediatamente
-- **Revisión:** Se publica en estado "pending" (revisión manual)
+- **Revisión:** El chisme queda oculto hasta que un moderador lo revise. En el perfil no hay revisión: el cambio se rechaza y tu perfil queda como estaba
 - **Rechazado:** No se publica, recibes feedback
 
 ### 3.3. Mejorar el Servicio
@@ -169,8 +171,8 @@ Para mantener Chismes seguro, moderamos todo el contenido antes de publicarlo.
 - Política: [Supabase Privacy Policy](https://supabase.com/privacy)
 
 **OpenAI** (Moderación de contenido):
-- Propósito: Análisis de texto para detectar contenido inapropiado
-- Datos compartidos: Solo texto del chisme (título + contenido)
+- Propósito: Análisis de texto e imágenes para detectar contenido inapropiado
+- Datos compartidos: texto e imagen de chismes y de los cambios de perfil
 - Retención: 30 días, luego se elimina
 - Ubicación: Estados Unidos
 - Política: [OpenAI Privacy Policy](https://openai.com/policies/privacy-policy)
@@ -204,8 +206,7 @@ Tienes derecho a solicitar una copia de tus datos personales.
 
 ### 5.2. Rectificación
 
-Puedes corregir datos incorrectos o incompletos en:
-- Settings → Editar perfil
+Puedes corregir tu nombre, usuario, bio y foto en Perfil → Editar perfil. Para otros datos, escribe a privacy@chismes.app desde el email de tu cuenta.
 
 ### 5.3. Eliminación ("Derecho al olvido")
 
@@ -246,7 +247,9 @@ Puedes solicitar que limitemos el procesamiento de tus datos.
 ### 5.7. Olvidar Ubicación
 
 Puedes borrar la ciudad guardada en cualquier momento:
-- Settings → Privacidad → Olvidar mi ubicación
+- Perfil → Privacidad → Olvidar ubicación
+
+También puedes activar **No guardar ubicación**: la app no recordará tu ciudad y te la pedirá en cada chisme.
 
 **Efecto:**
 - Se borra la ciudad guardada localmente
@@ -422,7 +425,7 @@ Para ejercer tus derechos (acceso, eliminación, portabilidad):
 
 **¿Con quién lo compartimos?**
 - Supabase (backend)
-- OpenAI (solo texto del chisme, 30 días)
+- OpenAI (texto e imágenes a moderar, 30 días)
 - NO vendemos tus datos
 
 **Tus derechos:**
@@ -443,8 +446,8 @@ Para ejercer tus derechos (acceso, eliminación, portabilidad):
 ## 14. Idiomas
 
 Esta Política de Privacidad está disponible en:
-- Español (este documento)
-- Inglés (próximamente)
+- Español
+- Inglés
 
 En caso de conflicto, prevalece la versión en español.
 
@@ -453,7 +456,7 @@ En caso de conflicto, prevalece la versión en español.
 **¿Preguntas?** Contacta: privacy@chismes.app
 
 **Fecha de vigencia:** 22 de octubre de 2026  
-**Última actualización:** 22 de octubre de 2026
+**Última actualización:** 24 de noviembre de 2026
 
 ---
 

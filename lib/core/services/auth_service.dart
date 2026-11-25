@@ -1,9 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:injectable/injectable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 
 import '../../features/auth/domain/entities/user.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
+import '../error/failure.dart';
 import '../logging/logging.dart';
+import '../result/result.dart';
 
 /// Servicio global de autenticación
 ///
@@ -49,10 +53,58 @@ class AuthService {
     this._logger,
   );
 
+  /// Último usuario cargado CON su perfil (username, nombre, bio, foto).
+  /// El getter síncrono del repositorio no trae el perfil (no puede leer la
+  /// tabla sin esperar): se completa con [loadCurrentUser] y [updateProfile].
+  User? _profileUser;
+
   /// Usuario actualmente autenticado
   ///
-  /// Retorna null si no hay sesión activa.
-  User? get currentUser => _authRepository.currentUser;
+  /// Retorna null si no hay sesión activa. Incluye el perfil si ya se cargó
+  /// ([loadCurrentUser]) y la sesión sigue siendo del mismo usuario.
+  User? get currentUser {
+    final sessionUser = _authRepository.currentUser;
+    if (sessionUser == null) {
+      _profileUser = null;
+      return null;
+    }
+    final cached = _profileUser;
+    return cached != null && cached.id == sessionUser.id ? cached : sessionUser;
+  }
+
+  /// Lee el usuario con su perfil desde el servidor y lo deja en [currentUser]
+  Future<Result<Failure, User?>> loadCurrentUser() async {
+    final result = await _authRepository.getCurrentUser();
+    result.when(
+      onFailure: (failure) =>
+          _logger.w('Failed to load current user', context: {'code': failure.code.name}),
+      onSuccess: (user) => _profileUser = user,
+    );
+    return result;
+  }
+
+  /// Actualiza el perfil (vía update-profile: el servidor valida y modera) y
+  /// deja el resultado en [currentUser]. Ver [AuthRepository.updateProfile].
+  Future<Result<Failure, User>> updateProfile({
+    String? username,
+    String? displayName,
+    String? bio,
+    Uint8List? avatar,
+    bool removeAvatar = false,
+  }) async {
+    final result = await _authRepository.updateProfile(
+      username: username,
+      displayName: displayName,
+      bio: bio,
+      avatar: avatar,
+      removeAvatar: removeAvatar,
+    );
+    result.when(
+      onFailure: (_) {},
+      onSuccess: (user) => _profileUser = user,
+    );
+    return result;
+  }
 
   /// Stream de cambios en el estado de autenticación
   ///

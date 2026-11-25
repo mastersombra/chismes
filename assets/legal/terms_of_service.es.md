@@ -1,8 +1,8 @@
 # Términos de Uso - Chismes
 
 **Fecha de vigencia:** 22 de octubre de 2026  
-**Última actualización:** 22 de octubre de 2026  
-**Versión:** 1.0
+**Última actualización:** 24 de noviembre de 2026  
+**Versión:** 1.1
 
 ---
 
@@ -10,7 +10,7 @@
 
 Bienvenido a **Chismes** ("la app", "nosotros", "nuestro").
 
-Al usar Chismes, aceptas estos Términos de Uso y nuestra [Política de Privacidad](PRIVACY_POLICY.md).
+Al usar Chismes, aceptas estos Términos de Uso y nuestra Política de Privacidad.
 
 **Si no estás de acuerdo, NO uses la app.**
 
@@ -110,24 +110,28 @@ Chismes es una plataforma social para compartir historias locales ("chismes") de
 
 ### 5.2. Consecuencias
 
-**Primera ofensa leve:**
-- Advertencia
-- Chisme eliminado
+Cada chisme rechazado por un moderador es una falta. Las faltas suman puntos según su gravedad y los puntos vencen a los 90 días:
+- Leve: 1 punto
+- Media: 2 puntos
+- Alta: 4 puntos
+- Crítica: suspensión directa
 
-**Ofensa grave o reincidencia:**
-- Suspensión temporal (7-30 días)
-- Chismes eliminados
+Según los puntos vigentes:
+- Menos de 3: advertencia
+- Desde 3: 24 horas sin publicar ni reportar
+- Desde 6: 7 días sin publicar ni reportar
+- Desde 10: suspensión indefinida (solo la levanta una apelación aceptada)
 
-**Ofensa muy grave:**
-- Suspensión permanente
-- Reporte a autoridades (si aplica)
+Los rechazos automáticos no suman puntos. Si eliminas tu cuenta y vuelves a registrarte con el mismo email, tus faltas anteriores siguen contando. Ante contenido ilegal, podemos reportarlo a las autoridades.
+
+Puedes ver tu estado en Perfil → Estado de la cuenta.
 
 ### 5.3. Apelaciones
 
 Si crees que tu contenido fue removido por error:
-- Contacta: appeals@chismes.app
-- Incluye: ID del chisme, razón por la cual crees que es error
-- Respuesta: Dentro de 7 días
+- Apela desde Perfil → Estado de la cuenta, dentro de los 14 días siguientes al rechazo
+- Una apelación por chisme rechazado
+- Si se acepta: la falta se anula y el texto del chisme se vuelve a publicar (las fotos no se recuperan)
 
 ---
 
@@ -281,12 +285,11 @@ Aceptas **indemnizarnos** de:
 ### 12.1. Por Ti
 
 Puedes cerrar tu cuenta en cualquier momento:
-- Settings → Eliminar cuenta
+- Perfil → Eliminar cuenta
 - O contacta: support@chismes.app
 
 **Efecto:**
-- Tu cuenta se desactiva inmediatamente
-- Datos se eliminan en 30 días (ver Política de Privacidad)
+- Tu cuenta y tus datos se eliminan inmediatamente (ver Política de Privacidad)
 
 ### 12.2. Por Nosotros
 
@@ -437,7 +440,7 @@ No somos responsables por retrasos/incumplimiento por causas fuera de nuestro co
 **¿Preguntas?** Contacta: legal@chismes.app
 
 **Fecha de vigencia:** 22 de octubre de 2026  
-**Última actualización:** 22 de octubre de 2026
+**Última actualización:** 24 de noviembre de 2026
 
 ---
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:chismes/core/legal/legal_consent_text.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:chismes/features/auth/presentation/screens/login_screen.dart';
@@ -129,6 +130,22 @@ void main() {
       expect(find.byType(SocialLoginButtons), findsOneWidget);
       expect(find.text('¿No tienes cuenta? '), findsOneWidget);
       expect(find.text('Regístrate'), findsOneWidget);
+    });
+
+    testWidgets('muestra el aviso de políticas (Google/Apple también crean cuentas)', (WidgetTester tester) async {
+      // Act
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      // Assert
+      expect(find.byType(LegalConsentText), findsOneWidget);
+      expect(
+        find.text(
+          'Al continuar, aceptas los Términos de uso y la Política de privacidad.',
+          findRichText: true,
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('debe renderizar botones de autenticación', (WidgetTester tester) async {

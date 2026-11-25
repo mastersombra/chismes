@@ -4,17 +4,18 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i3;
+import 'dart:typed_data' as _i7;
 
 import 'package:chismes/core/error/failure.dart' as _i5;
-import 'package:chismes/core/logging/app_logger.dart' as _i9;
+import 'package:chismes/core/logging/app_logger.dart' as _i10;
 import 'package:chismes/core/result/result.dart' as _i4;
 import 'package:chismes/features/auth/domain/entities/user.dart' as _i6;
 import 'package:chismes/features/auth/domain/usecases/is_username_available.dart'
-    as _i8;
+    as _i9;
 import 'package:chismes/features/auth/domain/usecases/update_profile.dart'
     as _i2;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i7;
+import 'package:mockito/src/dummies.dart' as _i8;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -44,24 +45,27 @@ class MockUpdateProfileUseCase extends _i1.Mock
   _i3.Future<_i4.Result<_i5.Failure, _i6.User>> call({
     String? username,
     String? displayName,
-    String? avatarUrl,
     String? bio,
+    _i7.Uint8List? avatar,
+    bool? removeAvatar = false,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#call, [], {
               #username: username,
               #displayName: displayName,
-              #avatarUrl: avatarUrl,
               #bio: bio,
+              #avatar: avatar,
+              #removeAvatar: removeAvatar,
             }),
             returnValue: _i3.Future<_i4.Result<_i5.Failure, _i6.User>>.value(
-              _i7.dummyValue<_i4.Result<_i5.Failure, _i6.User>>(
+              _i8.dummyValue<_i4.Result<_i5.Failure, _i6.User>>(
                 this,
                 Invocation.method(#call, [], {
                   #username: username,
                   #displayName: displayName,
-                  #avatarUrl: avatarUrl,
                   #bio: bio,
+                  #avatar: avatar,
+                  #removeAvatar: removeAvatar,
                 }),
               ),
             ),
@@ -73,7 +77,7 @@ class MockUpdateProfileUseCase extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockIsUsernameAvailableUseCase extends _i1.Mock
-    implements _i8.IsUsernameAvailableUseCase {
+    implements _i9.IsUsernameAvailableUseCase {
   MockIsUsernameAvailableUseCase() {
     _i1.throwOnMissingStub(this);
   }
@@ -83,7 +87,7 @@ class MockIsUsernameAvailableUseCase extends _i1.Mock
       (super.noSuchMethod(
             Invocation.method(#call, [username]),
             returnValue: _i3.Future<_i4.Result<_i5.Failure, bool>>.value(
-              _i7.dummyValue<_i4.Result<_i5.Failure, bool>>(
+              _i8.dummyValue<_i4.Result<_i5.Failure, bool>>(
                 this,
                 Invocation.method(#call, [username]),
               ),
@@ -95,7 +99,7 @@ class MockIsUsernameAvailableUseCase extends _i1.Mock
 /// A class which mocks [AppLogger].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAppLogger extends _i1.Mock implements _i9.AppLogger {
+class MockAppLogger extends _i1.Mock implements _i10.AppLogger {
   MockAppLogger() {
     _i1.throwOnMissingStub(this);
   }

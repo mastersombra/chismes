@@ -88,4 +88,16 @@ class FormValidators {
     }
     return null;
   }
+
+  /// Validador de @usuario: 3-30 caracteres, minúsculas, números o "_".
+  /// Mismas reglas que AuthValidator (dominio) y update-profile (servidor).
+  static String? username(BuildContext context, String? value) {
+    if (value == null || value.isEmpty) return context.l10n.usernameRequired;
+    if (value.length < 3) return context.l10n.usernameTooShort;
+    if (value.length > 30) return context.l10n.usernameTooLong;
+    if (!RegExp(r'^[a-z0-9_]+$').hasMatch(value)) {
+      return context.l10n.usernameInvalidChars;
+    }
+    return null;
+  }
 }

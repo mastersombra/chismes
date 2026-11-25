@@ -36,8 +36,6 @@ void main() {
       commentsNotifications: true,
       likesNotifications: true,
       followNotifications: true,
-      language: 'es',
-      darkMode: false,
       privacyLevel: 'public',
       showEmail: false,
       showActivity: true,
@@ -67,8 +65,6 @@ void main() {
           commentsNotifications: false,
           likesNotifications: false,
           followNotifications: false,
-          language: 'es',
-          darkMode: false,
           privacyLevel: 'public',
           showEmail: false,
           showActivity: true,
@@ -86,62 +82,6 @@ void main() {
             .called(1);
       });
 
-      test('debe actualizar idioma', () async {
-        // Arrange
-        const languageSettings = ProfileSettings(
-          notificationsEnabled: true,
-          emailNotifications: true,
-          pushNotifications: true,
-          commentsNotifications: true,
-          likesNotifications: true,
-          followNotifications: true,
-          language: 'en', // Changed to English
-          darkMode: false,
-          privacyLevel: 'public',
-          showEmail: false,
-          showActivity: true,
-        );
-
-        when(mockRepository.updateSettings(any, any))
-            .thenAnswer((_) async => Result.success(null));
-
-        // Act
-        final result = await useCase(tUserId, languageSettings);
-
-        // Assert
-        expect(result.isSuccess, isTrue);
-        verify(mockRepository.updateSettings(tUserId, languageSettings))
-            .called(1);
-      });
-
-      test('debe actualizar modo oscuro', () async {
-        // Arrange
-        const darkModeSettings = ProfileSettings(
-          notificationsEnabled: true,
-          emailNotifications: true,
-          pushNotifications: true,
-          commentsNotifications: true,
-          likesNotifications: true,
-          followNotifications: true,
-          language: 'es',
-          darkMode: true, // Enabled dark mode
-          privacyLevel: 'public',
-          showEmail: false,
-          showActivity: true,
-        );
-
-        when(mockRepository.updateSettings(any, any))
-            .thenAnswer((_) async => Result.success(null));
-
-        // Act
-        final result = await useCase(tUserId, darkModeSettings);
-
-        // Assert
-        expect(result.isSuccess, isTrue);
-        verify(mockRepository.updateSettings(tUserId, darkModeSettings))
-            .called(1);
-      });
-
       test('debe actualizar privacidad', () async {
         // Arrange
         const privacySettings = ProfileSettings(
@@ -151,8 +91,6 @@ void main() {
           commentsNotifications: true,
           likesNotifications: true,
           followNotifications: true,
-          language: 'es',
-          darkMode: false,
           privacyLevel: 'private', // Changed to private
           showEmail: false,
           showActivity: false, // Hide activity
@@ -179,8 +117,6 @@ void main() {
           commentsNotifications: true,
           likesNotifications: false,
           followNotifications: true,
-          language: 'en',
-          darkMode: true,
           privacyLevel: 'friends',
           showEmail: true,
           showActivity: false,
@@ -369,31 +305,11 @@ void main() {
         verify(mockRepository.updateSettings(any, any)).called(3);
       });
 
-      test('debe funcionar con todos los idiomas soportados', () async {
-        // Arrange
-        final languages = ['es', 'en'];
-
-        for (final lang in languages) {
-          final settings = tSettings.copyWith(language: lang);
-
-          when(mockRepository.updateSettings(tUserId, settings))
-              .thenAnswer((_) async => Result.success(null));
-
-          // Act
-          final result = await useCase(tUserId, settings);
-
-          // Assert
-          expect(result.isSuccess, isTrue);
-        }
-
-        verify(mockRepository.updateSettings(any, any)).called(2);
-      });
-
       test('debe manejar actualizaciones rápidas consecutivas', () async {
         // Arrange
-        final settings1 = tSettings.copyWith(darkMode: true);
-        final settings2 = tSettings.copyWith(darkMode: false);
-        final settings3 = tSettings.copyWith(language: 'en');
+        final settings1 = tSettings.copyWith(showEmail: true);
+        final settings2 = tSettings.copyWith(showEmail: false);
+        final settings3 = tSettings.copyWith(privacyLevel: 'private');
 
         when(mockRepository.updateSettings(any, any))
             .thenAnswer((_) async => Result.success(null));

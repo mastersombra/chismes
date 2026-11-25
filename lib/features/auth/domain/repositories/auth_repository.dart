@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import '../../../../core/error/failure.dart';
 import '../../../../core/result/result.dart';
 import '../entities/user.dart';
@@ -124,21 +126,22 @@ abstract class AuthRepository {
 
   /// Actualiza el perfil del usuario actual
   ///
-  /// Solo actualiza los campos que no son null.
+  /// Solo actualiza los campos que no son null. `''` en [displayName] o
+  /// [bio] los borra. El servidor valida, modera (texto y foto) y aplica
+  /// sanciones y el límite de cambio de @usuario.
   ///
-  /// [username] Nuevo username (debe ser único)
-  /// [displayName] Nuevo nombre a mostrar
-  /// [avatarUrl] Nueva URL de avatar
-  /// [bio] Nueva biografía
+  /// [avatar] Foto nueva, ya comprimida. [removeAvatar] quita la actual.
   ///
   /// Returns:
-  /// - Success: Usuario actualizado
-  /// - Failure: UsernameAlreadyTakenFailure, NetworkFailure, etc.
+  /// - Success: Usuario actualizado (con su perfil)
+  /// - Failure: usernameAlreadyTaken, UsernameCooldownFailure,
+  ///   moderationRejected, moderationUnavailable, AccountRestrictedFailure...
   Future<Result<Failure, User>> updateProfile({
     String? username,
     String? displayName,
-    String? avatarUrl,
     String? bio,
+    Uint8List? avatar,
+    bool removeAvatar = false,
   });
 
   /// Verifica si un username está disponible
