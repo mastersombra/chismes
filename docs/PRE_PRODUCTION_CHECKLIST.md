@@ -61,6 +61,10 @@ También 2026-11-21: la app no mostraba los errores específicos de
 como error genérico porque `functions.invoke` lanza `FunctionException` en
 respuestas no 2xx. Arreglado en `SupabaseGossipRemoteDataSource.edgeFunctionFailure`.
 
+Deuda 🟢: `social` importa `Gossip`/`GossipCard` de `features/gossip` (igual que
+Home y Search); lo limpio es moverlos a `core/`. `tools/audit_dependencies.sh`
+no detecta imports relativos entre features.
+
 Deuda 🟢: Perfil importa pantallas de `features/moderation` (panel y estado de
 la cuenta); lo limpio es navegar por rutas registradas en `core/`.
 
@@ -85,6 +89,21 @@ actividad) y tema Sistema/Claro/Oscuro local. Arreglado: el Perfil no mostraba
 despliega todas). Pendiente 🟡: las opciones de notificaciones y privacidad se
 guardan pero aún no tienen efecto (no hay notificaciones, seguidores ni
 perfiles públicos); al implementarlos, leer `user_settings`.
+
+**Hecho 2026-11-24 (3): seguidores y bloqueos** (`018_social_follows_blocks.sql`,
+feature `lib/features/social`). Seguir libre en cuentas públicas y con
+solicitud en privadas (`privacy_level` ahora tiene efecto y queda
+`public`/`private`); listas de seguidores/seguidos, quitar seguidor,
+solicitudes, bloquear/desbloquear (ambos sentidos, oculta perfil y chismes con
+perfil; los anónimos nunca). Autor visible (nombre/@usuario/foto) solo en
+chismes con perfil; feed Siguiendo real (antes vacío y recibía el `user_id`
+del cliente); búsqueda de usuarios; contadores reales en Perfil; límite
+anti-spam de 60 follows/hora y 300/día (`moderation_settings`). Home, Search,
+Gossip y Perfil abren `social` vía `core/navigation/social_navigator.dart`.
+**Aplicar a `chismes-dev`:** reset con 016+017+018 (`scripts/reset-database.sh`).
+Pendiente 🟢: contador de solicitudes pendientes en Perfil; botón Seguir en
+listas y búsqueda. `follow_notifications` sigue sin efecto hasta implementar
+notificaciones.
 
 **Siguiente recomendado:** los pendientes 🔴 del ítem 4 (App ID / release).
 
