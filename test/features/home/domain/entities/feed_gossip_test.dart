@@ -303,7 +303,7 @@ void main() {
         final gossip = createTestGossip();
 
         // Assert
-        expect(gossip.props.length, 16);
+        expect(gossip.props.length, 17);
         expect(gossip.props, contains(gossip.id));
         expect(gossip.props, contains(gossip.subject));
         expect(gossip.props, contains(gossip.likes));

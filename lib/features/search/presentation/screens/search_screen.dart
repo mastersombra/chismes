@@ -12,10 +12,14 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/result/result.dart';
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/navigation/social_navigator.dart';
 import '../../../../core/services/gossip_events.dart';
 import '../../../../core/services/search_history_service.dart';
 import '../../../../core/services/location_service.dart';
 import 'package:chismes/core/l10n/l10n.dart';
+
+/// Qué se busca: chismes o usuarios
+enum SearchMode { gossips, users }
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -36,6 +40,9 @@ class _SearchScreenState extends State<SearchScreen> {
   String? errorMessage;
   String currentQuery = '';
   SavedLocation? userLocation;
+  SearchMode mode = SearchMode.gossips;
+
+  bool get _isUsersMode => mode == SearchMode.users;
 
   // ✅ Usar DI container (Injectable)
   late final GetGossips _getGossips;
@@ -64,9 +71,12 @@ class _SearchScreenState extends State<SearchScreen> {
     _loadSearchHistory();
     _loadUserLocation();
 
-    // El historial se muestra solo mientras el campo (vacío) tiene foco
+    // El historial (solo de chismes) se muestra mientras el campo vacío
+    // tiene foco
     _searchFocusNode.addListener(() {
-      if (_searchFocusNode.hasFocus && _searchController.text.isEmpty) {
+      if (_searchFocusNode.hasFocus &&
+          _searchController.text.isEmpty &&
+          !_isUsersMode) {
         setState(() {
           showHistory = true;
         });
@@ -191,6 +201,31 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
+  /// Cambio de texto: en Usuarios la búsqueda la hace el widget de
+  /// resultados (con debounce); en Chismes, como siempre
+  void _onQueryChanged(String query) {
+    if (_isUsersMode) {
+      setState(() => currentQuery = query);
+    } else {
+      searchGossip(query);
+    }
+  }
+
+  void _setMode(SearchMode newMode) {
+    if (newMode == mode) return;
+    setState(() {
+      mode = newMode;
+      showHistory = false;
+      errorMessage = null;
+    });
+    final query = _searchController.text;
+    if (newMode == SearchMode.gossips) {
+      searchGossip(query);
+    } else {
+      setState(() => currentQuery = query);
+    }
+  }
+
   /// Ejecuta búsqueda desde el historial
   void _searchFromHistory(String query) {
     _searchController.text = query;
@@ -226,12 +261,14 @@ class _SearchScreenState extends State<SearchScreen> {
             child: TextField(
               controller: _searchController,
               focusNode: _searchFocusNode,
-              onChanged: searchGossip,
+              onChanged: _onQueryChanged,
               onTapOutside: (_) => _searchFocusNode.unfocus(),
               decoration: InputDecoration(
-                hintText: context.l10n.searchHint,
+                hintText: _isUsersMode
+                    ? context.l10n.socialSearchUsersHint
+                    : context.l10n.searchHint,
                 prefixIcon: const Icon(Icons.search),
-                suffixIcon: isLoading
+                suffixIcon: isLoading && !_isUsersMode
                     ? const Padding(
                         padding: EdgeInsets.all(AppSpacing.sm),
                         child: SizedBox(
@@ -245,7 +282,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             icon: const Icon(Icons.clear),
                             onPressed: () {
                               _searchController.clear();
-                              searchGossip('');
+                              _onQueryChanged('');
                             },
                           )
                         : null,
@@ -256,8 +293,34 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
           ),
 
-          // Filtro por ciudad (solo si usuario tiene ubicación)
-          if (userLocation != null && !showHistory)
+          // Chismes / Usuarios
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            child: SizedBox(
+              width: double.infinity,
+              child: SegmentedButton<SearchMode>(
+                key: const Key('searchModeSelector'),
+                showSelectedIcon: false,
+                segments: [
+                  ButtonSegment(
+                    value: SearchMode.gossips,
+                    icon: const Icon(Icons.chat_bubble_outline),
+                    label: Text(context.l10n.socialSearchTabGossips),
+                  ),
+                  ButtonSegment(
+                    value: SearchMode.users,
+                    icon: const Icon(Icons.person_outline),
+                    label: Text(context.l10n.socialSearchTabUsers),
+                  ),
+                ],
+                selected: {mode},
+                onSelectionChanged: (selection) => _setMode(selection.first),
+              ),
+            ),
+          ),
+
+          // Filtro por ciudad (solo chismes y si usuario tiene ubicación)
+          if (userLocation != null && !showHistory && !_isUsersMode)
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
@@ -291,7 +354,7 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
 
           // Mostrar mensaje de error si existe
-          if (errorMessage != null)
+          if (errorMessage != null && !_isUsersMode)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
               child: Container(
@@ -323,9 +386,12 @@ class _SearchScreenState extends State<SearchScreen> {
           // Con foco y campo vacío, el historial ocupa el lugar del contenido
           // (evita overflow con teclado abierto en pantallas chicas)
           Expanded(
-            child: showHistory && searchHistory.isNotEmpty
-                ? _buildSearchHistory(context)
-                : _buildContent(context),
+            child: _isUsersMode
+                ? getIt<SocialNavigator>()
+                    .buildUserSearchResults(_searchController.text)
+                : showHistory && searchHistory.isNotEmpty
+                    ? _buildSearchHistory(context)
+                    : _buildContent(context),
           ),
         ],
       ),

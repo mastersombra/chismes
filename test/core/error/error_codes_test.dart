@@ -71,6 +71,8 @@ void main() {
       expect(ErrorCode.values, contains(ErrorCode.usernameReserved));
       expect(ErrorCode.values, contains(ErrorCode.moderationUnavailable));
       expect(ErrorCode.values, contains(ErrorCode.invalidImage));
+      expect(ErrorCode.values, contains(ErrorCode.userNotAvailable));
+      expect(ErrorCode.values, contains(ErrorCode.followRateLimited));
     });
 
     test('debe tener código de error desconocido', () {
@@ -78,9 +80,9 @@ void main() {
       expect(ErrorCode.values, contains(ErrorCode.unknownError));
     });
 
-    test('debe tener exactamente 43 códigos de error', () {
+    test('debe tener exactamente 45 códigos de error', () {
       // Assert
-      expect(ErrorCode.values, hasLength(43));
+      expect(ErrorCode.values, hasLength(45));
     });
 
     test('enum values debe contener solo valores de ErrorCode', () {

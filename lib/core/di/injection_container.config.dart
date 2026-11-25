@@ -133,6 +133,39 @@ import '../../features/profile/domain/usecases/sign_out.dart' as _i487;
 import '../../features/profile/domain/usecases/update_settings.dart' as _i862;
 import '../../features/profile/presentation/controllers/profile_controller.dart'
     as _i658;
+import '../../features/social/data/datasources/supabase_social_remote_data_source.dart'
+    as _i176;
+import '../../features/social/data/repositories/social_repository_impl.dart'
+    as _i5;
+import '../../features/social/data/services/social_profile_service.dart'
+    as _i570;
+import '../../features/social/domain/repositories/social_repository.dart'
+    as _i640;
+import '../../features/social/domain/usecases/block_user.dart' as _i670;
+import '../../features/social/domain/usecases/follow_user.dart' as _i343;
+import '../../features/social/domain/usecases/get_blocked_users.dart' as _i1028;
+import '../../features/social/domain/usecases/get_follow_list.dart' as _i824;
+import '../../features/social/domain/usecases/get_follow_requests.dart' as _i74;
+import '../../features/social/domain/usecases/get_user_gossips.dart' as _i848;
+import '../../features/social/domain/usecases/get_user_profile.dart' as _i118;
+import '../../features/social/domain/usecases/remove_follower.dart' as _i459;
+import '../../features/social/domain/usecases/respond_follow_request.dart'
+    as _i353;
+import '../../features/social/domain/usecases/search_users.dart' as _i914;
+import '../../features/social/domain/usecases/unblock_user.dart' as _i800;
+import '../../features/social/domain/usecases/unfollow_user.dart' as _i143;
+import '../../features/social/presentation/controllers/blocked_users_controller.dart'
+    as _i949;
+import '../../features/social/presentation/controllers/follow_list_controller.dart'
+    as _i609;
+import '../../features/social/presentation/controllers/follow_requests_controller.dart'
+    as _i690;
+import '../../features/social/presentation/controllers/user_profile_controller.dart'
+    as _i884;
+import '../../features/social/presentation/controllers/user_search_controller.dart'
+    as _i696;
+import '../../features/social/presentation/navigation/social_navigator_impl.dart'
+    as _i318;
 import '../id/id_generator.dart' as _i1000;
 import '../id/timestamp_id_generator.dart' as _i458;
 import '../l10n/locale_notifier.dart' as _i817;
@@ -142,6 +175,7 @@ import '../logging/device_info_provider.dart' as _i966;
 import '../logging/logging.dart' as _i482;
 import '../logging/remote_logger.dart' as _i332;
 import '../media/supabase_storage_service.dart' as _i710;
+import '../navigation/social_navigator.dart' as _i640;
 import '../services/auth_service.dart' as _i745;
 import '../services/deep_link_service.dart' as _i391;
 import '../services/gossip_events.dart' as _i377;
@@ -159,7 +193,6 @@ _i174.GetIt $initGetIt(
   final gh = _i526.GetItHelper(getIt, environment, environmentFilter);
   final gossipModule = _$GossipModule();
   gh.singleton<_i966.DeviceInfoProvider>(() => _i966.DeviceInfoProvider());
-  gh.singleton<_i989.ProfileService>(() => _i989.ProfileService());
   gh.lazySingleton<_i897.DeviceRegion>(() => _i897.DeviceRegion());
   gh.lazySingleton<_i377.GossipEvents>(
     () => _i377.GossipEvents(),
@@ -173,6 +206,7 @@ _i174.GetIt $initGetIt(
     () => _i5.ThemeModeNotifier(gh<_i460.SharedPreferences>()),
   );
   gh.singleton<_i1000.IdGenerator>(() => _i458.TimestampIdGenerator());
+  gh.singleton<_i640.SocialNavigator>(() => _i318.SocialNavigatorImpl());
   gh.singleton<_i332.RemoteLogger>(
     () => _i332.SupabaseRemoteLogger(gh<_i454.SupabaseClient>()),
   );
@@ -220,6 +254,12 @@ _i174.GetIt $initGetIt(
   );
   gh.singleton<_i327.ProfileRemoteDataSource>(
     () => _i327.ProfileRemoteDataSource(
+      gh<_i454.SupabaseClient>(),
+      gh<_i482.AppLogger>(),
+    ),
+  );
+  gh.singleton<_i176.SupabaseSocialRemoteDataSource>(
+    () => _i176.SupabaseSocialRemoteDataSource(
       gh<_i454.SupabaseClient>(),
       gh<_i482.AppLogger>(),
     ),
@@ -277,6 +317,12 @@ _i174.GetIt $initGetIt(
       gh<_i852.SupabaseLocationRemoteDataSource>(),
     ),
   );
+  gh.singleton<_i640.SocialRepository>(
+    () => _i5.SocialRepositoryImpl(
+      gh<_i176.SupabaseSocialRemoteDataSource>(),
+      gh<_i482.AppLogger>(),
+    ),
+  );
   gh.factory<_i632.DecideAppeal>(
     () => _i632.DecideAppeal(gh<_i106.ModerationRepository>()),
   );
@@ -308,6 +354,45 @@ _i174.GetIt $initGetIt(
       gh<_i482.AppLogger>(),
     ),
   );
+  gh.singleton<_i989.ProfileService>(
+    () => _i570.SocialProfileService(gh<_i640.SocialRepository>()),
+  );
+  gh.factory<_i670.BlockUser>(
+    () => _i670.BlockUser(gh<_i640.SocialRepository>()),
+  );
+  gh.factory<_i343.FollowUser>(
+    () => _i343.FollowUser(gh<_i640.SocialRepository>()),
+  );
+  gh.factory<_i1028.GetBlockedUsers>(
+    () => _i1028.GetBlockedUsers(gh<_i640.SocialRepository>()),
+  );
+  gh.factory<_i824.GetFollowList>(
+    () => _i824.GetFollowList(gh<_i640.SocialRepository>()),
+  );
+  gh.factory<_i74.GetFollowRequests>(
+    () => _i74.GetFollowRequests(gh<_i640.SocialRepository>()),
+  );
+  gh.factory<_i848.GetUserGossips>(
+    () => _i848.GetUserGossips(gh<_i640.SocialRepository>()),
+  );
+  gh.factory<_i118.GetUserProfile>(
+    () => _i118.GetUserProfile(gh<_i640.SocialRepository>()),
+  );
+  gh.factory<_i459.RemoveFollower>(
+    () => _i459.RemoveFollower(gh<_i640.SocialRepository>()),
+  );
+  gh.factory<_i353.RespondFollowRequest>(
+    () => _i353.RespondFollowRequest(gh<_i640.SocialRepository>()),
+  );
+  gh.factory<_i914.SearchUsers>(
+    () => _i914.SearchUsers(gh<_i640.SocialRepository>()),
+  );
+  gh.factory<_i800.UnblockUser>(
+    () => _i800.UnblockUser(gh<_i640.SocialRepository>()),
+  );
+  gh.factory<_i143.UnfollowUser>(
+    () => _i143.UnfollowUser(gh<_i640.SocialRepository>()),
+  );
   gh.factory<_i155.CheckNewGossips>(
     () => _i155.CheckNewGossips(gh<_i0.HomeRepository>()),
   );
@@ -319,6 +404,12 @@ _i174.GetIt $initGetIt(
   );
   gh.factory<_i890.GetRecommendedFeed>(
     () => _i890.GetRecommendedFeed(gh<_i0.HomeRepository>()),
+  );
+  gh.factory<_i690.FollowRequestsController>(
+    () => _i690.FollowRequestsController(
+      gh<_i74.GetFollowRequests>(),
+      gh<_i353.RespondFollowRequest>(),
+    ),
   );
   gh.factory<_i457.DeleteAccount>(
     () => _i457.DeleteAccount(gh<_i894.ProfileRepository>()),
@@ -344,6 +435,17 @@ _i174.GetIt $initGetIt(
       repository: gh<_i865.GossipRepository>(),
       authRepository: gh<_i787.AuthRepository>(),
       logger: gh<_i482.AppLogger>(),
+    ),
+  );
+  gh.factory<_i884.UserProfileController>(
+    () => _i884.UserProfileController(
+      gh<_i118.GetUserProfile>(),
+      gh<_i848.GetUserGossips>(),
+      gh<_i343.FollowUser>(),
+      gh<_i143.UnfollowUser>(),
+      gh<_i670.BlockUser>(),
+      gh<_i800.UnblockUser>(),
+      gh<_i482.AppLogger>(),
     ),
   );
   gh.factory<_i627.AccountStatusController>(
@@ -452,6 +554,12 @@ _i174.GetIt $initGetIt(
       email: gh<String>(),
     ),
   );
+  gh.factory<_i949.BlockedUsersController>(
+    () => _i949.BlockedUsersController(
+      gh<_i1028.GetBlockedUsers>(),
+      gh<_i800.UnblockUser>(),
+    ),
+  );
   gh.lazySingleton<_i491.LocationManager>(
     () => _i491.LocationManager(
       gh<_i552.GetCountries>(),
@@ -460,6 +568,9 @@ _i174.GetIt $initGetIt(
       gh<_i669.LocationService>(),
       gh<_i354.AppLogger>(),
     ),
+  );
+  gh.factory<_i696.UserSearchController>(
+    () => _i696.UserSearchController(gh<_i914.SearchUsers>()),
   );
   gh.factory<_i840.PopularTabController>(
     () => _i840.PopularTabController(
@@ -474,6 +585,14 @@ _i174.GetIt $initGetIt(
   gh.factory<_i597.ResetPasswordController>(
     () => _i597.ResetPasswordController(
       gh<_i387.UpdatePasswordUseCase>(),
+      gh<_i482.AppLogger>(),
+    ),
+  );
+  gh.factory<_i609.FollowListController>(
+    () => _i609.FollowListController(
+      gh<_i824.GetFollowList>(),
+      gh<_i459.RemoveFollower>(),
+      gh<_i745.AuthService>(),
       gh<_i482.AppLogger>(),
     ),
   );

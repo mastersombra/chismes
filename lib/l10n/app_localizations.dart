@@ -1160,18 +1160,6 @@ abstract class AppLocalizations {
   /// **'Nivel de privacidad'**
   String get profileSettingsPrivacyDialogTitle;
 
-  /// No description provided for @profileSettingsPrivacyFriends.
-  ///
-  /// In es, this message translates to:
-  /// **'Amigos'**
-  String get profileSettingsPrivacyFriends;
-
-  /// No description provided for @profileSettingsPrivacyFriendsSubtitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Solo tus amigos pueden ver'**
-  String get profileSettingsPrivacyFriendsSubtitle;
-
   /// No description provided for @profileSettingsPrivacyLevel.
   ///
   /// In es, this message translates to:
@@ -1187,7 +1175,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileSettingsPrivacyPrivateSubtitle.
   ///
   /// In es, this message translates to:
-  /// **'Solo tú puedes ver'**
+  /// **'Apruebas a quién te sigue'**
   String get profileSettingsPrivacyPrivateSubtitle;
 
   /// No description provided for @profileSettingsPrivacyPublic.
@@ -2946,6 +2934,276 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Oscuro'**
   String get profileSettingsThemeDark;
+
+  /// No description provided for @errorsUserNotAvailable.
+  ///
+  /// In es, this message translates to:
+  /// **'Este usuario no está disponible.'**
+  String get errorsUserNotAvailable;
+
+  /// No description provided for @gossipAuthorSemanticLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver perfil de {name}'**
+  String gossipAuthorSemanticLabel(String name);
+
+  /// No description provided for @socialProfileTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Perfil'**
+  String get socialProfileTitle;
+
+  /// No description provided for @socialUnknownUser.
+  ///
+  /// In es, this message translates to:
+  /// **'Usuario'**
+  String get socialUnknownUser;
+
+  /// No description provided for @socialFollow.
+  ///
+  /// In es, this message translates to:
+  /// **'Seguir'**
+  String get socialFollow;
+
+  /// No description provided for @socialFollowing.
+  ///
+  /// In es, this message translates to:
+  /// **'Siguiendo'**
+  String get socialFollowing;
+
+  /// No description provided for @socialRequested.
+  ///
+  /// In es, this message translates to:
+  /// **'Solicitado'**
+  String get socialRequested;
+
+  /// No description provided for @socialUnblock.
+  ///
+  /// In es, this message translates to:
+  /// **'Desbloquear'**
+  String get socialUnblock;
+
+  /// No description provided for @socialBlock.
+  ///
+  /// In es, this message translates to:
+  /// **'Bloquear'**
+  String get socialBlock;
+
+  /// No description provided for @socialFollowsYou.
+  ///
+  /// In es, this message translates to:
+  /// **'Te sigue'**
+  String get socialFollowsYou;
+
+  /// No description provided for @socialMoreOptions.
+  ///
+  /// In es, this message translates to:
+  /// **'Más opciones'**
+  String get socialMoreOptions;
+
+  /// No description provided for @socialRequestSent.
+  ///
+  /// In es, this message translates to:
+  /// **'Solicitud enviada'**
+  String get socialRequestSent;
+
+  /// No description provided for @socialBlockDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Bloquear a {name}?'**
+  String socialBlockDialogTitle(String name);
+
+  /// No description provided for @socialBlockDialogMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'No podrá ver tu perfil ni tus chismes con perfil, y dejarán de seguirse. No le avisaremos.'**
+  String get socialBlockDialogMessage;
+
+  /// No description provided for @socialBlockedSnack.
+  ///
+  /// In es, this message translates to:
+  /// **'Bloqueaste a {name}'**
+  String socialBlockedSnack(String name);
+
+  /// No description provided for @socialUnblockedSnack.
+  ///
+  /// In es, this message translates to:
+  /// **'Desbloqueaste a {name}'**
+  String socialUnblockedSnack(String name);
+
+  /// No description provided for @socialBlockedProfileTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Bloqueaste esta cuenta'**
+  String get socialBlockedProfileTitle;
+
+  /// No description provided for @socialBlockedProfileMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Desbloquéala para ver su perfil y sus chismes.'**
+  String get socialBlockedProfileMessage;
+
+  /// No description provided for @socialPrivateAccountTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta cuenta es privada'**
+  String get socialPrivateAccountTitle;
+
+  /// No description provided for @socialPrivateAccountMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Síguela para ver sus chismes y sus seguidores.'**
+  String get socialPrivateAccountMessage;
+
+  /// No description provided for @socialUserNotAvailableTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Este usuario no está disponible'**
+  String get socialUserNotAvailableTitle;
+
+  /// No description provided for @socialUserNotAvailableMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Puede que la cuenta ya no exista.'**
+  String get socialUserNotAvailableMessage;
+
+  /// No description provided for @socialNoGossips.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay chismes con perfil'**
+  String get socialNoGossips;
+
+  /// No description provided for @socialGossipsError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudieron cargar los chismes'**
+  String get socialGossipsError;
+
+  /// No description provided for @socialLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo cargar. Intenta de nuevo.'**
+  String get socialLoadError;
+
+  /// No description provided for @socialEmptyFollowers.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay seguidores'**
+  String get socialEmptyFollowers;
+
+  /// No description provided for @socialEmptyFollowing.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no sigue a nadie'**
+  String get socialEmptyFollowing;
+
+  /// No description provided for @socialRemoveFollower.
+  ///
+  /// In es, this message translates to:
+  /// **'Quitar'**
+  String get socialRemoveFollower;
+
+  /// No description provided for @socialRemoveFollowerDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Quitar a {name} de tus seguidores?'**
+  String socialRemoveFollowerDialogTitle(String name);
+
+  /// No description provided for @socialRemoveFollowerDialogMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'No le avisaremos. Podrá volver a seguirte.'**
+  String get socialRemoveFollowerDialogMessage;
+
+  /// No description provided for @socialFollowerRemoved.
+  ///
+  /// In es, this message translates to:
+  /// **'Quitaste a {name} de tus seguidores'**
+  String socialFollowerRemoved(String name);
+
+  /// No description provided for @socialFollowRequestsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Solicitudes de seguimiento'**
+  String get socialFollowRequestsTitle;
+
+  /// No description provided for @socialFollowRequestsSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Quién quiere seguir tu cuenta privada'**
+  String get socialFollowRequestsSubtitle;
+
+  /// No description provided for @socialNoFollowRequests.
+  ///
+  /// In es, this message translates to:
+  /// **'No tienes solicitudes pendientes'**
+  String get socialNoFollowRequests;
+
+  /// No description provided for @socialAccept.
+  ///
+  /// In es, this message translates to:
+  /// **'Aceptar'**
+  String get socialAccept;
+
+  /// No description provided for @socialReject.
+  ///
+  /// In es, this message translates to:
+  /// **'Rechazar'**
+  String get socialReject;
+
+  /// No description provided for @socialBlockedUsersTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Usuarios bloqueados'**
+  String get socialBlockedUsersTitle;
+
+  /// No description provided for @socialBlockedUsersSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'No ven tu perfil ni tus chismes con perfil'**
+  String get socialBlockedUsersSubtitle;
+
+  /// No description provided for @socialNoBlockedUsers.
+  ///
+  /// In es, this message translates to:
+  /// **'No has bloqueado a nadie'**
+  String get socialNoBlockedUsers;
+
+  /// No description provided for @socialSearchTabGossips.
+  ///
+  /// In es, this message translates to:
+  /// **'Chismes'**
+  String get socialSearchTabGossips;
+
+  /// No description provided for @socialSearchTabUsers.
+  ///
+  /// In es, this message translates to:
+  /// **'Usuarios'**
+  String get socialSearchTabUsers;
+
+  /// No description provided for @socialSearchUsersHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar por @usuario o nombre...'**
+  String get socialSearchUsersHint;
+
+  /// No description provided for @socialSearchUsersPrompt.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe al menos 2 letras para buscar personas'**
+  String get socialSearchUsersPrompt;
+
+  /// No description provided for @socialSearchUsersNoResults.
+  ///
+  /// In es, this message translates to:
+  /// **'No encontramos usuarios'**
+  String get socialSearchUsersNoResults;
+
+  /// No description provided for @errorsFollowRateLimited.
+  ///
+  /// In es, this message translates to:
+  /// **'Estás siguiendo a muchas personas muy rápido. Intenta más tarde.'**
+  String get errorsFollowRateLimited;
 }
 
 class _AppLocalizationsDelegate

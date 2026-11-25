@@ -77,24 +77,6 @@ void main() {
         expect(settings.privacyLevel, 'public');
       });
 
-      test('debe aceptar privacyLevel friends', () {
-        // Act
-        const settings = ProfileSettings(
-          notificationsEnabled: true,
-          emailNotifications: true,
-          pushNotifications: true,
-          commentsNotifications: true,
-          likesNotifications: true,
-          followNotifications: true,
-          privacyLevel: 'friends',
-          showEmail: false,
-          showActivity: true,
-        );
-
-        // Assert
-        expect(settings.privacyLevel, 'friends');
-      });
-
       test('debe aceptar privacyLevel private', () {
         // Act
         const settings = ProfileSettings(

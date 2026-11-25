@@ -1,3 +1,4 @@
+import '../../../../core/social/gossip_author.dart';
 import '../../domain/entities/feed_gossip.dart';
 
 /// Model para FeedGossip - Mapea JSON de Supabase RPC.
@@ -19,6 +20,9 @@ import '../../domain/entities/feed_gossip.dart';
 ///   "shares": 5,
 ///   "published_as": "anonymous",
 ///   "created_by": "uuid" | null,
+///   "author_username": "string" | null,      // solo chismes con perfil
+///   "author_display_name": "string" | null,
+///   "author_avatar_url": "https://..." | null,
 ///   "image_url": "https://..." | null,
 ///   "score": 123.45,
 ///   "is_from_my_city": true,
@@ -42,6 +46,9 @@ class FeedGossipModel {
   final int shares;
   final String publishedAs;
   final String? createdBy;
+  final String? authorUsername;
+  final String? authorDisplayName;
+  final String? authorAvatarUrl;
   final String? imageUrl;
   final double score;
   final String? proximity; // 'city' | 'region' | 'country' | 'global'
@@ -60,6 +67,9 @@ class FeedGossipModel {
     required this.shares,
     required this.publishedAs,
     this.createdBy,
+    this.authorUsername,
+    this.authorDisplayName,
+    this.authorAvatarUrl,
     this.imageUrl,
     required this.score,
     this.proximity,
@@ -86,6 +96,9 @@ class FeedGossipModel {
         shares: json['shares'] as int,
         publishedAs: json['published_as'] as String,
         createdBy: json['created_by'] as String?,
+        authorUsername: json['author_username'] as String?,
+        authorDisplayName: json['author_display_name'] as String?,
+        authorAvatarUrl: json['author_avatar_url'] as String?,
         imageUrl: json['image_url'] as String?,
         score: (json['score'] as num).toDouble(),
         proximity: json['proximity'] as String?,
@@ -118,6 +131,13 @@ class FeedGossipModel {
       shares: shares,
       publishedAs: publishedAs,
       createdBy: createdBy,
+      author: GossipAuthor.maybe(
+        publishedAs: publishedAs,
+        createdBy: createdBy,
+        username: authorUsername,
+        displayName: authorDisplayName,
+        avatarUrl: authorAvatarUrl,
+      ),
       imageUrl: imageUrl,
       score: score,
       proximity: FeedProximity.fromString(proximity),
@@ -139,6 +159,9 @@ class FeedGossipModel {
         'shares': shares,
         'published_as': publishedAs,
         'created_by': createdBy,
+        'author_username': authorUsername,
+        'author_display_name': authorDisplayName,
+        'author_avatar_url': authorAvatarUrl,
         'image_url': imageUrl,
         'score': score,
         'proximity': proximity,

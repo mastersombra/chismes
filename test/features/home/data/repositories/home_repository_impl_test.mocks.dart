@@ -76,13 +76,11 @@ class MockHomeRemoteDataSource extends _i1.Mock
 
   @override
   _i4.Future<_i2.PaginatedGossipsModel> getFollowingFeed({
-    required String? userId,
     int? pageSize = 20,
     _i5.FeedCursor? cursor,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#getFollowingFeed, [], {
-              #userId: userId,
               #pageSize: pageSize,
               #cursor: cursor,
             }),
@@ -90,7 +88,6 @@ class MockHomeRemoteDataSource extends _i1.Mock
               _FakePaginatedGossipsModel_0(
                 this,
                 Invocation.method(#getFollowingFeed, [], {
-                  #userId: userId,
                   #pageSize: pageSize,
                   #cursor: cursor,
                 }),

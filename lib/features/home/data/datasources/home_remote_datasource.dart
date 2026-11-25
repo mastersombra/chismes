@@ -126,10 +126,12 @@ class HomeRemoteDataSource {
     }
   }
 
-  /// Llama a `get_following_feed` RPC.
+  /// Llama a `get_following_feed` RPC (migración 018).
+  ///
+  /// El servidor usa `auth.uid()`: no se manda el ID del usuario. Solo trae
+  /// chismes con perfil de quienes sigo (nunca anónimos).
   ///
   /// **Parámetros:**
-  /// - `userId`: ID del usuario actual (requerido)
   /// - `pageSize`: Chismes por página (default: 20)
   /// - `cursor`: Cursor de paginación (nullable)
   ///
@@ -140,13 +142,11 @@ class HomeRemoteDataSource {
   /// - `ServerException`: Error en Supabase
   /// - `FormatException`: Error de deserialización
   Future<PaginatedGossipsModel> getFollowingFeed({
-    required String userId,
     int pageSize = 20,
     FeedCursor? cursor,
   }) async {
     try {
       _logger.d('Calling get_following_feed RPC', context: {
-        'userId': userId,
         'pageSize': pageSize,
         'cursor': cursor?.toString(),
       });
@@ -154,7 +154,6 @@ class HomeRemoteDataSource {
       final response = await _supabase.rpc(
         'get_following_feed',
         params: {
-          'current_user_id': userId,
           'page_size': pageSize,
           'cursor_created_at': cursor?.createdAt?.toIso8601String(),
           'cursor_id': cursor?.id,

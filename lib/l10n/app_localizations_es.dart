@@ -608,20 +608,14 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileSettingsPrivacyDialogTitle => 'Nivel de privacidad';
 
   @override
-  String get profileSettingsPrivacyFriends => 'Amigos';
-
-  @override
-  String get profileSettingsPrivacyFriendsSubtitle =>
-      'Solo tus amigos pueden ver';
-
-  @override
   String get profileSettingsPrivacyLevel => 'Nivel de privacidad';
 
   @override
   String get profileSettingsPrivacyPrivate => 'Privado';
 
   @override
-  String get profileSettingsPrivacyPrivateSubtitle => 'Solo tú puedes ver';
+  String get profileSettingsPrivacyPrivateSubtitle =>
+      'Apruebas a quién te sigue';
 
   @override
   String get profileSettingsPrivacyPublic => 'Público';
@@ -1643,4 +1637,160 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get profileSettingsThemeDark => 'Oscuro';
+
+  @override
+  String get errorsUserNotAvailable => 'Este usuario no está disponible.';
+
+  @override
+  String gossipAuthorSemanticLabel(String name) {
+    return 'Ver perfil de $name';
+  }
+
+  @override
+  String get socialProfileTitle => 'Perfil';
+
+  @override
+  String get socialUnknownUser => 'Usuario';
+
+  @override
+  String get socialFollow => 'Seguir';
+
+  @override
+  String get socialFollowing => 'Siguiendo';
+
+  @override
+  String get socialRequested => 'Solicitado';
+
+  @override
+  String get socialUnblock => 'Desbloquear';
+
+  @override
+  String get socialBlock => 'Bloquear';
+
+  @override
+  String get socialFollowsYou => 'Te sigue';
+
+  @override
+  String get socialMoreOptions => 'Más opciones';
+
+  @override
+  String get socialRequestSent => 'Solicitud enviada';
+
+  @override
+  String socialBlockDialogTitle(String name) {
+    return '¿Bloquear a $name?';
+  }
+
+  @override
+  String get socialBlockDialogMessage =>
+      'No podrá ver tu perfil ni tus chismes con perfil, y dejarán de seguirse. No le avisaremos.';
+
+  @override
+  String socialBlockedSnack(String name) {
+    return 'Bloqueaste a $name';
+  }
+
+  @override
+  String socialUnblockedSnack(String name) {
+    return 'Desbloqueaste a $name';
+  }
+
+  @override
+  String get socialBlockedProfileTitle => 'Bloqueaste esta cuenta';
+
+  @override
+  String get socialBlockedProfileMessage =>
+      'Desbloquéala para ver su perfil y sus chismes.';
+
+  @override
+  String get socialPrivateAccountTitle => 'Esta cuenta es privada';
+
+  @override
+  String get socialPrivateAccountMessage =>
+      'Síguela para ver sus chismes y sus seguidores.';
+
+  @override
+  String get socialUserNotAvailableTitle => 'Este usuario no está disponible';
+
+  @override
+  String get socialUserNotAvailableMessage =>
+      'Puede que la cuenta ya no exista.';
+
+  @override
+  String get socialNoGossips => 'Todavía no hay chismes con perfil';
+
+  @override
+  String get socialGossipsError => 'No se pudieron cargar los chismes';
+
+  @override
+  String get socialLoadError => 'No se pudo cargar. Intenta de nuevo.';
+
+  @override
+  String get socialEmptyFollowers => 'Todavía no hay seguidores';
+
+  @override
+  String get socialEmptyFollowing => 'Todavía no sigue a nadie';
+
+  @override
+  String get socialRemoveFollower => 'Quitar';
+
+  @override
+  String socialRemoveFollowerDialogTitle(String name) {
+    return '¿Quitar a $name de tus seguidores?';
+  }
+
+  @override
+  String get socialRemoveFollowerDialogMessage =>
+      'No le avisaremos. Podrá volver a seguirte.';
+
+  @override
+  String socialFollowerRemoved(String name) {
+    return 'Quitaste a $name de tus seguidores';
+  }
+
+  @override
+  String get socialFollowRequestsTitle => 'Solicitudes de seguimiento';
+
+  @override
+  String get socialFollowRequestsSubtitle =>
+      'Quién quiere seguir tu cuenta privada';
+
+  @override
+  String get socialNoFollowRequests => 'No tienes solicitudes pendientes';
+
+  @override
+  String get socialAccept => 'Aceptar';
+
+  @override
+  String get socialReject => 'Rechazar';
+
+  @override
+  String get socialBlockedUsersTitle => 'Usuarios bloqueados';
+
+  @override
+  String get socialBlockedUsersSubtitle =>
+      'No ven tu perfil ni tus chismes con perfil';
+
+  @override
+  String get socialNoBlockedUsers => 'No has bloqueado a nadie';
+
+  @override
+  String get socialSearchTabGossips => 'Chismes';
+
+  @override
+  String get socialSearchTabUsers => 'Usuarios';
+
+  @override
+  String get socialSearchUsersHint => 'Buscar por @usuario o nombre...';
+
+  @override
+  String get socialSearchUsersPrompt =>
+      'Escribe al menos 2 letras para buscar personas';
+
+  @override
+  String get socialSearchUsersNoResults => 'No encontramos usuarios';
+
+  @override
+  String get errorsFollowRateLimited =>
+      'Estás siguiendo a muchas personas muy rápido. Intenta más tarde.';
 }

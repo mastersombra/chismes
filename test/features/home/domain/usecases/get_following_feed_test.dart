@@ -77,14 +77,12 @@ void main() {
         );
 
         when(mockRepository.getFollowingFeed(
-          userId: userId,
           pageSize: pageSize,
           cursor: null,
         )).thenAnswer((_) async => Result.success(paginated));
 
         // Act
         final result = await useCase(
-          userId: userId,
           pageSize: pageSize,
         );
 
@@ -94,7 +92,6 @@ void main() {
         expect(result.successValue?.hasMore, isTrue);
         expect(result.successValue?.nextCursor, isNotNull);
         verify(mockRepository.getFollowingFeed(
-          userId: userId,
           pageSize: pageSize,
           cursor: null,
         )).called(1);
@@ -123,14 +120,12 @@ void main() {
         );
 
         when(mockRepository.getFollowingFeed(
-          userId: userId,
           pageSize: pageSize,
           cursor: cursor,
         )).thenAnswer((_) async => Result.success(paginated));
 
         // Act
         final result = await useCase(
-          userId: userId,
           pageSize: pageSize,
           cursor: cursor,
         );
@@ -139,7 +134,6 @@ void main() {
         expect(result.isSuccess, isTrue);
         expect(result.successValue?.data.length, 2);
         verify(mockRepository.getFollowingFeed(
-          userId: userId,
           pageSize: pageSize,
           cursor: cursor,
         )).called(1);
@@ -155,14 +149,12 @@ void main() {
         );
 
         when(mockRepository.getFollowingFeed(
-          userId: userId,
           pageSize: pageSize,
           cursor: null,
         )).thenAnswer((_) async => Result.success(paginated));
 
         // Act
         final result = await useCase(
-          userId: userId,
           pageSize: pageSize,
         );
 
@@ -177,14 +169,12 @@ void main() {
         const paginated = PaginatedGossips.empty();
 
         when(mockRepository.getFollowingFeed(
-          userId: userId,
           pageSize: pageSize,
           cursor: null,
         )).thenAnswer((_) async => Result.success(paginated));
 
         // Act
         final result = await useCase(
-          userId: userId,
           pageSize: pageSize,
         );
 
@@ -196,26 +186,23 @@ void main() {
     });
 
     group('Parámetros', () {
-      test('userId es requerido', () async {
+      test('no recibe user id (el servidor usa auth.uid()) y pasa pageSize', () async {
         // Arrange
         const paginated = PaginatedGossips.empty();
 
         when(mockRepository.getFollowingFeed(
-          userId: userId,
           pageSize: pageSize,
           cursor: null,
         )).thenAnswer((_) async => Result.success(paginated));
 
         // Act
         final result = await useCase(
-          userId: userId,
           pageSize: pageSize,
         );
 
         // Assert
         expect(result.isSuccess, isTrue);
         verify(mockRepository.getFollowingFeed(
-          userId: userId,
           pageSize: pageSize,
           cursor: null,
         )).called(1);
@@ -226,20 +213,17 @@ void main() {
         const paginated = PaginatedGossips.empty();
 
         when(mockRepository.getFollowingFeed(
-          userId: userId,
           pageSize: 20,
           cursor: null,
         )).thenAnswer((_) async => Result.success(paginated));
 
         // Act
         final result = await useCase(
-          userId: userId,
         );
 
         // Assert
         expect(result.isSuccess, isTrue);
         verify(mockRepository.getFollowingFeed(
-          userId: userId,
           pageSize: 20,
           cursor: null,
         )).called(1);
@@ -251,21 +235,18 @@ void main() {
         const paginated = PaginatedGossips.empty();
 
         when(mockRepository.getFollowingFeed(
-          userId: userId,
           pageSize: customPageSize,
           cursor: null,
         )).thenAnswer((_) async => Result.success(paginated));
 
         // Act
         final result = await useCase(
-          userId: userId,
           pageSize: customPageSize,
         );
 
         // Assert
         expect(result.isSuccess, isTrue);
         verify(mockRepository.getFollowingFeed(
-          userId: userId,
           pageSize: customPageSize,
           cursor: null,
         )).called(1);
@@ -281,14 +262,12 @@ void main() {
         );
 
         when(mockRepository.getFollowingFeed(
-          userId: userId,
           pageSize: pageSize,
           cursor: null,
         )).thenAnswer((_) async => Result.failure(networkFailure));
 
         // Act
         final result = await useCase(
-          userId: userId,
           pageSize: pageSize,
         );
 
@@ -296,7 +275,6 @@ void main() {
         expect(result.isFailure, isTrue);
         expect(result.failureValue, networkFailure);
         verify(mockRepository.getFollowingFeed(
-          userId: userId,
           pageSize: pageSize,
           cursor: null,
         )).called(1);
@@ -309,14 +287,12 @@ void main() {
         );
 
         when(mockRepository.getFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.failure(failure));
 
         // Act
         final result = await useCase(
-          userId: userId,
         );
 
         // Assert
@@ -332,14 +308,12 @@ void main() {
         );
 
         when(mockRepository.getFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.failure(failure));
 
         // Act
         final result = await useCase(
-          userId: userId,
         );
 
         // Assert
@@ -355,14 +329,12 @@ void main() {
         );
 
         when(mockRepository.getFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.failure(failure));
 
         // Act
         final result = await useCase(
-          userId: userId,
         );
 
         // Assert
@@ -389,14 +361,12 @@ void main() {
         );
 
         when(mockRepository.getFollowingFeed(
-          userId: userId,
           pageSize: pageSize,
           cursor: null,
         )).thenAnswer((_) async => Result.success(paginated));
 
         // Act
         final result = await useCase(
-          userId: userId,
           pageSize: pageSize,
         );
 

@@ -8,7 +8,7 @@ class ProfileSettings {
   final bool commentsNotifications;
   final bool likesNotifications;
   final bool followNotifications;
-  final String privacyLevel; // 'public', 'friends', 'private'
+  final String privacyLevel; // 'public' | 'private' (privada: seguir requiere aprobación)
   final bool showEmail;
   final bool showActivity;
 

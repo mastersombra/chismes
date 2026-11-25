@@ -124,7 +124,6 @@ void main() {
       );
 
       when(mockGetFollowingFeed(
-        userId: anyNamed('userId'),
         pageSize: anyNamed('pageSize'),
         cursor: anyNamed('cursor'),
       )).thenAnswer((_) async => Result.success(tPaginatedFeed));
@@ -146,7 +145,6 @@ void main() {
         );
 
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tPaginatedFeed));
@@ -182,7 +180,6 @@ void main() {
         expect(controller.state.status, FollowingTabStatus.notFollowing);
         verifyNever(mockProfileService.getFollowingCount(any));
         verifyNever(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         ));
@@ -205,7 +202,6 @@ void main() {
 
         // No debe llamar a getFollowingFeed ni getRecommendedFeed
         verifyNever(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         ));
@@ -226,7 +222,6 @@ void main() {
         );
 
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tPaginatedFeed));
@@ -240,7 +235,6 @@ void main() {
         expect(controller.state.hasMore, isTrue);
         expect(controller.state.nextCursor, tCursor);
         verify(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: 20,
           cursor: null,
         )).called(1);
@@ -263,7 +257,6 @@ void main() {
         );
 
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tEmptyFeed));
@@ -282,7 +275,6 @@ void main() {
         expect(controller.state.status, FollowingTabStatus.loadedRecommended);
         expect(controller.state.recommendedGossips, [tGossip]);
         verify(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: 20,
           cursor: null,
         )).called(1);
@@ -302,7 +294,6 @@ void main() {
         );
 
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.failure(tFailure));
@@ -329,7 +320,6 @@ void main() {
         );
 
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tEmptyFeed));
@@ -352,7 +342,6 @@ void main() {
       test('debe manejar excepción inesperada en loadFeed', () async {
         // Arrange
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenThrow(Exception('Unexpected database error'));
@@ -376,7 +365,6 @@ void main() {
         );
 
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tEmptyFeed));
@@ -408,7 +396,6 @@ void main() {
         );
 
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tInitialFeed));
@@ -423,7 +410,6 @@ void main() {
         );
 
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tRefreshedFeed));
@@ -435,7 +421,6 @@ void main() {
         expect(controller.state.gossips, [tGossip]);
         expect(controller.state.hasMore, isFalse);
         verify(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: 20,
           cursor: null,
         )).called(2); // Una vez en loadFeed inicial, otra en refresh
@@ -453,7 +438,6 @@ void main() {
         );
 
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tFirstPage));
@@ -484,7 +468,6 @@ void main() {
         );
 
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: tCursor,
         )).thenAnswer((_) async => Result.success(tSecondPage));
@@ -497,7 +480,6 @@ void main() {
         expect(controller.state.gossips, [tGossip, tSecondGossip]);
         expect(controller.state.hasMore, isFalse);
         verify(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: 20,
           cursor: tCursor,
         )).called(1);
@@ -519,7 +501,6 @@ void main() {
         );
 
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tEmptyFeed));
@@ -595,7 +576,6 @@ void main() {
         );
 
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tEmptyFeed));
@@ -635,7 +615,6 @@ void main() {
         );
 
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tFirstPage));
@@ -651,7 +630,6 @@ void main() {
         // Assert
         // Solo debe llamar una vez más (no dos veces)
         verify(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: 20,
           cursor: tCursor,
         )).called(1);
@@ -666,7 +644,6 @@ void main() {
         );
 
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tOnlyPage));
@@ -679,7 +656,6 @@ void main() {
         // Assert
         // No debe hacer llamada adicional
         verify(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: 20,
           cursor: null,
         )).called(1); // Solo la llamada inicial
@@ -694,7 +670,6 @@ void main() {
         );
 
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tFirstPage));
@@ -706,7 +681,6 @@ void main() {
         );
 
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: tCursor,
         )).thenAnswer((_) async => Result.failure(tFailure));
@@ -728,7 +702,6 @@ void main() {
         );
 
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tFirstPage));
@@ -737,7 +710,6 @@ void main() {
 
         // Simular excepción inesperada en loadMore
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: tCursor,
         )).thenThrow(Exception('Unexpected pagination error'));
@@ -761,7 +733,6 @@ void main() {
         );
 
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tPaginatedFeed));
@@ -789,7 +760,6 @@ void main() {
         );
 
         when(mockGetFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => Result.success(tEmptyFeed));

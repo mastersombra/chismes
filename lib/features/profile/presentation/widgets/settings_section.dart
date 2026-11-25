@@ -226,8 +226,6 @@ class SettingsSection extends StatelessWidget {
     switch (level) {
       case 'public':
         return '${context.l10n.profileSettingsPrivacyPublic} - ${context.l10n.profileSettingsPrivacyPublicSubtitle}';
-      case 'friends':
-        return '${context.l10n.profileSettingsPrivacyFriends} - ${context.l10n.profileSettingsPrivacyFriendsSubtitle}';
       case 'private':
         return '${context.l10n.profileSettingsPrivacyPrivate} - ${context.l10n.profileSettingsPrivacyPrivateSubtitle}';
       default:
@@ -263,13 +261,6 @@ class SettingsSection extends StatelessWidget {
               title: context.l10n.profileSettingsPrivacyPublic,
               subtitle: context.l10n.profileSettingsPrivacyPublicSubtitle,
               value: 'public',
-              currentValue: settings.privacyLevel,
-            ),
-            _buildPrivacyOption(
-              context,
-              title: context.l10n.profileSettingsPrivacyFriends,
-              subtitle: context.l10n.profileSettingsPrivacyFriendsSubtitle,
-              value: 'friends',
               currentValue: settings.privacyLevel,
             ),
             _buildPrivacyOption(

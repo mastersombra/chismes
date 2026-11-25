@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/navigation/social_navigator.dart';
 import '../../../../core/services/location_service.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../moderation/presentation/screens/account_status_screen.dart';
@@ -140,11 +141,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 const SizedBox(height: AppSpacing.xl),
 
-                // Estadísticas
+                // Estadísticas (seguidores/seguidos abren las listas)
                 if (_controller.userStats != null)
-                  ProfileStatsCard(stats: _controller.userStats!),
+                  ProfileStatsCard(
+                    stats: _controller.userStats!,
+                    onFollowersTap: () => _openSocial(
+                      (nav) => nav.openFollowList(
+                        context,
+                        userId: user.id,
+                        kind: FollowListKind.followers,
+                      ),
+                    ),
+                    onFollowingTap: () => _openSocial(
+                      (nav) => nav.openFollowList(
+                        context,
+                        userId: user.id,
+                        kind: FollowListKind.following,
+                      ),
+                    ),
+                  ),
 
                 const SizedBox(height: AppSpacing.xl),
+
+                // Social: solicitudes (cuenta privada) y bloqueados
+                _buildSocialEntries(context),
+                const SizedBox(height: AppSpacing.md),
 
                 // Estado de la cuenta (sanciones y apelaciones): todos
                 _buildAccountStatusEntry(context),
@@ -198,6 +219,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
       MaterialPageRoute(builder: (_) => EditProfileScreen(user: user)),
     );
     if (saved == true) _controller.onProfileEdited();
+  }
+
+  /// Abre una pantalla social y, al volver, recarga los contadores (pudo
+  /// aceptar solicitudes o quitar seguidores)
+  Future<void> _openSocial(
+    Future<void> Function(SocialNavigator navigator) open,
+  ) async {
+    await open(getIt<SocialNavigator>());
+    if (mounted) await _controller.refresh();
+  }
+
+  Widget _buildSocialEntries(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          ListTile(
+            key: const Key('followRequestsEntry'),
+            leading: const Icon(Icons.person_add_alt_outlined),
+            title: Text(context.l10n.socialFollowRequestsTitle),
+            subtitle: Text(context.l10n.socialFollowRequestsSubtitle),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _openSocial((nav) => nav.openFollowRequests(context)),
+          ),
+          const Divider(height: 1),
+          ListTile(
+            key: const Key('blockedUsersEntry'),
+            leading: const Icon(Icons.block),
+            title: Text(context.l10n.socialBlockedUsersTitle),
+            subtitle: Text(context.l10n.socialBlockedUsersSubtitle),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _openSocial((nav) => nav.openBlockedUsers(context)),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildAccountStatusEntry(BuildContext context) {

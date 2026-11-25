@@ -287,7 +287,7 @@ void main() {
 
       test('debe funcionar con todos los niveles de privacidad', () async {
         // Arrange
-        final privacyLevels = ['public', 'friends', 'private'];
+        final privacyLevels = ['public', 'private'];
 
         for (final level in privacyLevels) {
           final settings = tSettings.copyWith(privacyLevel: level);
@@ -302,7 +302,7 @@ void main() {
           expect(result.isSuccess, isTrue);
         }
 
-        verify(mockRepository.updateSettings(any, any)).called(3);
+        verify(mockRepository.updateSettings(any, any)).called(2);
       });
 
       test('debe manejar actualizaciones rápidas consecutivas', () async {

@@ -130,6 +130,10 @@ class ErrorMessages {
         return context.l10n.errorsModerationUnavailable;
       case ErrorCode.invalidImage:
         return context.l10n.errorsInvalidImage;
+      case ErrorCode.userNotAvailable:
+        return context.l10n.errorsUserNotAvailable;
+      case ErrorCode.followRateLimited:
+        return context.l10n.errorsFollowRateLimited;
 
       // Errores desconocidos
       case ErrorCode.unknownError:
@@ -211,6 +215,8 @@ class ErrorMessages {
       case ErrorCode.usernameReserved:
       case ErrorCode.moderationUnavailable:
       case ErrorCode.invalidImage:
+      case ErrorCode.userNotAvailable:
+      case ErrorCode.followRateLimited:
         return context.l10n.errorsTitlesGeneral;
       case ErrorCode.unknownError:
         return context.l10n.errorsTitlesUnexpected;

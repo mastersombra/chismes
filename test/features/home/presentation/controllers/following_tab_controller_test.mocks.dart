@@ -60,13 +60,11 @@ class MockGetFollowingFeed extends _i1.Mock implements _i3.GetFollowingFeed {
 
   @override
   _i4.Future<_i5.Result<_i6.Failure, _i7.PaginatedGossips>> call({
-    required String? userId,
     int? pageSize = 20,
     _i8.FeedCursor? cursor,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#call, [], {
-              #userId: userId,
               #pageSize: pageSize,
               #cursor: cursor,
             }),
@@ -75,7 +73,6 @@ class MockGetFollowingFeed extends _i1.Mock implements _i3.GetFollowingFeed {
                   _i9.dummyValue<_i5.Result<_i6.Failure, _i7.PaginatedGossips>>(
                     this,
                     Invocation.method(#call, [], {
-                      #userId: userId,
                       #pageSize: pageSize,
                       #cursor: cursor,
                     }),
@@ -256,14 +253,6 @@ class MockProfileService extends _i1.Mock implements _i16.ProfileService {
   _i4.Future<int> getFollowingCount(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#getFollowingCount, [userId]),
-            returnValue: _i4.Future<int>.value(0),
-          )
-          as _i4.Future<int>);
-
-  @override
-  _i4.Future<int> getFollowersCount(String? userId) =>
-      (super.noSuchMethod(
-            Invocation.method(#getFollowersCount, [userId]),
             returnValue: _i4.Future<int>.value(0),
           )
           as _i4.Future<int>);

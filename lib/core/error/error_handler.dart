@@ -315,6 +315,31 @@ class ErrorHandler {
           technicalMessage: message,
         );
 
+      // SQLSTATE propios de las funciones sociales (migración 018)
+      case 'CS401': // Sin sesión
+        return AuthFailure(
+          code: ErrorCode.userNotAuthenticated,
+          technicalMessage: message,
+        );
+
+      case 'CS400': // Acción inválida (seguirse/bloquearse a sí mismo, tipo inválido)
+        return ValidationFailure(
+          code: ErrorCode.invalidInput,
+          technicalMessage: message,
+        );
+
+      case 'CS429': // Límite anti-spam de follow_user (DETAIL: 'hourly' | 'daily')
+        return RateLimitFailure(
+          code: ErrorCode.followRateLimited,
+          technicalMessage: '$message (${error.details ?? 'unknown'})',
+        );
+
+      case 'CS404': // Usuario no disponible: no existe o hay un bloqueo
+        return DataFailure(
+          code: ErrorCode.userNotAvailable,
+          technicalMessage: message,
+        );
+
       default:
         return ServerFailure(
           code: ErrorCode.serverError,

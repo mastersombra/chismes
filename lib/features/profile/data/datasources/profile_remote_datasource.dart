@@ -37,12 +37,13 @@ class ProfileRemoteDataSource {
 
       _logger.d('User has $gossipsCount gossips');
 
-      // Por ahora retornamos stats básicas (followers/comments vendrán en futuras features)
+      final social = await _getSocialCounts(userId);
+
       return UserStatsModel(
         gossipsCount: gossipsCount,
         commentsCount: 0, // TODO: Implementar cuando exista feature de comments
-        followersCount: 0, // TODO: Implementar cuando exista feature de follows
-        followingCount: 0, // TODO: Implementar cuando exista feature de follows
+        followersCount: social.followers,
+        followingCount: social.following,
         lastActivityAt: DateTime.now().toIso8601String(),
       );
     } catch (error, stackTrace) {
@@ -53,6 +54,26 @@ class ProfileRemoteDataSource {
         context: {'userId': userId},
       );
       rethrow;
+    }
+  }
+
+  /// Seguidores y seguidos (`get_user_profile`, migración 018).
+  ///
+  /// Si falla, 0 y 0 con un aviso en el log: los chismes ya se contaron y
+  /// el perfil se muestra igual.
+  Future<({int followers, int following})> _getSocialCounts(String userId) async {
+    try {
+      final json = await _supabase.rpc('get_user_profile', params: {'p_user': userId});
+      if (json is! Map<String, dynamic>) {
+        return (followers: 0, following: 0);
+      }
+      return (
+        followers: (json['followers_count'] as num?)?.toInt() ?? 0,
+        following: (json['following_count'] as num?)?.toInt() ?? 0,
+      );
+    } catch (error) {
+      _logger.w('Could not load follow counts', context: {'userId': userId, 'error': error.toString()});
+      return (followers: 0, following: 0);
     }
   }
 

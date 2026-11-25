@@ -490,6 +490,8 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
       final l10n = AppLocalizations.of(tester.element(find.byType(ProfileScreen)))!;
+      await tester.scrollUntilVisible(find.byKey(const Key('accountStatusEntry')), 200,
+          scrollable: find.byType(Scrollable).first);
 
       expect(find.byKey(const Key('accountStatusEntry')), findsOneWidget);
       expect(find.text(l10n.accountStatusEntryTitle), findsOneWidget);

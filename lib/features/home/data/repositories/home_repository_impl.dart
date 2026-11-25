@@ -89,19 +89,16 @@ class HomeRepositoryImpl implements HomeRepository {
 
   @override
   Future<Result<Failure, PaginatedGossips>> getFollowingFeed({
-    required String userId,
     int pageSize = 20,
     FeedCursor? cursor,
   }) async {
     try {
       _logger.d('Getting following feed', context: {
-        'userId': userId,
         'pageSize': pageSize,
         'cursor': cursor?.toString(),
       });
 
       final model = await _remoteDataSource.getFollowingFeed(
-        userId: userId,
         pageSize: pageSize,
         cursor: cursor,
       );
@@ -119,7 +116,6 @@ class HomeRepositoryImpl implements HomeRepository {
         'Error getting following feed',
         error: error,
         stackTrace: stackTrace,
-        context: {'userId': userId},
       );
       return Result.failure(ErrorHandler.handleError(error));
     }

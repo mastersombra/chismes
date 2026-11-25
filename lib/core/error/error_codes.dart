@@ -56,6 +56,8 @@ enum ErrorCode {
   usernameReserved, // @usuario reservado (admin, soporte, ...)
   moderationUnavailable, // La moderación automática no respondió: reintentar más tarde
   invalidImage, // La foto no es JPEG, PNG ni WebP
+  userNotAvailable, // El usuario no existe o hay un bloqueo (no se distingue a propósito)
+  followRateLimited, // Siguió/solicitó a demasiadas cuentas en poco tiempo (CS429)
 
   // Errores desconocidos
   unknownError,

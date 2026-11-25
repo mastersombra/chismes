@@ -75,13 +75,11 @@ class MockHomeRepository extends _i1.Mock implements _i2.HomeRepository {
 
   @override
   _i3.Future<_i4.Result<_i5.Failure, _i6.PaginatedGossips>> getFollowingFeed({
-    required String? userId,
     int? pageSize = 20,
     _i7.FeedCursor? cursor,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#getFollowingFeed, [], {
-              #userId: userId,
               #pageSize: pageSize,
               #cursor: cursor,
             }),
@@ -90,7 +88,6 @@ class MockHomeRepository extends _i1.Mock implements _i2.HomeRepository {
                   _i8.dummyValue<_i4.Result<_i5.Failure, _i6.PaginatedGossips>>(
                     this,
                     Invocation.method(#getFollowingFeed, [], {
-                      #userId: userId,
                       #pageSize: pageSize,
                       #cursor: cursor,
                     }),

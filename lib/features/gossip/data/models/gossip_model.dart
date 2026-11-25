@@ -1,3 +1,4 @@
+import '../../../../core/social/gossip_author.dart';
 import '../../domain/entities/gossip.dart';
 
 /// Model de datos para Gossip - Solo serialización/deserialización
@@ -310,6 +311,14 @@ class GossipModel {
   /// - Requerido si modifiedAt está presente
   final String? modifiedBy;
 
+  /// Autor visible (vista `public_gossips`, migración 018): @usuario, nombre
+  /// y foto. Solo vienen en chismes con perfil; NULL en anónimos.
+  ///
+  /// **Caché:** opcionales; las entradas guardadas antes de 018 no los traen.
+  final String? authorUsername;
+  final String? authorDisplayName;
+  final String? authorAvatarUrl;
+
   const GossipModel({
     required this.id,
     required this.countryId,
@@ -334,6 +343,9 @@ class GossipModel {
     required this.createdBy,
     this.modifiedAt,
     this.modifiedBy,
+    this.authorUsername,
+    this.authorDisplayName,
+    this.authorAvatarUrl,
   });
 
   /// Deserializa desde JSON con nomenclatura snake_case
@@ -456,6 +468,10 @@ class GossipModel {
       throw FormatException('Invalid type for modified_by: expected String or null, got ${modifiedBy.runtimeType}');
     }
 
+    final authorUsername = _optionalString(json, 'author_username');
+    final authorDisplayName = _optionalString(json, 'author_display_name');
+    final authorAvatarUrl = _optionalString(json, 'author_avatar_url');
+
     return GossipModel(
       id: id,
       countryId: countryId,
@@ -480,7 +496,19 @@ class GossipModel {
       createdBy: createdBy as String?,
       modifiedAt: modifiedAt,
       modifiedBy: modifiedBy,
+      authorUsername: authorUsername,
+      authorDisplayName: authorDisplayName,
+      authorAvatarUrl: authorAvatarUrl,
     );
+  }
+
+  /// Campo opcional String: ausente o null → null; otro tipo → FormatException
+  static String? _optionalString(Map<String, dynamic> json, String key) {
+    final value = json[key];
+    if (value != null && value is! String) {
+      throw FormatException('Invalid type for $key: expected String or null, got ${value.runtimeType}');
+    }
+    return value as String?;
   }
 
   /// Serializa a JSON con nomenclatura snake_case
@@ -518,6 +546,9 @@ class GossipModel {
       'created_by': createdBy,
       'modified_at': modifiedAt,
       'modified_by': modifiedBy,
+      'author_username': authorUsername,
+      'author_display_name': authorDisplayName,
+      'author_avatar_url': authorAvatarUrl,
     };
   }
 
@@ -547,6 +578,9 @@ class GossipModel {
       createdBy: entity.createdBy,
       modifiedAt: entity.modifiedAt?.toIso8601String(),
       modifiedBy: entity.modifiedBy,
+      authorUsername: entity.author?.username,
+      authorDisplayName: entity.author?.displayName,
+      authorAvatarUrl: entity.author?.avatarUrl,
     );
   }
 
@@ -601,6 +635,13 @@ class GossipModel {
       createdBy: createdBy,
       modifiedAt: modifiedAt != null ? DateTime.parse(modifiedAt!) : null,
       modifiedBy: modifiedBy,
+      author: GossipAuthor.maybe(
+        publishedAs: publishedAs,
+        createdBy: createdBy,
+        username: authorUsername,
+        displayName: authorDisplayName,
+        avatarUrl: authorAvatarUrl,
+      ),
     );
   }
 }

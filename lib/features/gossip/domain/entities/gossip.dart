@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../../../../core/audit/auditable.dart';
+import '../../../../core/social/gossip_author.dart';
 
 enum PublishAs {
   anonymous('anonymous'),
@@ -85,6 +86,10 @@ class Gossip extends Equatable implements Auditable {
   @override
   final String? modifiedBy;
 
+  /// Autor visible (@usuario, nombre, foto). Solo en chismes publicados con
+  /// perfil; SIEMPRE null en los anónimos (incluso los propios).
+  final GossipAuthor? author;
+
   const Gossip({
     required this.id,
     required this.countryId,
@@ -107,6 +112,7 @@ class Gossip extends Equatable implements Auditable {
     required this.createdBy,
     this.modifiedAt,
     this.modifiedBy,
+    this.author,
   });
 
   @override
@@ -132,5 +138,6 @@ class Gossip extends Equatable implements Auditable {
     createdBy,
     modifiedAt,
     modifiedBy,
+    author,
   ];
 }

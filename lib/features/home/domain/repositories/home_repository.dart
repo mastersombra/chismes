@@ -69,14 +69,11 @@ abstract class HomeRepository {
   ///
   /// **Ordenamiento:** Más recientes primero (created_at DESC)
   ///
-  /// **Filtro:**
-  /// - Solo chismes de personas que sigo (tabla `user_follows`)
-  /// - Status: published
-  /// - Moderation: approved
-  /// - Visibility: public o followers
+  /// **Filtro (servidor, con `auth.uid()`):**
+  /// - Solo chismes CON PERFIL de personas que sigo (nunca anónimos)
+  /// - Status: published, Moderation: approved, Visibility: public
   ///
   /// **Parámetros:**
-  /// - `userId`: ID del usuario actual (requerido)
   /// - `pageSize`: Chismes por página (default: 20)
   /// - `cursor`: Cursor de la página anterior (null = primera página)
   ///
@@ -87,7 +84,6 @@ abstract class HomeRepository {
   /// **Nota:** Si no sigue a nadie o no hay chismes, retorna lista vacía.
   /// El controller debe manejar el fallback a recommended feed.
   Future<Result<Failure, PaginatedGossips>> getFollowingFeed({
-    required String userId,
     int pageSize = 20,
     FeedCursor? cursor,
   });

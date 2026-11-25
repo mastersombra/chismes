@@ -237,11 +237,9 @@
   "profileSettingsNewFollowers": "Nuevos seguidores",
   "profileSettingsNewFollowersSubtitle": "Notificar cuando alguien te siga",
   "profileSettingsPrivacyDialogTitle": "Nivel de privacidad",
-  "profileSettingsPrivacyFriends": "Amigos",
-  "profileSettingsPrivacyFriendsSubtitle": "Solo tus amigos pueden ver",
   "profileSettingsPrivacyLevel": "Nivel de privacidad",
   "profileSettingsPrivacyPrivate": "Privado",
-  "profileSettingsPrivacyPrivateSubtitle": "Solo tú puedes ver",
+  "profileSettingsPrivacyPrivateSubtitle": "Apruebas a quién te sigue",
   "profileSettingsPrivacyPublic": "Público",
   "profileSettingsPrivacyPublicSubtitle": "Todos pueden ver tu perfil",
   "profileSettingsPushNotifications": "Notificaciones push",
@@ -795,5 +793,98 @@
   "profileSettingsTheme": "Tema",
   "profileSettingsThemeSystem": "Igual que el teléfono",
   "profileSettingsThemeLight": "Claro",
-  "profileSettingsThemeDark": "Oscuro"
+  "profileSettingsThemeDark": "Oscuro",
+  "errorsUserNotAvailable": "Este usuario no está disponible.",
+  "gossipAuthorSemanticLabel": "Ver perfil de {name}",
+  "@gossipAuthorSemanticLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "@ana"
+      }
+    }
+  },
+  "socialProfileTitle": "Perfil",
+  "socialUnknownUser": "Usuario",
+  "socialFollow": "Seguir",
+  "socialFollowing": "Siguiendo",
+  "socialRequested": "Solicitado",
+  "socialUnblock": "Desbloquear",
+  "socialBlock": "Bloquear",
+  "socialFollowsYou": "Te sigue",
+  "socialMoreOptions": "Más opciones",
+  "socialRequestSent": "Solicitud enviada",
+  "socialBlockDialogTitle": "¿Bloquear a {name}?",
+  "@socialBlockDialogTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "@ana"
+      }
+    }
+  },
+  "socialBlockDialogMessage": "No podrá ver tu perfil ni tus chismes con perfil, y dejarán de seguirse. No le avisaremos.",
+  "socialBlockedSnack": "Bloqueaste a {name}",
+  "@socialBlockedSnack": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "@ana"
+      }
+    }
+  },
+  "socialUnblockedSnack": "Desbloqueaste a {name}",
+  "@socialUnblockedSnack": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "@ana"
+      }
+    }
+  },
+  "socialBlockedProfileTitle": "Bloqueaste esta cuenta",
+  "socialBlockedProfileMessage": "Desbloquéala para ver su perfil y sus chismes.",
+  "socialPrivateAccountTitle": "Esta cuenta es privada",
+  "socialPrivateAccountMessage": "Síguela para ver sus chismes y sus seguidores.",
+  "socialUserNotAvailableTitle": "Este usuario no está disponible",
+  "socialUserNotAvailableMessage": "Puede que la cuenta ya no exista.",
+  "socialNoGossips": "Todavía no hay chismes con perfil",
+  "socialGossipsError": "No se pudieron cargar los chismes",
+  "socialLoadError": "No se pudo cargar. Intenta de nuevo.",
+  "socialEmptyFollowers": "Todavía no hay seguidores",
+  "socialEmptyFollowing": "Todavía no sigue a nadie",
+  "socialRemoveFollower": "Quitar",
+  "socialRemoveFollowerDialogTitle": "¿Quitar a {name} de tus seguidores?",
+  "@socialRemoveFollowerDialogTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "@ana"
+      }
+    }
+  },
+  "socialRemoveFollowerDialogMessage": "No le avisaremos. Podrá volver a seguirte.",
+  "socialFollowerRemoved": "Quitaste a {name} de tus seguidores",
+  "@socialFollowerRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "@ana"
+      }
+    }
+  },
+  "socialFollowRequestsTitle": "Solicitudes de seguimiento",
+  "socialFollowRequestsSubtitle": "Quién quiere seguir tu cuenta privada",
+  "socialNoFollowRequests": "No tienes solicitudes pendientes",
+  "socialAccept": "Aceptar",
+  "socialReject": "Rechazar",
+  "socialBlockedUsersTitle": "Usuarios bloqueados",
+  "socialBlockedUsersSubtitle": "No ven tu perfil ni tus chismes con perfil",
+  "socialNoBlockedUsers": "No has bloqueado a nadie",
+  "socialSearchTabGossips": "Chismes",
+  "socialSearchTabUsers": "Usuarios",
+  "socialSearchUsersHint": "Buscar por @usuario o nombre...",
+  "socialSearchUsersPrompt": "Escribe al menos 2 letras para buscar personas",
+  "socialSearchUsersNoResults": "No encontramos usuarios",
+  "errorsFollowRateLimited": "Estás siguiendo a muchas personas muy rápido. Intenta más tarde."
 }

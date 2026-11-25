@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -48,8 +50,9 @@ void main() {
 
         final stats = await dataSource.getUserStats(testUserId);
 
-        final params = fake.lastRequest.url.queryParameters;
-        expect(fake.lastRequest.url.path, '/rest/v1/public_gossips');
+        final request = fake.requests.first;
+        final params = request.url.queryParameters;
+        expect(request.url.path, '/rest/v1/public_gossips');
         expect(params['select'], 'id');
         expect(params['created_by'], 'eq.$testUserId');
         expect(params['status'], 'neq.deleted');
@@ -58,6 +61,49 @@ void main() {
         expect(stats.followersCount, 0);
         expect(stats.followingCount, 0);
         expect(DateTime.tryParse(stats.lastActivityAt!), isNotNull);
+      });
+
+      test('seguidores y seguidos vienen de get_user_profile del propio usuario',
+          () async {
+        fake.handler = (req) => FakeSupabaseHttp.jsonResponse(
+              req,
+              req.url.path == '/rest/v1/rpc/get_user_profile'
+                  ? {'id': testUserId, 'followers_count': 12, 'following_count': 7}
+                  : [
+                      {'id': 'g1'},
+                    ],
+            );
+
+        final stats = await dataSource.getUserStats(testUserId);
+
+        final rpc = fake.requests
+            .singleWhere((r) => r.url.path == '/rest/v1/rpc/get_user_profile');
+        expect(jsonDecode(rpc.body), {'p_user': testUserId});
+        expect(stats.gossipsCount, 1);
+        expect(stats.followersCount, 12);
+        expect(stats.followingCount, 7);
+      });
+
+      test('si get_user_profile falla, contadores en 0 con aviso (no rompe el perfil)',
+          () async {
+        fake.handler = (req) => req.url.path == '/rest/v1/rpc/get_user_profile'
+            ? FakeSupabaseHttp.jsonResponse(
+                req,
+                {'message': 'boom', 'code': 'XX000', 'details': null, 'hint': null},
+                status: 500,
+              )
+            : FakeSupabaseHttp.jsonResponse(req, [
+                {'id': 'g1'},
+                {'id': 'g2'},
+              ]);
+
+        final stats = await dataSource.getUserStats(testUserId);
+
+        expect(stats.gossipsCount, 2);
+        expect(stats.followersCount, 0);
+        expect(stats.followingCount, 0);
+        verify(mockLogger.w('Could not load follow counts', context: anyNamed('context')))
+            .called(1);
       });
 
       test('retorna 0 gossips cuando el usuario no tiene publicaciones', () async {

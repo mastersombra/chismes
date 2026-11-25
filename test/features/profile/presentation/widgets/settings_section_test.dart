@@ -344,8 +344,9 @@ void main() {
       await tester.pumpAndSettle();
 
       // Assert
+      // Solo público y privado ('friends' ya no existe, migración 018)
       expect(find.text('Público'), findsWidgets);
-      expect(find.text('Amigos'), findsOneWidget);
+      expect(find.text('Amigos'), findsNothing);
       expect(find.text('Privado'), findsOneWidget);
     });
 
@@ -671,7 +672,8 @@ void main() {
       expect(find.textContaining('Público'), findsOneWidget);
     });
 
-    testWidgets('debe mostrar texto correcto para friends', (tester) async {
+    testWidgets('el valor legado friends ya no se muestra (cae en público)',
+        (tester) async {
       // Arrange
       final settings = ProfileSettings.defaultSettings().copyWith(
         privacyLevel: 'friends',
@@ -681,7 +683,8 @@ void main() {
       await tester.pumpWidget(createWidget(settings));
 
       // Assert
-      expect(find.textContaining('Amigos'), findsOneWidget);
+      expect(find.textContaining('Amigos'), findsNothing);
+      expect(find.textContaining('Público'), findsOneWidget);
     });
 
     testWidgets('debe mostrar texto correcto para private', (tester) async {
@@ -717,7 +720,7 @@ void main() {
         (tester) async {
       // Arrange
       final settings = ProfileSettings.defaultSettings().copyWith(
-        privacyLevel: 'friends',
+        privacyLevel: 'private',
       );
 
       // Act
@@ -732,9 +735,9 @@ void main() {
       await tester.tap(find.text('Nivel de privacidad'));
       await tester.pumpAndSettle();
 
-      // Assert - verificar que 'friends' tiene icono seleccionado
+      // Assert - 'private' seleccionado; solo hay dos opciones
       expect(find.byIcon(Icons.radio_button_checked), findsNWidgets(1));
-      expect(find.byIcon(Icons.radio_button_unchecked), findsNWidgets(2));
+      expect(find.byIcon(Icons.radio_button_unchecked), findsNWidgets(1));
     });
 
     testWidgets('debe marcar idioma actual en dialog de idioma',
