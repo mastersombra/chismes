@@ -103,7 +103,7 @@ CREATE TABLE user_settings (
   likes_notifications BOOLEAN NOT NULL DEFAULT TRUE,
   follow_notifications BOOLEAN NOT NULL DEFAULT TRUE,
   privacy_level TEXT NOT NULL DEFAULT 'public'
-    CHECK (privacy_level IN ('public', 'friends', 'private')),
+    CHECK (privacy_level IN ('public', 'private')),
   show_email BOOLEAN NOT NULL DEFAULT FALSE,
   show_activity BOOLEAN NOT NULL DEFAULT TRUE,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()

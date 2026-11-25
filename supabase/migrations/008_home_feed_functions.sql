@@ -264,6 +264,11 @@ BEGIN
           'published_as', pg.published_as,
           -- Ya enmascarado por public_gossips (NULL en anónimos ajenos)
           'created_by', pg.created_by,
+          -- Autor (NULL en anónimos). Columnas agregadas a public_gossips en
+          -- 018; plpgsql las resuelve al ejecutar.
+          'author_username', pg.author_username,
+          'author_display_name', pg.author_display_name,
+          'author_avatar_url', pg.author_avatar_url,
           'image_url', pg.image_url,
           'score', pg.score_final,
           'proximity', pg.proximity,
@@ -300,101 +305,10 @@ COMMENT ON FUNCTION get_popular_feed IS
 'Feed principal por anillos de cercanía (ciudad/región/país) + popularidad + frescura, con tendencia relativa y relleno. Pesos en feed_settings. Paginación cursor-based.';
 
 -- =====================================================
--- FUNCIÓN: get_following_feed
+-- FUNCIÓN: get_following_feed → ver 018_social_follows_blocks.sql
 -- =====================================================
--- Feed de chismes de personas que sigo
--- Ordenado por fecha (más recientes primero)
--- Paginación: Cursor-based (created_at, id)
--- =====================================================
-
-CREATE OR REPLACE FUNCTION get_following_feed(
-  current_user_id UUID,
-  page_size INT DEFAULT 20,
-  cursor_created_at TIMESTAMPTZ DEFAULT NULL,
-  cursor_id UUID DEFAULT NULL
-)
-RETURNS JSON
-LANGUAGE plpgsql
-AS $$
-DECLARE
-  result_json JSON;
-BEGIN
-  WITH paginated_gossips AS (
-    SELECT
-      g.id,
-      g.subject,
-      g.content,
-      g.city_id,
-      g.created_at,
-      COALESCE(g.like_count, 0) AS likes,
-      COALESCE(g.comment_count, 0) AS comments,
-      COALESCE(g.share_count, 0) AS shares,
-      g.published_as,
-      g.created_by,  -- Ya enmascarado por public_gossips
-      g.image_url,
-      0::NUMERIC AS score,  -- No usamos score en Following
-      TRUE AS is_from_my_city,  -- Placeholder
-      FALSE AS is_trending  -- Placeholder
-    FROM public_gossips g
-    WHERE
-      g.status = 'published' AND
-      g.moderation_status = 'approved' AND
-      (g.visibility = 'public' OR g.visibility = 'followers') AND
-      g.deleted_at IS NULL AND
-      -- TODO: Filtrar por usuarios que sigo (requiere tabla user_follows)
-      -- Por ahora retorna vacío para evitar errores
-      FALSE
-      AND
-      -- Paginación con cursor (created_at, id)
-      (cursor_created_at IS NULL OR
-       g.created_at < cursor_created_at OR
-       (g.created_at = cursor_created_at AND g.id > cursor_id))
-    ORDER BY g.created_at DESC, g.id ASC
-    LIMIT page_size + 1
-  )
-
-  SELECT
-    json_build_object(
-      'data', COALESCE(json_agg(
-        json_build_object(
-          'id', pg.id,
-          'subject', pg.subject,
-          'content', pg.content,
-          'city_id', pg.city_id,
-          'created_at', pg.created_at,
-          'likes', pg.likes,
-          'comments', pg.comments,
-          'shares', pg.shares,
-          'published_as', pg.published_as,
-          'created_by', pg.created_by,
-          'image_url', pg.image_url,
-          'score', pg.score,
-          'is_from_my_city', pg.is_from_my_city,
-          'is_trending', pg.is_trending
-        )
-      ) FILTER (WHERE rn <= page_size), '[]'::json),
-      'has_more', (SELECT COUNT(*) FROM paginated_gossips) > page_size,
-      'next_cursor', CASE
-        WHEN (SELECT COUNT(*) FROM paginated_gossips) > page_size THEN
-          json_build_object(
-            'created_at', (SELECT created_at FROM paginated_gossips ORDER BY created_at DESC, id ASC LIMIT 1 OFFSET page_size - 1),
-            'id', (SELECT id FROM paginated_gossips ORDER BY created_at DESC, id ASC LIMIT 1 OFFSET page_size - 1)
-          )
-        ELSE NULL
-      END
-    ) INTO result_json
-  FROM (
-    SELECT *, ROW_NUMBER() OVER (ORDER BY created_at DESC, id ASC) as rn
-    FROM paginated_gossips
-  ) pg;
-
-  RETURN result_json;
-END;
-$$;
-
--- Comentario
-COMMENT ON FUNCTION get_following_feed IS
-'Feed de chismes de personas que sigo. Ordenado cronológicamente inverso.';
+-- Necesita la tabla user_follows (018) y usa auth.uid() en vez de recibir
+-- el user_id del cliente.
 
 -- =====================================================
 -- FUNCIÓN: check_new_gossips
@@ -449,7 +363,6 @@ COMMENT ON FUNCTION check_new_gossips IS
 -- Permitir que usuarios autenticados llamen estas funciones
 
 GRANT EXECUTE ON FUNCTION get_popular_feed TO authenticated;
-GRANT EXECUTE ON FUNCTION get_following_feed TO authenticated;
 GRANT EXECUTE ON FUNCTION check_new_gossips TO authenticated;
 GRANT EXECUTE ON FUNCTION feed_engagement(public_gossips) TO authenticated;
 GRANT EXECUTE ON FUNCTION feed_age_hours(public_gossips) TO authenticated;

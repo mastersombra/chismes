@@ -152,6 +152,16 @@
 - ✅ Bucket público `avatars` (2 MB, JPEG/PNG/WebP), solo escribe `service_role`; `delete-account` vacía `avatars/{user_id}/`
 - Tests: `supabase/tests/009_profile_editing_test.sql`, E2E `supabase/tests/e2e/update_profile_e2e.test.ts` y `storage_rls_e2e.test.ts`
 
+### 018_social_follows_blocks.sql
+- ✅ `user_follows`, `follow_requests` y `user_blocks` (cascada con la cuenta). Los clientes no las leen ni escriben: todo pasa por funciones SECURITY DEFINER con `auth.uid()`
+- ✅ Seguir: libre en cuentas públicas; `privacy_level = 'private'` → solicitud (aceptar/rechazar). Al volver pública se aceptan las pendientes (trigger). `privacy_level` queda `public`/`private` (se quitó `friends` en 017)
+- ✅ Bloquear: corta seguimiento y solicitudes en ambos sentidos e impide volver a seguir. Ninguno ve el perfil (`profiles` RLS + `get_user_profile`) ni los chismes CON PERFIL del otro. Los anónimos no se filtran (revelaría el autor)
+- ✅ `public_gossips` redefinida: agrega `author_username`, `author_display_name`, `author_avatar_url` solo en chismes con perfil, y filtra chismes con perfil de bloqueados y de cuentas privadas que no sigo. Aplica a feeds, búsqueda, detalle y `report-gossip`
+- ✅ `get_following_feed` real (reemplaza la de 008, que recibía el `user_id` del cliente y devolvía vacío): solo chismes con perfil de quienes sigo, nunca anónimos
+- ✅ API: `follow_user`, `unfollow_user`, `respond_follow_request`, `remove_follower`, `block_user`, `unblock_user`, `get_user_profile`, `get_follow_list`, `get_follow_requests`, `get_blocked_users`, `search_users`, `get_user_gossips`. Errores: `CS401` sin sesión, `CS400` consigo mismo/tipo inválido, `CS404` no disponible (inexistente o bloqueo, sin distinguir), `CS429` límite de seguimientos
+- ✅ Anti-spam: seguir/solicitar se registra en `rate_limits` (`follow_user`, agregado al CHECK de 004) solo cuando se crea algo nuevo; 60/hora y 300/día editables en `moderation_settings` (`follow_hourly_limit`, `follow_daily_limit`); superado → `CS429`
+- Tests: `supabase/tests/010_social_test.sql`
+
 ---
 
 ## 🔄 Cómo usar

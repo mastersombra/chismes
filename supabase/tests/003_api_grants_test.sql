@@ -33,7 +33,13 @@ SELECT set_config('request.jwt.claims','{"sub":"11111111-1111-1111-1111-11111111
 DO $$
 BEGIN
   PERFORM get_popular_feed('t-medellin','co-antioquia','CO');
-  PERFORM get_following_feed('11111111-1111-1111-1111-111111111111'::uuid);
+  PERFORM get_following_feed();
+  PERFORM get_user_gossips('11111111-1111-1111-1111-111111111111'::uuid);
+  PERFORM get_user_profile('11111111-1111-1111-1111-111111111111'::uuid);
+  PERFORM get_follow_list('11111111-1111-1111-1111-111111111111'::uuid, 'followers');
+  PERFORM get_follow_requests();
+  PERFORM get_blocked_users();
+  PERFORM search_users('ab');
   PERFORM check_new_gossips('t-medellin', NULL, 'CO', now() - interval '1 day');
   PERFORM * FROM search_gossips('s');
   PERFORM * FROM search_cities('Med');
