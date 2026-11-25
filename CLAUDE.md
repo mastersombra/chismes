@@ -482,8 +482,8 @@ test('debe retornar gossips', () async {
 
 ### Coverage
 
-**Estado:** ✅ **97.55%** sin `lib/l10n/` (10,116 / 10,370 líneas, medido 2026-11-24)  
-**Tests:** 4,550 tests (4,547 pasan · 3 skip)  
+**Estado:** ✅ **97.64%** sin `lib/l10n/` (10,566 / 10,821 líneas, medido 2026-11-24)  
+**Tests:** 4,644 tests (4,641 pasan · 3 skip)  
 **Objetivo:** >85% sin `lib/l10n/` (código generado, no se mide). Plan y tracking: `docs/TEST_PLAN_85.md`
 
 ```bash
@@ -577,7 +577,7 @@ supabase migration new name
 - Reactions
 - Profile completo
 - ~~Seguidores~~ ✅ (2026-11-24, feature `social`)
-- Notifications
+- ~~Notifications in-app~~ ✅ (2026-11-24, feature `notifications`; push pendiente)
 - Audio upload
 
 ---
@@ -625,12 +625,12 @@ Para nuevas sesiones:
 **Última actualización:** 2026-11-24
 
 ```
-Archivos Dart:        260 en lib/ (sin generados ni l10n) · 218 archivos de test
-Features:             8 (auth, gossip, home, location, moderation, profile, search, social)
-Tests:                4,550 (4,547 pasando, 3 skip)
-Coverage:             97.55% (sin lib/l10n)
+Archivos Dart:        281 en lib/ (sin generados ni l10n) · 229 archivos de test
+Features:             9 (auth, gossip, home, location, moderation, notifications, profile, search, social)
+Tests:                4,644 (4,641 pasando, 3 skip)
+Coverage:             97.64% (sin lib/l10n)
 Líneas de código:     ~16,500 (lib/, sin comentarios ni generados)
-Migraciones:          18
+Migraciones:          19
 Architecture Score:   9.65/10 ✅ TOP 1%
 ```
 

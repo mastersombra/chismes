@@ -3,7 +3,7 @@
 **Fecha de creación:** 2026-10-22  
 **Objetivo:** Verificar que el proyecto está listo para producción  
 **Estado:** 📋 EN PROGRESO
-**Última revisión:** 2026-11-21 (sanciones + apelaciones + reincidentes; antes: backend en el CI, eliminación de cuenta, RLS de storage)
+**Última revisión:** 2026-11-24 (notificaciones in-app; antes: seguidores, perfil editable, políticas en la app)
 
 ---
 
@@ -104,6 +104,25 @@ Gossip y Perfil abren `social` vía `core/navigation/social_navigator.dart`.
 Pendiente 🟢: contador de solicitudes pendientes en Perfil; botón Seguir en
 listas y búsqueda. `follow_notifications` sigue sin efecto hasta implementar
 notificaciones.
+
+**Hecho 2026-11-24 (4): notificaciones dentro de la app** (`019_notifications.sql`,
+feature `lib/features/notifications`). Las crean triggers del servidor (nunca
+la app): nuevo seguidor, solicitud (se borra al responderla o cancelarla) y
+solicitud aceptada; decisión humana de moderación (rechazo con motivo, nunca
+la nota interna; aprobado tras revisión o tras ocultar por reportes) y
+apelación resuelta. `notifications_enabled`/`follow_notifications` ya tienen
+efecto: apagan solo las sociales (las de la cuenta llegan siempre).
+Anti-spam por (destinatario, tipo, autor); bloquear borra los avisos entre
+ambos; pg_cron borra las de más de 90 días. App: campana con contador en
+Home (sin Realtime: se refresca al abrir, al volver a primer plano y al
+cambiar de pestaña), pantalla paginada que marca leídas las que muestra.
+Navegación vía `core/navigation/notifications_navigator.dart` y
+`account_navigator.dart` (Estado de la cuenta, implementado en moderation).
+Tests: SQL `011` (N1–N13), 92 Flutter. **Aplicar a `chismes-dev`:** reset con
+la 019 (`scripts/reset-database.sh`). Pendiente 🟡: **push** (FCM/APNs,
+requiere cuentas de Apple/Google; `push_notifications` sigue sin efecto),
+email. Pendiente 🟢: abrir el chisme al tocar "aprobado"; `comments`/`likes`
+sin efecto hasta que existan.
 
 **Siguiente recomendado:** los pendientes 🔴 del ítem 4 (App ID / release).
 
@@ -499,7 +518,7 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
    - Audio (backend listo, falta UI)
    - Comentarios
    - Reacciones
-   - Notificaciones
+   - Notificaciones (in-app ✅ 2026-11-24; falta push)
 
 2. **Optimizaciones**
    - CDN para media
