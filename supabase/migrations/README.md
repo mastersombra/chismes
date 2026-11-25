@@ -139,6 +139,19 @@
 - ✅ Solo `service_role` (moderate-gossip, report-gossip, account-status, moderation-review)
 - Tests: `supabase/tests/007_sanctions_test.sql`, E2E `supabase/tests/e2e/sanctions_e2e.test.ts`
 
+### 016_policy_acceptances.sql
+- ✅ `legal_documents`: versión vigente de la Política de privacidad y los Términos de uso (debe coincidir con el encabezado de `assets/legal/*.md`; un test de Flutter lo verifica). Lectura pública
+- ✅ `policy_acceptances`: qué versión aceptó cada usuario y cuándo (prueba para GDPR). La escribe un trigger en `auth.users` al crear la cuenta (email, Google o Apple), nunca el cliente; el usuario lee solo las suyas; se borra en cascada al eliminar la cuenta
+- Al cambiar una política: subir la versión en los `.md` (es y en) y `UPDATE legal_documents` en una migración nueva
+- Tests: `supabase/tests/008_policy_acceptances_test.sql`
+
+### 017_profile_editing.sql
+- ✅ Los clientes ya no escriben en `profiles` (antes: bio/nombre sin moderar y cualquier `avatar_url`). Toda edición pasa por la Edge Function `update-profile`
+- ✅ `username_changed_at` + trigger `enforce_username_change_cooldown`: el @usuario se cambia una vez cada `username_change_cooldown_days` (30, en `moderation_settings`); la primera elección no cuenta; aplica también a `service_role` (SQLSTATE `P0010`)
+- ✅ `user_settings`: notificaciones, nivel de privacidad, mostrar email/actividad. Fila creada al registrarse (y para los usuarios existentes); el dueño la lee y cambia solo las preferencias (GRANT por columna); se borra con la cuenta
+- ✅ Bucket público `avatars` (2 MB, JPEG/PNG/WebP), solo escribe `service_role`; `delete-account` vacía `avatars/{user_id}/`
+- Tests: `supabase/tests/009_profile_editing_test.sql`, E2E `supabase/tests/e2e/update_profile_e2e.test.ts` y `storage_rls_e2e.test.ts`
+
 ---
 
 ## 🔄 Cómo usar

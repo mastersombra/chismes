@@ -226,10 +226,10 @@ supabase functions logs moderate-gossip --filter error
 ## 🧪 Tests
 
 ```bash
-deno test supabase/functions/moderate-gossip/moderation.test.ts
+deno test supabase/functions/_shared/moderation.test.ts
 # Sin Deno instalado:
 docker run --rm -v "$PWD/supabase/functions:/fn" -w /fn denoland/deno:2.1.4 \
-  deno test moderate-gossip/moderation.test.ts
+  deno test _shared/moderation.test.ts
 ```
 
 ## 🔧 Troubleshooting

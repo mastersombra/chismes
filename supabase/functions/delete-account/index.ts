@@ -8,14 +8,15 @@
 // 1. Auth + confirmación ("DELETE_MY_ACCOUNT"): la app pide doble confirmación
 // 2. get_account_deletion_media(): media de sus chismes (pública + cuarentena)
 // 3. Borra esa media con la Storage API, más todo lo que tenga en
-//    quarantine/<user_id>/ (subidas que no llegaron a la cola). Los errores
+//    quarantine/<user_id>/ (subidas que no llegaron a la cola) y su foto de
+//    perfil (avatars/<user_id>/). Los errores
 //    se loguean y no bloquean: cleanup-media borra lo huérfano (> 7 días)
 // 4. delete_user_account() (migración 014), en una transacción: registro
 //    anónimo de faltas (solo si tuvo rechazos) + borrar auth.users. Por
 //    cascada se van chismes, perfil, reportes e historial de moderación
 //
 // Qué se conserva: solo account_deletion_records (huella HMAC del email +
-// conteo de rechazos por gravedad), si tuvo faltas. Ver PRIVACY_POLICY.md.
+// conteo de rechazos por gravedad), si tuvo faltas. Ver assets/legal/privacy_policy.es.md.
 //
 // Secrets: ACCOUNT_HASH_SECRET (obligatorio: sin él responde 500 y no borra).
 // No rotarlo: cambiar el secret invalida las huellas guardadas.
@@ -33,7 +34,13 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const QUARANTINE_BUCKETS = ['images-quarantine', 'audio-quarantine'] as const
+// Carpetas propias del usuario que se vacían enteras (además de la media de
+// sus chismes): subidas en cuarentena y su foto de perfil (017)
+const USER_FOLDERS = [
+  { bucket: 'images-quarantine', prefix: (id: string) => `quarantine/${id}` },
+  { bucket: 'audio-quarantine', prefix: (id: string) => `quarantine/${id}` },
+  { bucket: 'avatars', prefix: (id: string) => id },
+] as const
 
 function json(status: number, body: Record<string, unknown>): Response {
   return new Response(JSON.stringify(body), {
@@ -105,10 +112,12 @@ serve(async (req) => {
       'audio': cleanPaths(media?.audio_paths ?? []),
       'images-quarantine': cleanPaths(media?.image_quarantine_paths ?? []),
       'audio-quarantine': cleanPaths(media?.audio_quarantine_paths ?? []),
+      'avatars': [],
     }
 
-    for (const bucket of QUARANTINE_BUCKETS) {
-      const prefix = `quarantine/${user.id}`
+    for (const folder of USER_FOLDERS) {
+      const bucket = folder.bucket
+      const prefix = folder.prefix(user.id)
       const { data: files, error } = await admin.storage.from(bucket).list(prefix, { limit: 1000 })
       if (error) {
         console.error(`list ${bucket}/${prefix} failed:`, error.message)

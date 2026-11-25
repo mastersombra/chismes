@@ -2,10 +2,10 @@
  * Tests de moderation.ts (sin red: OpenAI simulado con un fetch falso)
  *
  * Correr:
- *   deno test supabase/functions/moderate-gossip/moderation.test.ts
+ *   deno test supabase/functions/_shared/moderation.test.ts
  * Sin Deno instalado (Docker):
  *   docker run --rm -v "$PWD/supabase/functions:/fn" -w /fn denoland/deno:2.1.4 \
- *     test moderate-gossip/moderation.test.ts
+ *     test _shared/moderation.test.ts
  */
 import {
   assert,
