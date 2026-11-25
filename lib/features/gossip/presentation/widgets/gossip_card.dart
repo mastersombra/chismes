@@ -13,12 +13,21 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/result/result.dart';
 import '../../../../core/error/error_messages.dart';
 import '../../../../core/error/failure.dart';
+import 'gossip_author_row.dart';
 import 'report_gossip_dialog.dart';
 
 class GossipCard extends StatelessWidget {
   final Gossip gossip;
 
-  const GossipCard({super.key, required this.gossip});
+  /// Muestra el autor (solo chismes con perfil). Se apaga en el perfil del
+  /// propio autor: ya se sabe de quién es y tocarlo abriría el mismo perfil.
+  final bool showAuthor;
+
+  const GossipCard({
+    super.key,
+    required this.gossip,
+    this.showAuthor = true,
+  });
 
   /// Comparte el chisme usando deep link
   Future<void> _shareGossip(BuildContext context, Gossip gossip) async {
@@ -136,7 +145,10 @@ $deepLink
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => GossipDetailScreen(gossip: gossip),
+              builder: (_) => GossipDetailScreen(
+                gossip: gossip,
+                showAuthor: showAuthor,
+              ),
             ),
           );
         },
@@ -197,10 +209,23 @@ $deepLink
 
                         const SizedBox(height: AppSpacing.xs),
 
-                        // ✅ Botones de acción (compartir y reportar)
+                        // Autor (solo con perfil) + botones de acción
+                        // (compartir y reportar). El autor va en la misma
+                        // fila para no sumar alto (grilla de alto fijo).
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
+                            if (showAuthor && gossip.author != null)
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: GossipAuthorRow(
+                                    author: gossip.author!,
+                                    compact: true,
+                                  ),
+                                ),
+                              ),
+
                             // Botón compartir
                             Semantics(
                               label: context.l10n.gossipCardShareSemanticLabel,

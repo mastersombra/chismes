@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS rate_limits (
   user_agent TEXT,
 
   CONSTRAINT rate_limits_action_type_check
-    CHECK (action_type IN ('create_gossip', 'update_profile', 'create_comment', 'create_reaction'))
+    CHECK (action_type IN ('create_gossip', 'update_profile', 'create_comment', 'create_reaction', 'follow_user'))
 );
 
 -- Índices

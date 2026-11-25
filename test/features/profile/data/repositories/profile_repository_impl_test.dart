@@ -148,8 +148,6 @@ void main() {
         commentsNotifications: false,
         likesNotifications: true,
         followNotifications: false,
-        language: 'en',
-        darkMode: true,
         privacyLevel: 'private',
         showEmail: true,
         showActivity: false,
@@ -172,8 +170,6 @@ void main() {
             expect(settings, isA<ProfileSettings>());
             expect(settings.notificationsEnabled, true);
             expect(settings.emailNotifications, false);
-            expect(settings.language, 'en');
-            expect(settings.darkMode, true);
             expect(settings.privacyLevel, 'private');
           },
         );
@@ -233,8 +229,6 @@ void main() {
                 tProfileSettingsModel.likesNotifications);
             expect(settings.followNotifications,
                 tProfileSettingsModel.followNotifications);
-            expect(settings.language, tProfileSettingsModel.language);
-            expect(settings.darkMode, tProfileSettingsModel.darkMode);
             expect(settings.privacyLevel, tProfileSettingsModel.privacyLevel);
             expect(settings.showEmail, tProfileSettingsModel.showEmail);
             expect(settings.showActivity, tProfileSettingsModel.showActivity);
@@ -251,8 +245,6 @@ void main() {
         commentsNotifications: true,
         likesNotifications: false,
         followNotifications: true,
-        language: 'en',
-        darkMode: true,
         privacyLevel: 'private',
         showEmail: true,
         showActivity: false,
@@ -301,8 +293,6 @@ void main() {
         )).captured.single as ProfileSettingsModel;
 
         expect(captured.notificationsEnabled, tProfileSettings.notificationsEnabled);
-        expect(captured.language, tProfileSettings.language);
-        expect(captured.darkMode, tProfileSettings.darkMode);
         expect(captured.privacyLevel, tProfileSettings.privacyLevel);
       });
 

@@ -980,180 +980,6 @@ abstract class AppLocalizations {
   /// **'Sin nombre'**
   String get profileHeaderNoName;
 
-  /// No description provided for @profilePrivacySettingsAccountDeleteSubtitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Elimina tu cuenta y todos tus datos'**
-  String get profilePrivacySettingsAccountDeleteSubtitle;
-
-  /// No description provided for @profilePrivacySettingsAccountDeleteTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Eliminar cuenta'**
-  String get profilePrivacySettingsAccountDeleteTitle;
-
-  /// No description provided for @profilePrivacySettingsDialogsDeleteAccountConfirmPlaceholder.
-  ///
-  /// In es, this message translates to:
-  /// **'ELIMINAR'**
-  String get profilePrivacySettingsDialogsDeleteAccountConfirmPlaceholder;
-
-  /// No description provided for @profilePrivacySettingsDialogsDeleteAccountConfirmPrompt.
-  ///
-  /// In es, this message translates to:
-  /// **'Para confirmar, escribe ELIMINAR'**
-  String get profilePrivacySettingsDialogsDeleteAccountConfirmPrompt;
-
-  /// No description provided for @profilePrivacySettingsDialogsDeleteAccountMessage.
-  ///
-  /// In es, this message translates to:
-  /// **'Esto eliminará:\n• Tu cuenta\n• Todos tus chismes\n• Todas tus interacciones\n\n⚠️ Esta acción NO se puede deshacer.'**
-  String get profilePrivacySettingsDialogsDeleteAccountMessage;
-
-  /// No description provided for @profilePrivacySettingsDialogsDeleteAccountTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'⚠️ Eliminar cuenta'**
-  String get profilePrivacySettingsDialogsDeleteAccountTitle;
-
-  /// No description provided for @profilePrivacySettingsDialogsDeleteAllDataMessage.
-  ///
-  /// In es, this message translates to:
-  /// **'Se borrarán TODOS los datos guardados localmente:\n• Ubicación guardada\n• Preferencias\n• Cache\n\n¿Estás seguro?'**
-  String get profilePrivacySettingsDialogsDeleteAllDataMessage;
-
-  /// No description provided for @profilePrivacySettingsDialogsDeleteAllDataTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'⚠️ Borrar todos los datos'**
-  String get profilePrivacySettingsDialogsDeleteAllDataTitle;
-
-  /// No description provided for @profilePrivacySettingsDialogsForgetLocationMessage.
-  ///
-  /// In es, this message translates to:
-  /// **'Se borrará tu ciudad guardada. La próxima vez que crees un chisme, se pedirá ubicación de nuevo.'**
-  String get profilePrivacySettingsDialogsForgetLocationMessage;
-
-  /// No description provided for @profilePrivacySettingsDialogsForgetLocationTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'¿Olvidar ubicación?'**
-  String get profilePrivacySettingsDialogsForgetLocationTitle;
-
-  /// No description provided for @profilePrivacySettingsDialogsPrivacyPolicyContent.
-  ///
-  /// In es, this message translates to:
-  /// **'La política de privacidad completa está disponible en:\n\nhttps://chismes.app/privacy\n\nO en el archivo PRIVACY_POLICY.md del proyecto.'**
-  String get profilePrivacySettingsDialogsPrivacyPolicyContent;
-
-  /// No description provided for @profilePrivacySettingsDialogsTermsOfUseContent.
-  ///
-  /// In es, this message translates to:
-  /// **'Los términos de uso completos están disponibles en:\n\nhttps://chismes.app/terms\n\nO en el archivo TERMS_OF_SERVICE.md del proyecto.'**
-  String get profilePrivacySettingsDialogsTermsOfUseContent;
-
-  /// No description provided for @profilePrivacySettingsExportComingSoon.
-  ///
-  /// In es, this message translates to:
-  /// **'Exportación disponible próximamente'**
-  String get profilePrivacySettingsExportComingSoon;
-
-  /// No description provided for @profilePrivacySettingsExportDataTooltip.
-  ///
-  /// In es, this message translates to:
-  /// **'Exportar datos'**
-  String get profilePrivacySettingsExportDataTooltip;
-
-  /// No description provided for @profilePrivacySettingsLocalDataInfoMessage.
-  ///
-  /// In es, this message translates to:
-  /// **'Estos datos se almacenan solo en tu teléfono (SharedPreferences). NO se envían al servidor.'**
-  String get profilePrivacySettingsLocalDataInfoMessage;
-
-  /// No description provided for @profilePrivacySettingsLocalDataInfoTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'ℹ️ Datos locales'**
-  String get profilePrivacySettingsLocalDataInfoTitle;
-
-  /// No description provided for @profilePrivacySettingsLocationAnonymousModeDescription.
-  ///
-  /// In es, this message translates to:
-  /// **'Con modo anónimo activado, se pedirá ubicación cada vez que crees un chisme.'**
-  String get profilePrivacySettingsLocationAnonymousModeDescription;
-
-  /// No description provided for @profilePrivacySettingsLocationAnonymousModeSubtitle.
-  ///
-  /// In es, this message translates to:
-  /// **'No guardar ubicación por defecto'**
-  String get profilePrivacySettingsLocationAnonymousModeSubtitle;
-
-  /// No description provided for @profilePrivacySettingsLocationForgetTooltip.
-  ///
-  /// In es, this message translates to:
-  /// **'Olvidar ubicación'**
-  String get profilePrivacySettingsLocationForgetTooltip;
-
-  /// No description provided for @profilePrivacySettingsLocationNotSaved.
-  ///
-  /// In es, this message translates to:
-  /// **'No guardada'**
-  String get profilePrivacySettingsLocationNotSaved;
-
-  /// No description provided for @profilePrivacySettingsNoLocalData.
-  ///
-  /// In es, this message translates to:
-  /// **'No hay datos guardados localmente'**
-  String get profilePrivacySettingsNoLocalData;
-
-  /// No description provided for @profilePrivacySettingsSectionsAccount.
-  ///
-  /// In es, this message translates to:
-  /// **'🔒 Cuenta'**
-  String get profilePrivacySettingsSectionsAccount;
-
-  /// No description provided for @profilePrivacySettingsSectionsLocation.
-  ///
-  /// In es, this message translates to:
-  /// **'📍 Ubicación'**
-  String get profilePrivacySettingsSectionsLocation;
-
-  /// No description provided for @profilePrivacySettingsSectionsPolicies.
-  ///
-  /// In es, this message translates to:
-  /// **'📄 Políticas'**
-  String get profilePrivacySettingsSectionsPolicies;
-
-  /// No description provided for @profilePrivacySettingsSectionsStoredData.
-  ///
-  /// In es, this message translates to:
-  /// **'💾 Datos almacenados'**
-  String get profilePrivacySettingsSectionsStoredData;
-
-  /// No description provided for @profilePrivacySettingsSnackbarsAnonymousModeOff.
-  ///
-  /// In es, this message translates to:
-  /// **'✅ Modo anónimo desactivado'**
-  String get profilePrivacySettingsSnackbarsAnonymousModeOff;
-
-  /// No description provided for @profilePrivacySettingsSnackbarsAnonymousModeOn.
-  ///
-  /// In es, this message translates to:
-  /// **'✅ Modo anónimo activado'**
-  String get profilePrivacySettingsSnackbarsAnonymousModeOn;
-
-  /// No description provided for @profilePrivacySettingsSnackbarsDataErased.
-  ///
-  /// In es, this message translates to:
-  /// **'✅ Datos borrados'**
-  String get profilePrivacySettingsSnackbarsDataErased;
-
-  /// No description provided for @profilePrivacySettingsSnackbarsLocationForgotten.
-  ///
-  /// In es, this message translates to:
-  /// **'✅ Ubicación olvidada'**
-  String get profilePrivacySettingsSnackbarsLocationForgotten;
-
   /// No description provided for @profileScreenErrorLoading.
   ///
   /// In es, this message translates to:
@@ -1280,18 +1106,6 @@ abstract class AppLocalizations {
   /// **'Recibir resumen diario por email'**
   String get profileSettingsDailySummarySubtitle;
 
-  /// No description provided for @profileSettingsDarkMode.
-  ///
-  /// In es, this message translates to:
-  /// **'Modo oscuro'**
-  String get profileSettingsDarkMode;
-
-  /// No description provided for @profileSettingsDarkModeSubtitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Usar tema oscuro en la aplicación'**
-  String get profileSettingsDarkModeSubtitle;
-
   /// No description provided for @profileSettingsEmailNotifications.
   ///
   /// In es, this message translates to:
@@ -1346,18 +1160,6 @@ abstract class AppLocalizations {
   /// **'Nivel de privacidad'**
   String get profileSettingsPrivacyDialogTitle;
 
-  /// No description provided for @profileSettingsPrivacyFriends.
-  ///
-  /// In es, this message translates to:
-  /// **'Amigos'**
-  String get profileSettingsPrivacyFriends;
-
-  /// No description provided for @profileSettingsPrivacyFriendsSubtitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Solo tus amigos pueden ver'**
-  String get profileSettingsPrivacyFriendsSubtitle;
-
   /// No description provided for @profileSettingsPrivacyLevel.
   ///
   /// In es, this message translates to:
@@ -1373,7 +1175,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileSettingsPrivacyPrivateSubtitle.
   ///
   /// In es, this message translates to:
-  /// **'Solo tú puedes ver'**
+  /// **'Apruebas a quién te sigue'**
   String get profileSettingsPrivacyPrivateSubtitle;
 
   /// No description provided for @profileSettingsPrivacyPublic.
@@ -1712,60 +1514,6 @@ abstract class AppLocalizations {
   /// **'Continuar con Google'**
   String get continueWithGoogle;
 
-  /// No description provided for @privacyConsentTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Configuración de Privacidad'**
-  String get privacyConsentTitle;
-
-  /// No description provided for @privacyConsentDeclineButton.
-  ///
-  /// In es, this message translates to:
-  /// **'Rechazar'**
-  String get privacyConsentDeclineButton;
-
-  /// No description provided for @privacySettingsPrivacyPolicy.
-  ///
-  /// In es, this message translates to:
-  /// **'Política de Privacidad'**
-  String get privacySettingsPrivacyPolicy;
-
-  /// No description provided for @privacySettingsTermsOfUse.
-  ///
-  /// In es, this message translates to:
-  /// **'Términos de Uso'**
-  String get privacySettingsTermsOfUse;
-
-  /// No description provided for @privacySettingsTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Privacidad'**
-  String get privacySettingsTitle;
-
-  /// No description provided for @privacySettingsSavedCity.
-  ///
-  /// In es, this message translates to:
-  /// **'Ciudad guardada'**
-  String get privacySettingsSavedCity;
-
-  /// No description provided for @privacySettingsAnonymousMode.
-  ///
-  /// In es, this message translates to:
-  /// **'Modo anónimo'**
-  String get privacySettingsAnonymousMode;
-
-  /// No description provided for @privacySettingsViewMyData.
-  ///
-  /// In es, this message translates to:
-  /// **'Ver mis datos'**
-  String get privacySettingsViewMyData;
-
-  /// No description provided for @privacySettingsViewMyDataSubtitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Descarga tus datos personales'**
-  String get privacySettingsViewMyDataSubtitle;
-
   /// No description provided for @locationChangeDialogTitle.
   ///
   /// In es, this message translates to:
@@ -1976,12 +1724,6 @@ abstract class AppLocalizations {
   /// **'Tu contraseña ha sido actualizada exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña'**
   String get passwordUpdatedSuccessMessage;
 
-  /// No description provided for @permanentlyDelete.
-  ///
-  /// In es, this message translates to:
-  /// **'Eliminar permanentemente'**
-  String get permanentlyDelete;
-
   /// No description provided for @locationRegionRequired.
   ///
   /// In es, this message translates to:
@@ -2005,36 +1747,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Usar ubicación actual'**
   String get locationUseCurrentLocation;
-
-  /// No description provided for @privacySettingsAccountDeleted.
-  ///
-  /// In es, this message translates to:
-  /// **'Cuenta eliminada'**
-  String get privacySettingsAccountDeleted;
-
-  /// No description provided for @privacySettingsConfirmDeletion.
-  ///
-  /// In es, this message translates to:
-  /// **'¿Confirmas que deseas eliminar tu cuenta?'**
-  String get privacySettingsConfirmDeletion;
-
-  /// No description provided for @privacySettingsDeletionCancelled.
-  ///
-  /// In es, this message translates to:
-  /// **'Eliminación cancelada'**
-  String get privacySettingsDeletionCancelled;
-
-  /// No description provided for @privacySettingsEraseButton.
-  ///
-  /// In es, this message translates to:
-  /// **'Eliminar cuenta'**
-  String get privacySettingsEraseButton;
-
-  /// No description provided for @privacySettingsMyData.
-  ///
-  /// In es, this message translates to:
-  /// **'Mis datos'**
-  String get privacySettingsMyData;
 
   /// No description provided for @resetPasswordSubtitle.
   ///
@@ -2084,12 +1796,6 @@ abstract class AppLocalizations {
   /// **'Crea tu cuenta en segundos'**
   String get signupDescription;
 
-  /// No description provided for @signupTermsMessage.
-  ///
-  /// In es, this message translates to:
-  /// **'Al crear una cuenta, aceptas nuestros Términos y Condiciones y Política de Privacidad'**
-  String get signupTermsMessage;
-
   /// No description provided for @signupPasswordRequired.
   ///
   /// In es, this message translates to:
@@ -2138,222 +1844,6 @@ abstract class AppLocalizations {
   /// **'Escribe al menos {minChars} caracteres para buscar'**
   String locationMinCharsMessage(int minChars);
 
-  /// No description provided for @privacyConsentHeader.
-  ///
-  /// In es, this message translates to:
-  /// **'🔒 Tu privacidad es importante'**
-  String get privacyConsentHeader;
-
-  /// No description provided for @privacyConsentSubheader.
-  ///
-  /// In es, this message translates to:
-  /// **'Antes de comenzar, queremos que sepas cómo manejamos tus datos.'**
-  String get privacyConsentSubheader;
-
-  /// No description provided for @privacyConsentDataCollectedTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'📊 ¿Qué datos recopilamos?'**
-  String get privacyConsentDataCollectedTitle;
-
-  /// No description provided for @privacyConsentDataCollectedItem1.
-  ///
-  /// In es, this message translates to:
-  /// **'Tu email y contraseña (encriptada)'**
-  String get privacyConsentDataCollectedItem1;
-
-  /// No description provided for @privacyConsentDataCollectedItem2.
-  ///
-  /// In es, this message translates to:
-  /// **'Solo tu ciudad (NO coordenadas exactas)'**
-  String get privacyConsentDataCollectedItem2;
-
-  /// No description provided for @privacyConsentDataCollectedItem3.
-  ///
-  /// In es, this message translates to:
-  /// **'Contenido de tus chismes (texto, imagen, audio)'**
-  String get privacyConsentDataCollectedItem3;
-
-  /// No description provided for @privacyConsentDataCollectedItem4.
-  ///
-  /// In es, this message translates to:
-  /// **'Estadísticas de uso (para mejorar la app)'**
-  String get privacyConsentDataCollectedItem4;
-
-  /// No description provided for @privacyConsentDataUsageTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'🎯 ¿Cómo los usamos?'**
-  String get privacyConsentDataUsageTitle;
-
-  /// No description provided for @privacyConsentDataUsageItem1.
-  ///
-  /// In es, this message translates to:
-  /// **'Proporcionar el servicio (publicar chismes)'**
-  String get privacyConsentDataUsageItem1;
-
-  /// No description provided for @privacyConsentDataUsageItem2.
-  ///
-  /// In es, this message translates to:
-  /// **'Moderar contenido (mantener comunidad segura)'**
-  String get privacyConsentDataUsageItem2;
-
-  /// No description provided for @privacyConsentDataUsageItem3.
-  ///
-  /// In es, this message translates to:
-  /// **'Mejorar la app (analizar uso)'**
-  String get privacyConsentDataUsageItem3;
-
-  /// No description provided for @privacyConsentModerationTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'🤖 Moderación de contenido'**
-  String get privacyConsentModerationTitle;
-
-  /// No description provided for @privacyConsentModerationItem1.
-  ///
-  /// In es, this message translates to:
-  /// **'Usamos OpenAI para analizar texto'**
-  String get privacyConsentModerationItem1;
-
-  /// No description provided for @privacyConsentModerationItem2.
-  ///
-  /// In es, this message translates to:
-  /// **'Solo se envía el texto del chisme'**
-  String get privacyConsentModerationItem2;
-
-  /// No description provided for @privacyConsentModerationItem3.
-  ///
-  /// In es, this message translates to:
-  /// **'NO enviamos tu nombre, ubicación ni otros datos'**
-  String get privacyConsentModerationItem3;
-
-  /// No description provided for @privacyConsentModerationItem4.
-  ///
-  /// In es, this message translates to:
-  /// **'OpenAI retiene el texto por 30 días, luego lo elimina'**
-  String get privacyConsentModerationItem4;
-
-  /// No description provided for @privacyConsentModerationItem5.
-  ///
-  /// In es, this message translates to:
-  /// **'NO se usa para entrenar modelos de IA'**
-  String get privacyConsentModerationItem5;
-
-  /// No description provided for @privacyConsentLocationTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'📍 Tu ubicación'**
-  String get privacyConsentLocationTitle;
-
-  /// No description provided for @privacyConsentLocationItem1.
-  ///
-  /// In es, this message translates to:
-  /// **'Solo detectamos tu ciudad (ej: \"Bogotá\")'**
-  String get privacyConsentLocationItem1;
-
-  /// No description provided for @privacyConsentLocationItem2.
-  ///
-  /// In es, this message translates to:
-  /// **'Coordenadas GPS se descartan inmediatamente'**
-  String get privacyConsentLocationItem2;
-
-  /// No description provided for @privacyConsentLocationItem3.
-  ///
-  /// In es, this message translates to:
-  /// **'NUNCA almacenamos ni enviamos coordenadas exactas'**
-  String get privacyConsentLocationItem3;
-
-  /// No description provided for @privacyConsentLocationItem4.
-  ///
-  /// In es, this message translates to:
-  /// **'Puedes elegir la ciudad manualmente'**
-  String get privacyConsentLocationItem4;
-
-  /// No description provided for @privacyConsentRightsTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'✅ Tus derechos'**
-  String get privacyConsentRightsTitle;
-
-  /// No description provided for @privacyConsentRightsItem1.
-  ///
-  /// In es, this message translates to:
-  /// **'Acceder a tus datos en cualquier momento'**
-  String get privacyConsentRightsItem1;
-
-  /// No description provided for @privacyConsentRightsItem2.
-  ///
-  /// In es, this message translates to:
-  /// **'Eliminar tu cuenta y datos'**
-  String get privacyConsentRightsItem2;
-
-  /// No description provided for @privacyConsentRightsItem3.
-  ///
-  /// In es, this message translates to:
-  /// **'Olvidar tu ubicación guardada'**
-  String get privacyConsentRightsItem3;
-
-  /// No description provided for @privacyConsentRightsItem4.
-  ///
-  /// In es, this message translates to:
-  /// **'Exportar tus datos (portabilidad)'**
-  String get privacyConsentRightsItem4;
-
-  /// No description provided for @privacyConsentCheckboxPrivacy.
-  ///
-  /// In es, this message translates to:
-  /// **'He leído y acepto la '**
-  String get privacyConsentCheckboxPrivacy;
-
-  /// No description provided for @privacyConsentCheckboxPrivacyLink.
-  ///
-  /// In es, this message translates to:
-  /// **'Política de Privacidad'**
-  String get privacyConsentCheckboxPrivacyLink;
-
-  /// No description provided for @privacyConsentCheckboxTerms.
-  ///
-  /// In es, this message translates to:
-  /// **'He leído y acepto los '**
-  String get privacyConsentCheckboxTerms;
-
-  /// No description provided for @privacyConsentCheckboxTermsLink.
-  ///
-  /// In es, this message translates to:
-  /// **'Términos de Uso'**
-  String get privacyConsentCheckboxTermsLink;
-
-  /// No description provided for @privacyConsentCheckboxModeration.
-  ///
-  /// In es, this message translates to:
-  /// **'Acepto que el texto de mis chismes se envíe a '**
-  String get privacyConsentCheckboxModeration;
-
-  /// No description provided for @privacyConsentCheckboxModerationBold.
-  ///
-  /// In es, this message translates to:
-  /// **'OpenAI'**
-  String get privacyConsentCheckboxModerationBold;
-
-  /// No description provided for @privacyConsentCheckboxModerationSuffix.
-  ///
-  /// In es, this message translates to:
-  /// **' para moderación de contenido (30 días de retención)'**
-  String get privacyConsentCheckboxModerationSuffix;
-
-  /// No description provided for @privacyConsentAcceptButton.
-  ///
-  /// In es, this message translates to:
-  /// **'Aceptar y Continuar'**
-  String get privacyConsentAcceptButton;
-
-  /// No description provided for @privacyConsentDisclaimer.
-  ///
-  /// In es, this message translates to:
-  /// **'Al continuar, aceptas nuestras políticas'**
-  String get privacyConsentDisclaimer;
-
   /// No description provided for @authOtpResendCode.
   ///
   /// In es, this message translates to:
@@ -2389,96 +1879,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'El código debe tener 6 dígitos'**
   String get authOtpCodeMustBe6Digits;
-
-  /// No description provided for @privacyConsentDialogPrivacyAvailable.
-  ///
-  /// In es, this message translates to:
-  /// **'La política de privacidad completa está disponible en:'**
-  String get privacyConsentDialogPrivacyAvailable;
-
-  /// No description provided for @privacyConsentDialogPrivacyUrl.
-  ///
-  /// In es, this message translates to:
-  /// **'https://chismes.app/privacy'**
-  String get privacyConsentDialogPrivacyUrl;
-
-  /// No description provided for @privacyConsentDialogPrivacyFile.
-  ///
-  /// In es, this message translates to:
-  /// **'O en el archivo PRIVACY_POLICY.md del proyecto.'**
-  String get privacyConsentDialogPrivacyFile;
-
-  /// No description provided for @privacyConsentDialogPrivacySummary.
-  ///
-  /// In es, this message translates to:
-  /// **'Resumen:'**
-  String get privacyConsentDialogPrivacySummary;
-
-  /// No description provided for @privacyConsentDialogPrivacyItem1.
-  ///
-  /// In es, this message translates to:
-  /// **'• Solo recopilamos datos necesarios'**
-  String get privacyConsentDialogPrivacyItem1;
-
-  /// No description provided for @privacyConsentDialogPrivacyItem2.
-  ///
-  /// In es, this message translates to:
-  /// **'• No vendemos tus datos'**
-  String get privacyConsentDialogPrivacyItem2;
-
-  /// No description provided for @privacyConsentDialogPrivacyItem3.
-  ///
-  /// In es, this message translates to:
-  /// **'• Puedes eliminar tu cuenta en cualquier momento'**
-  String get privacyConsentDialogPrivacyItem3;
-
-  /// No description provided for @privacyConsentDialogTermsAvailable.
-  ///
-  /// In es, this message translates to:
-  /// **'Los términos de uso completos están disponibles en:'**
-  String get privacyConsentDialogTermsAvailable;
-
-  /// No description provided for @privacyConsentDialogTermsUrl.
-  ///
-  /// In es, this message translates to:
-  /// **'https://chismes.app/terms'**
-  String get privacyConsentDialogTermsUrl;
-
-  /// No description provided for @privacyConsentDialogTermsFile.
-  ///
-  /// In es, this message translates to:
-  /// **'O en el archivo TERMS_OF_SERVICE.md del proyecto.'**
-  String get privacyConsentDialogTermsFile;
-
-  /// No description provided for @privacyConsentDialogTermsSummary.
-  ///
-  /// In es, this message translates to:
-  /// **'Resumen:'**
-  String get privacyConsentDialogTermsSummary;
-
-  /// No description provided for @privacyConsentDialogTermsItem1.
-  ///
-  /// In es, this message translates to:
-  /// **'• Edad mínima: 13 años'**
-  String get privacyConsentDialogTermsItem1;
-
-  /// No description provided for @privacyConsentDialogTermsItem2.
-  ///
-  /// In es, this message translates to:
-  /// **'• No publicar contenido inapropiado'**
-  String get privacyConsentDialogTermsItem2;
-
-  /// No description provided for @privacyConsentDialogTermsItem3.
-  ///
-  /// In es, this message translates to:
-  /// **'• Moderación automática + manual'**
-  String get privacyConsentDialogTermsItem3;
-
-  /// No description provided for @privacyConsentDialogTermsItem4.
-  ///
-  /// In es, this message translates to:
-  /// **'• Podemos suspender cuentas que violen normas'**
-  String get privacyConsentDialogTermsItem4;
 
   /// No description provided for @searchRecentSearches.
   ///
@@ -3312,6 +2712,498 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Esta apelación la debe revisar otro moderador (tú hiciste el rechazo)'**
   String get appealNeedsAnotherModerator;
+
+  /// No description provided for @legalPrivacyPolicyTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Política de privacidad'**
+  String get legalPrivacyPolicyTitle;
+
+  /// No description provided for @legalTermsOfServiceTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Términos de uso'**
+  String get legalTermsOfServiceTitle;
+
+  /// No description provided for @legalSectionTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Legal'**
+  String get legalSectionTitle;
+
+  /// No description provided for @legalDocumentLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo abrir el documento.'**
+  String get legalDocumentLoadError;
+
+  /// Texto de aceptación de las políticas en Registro y Login; {terms} y {privacy} son links
+  ///
+  /// In es, this message translates to:
+  /// **'Al continuar, aceptas los {terms} y la {privacy}.'**
+  String legalConsentMessage(String terms, String privacy);
+
+  /// No description provided for @locationPrivacyTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Ubicación'**
+  String get locationPrivacyTitle;
+
+  /// No description provided for @locationPrivacySavedCity.
+  ///
+  /// In es, this message translates to:
+  /// **'Ciudad guardada'**
+  String get locationPrivacySavedCity;
+
+  /// No description provided for @locationPrivacyNotSaved.
+  ///
+  /// In es, this message translates to:
+  /// **'No guardada'**
+  String get locationPrivacyNotSaved;
+
+  /// No description provided for @locationPrivacyForget.
+  ///
+  /// In es, this message translates to:
+  /// **'Olvidar ubicación'**
+  String get locationPrivacyForget;
+
+  /// No description provided for @locationPrivacyForgetDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Olvidar tu ubicación?'**
+  String get locationPrivacyForgetDialogTitle;
+
+  /// No description provided for @locationPrivacyForgetDialogMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Se borrará tu ciudad guardada. La próxima vez que crees un chisme te la pediremos de nuevo.'**
+  String get locationPrivacyForgetDialogMessage;
+
+  /// No description provided for @locationPrivacyForgotten.
+  ///
+  /// In es, this message translates to:
+  /// **'Ubicación olvidada'**
+  String get locationPrivacyForgotten;
+
+  /// No description provided for @locationPrivacyDontSave.
+  ///
+  /// In es, this message translates to:
+  /// **'No guardar ubicación'**
+  String get locationPrivacyDontSave;
+
+  /// No description provided for @locationPrivacyDontSaveSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Te pediremos la ciudad en cada chisme'**
+  String get locationPrivacyDontSaveSubtitle;
+
+  /// No description provided for @locationPrivacyError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo guardar el cambio. Intenta de nuevo.'**
+  String get locationPrivacyError;
+
+  /// No description provided for @errorsUsernameChangeCooldown.
+  ///
+  /// In es, this message translates to:
+  /// **'Ya cambiaste tu usuario hace poco. Podrás cambiarlo de nuevo en unos días.'**
+  String get errorsUsernameChangeCooldown;
+
+  /// No description provided for @errorsUsernameChangeCooldownUntil.
+  ///
+  /// In es, this message translates to:
+  /// **'Ya cambiaste tu usuario hace poco. Podrás cambiarlo de nuevo el {date}.'**
+  String errorsUsernameChangeCooldownUntil(String date);
+
+  /// No description provided for @errorsUsernameReserved.
+  ///
+  /// In es, this message translates to:
+  /// **'Ese nombre de usuario no está disponible.'**
+  String get errorsUsernameReserved;
+
+  /// No description provided for @errorsModerationUnavailable.
+  ///
+  /// In es, this message translates to:
+  /// **'No pudimos revisar el cambio ahora. Intenta de nuevo en unos minutos.'**
+  String get errorsModerationUnavailable;
+
+  /// No description provided for @errorsInvalidImage.
+  ///
+  /// In es, this message translates to:
+  /// **'La foto debe ser JPG, PNG o WebP.'**
+  String get errorsInvalidImage;
+
+  /// No description provided for @editProfileTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar perfil'**
+  String get editProfileTitle;
+
+  /// No description provided for @editProfileSave.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get editProfileSave;
+
+  /// No description provided for @editProfileSaved.
+  ///
+  /// In es, this message translates to:
+  /// **'Perfil actualizado'**
+  String get editProfileSaved;
+
+  /// No description provided for @editProfileChangePhoto.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar foto de perfil'**
+  String get editProfileChangePhoto;
+
+  /// No description provided for @editProfilePhotoGallery.
+  ///
+  /// In es, this message translates to:
+  /// **'Elegir de la galería'**
+  String get editProfilePhotoGallery;
+
+  /// No description provided for @editProfilePhotoCamera.
+  ///
+  /// In es, this message translates to:
+  /// **'Tomar foto'**
+  String get editProfilePhotoCamera;
+
+  /// No description provided for @editProfilePhotoRemove.
+  ///
+  /// In es, this message translates to:
+  /// **'Quitar foto'**
+  String get editProfilePhotoRemove;
+
+  /// No description provided for @editProfilePhotoError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo usar esa foto. Prueba con otra.'**
+  String get editProfilePhotoError;
+
+  /// No description provided for @editProfileUsernameHelper.
+  ///
+  /// In es, this message translates to:
+  /// **'Puedes cambiarlo una vez cada 30 días'**
+  String get editProfileUsernameHelper;
+
+  /// No description provided for @editProfileModerationNote.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu foto, nombre y bio son públicos: los revisamos antes de guardarlos.'**
+  String get editProfileModerationNote;
+
+  /// No description provided for @editProfileDiscardTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Descartar los cambios?'**
+  String get editProfileDiscardTitle;
+
+  /// No description provided for @editProfileDiscardMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Si sales ahora, no se guardará lo que cambiaste.'**
+  String get editProfileDiscardMessage;
+
+  /// No description provided for @editProfileDiscard.
+  ///
+  /// In es, this message translates to:
+  /// **'Descartar'**
+  String get editProfileDiscard;
+
+  /// No description provided for @profileSettingsTheme.
+  ///
+  /// In es, this message translates to:
+  /// **'Tema'**
+  String get profileSettingsTheme;
+
+  /// No description provided for @profileSettingsThemeSystem.
+  ///
+  /// In es, this message translates to:
+  /// **'Igual que el teléfono'**
+  String get profileSettingsThemeSystem;
+
+  /// No description provided for @profileSettingsThemeLight.
+  ///
+  /// In es, this message translates to:
+  /// **'Claro'**
+  String get profileSettingsThemeLight;
+
+  /// No description provided for @profileSettingsThemeDark.
+  ///
+  /// In es, this message translates to:
+  /// **'Oscuro'**
+  String get profileSettingsThemeDark;
+
+  /// No description provided for @errorsUserNotAvailable.
+  ///
+  /// In es, this message translates to:
+  /// **'Este usuario no está disponible.'**
+  String get errorsUserNotAvailable;
+
+  /// No description provided for @gossipAuthorSemanticLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver perfil de {name}'**
+  String gossipAuthorSemanticLabel(String name);
+
+  /// No description provided for @socialProfileTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Perfil'**
+  String get socialProfileTitle;
+
+  /// No description provided for @socialUnknownUser.
+  ///
+  /// In es, this message translates to:
+  /// **'Usuario'**
+  String get socialUnknownUser;
+
+  /// No description provided for @socialFollow.
+  ///
+  /// In es, this message translates to:
+  /// **'Seguir'**
+  String get socialFollow;
+
+  /// No description provided for @socialFollowing.
+  ///
+  /// In es, this message translates to:
+  /// **'Siguiendo'**
+  String get socialFollowing;
+
+  /// No description provided for @socialRequested.
+  ///
+  /// In es, this message translates to:
+  /// **'Solicitado'**
+  String get socialRequested;
+
+  /// No description provided for @socialUnblock.
+  ///
+  /// In es, this message translates to:
+  /// **'Desbloquear'**
+  String get socialUnblock;
+
+  /// No description provided for @socialBlock.
+  ///
+  /// In es, this message translates to:
+  /// **'Bloquear'**
+  String get socialBlock;
+
+  /// No description provided for @socialFollowsYou.
+  ///
+  /// In es, this message translates to:
+  /// **'Te sigue'**
+  String get socialFollowsYou;
+
+  /// No description provided for @socialMoreOptions.
+  ///
+  /// In es, this message translates to:
+  /// **'Más opciones'**
+  String get socialMoreOptions;
+
+  /// No description provided for @socialRequestSent.
+  ///
+  /// In es, this message translates to:
+  /// **'Solicitud enviada'**
+  String get socialRequestSent;
+
+  /// No description provided for @socialBlockDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Bloquear a {name}?'**
+  String socialBlockDialogTitle(String name);
+
+  /// No description provided for @socialBlockDialogMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'No podrá ver tu perfil ni tus chismes con perfil, y dejarán de seguirse. No le avisaremos.'**
+  String get socialBlockDialogMessage;
+
+  /// No description provided for @socialBlockedSnack.
+  ///
+  /// In es, this message translates to:
+  /// **'Bloqueaste a {name}'**
+  String socialBlockedSnack(String name);
+
+  /// No description provided for @socialUnblockedSnack.
+  ///
+  /// In es, this message translates to:
+  /// **'Desbloqueaste a {name}'**
+  String socialUnblockedSnack(String name);
+
+  /// No description provided for @socialBlockedProfileTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Bloqueaste esta cuenta'**
+  String get socialBlockedProfileTitle;
+
+  /// No description provided for @socialBlockedProfileMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Desbloquéala para ver su perfil y sus chismes.'**
+  String get socialBlockedProfileMessage;
+
+  /// No description provided for @socialPrivateAccountTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta cuenta es privada'**
+  String get socialPrivateAccountTitle;
+
+  /// No description provided for @socialPrivateAccountMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Síguela para ver sus chismes y sus seguidores.'**
+  String get socialPrivateAccountMessage;
+
+  /// No description provided for @socialUserNotAvailableTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Este usuario no está disponible'**
+  String get socialUserNotAvailableTitle;
+
+  /// No description provided for @socialUserNotAvailableMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Puede que la cuenta ya no exista.'**
+  String get socialUserNotAvailableMessage;
+
+  /// No description provided for @socialNoGossips.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay chismes con perfil'**
+  String get socialNoGossips;
+
+  /// No description provided for @socialGossipsError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudieron cargar los chismes'**
+  String get socialGossipsError;
+
+  /// No description provided for @socialLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo cargar. Intenta de nuevo.'**
+  String get socialLoadError;
+
+  /// No description provided for @socialEmptyFollowers.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay seguidores'**
+  String get socialEmptyFollowers;
+
+  /// No description provided for @socialEmptyFollowing.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no sigue a nadie'**
+  String get socialEmptyFollowing;
+
+  /// No description provided for @socialRemoveFollower.
+  ///
+  /// In es, this message translates to:
+  /// **'Quitar'**
+  String get socialRemoveFollower;
+
+  /// No description provided for @socialRemoveFollowerDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Quitar a {name} de tus seguidores?'**
+  String socialRemoveFollowerDialogTitle(String name);
+
+  /// No description provided for @socialRemoveFollowerDialogMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'No le avisaremos. Podrá volver a seguirte.'**
+  String get socialRemoveFollowerDialogMessage;
+
+  /// No description provided for @socialFollowerRemoved.
+  ///
+  /// In es, this message translates to:
+  /// **'Quitaste a {name} de tus seguidores'**
+  String socialFollowerRemoved(String name);
+
+  /// No description provided for @socialFollowRequestsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Solicitudes de seguimiento'**
+  String get socialFollowRequestsTitle;
+
+  /// No description provided for @socialFollowRequestsSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Quién quiere seguir tu cuenta privada'**
+  String get socialFollowRequestsSubtitle;
+
+  /// No description provided for @socialNoFollowRequests.
+  ///
+  /// In es, this message translates to:
+  /// **'No tienes solicitudes pendientes'**
+  String get socialNoFollowRequests;
+
+  /// No description provided for @socialAccept.
+  ///
+  /// In es, this message translates to:
+  /// **'Aceptar'**
+  String get socialAccept;
+
+  /// No description provided for @socialReject.
+  ///
+  /// In es, this message translates to:
+  /// **'Rechazar'**
+  String get socialReject;
+
+  /// No description provided for @socialBlockedUsersTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Usuarios bloqueados'**
+  String get socialBlockedUsersTitle;
+
+  /// No description provided for @socialBlockedUsersSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'No ven tu perfil ni tus chismes con perfil'**
+  String get socialBlockedUsersSubtitle;
+
+  /// No description provided for @socialNoBlockedUsers.
+  ///
+  /// In es, this message translates to:
+  /// **'No has bloqueado a nadie'**
+  String get socialNoBlockedUsers;
+
+  /// No description provided for @socialSearchTabGossips.
+  ///
+  /// In es, this message translates to:
+  /// **'Chismes'**
+  String get socialSearchTabGossips;
+
+  /// No description provided for @socialSearchTabUsers.
+  ///
+  /// In es, this message translates to:
+  /// **'Usuarios'**
+  String get socialSearchTabUsers;
+
+  /// No description provided for @socialSearchUsersHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar por @usuario o nombre...'**
+  String get socialSearchUsersHint;
+
+  /// No description provided for @socialSearchUsersPrompt.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe al menos 2 letras para buscar personas'**
+  String get socialSearchUsersPrompt;
+
+  /// No description provided for @socialSearchUsersNoResults.
+  ///
+  /// In es, this message translates to:
+  /// **'No encontramos usuarios'**
+  String get socialSearchUsersNoResults;
+
+  /// No description provided for @errorsFollowRateLimited.
+  ///
+  /// In es, this message translates to:
+  /// **'Estás siguiendo a muchas personas muy rápido. Intenta más tarde.'**
+  String get errorsFollowRateLimited;
 }
 
 class _AppLocalizationsDelegate

@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../../core/social/gossip_author.dart';
+
 /// Gossip con metadata adicional para renderizar en el feed.
 ///
 /// Esta entity extiende la información base del Gossip con datos
@@ -60,6 +62,10 @@ class FeedGossip extends Equatable {
   final String publishedAs; // 'anonymous' o 'profile'
   final String? createdBy; // Nullable si es anónimo
 
+  /// Autor visible (@usuario, nombre, foto). Solo en chismes con perfil;
+  /// SIEMPRE null en los anónimos.
+  final GossipAuthor? author;
+
   // Media
   final String? imageUrl;
 
@@ -103,6 +109,7 @@ class FeedGossip extends Equatable {
     required this.shares,
     required this.publishedAs,
     this.createdBy,
+    this.author,
     this.imageUrl,
     required this.score,
     this.proximity = FeedProximity.global,
@@ -123,6 +130,7 @@ class FeedGossip extends Equatable {
         shares,
         publishedAs,
         createdBy,
+        author,
         imageUrl,
         score,
         proximity,

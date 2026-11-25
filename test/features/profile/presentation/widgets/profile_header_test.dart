@@ -36,6 +36,39 @@ void main() {
     );
   }
 
+  group('ProfileHeader - Botón Editar perfil', () {
+    testWidgets('sin onEdit no muestra el botón', (tester) async {
+      // Act
+      await tester.pumpWidget(createTestWidget(mockUser));
+      await tester.pump();
+
+      // Assert
+      expect(find.byKey(const Key('editProfileButton')), findsNothing);
+    });
+
+    testWidgets('con onEdit muestra "Editar perfil" y lo llama al tocar',
+        (tester) async {
+      // Arrange
+      var taps = 0;
+      await tester.pumpWidget(testableWidget(
+        child: SingleChildScrollView(
+          child: ProfileHeader(user: mockUser, onEdit: () => taps++),
+        ),
+      ));
+      await tester.pump();
+
+      // Act
+      final button = find.byKey(const Key('editProfileButton'));
+      await tester.ensureVisible(button);
+      await tester.tap(button);
+      await tester.pump();
+
+      // Assert
+      expect(find.text('Editar perfil'), findsOneWidget);
+      expect(taps, 1);
+    });
+  });
+
   group('ProfileHeader - Básicos', () {
     testWidgets('debe renderizar el widget', (tester) async {
       // Act

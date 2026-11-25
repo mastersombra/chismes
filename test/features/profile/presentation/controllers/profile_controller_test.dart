@@ -69,6 +69,7 @@ void main() {
   provideDummy<Result<Failure, void>>(
     Result.failure(const AuthFailure(code: ErrorCode.unauthorized)),
   );
+  provideDummy<Result<Failure, User?>>(Result.success(null));
 
   setUp(() {
     mockGetUserStats = MockGetUserStats();
@@ -82,6 +83,8 @@ void main() {
     // Default stubs
     when(mockAuthService.currentUser).thenReturn(tUser);
     when(mockAuthService.userId).thenReturn(tUserId);
+    when(mockAuthService.loadCurrentUser())
+        .thenAnswer((_) async => Result.success(tUser));
 
     controller = ProfileController(
       mockGetUserStats,
@@ -134,6 +137,43 @@ void main() {
       verify(mockLogger.i('Profile loaded successfully')).called(1);
     });
 
+    test('carga el perfil completo del usuario antes que stats y settings',
+        () async {
+      // Arrange
+      when(mockGetUserStats(tUserId))
+          .thenAnswer((_) async => Result.success(tUserStats));
+      when(mockGetSettings(tUserId))
+          .thenAnswer((_) async => Result.success(tSettings));
+
+      // Act
+      await controller.loadProfile();
+
+      // Assert
+      verifyInOrder([
+        mockAuthService.loadCurrentUser(),
+        mockGetUserStats(tUserId),
+        mockGetSettings(tUserId),
+      ]);
+    });
+
+    test('si falla loadCurrentUser igual carga stats y settings', () async {
+      // Arrange
+      when(mockAuthService.loadCurrentUser()).thenAnswer((_) async =>
+          Result.failure(const NetworkFailure(code: ErrorCode.networkError)));
+      when(mockGetUserStats(tUserId))
+          .thenAnswer((_) async => Result.success(tUserStats));
+      when(mockGetSettings(tUserId))
+          .thenAnswer((_) async => Result.success(tSettings));
+
+      // Act
+      await controller.loadProfile();
+
+      // Assert
+      expect(controller.state, ProfileState.loaded);
+      expect(controller.userStats, tUserStats);
+      expect(controller.currentUser, tUser);
+    });
+
     test('debe usar stats por defecto cuando falla getUserStats', () async {
       // Arrange
       when(mockGetUserStats(tUserId)).thenAnswer(
@@ -175,7 +215,6 @@ void main() {
       expect(controller.state, ProfileState.loaded);
       expect(controller.userStats, tUserStats);
       expect(controller.settings, isNotNull);
-      expect(controller.settings!.language, 'es');
       verify(mockLogger.w(
         argThat(contains('Failed to load settings')),
       )).called(1);
@@ -259,7 +298,7 @@ void main() {
   });
 
   group('ProfileController - updateSetting', () {
-    final tNewSettings = tSettings.copyWith(darkMode: true);
+    final tNewSettings = tSettings.copyWith(showEmail: !tSettings.showEmail);
 
     test('debe actualizar settings exitosamente', () async {
       // Arrange
@@ -318,8 +357,9 @@ void main() {
           .thenAnswer((_) async => Result.success(tSettings));
 
       // Act - iniciar loadProfile (estado loading)
-      controller.loadProfile();
+      final loading = controller.loadProfile();
       final result = await controller.updateSetting(tNewSettings);
+      await loading;
 
       // Assert
       expect(result, isFalse);
@@ -485,6 +525,21 @@ void main() {
 
       // Assert - errores previos deben estar limpios (verificar estado)
       // No verificamos getErrorMessage sin BuildContext real
+    });
+  });
+
+  group('ProfileController - onProfileEdited', () {
+    test('notifica a los listeners para mostrar el usuario editado', () {
+      // Arrange
+      var notifications = 0;
+      controller.addListener(() => notifications++);
+
+      // Act
+      controller.onProfileEdited();
+
+      // Assert
+      expect(notifications, 1);
+      expect(controller.state, ProfileState.initial);
     });
   });
 

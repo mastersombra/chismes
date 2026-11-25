@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/legal/legal_consent_text.dart';
 
 import '../../../../core/di/injection_container.dart';
 import 'package:chismes/core/l10n/l10n.dart';
@@ -265,7 +266,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       isLoading: isLoading,
                     ),
 
-                    const SizedBox(height: AppSpacing.xxl),
+                    const SizedBox(height: AppSpacing.lg),
+
+                    // Google/Apple también crean cuentas: el aviso va antes
+                    const LegalConsentText(),
+
+                    const SizedBox(height: AppSpacing.xl),
 
                     // Sign up link
                     Row(

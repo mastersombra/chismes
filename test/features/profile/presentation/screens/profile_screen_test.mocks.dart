@@ -4,15 +4,23 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i5;
+import 'dart:typed_data' as _i15;
 import 'dart:ui' as _i2;
 
+import 'package:chismes/core/error/failure.dart' as _i13;
 import 'package:chismes/core/l10n/locale_notifier.dart' as _i7;
+import 'package:chismes/core/result/result.dart' as _i12;
+import 'package:chismes/core/services/auth_service.dart' as _i10;
+import 'package:chismes/core/services/location_service.dart' as _i8;
+import 'package:chismes/features/auth/domain/entities/user.dart' as _i11;
 import 'package:chismes/features/profile/domain/entities/profile_settings.dart'
     as _i6;
 import 'package:chismes/features/profile/presentation/controllers/profile_controller.dart'
     as _i3;
 import 'package:flutter/widgets.dart' as _i4;
+import 'package:geolocator/geolocator.dart' as _i9;
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:mockito/src/dummies.dart' as _i14;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -99,6 +107,12 @@ class MockProfileController extends _i1.Mock implements _i3.ProfileController {
             returnValueForMissingStub: _i5.Future<bool>.value(false),
           )
           as _i5.Future<bool>);
+
+  @override
+  void onProfileEdited() => super.noSuchMethod(
+    Invocation.method(#onProfileEdited, []),
+    returnValueForMissingStub: null,
+  );
 
   @override
   _i5.Future<void> refresh() =>
@@ -191,4 +205,214 @@ class MockLocaleNotifier extends _i1.Mock implements _i7.LocaleNotifier {
     Invocation.method(#notifyListeners, []),
     returnValueForMissingStub: null,
   );
+}
+
+/// A class which mocks [LocationService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockLocationService extends _i1.Mock implements _i8.LocationService {
+  @override
+  _i5.Future<_i9.Position?> getCurrentPosition() =>
+      (super.noSuchMethod(
+            Invocation.method(#getCurrentPosition, []),
+            returnValue: _i5.Future<_i9.Position?>.value(),
+            returnValueForMissingStub: _i5.Future<_i9.Position?>.value(),
+          )
+          as _i5.Future<_i9.Position?>);
+
+  @override
+  _i5.Future<_i8.DetectedLocation?> getCityFromCoordinates(
+    double? latitude,
+    double? longitude,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#getCityFromCoordinates, [latitude, longitude]),
+            returnValue: _i5.Future<_i8.DetectedLocation?>.value(),
+            returnValueForMissingStub:
+                _i5.Future<_i8.DetectedLocation?>.value(),
+          )
+          as _i5.Future<_i8.DetectedLocation?>);
+
+  @override
+  _i5.Future<void> saveDefaultLocation({
+    required String? countryId,
+    required String? regionId,
+    required String? cityId,
+    required String? countryName,
+    required String? regionName,
+    required String? cityName,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveDefaultLocation, [], {
+              #countryId: countryId,
+              #regionId: regionId,
+              #cityId: cityId,
+              #countryName: countryName,
+              #regionName: regionName,
+              #cityName: cityName,
+            }),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<_i8.SavedLocation?> getDefaultLocation() =>
+      (super.noSuchMethod(
+            Invocation.method(#getDefaultLocation, []),
+            returnValue: _i5.Future<_i8.SavedLocation?>.value(),
+            returnValueForMissingStub: _i5.Future<_i8.SavedLocation?>.value(),
+          )
+          as _i5.Future<_i8.SavedLocation?>);
+
+  @override
+  _i5.Future<void> clearDefaultLocation() =>
+      (super.noSuchMethod(
+            Invocation.method(#clearDefaultLocation, []),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<bool> isAnonymousModeEnabled() =>
+      (super.noSuchMethod(
+            Invocation.method(#isAnonymousModeEnabled, []),
+            returnValue: _i5.Future<bool>.value(false),
+            returnValueForMissingStub: _i5.Future<bool>.value(false),
+          )
+          as _i5.Future<bool>);
+
+  @override
+  _i5.Future<bool> setAnonymousMode(bool? enabled) =>
+      (super.noSuchMethod(
+            Invocation.method(#setAnonymousMode, [enabled]),
+            returnValue: _i5.Future<bool>.value(false),
+            returnValueForMissingStub: _i5.Future<bool>.value(false),
+          )
+          as _i5.Future<bool>);
+}
+
+/// A class which mocks [AuthService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockAuthService extends _i1.Mock implements _i10.AuthService {
+  @override
+  _i5.Stream<_i11.User?> get userStream =>
+      (super.noSuchMethod(
+            Invocation.getter(#userStream),
+            returnValue: _i5.Stream<_i11.User?>.empty(),
+            returnValueForMissingStub: _i5.Stream<_i11.User?>.empty(),
+          )
+          as _i5.Stream<_i11.User?>);
+
+  @override
+  bool get isAuthenticated =>
+      (super.noSuchMethod(
+            Invocation.getter(#isAuthenticated),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
+
+  @override
+  bool get hasCompleteProfile =>
+      (super.noSuchMethod(
+            Invocation.getter(#hasCompleteProfile),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
+
+  @override
+  bool get hasUsername =>
+      (super.noSuchMethod(
+            Invocation.getter(#hasUsername),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
+
+  @override
+  _i5.Future<_i12.Result<_i13.Failure, _i11.User?>> loadCurrentUser() =>
+      (super.noSuchMethod(
+            Invocation.method(#loadCurrentUser, []),
+            returnValue:
+                _i5.Future<_i12.Result<_i13.Failure, _i11.User?>>.value(
+                  _i14.dummyValue<_i12.Result<_i13.Failure, _i11.User?>>(
+                    this,
+                    Invocation.method(#loadCurrentUser, []),
+                  ),
+                ),
+            returnValueForMissingStub:
+                _i5.Future<_i12.Result<_i13.Failure, _i11.User?>>.value(
+                  _i14.dummyValue<_i12.Result<_i13.Failure, _i11.User?>>(
+                    this,
+                    Invocation.method(#loadCurrentUser, []),
+                  ),
+                ),
+          )
+          as _i5.Future<_i12.Result<_i13.Failure, _i11.User?>>);
+
+  @override
+  _i5.Future<_i12.Result<_i13.Failure, _i11.User>> updateProfile({
+    String? username,
+    String? displayName,
+    String? bio,
+    _i15.Uint8List? avatar,
+    bool? removeAvatar = false,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateProfile, [], {
+              #username: username,
+              #displayName: displayName,
+              #bio: bio,
+              #avatar: avatar,
+              #removeAvatar: removeAvatar,
+            }),
+            returnValue: _i5.Future<_i12.Result<_i13.Failure, _i11.User>>.value(
+              _i14.dummyValue<_i12.Result<_i13.Failure, _i11.User>>(
+                this,
+                Invocation.method(#updateProfile, [], {
+                  #username: username,
+                  #displayName: displayName,
+                  #bio: bio,
+                  #avatar: avatar,
+                  #removeAvatar: removeAvatar,
+                }),
+              ),
+            ),
+            returnValueForMissingStub:
+                _i5.Future<_i12.Result<_i13.Failure, _i11.User>>.value(
+                  _i14.dummyValue<_i12.Result<_i13.Failure, _i11.User>>(
+                    this,
+                    Invocation.method(#updateProfile, [], {
+                      #username: username,
+                      #displayName: displayName,
+                      #bio: bio,
+                      #avatar: avatar,
+                      #removeAvatar: removeAvatar,
+                    }),
+                  ),
+                ),
+          )
+          as _i5.Future<_i12.Result<_i13.Failure, _i11.User>>);
+
+  @override
+  Map<String, dynamic> debugSessionStatus() =>
+      (super.noSuchMethod(
+            Invocation.method(#debugSessionStatus, []),
+            returnValue: <String, dynamic>{},
+            returnValueForMissingStub: <String, dynamic>{},
+          )
+          as Map<String, dynamic>);
+
+  @override
+  bool isSessionExpired() =>
+      (super.noSuchMethod(
+            Invocation.method(#isSessionExpired, []),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
 }

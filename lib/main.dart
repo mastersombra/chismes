@@ -6,6 +6,7 @@ import 'core/di/injection_container.dart';
 import 'core/logging/logging.dart';
 import 'core/services/deep_link_service.dart' as core_services;
 import 'core/l10n/locale_notifier.dart';
+import 'core/theme/theme_mode_notifier.dart';
 import 'features/auth/presentation/widgets/auth_gate.dart';
 import 'core/l10n/l10n.dart';
 
@@ -67,16 +68,17 @@ class ChismesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localeNotifier = getIt<LocaleNotifier>();
+    final themeModeNotifier = getIt<ThemeModeNotifier>();
 
     return ListenableBuilder(
-      listenable: localeNotifier,
+      listenable: Listenable.merge([localeNotifier, themeModeNotifier]),
       builder: (context, _) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Chismes',
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
-          themeMode: ThemeMode.system,
+          themeMode: themeModeNotifier.mode,
           navigatorKey: navigatorKey, // ← Para deep links
 
           // Configuración de internacionalización (gen-l10n)

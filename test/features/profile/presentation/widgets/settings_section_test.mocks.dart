@@ -94,6 +94,12 @@ class MockProfileController extends _i1.Mock implements _i3.ProfileController {
           as _i5.Future<bool>);
 
   @override
+  void onProfileEdited() => super.noSuchMethod(
+    Invocation.method(#onProfileEdited, []),
+    returnValueForMissingStub: null,
+  );
+
+  @override
   _i5.Future<void> refresh() =>
       (super.noSuchMethod(
             Invocation.method(#refresh, []),

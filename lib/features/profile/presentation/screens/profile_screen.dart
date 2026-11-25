@@ -2,11 +2,17 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/navigation/social_navigator.dart';
+import '../../../../core/services/location_service.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../moderation/presentation/screens/account_status_screen.dart';
 import '../../../moderation/presentation/screens/moderation_queue_screen.dart';
 import '../controllers/profile_controller.dart';
+import 'edit_profile_screen.dart';
+import '../../../auth/domain/entities/user.dart';
 import '../widgets/delete_account_dialog.dart';
+import '../widgets/legal_card.dart';
+import '../widgets/location_privacy_card.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/profile_stats_card.dart';
 import '../widgets/settings_section.dart';
@@ -22,11 +28,13 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late final ProfileController _controller;
+  late final LocationService _locationService;
 
   @override
   void initState() {
     super.initState();
     _controller = getIt<ProfileController>();
+    _locationService = getIt<LocationService>();
     _controller.addListener(_onControllerChanged);
 
     // Cargar datos del perfil
@@ -126,15 +134,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
               padding: const EdgeInsets.all(AppSpacing.lg),
               children: [
                 // Header con foto de perfil y nombre
-                ProfileHeader(user: user),
+                ProfileHeader(
+                  user: user,
+                  onEdit: () => _openEditProfile(context, user),
+                ),
 
                 const SizedBox(height: AppSpacing.xl),
 
-                // Estadísticas
+                // Estadísticas (seguidores/seguidos abren las listas)
                 if (_controller.userStats != null)
-                  ProfileStatsCard(stats: _controller.userStats!),
+                  ProfileStatsCard(
+                    stats: _controller.userStats!,
+                    onFollowersTap: () => _openSocial(
+                      (nav) => nav.openFollowList(
+                        context,
+                        userId: user.id,
+                        kind: FollowListKind.followers,
+                      ),
+                    ),
+                    onFollowingTap: () => _openSocial(
+                      (nav) => nav.openFollowList(
+                        context,
+                        userId: user.id,
+                        kind: FollowListKind.following,
+                      ),
+                    ),
+                  ),
 
                 const SizedBox(height: AppSpacing.xl),
+
+                // Social: solicitudes (cuenta privada) y bloqueados
+                _buildSocialEntries(context),
+                const SizedBox(height: AppSpacing.md),
 
                 // Estado de la cuenta (sanciones y apelaciones): todos
                 _buildAccountStatusEntry(context),
@@ -154,6 +185,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     controller: _controller,
                   ),
 
+                const SizedBox(height: AppSpacing.lg),
+
+                // Ubicación guardada en el teléfono (Política de privacidad 5.7)
+                LocationPrivacyCard(locationService: _locationService),
+
+                const SizedBox(height: AppSpacing.lg),
+
+                // Política de privacidad y Términos de uso
+                const LegalCard(),
+
                 const SizedBox(height: AppSpacing.xxl),
 
                 // Botón de cerrar sesión
@@ -169,6 +210,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Future<void> _openEditProfile(BuildContext context, User user) async {
+    final saved = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => EditProfileScreen(user: user)),
+    );
+    if (saved == true) _controller.onProfileEdited();
+  }
+
+  /// Abre una pantalla social y, al volver, recarga los contadores (pudo
+  /// aceptar solicitudes o quitar seguidores)
+  Future<void> _openSocial(
+    Future<void> Function(SocialNavigator navigator) open,
+  ) async {
+    await open(getIt<SocialNavigator>());
+    if (mounted) await _controller.refresh();
+  }
+
+  Widget _buildSocialEntries(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          ListTile(
+            key: const Key('followRequestsEntry'),
+            leading: const Icon(Icons.person_add_alt_outlined),
+            title: Text(context.l10n.socialFollowRequestsTitle),
+            subtitle: Text(context.l10n.socialFollowRequestsSubtitle),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _openSocial((nav) => nav.openFollowRequests(context)),
+          ),
+          const Divider(height: 1),
+          ListTile(
+            key: const Key('blockedUsersEntry'),
+            leading: const Icon(Icons.block),
+            title: Text(context.l10n.socialBlockedUsersTitle),
+            subtitle: Text(context.l10n.socialBlockedUsersSubtitle),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _openSocial((nav) => nav.openBlockedUsers(context)),
+          ),
+        ],
       ),
     );
   }

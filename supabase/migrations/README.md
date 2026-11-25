@@ -139,6 +139,29 @@
 - ✅ Solo `service_role` (moderate-gossip, report-gossip, account-status, moderation-review)
 - Tests: `supabase/tests/007_sanctions_test.sql`, E2E `supabase/tests/e2e/sanctions_e2e.test.ts`
 
+### 016_policy_acceptances.sql
+- ✅ `legal_documents`: versión vigente de la Política de privacidad y los Términos de uso (debe coincidir con el encabezado de `assets/legal/*.md`; un test de Flutter lo verifica). Lectura pública
+- ✅ `policy_acceptances`: qué versión aceptó cada usuario y cuándo (prueba para GDPR). La escribe un trigger en `auth.users` al crear la cuenta (email, Google o Apple), nunca el cliente; el usuario lee solo las suyas; se borra en cascada al eliminar la cuenta
+- Al cambiar una política: subir la versión en los `.md` (es y en) y `UPDATE legal_documents` en una migración nueva
+- Tests: `supabase/tests/008_policy_acceptances_test.sql`
+
+### 017_profile_editing.sql
+- ✅ Los clientes ya no escriben en `profiles` (antes: bio/nombre sin moderar y cualquier `avatar_url`). Toda edición pasa por la Edge Function `update-profile`
+- ✅ `username_changed_at` + trigger `enforce_username_change_cooldown`: el @usuario se cambia una vez cada `username_change_cooldown_days` (30, en `moderation_settings`); la primera elección no cuenta; aplica también a `service_role` (SQLSTATE `P0010`)
+- ✅ `user_settings`: notificaciones, nivel de privacidad, mostrar email/actividad. Fila creada al registrarse (y para los usuarios existentes); el dueño la lee y cambia solo las preferencias (GRANT por columna); se borra con la cuenta
+- ✅ Bucket público `avatars` (2 MB, JPEG/PNG/WebP), solo escribe `service_role`; `delete-account` vacía `avatars/{user_id}/`
+- Tests: `supabase/tests/009_profile_editing_test.sql`, E2E `supabase/tests/e2e/update_profile_e2e.test.ts` y `storage_rls_e2e.test.ts`
+
+### 018_social_follows_blocks.sql
+- ✅ `user_follows`, `follow_requests` y `user_blocks` (cascada con la cuenta). Los clientes no las leen ni escriben: todo pasa por funciones SECURITY DEFINER con `auth.uid()`
+- ✅ Seguir: libre en cuentas públicas; `privacy_level = 'private'` → solicitud (aceptar/rechazar). Al volver pública se aceptan las pendientes (trigger). `privacy_level` queda `public`/`private` (se quitó `friends` en 017)
+- ✅ Bloquear: corta seguimiento y solicitudes en ambos sentidos e impide volver a seguir. Ninguno ve el perfil (`profiles` RLS + `get_user_profile`) ni los chismes CON PERFIL del otro. Los anónimos no se filtran (revelaría el autor)
+- ✅ `public_gossips` redefinida: agrega `author_username`, `author_display_name`, `author_avatar_url` solo en chismes con perfil, y filtra chismes con perfil de bloqueados y de cuentas privadas que no sigo. Aplica a feeds, búsqueda, detalle y `report-gossip`
+- ✅ `get_following_feed` real (reemplaza la de 008, que recibía el `user_id` del cliente y devolvía vacío): solo chismes con perfil de quienes sigo, nunca anónimos
+- ✅ API: `follow_user`, `unfollow_user`, `respond_follow_request`, `remove_follower`, `block_user`, `unblock_user`, `get_user_profile`, `get_follow_list`, `get_follow_requests`, `get_blocked_users`, `search_users`, `get_user_gossips`. Errores: `CS401` sin sesión, `CS400` consigo mismo/tipo inválido, `CS404` no disponible (inexistente o bloqueo, sin distinguir), `CS429` límite de seguimientos
+- ✅ Anti-spam: seguir/solicitar se registra en `rate_limits` (`follow_user`, agregado al CHECK de 004) solo cuando se crea algo nuevo; 60/hora y 300/día editables en `moderation_settings` (`follow_hourly_limit`, `follow_daily_limit`); superado → `CS429`
+- Tests: `supabase/tests/010_social_test.sql`
+
 ---
 
 ## 🔄 Cómo usar

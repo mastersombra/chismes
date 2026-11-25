@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide ErrorCode;
+import 'package:chismes/core/error/error_codes.dart';
+import 'package:chismes/core/error/failure.dart';
 import 'package:chismes/core/logging/logging.dart';
 import 'package:chismes/features/profile/data/datasources/profile_remote_datasource.dart';
 import 'package:chismes/features/profile/data/models/profile_settings_model.dart';
@@ -46,8 +50,9 @@ void main() {
 
         final stats = await dataSource.getUserStats(testUserId);
 
-        final params = fake.lastRequest.url.queryParameters;
-        expect(fake.lastRequest.url.path, '/rest/v1/public_gossips');
+        final request = fake.requests.first;
+        final params = request.url.queryParameters;
+        expect(request.url.path, '/rest/v1/public_gossips');
         expect(params['select'], 'id');
         expect(params['created_by'], 'eq.$testUserId');
         expect(params['status'], 'neq.deleted');
@@ -56,6 +61,49 @@ void main() {
         expect(stats.followersCount, 0);
         expect(stats.followingCount, 0);
         expect(DateTime.tryParse(stats.lastActivityAt!), isNotNull);
+      });
+
+      test('seguidores y seguidos vienen de get_user_profile del propio usuario',
+          () async {
+        fake.handler = (req) => FakeSupabaseHttp.jsonResponse(
+              req,
+              req.url.path == '/rest/v1/rpc/get_user_profile'
+                  ? {'id': testUserId, 'followers_count': 12, 'following_count': 7}
+                  : [
+                      {'id': 'g1'},
+                    ],
+            );
+
+        final stats = await dataSource.getUserStats(testUserId);
+
+        final rpc = fake.requests
+            .singleWhere((r) => r.url.path == '/rest/v1/rpc/get_user_profile');
+        expect(jsonDecode(rpc.body), {'p_user': testUserId});
+        expect(stats.gossipsCount, 1);
+        expect(stats.followersCount, 12);
+        expect(stats.followingCount, 7);
+      });
+
+      test('si get_user_profile falla, contadores en 0 con aviso (no rompe el perfil)',
+          () async {
+        fake.handler = (req) => req.url.path == '/rest/v1/rpc/get_user_profile'
+            ? FakeSupabaseHttp.jsonResponse(
+                req,
+                {'message': 'boom', 'code': 'XX000', 'details': null, 'hint': null},
+                status: 500,
+              )
+            : FakeSupabaseHttp.jsonResponse(req, [
+                {'id': 'g1'},
+                {'id': 'g2'},
+              ]);
+
+        final stats = await dataSource.getUserStats(testUserId);
+
+        expect(stats.gossipsCount, 2);
+        expect(stats.followersCount, 0);
+        expect(stats.followingCount, 0);
+        verify(mockLogger.w('Could not load follow counts', context: anyNamed('context')))
+            .called(1);
       });
 
       test('retorna 0 gossips cuando el usuario no tiene publicaciones', () async {
@@ -80,54 +128,90 @@ void main() {
       });
     });
 
-    group('getSettings', () {
-      test('debe retornar configuración por defecto con valores correctos',
-          () async {
+    group('getSettings (user_settings)', () {
+      late FakeSupabaseHttp fake;
+
+      setUp(() {
+        fake = FakeSupabaseHttp();
+        dataSource = ProfileRemoteDataSource(fake.client, mockLogger);
+      });
+
+      test('lee la fila del usuario en user_settings', () async {
+        // Arrange
+        fake.respondJson([
+          {
+            'user_id': testUserId,
+            'notifications_enabled': false,
+            'email_notifications': false,
+            'push_notifications': true,
+            'comments_notifications': false,
+            'likes_notifications': true,
+            'follow_notifications': false,
+            'privacy_level': 'private',
+            'show_email': true,
+            'show_activity': false,
+          }
+        ]);
+
         // Act
         final result = await dataSource.getSettings(testUserId);
 
         // Assert
-        expect(result, isA<ProfileSettingsModel>());
-        expect(result.notificationsEnabled, true);
-        expect(result.emailNotifications, true);
-        expect(result.pushNotifications, true);
-        expect(result.commentsNotifications, true);
-        expect(result.likesNotifications, true);
-        expect(result.followNotifications, true);
-        expect(result.language, 'es');
-        expect(result.darkMode, false);
+        final req = fake.lastRequest;
+        expect(req.method, 'GET');
+        expect(req.url.path, '/rest/v1/user_settings');
+        expect(req.url.queryParameters['user_id'], 'eq.$testUserId');
+        expect(req.url.queryParameters['select'], '*');
+        expect(result.notificationsEnabled, isFalse);
+        expect(result.emailNotifications, isFalse);
+        expect(result.pushNotifications, isTrue);
+        expect(result.commentsNotifications, isFalse);
+        expect(result.likesNotifications, isTrue);
+        expect(result.followNotifications, isFalse);
+        expect(result.privacyLevel, 'private');
+        expect(result.showEmail, isTrue);
+        expect(result.showActivity, isFalse);
+        verifyNever(mockLogger.w(any, context: anyNamed('context')));
+      });
+
+      test('sin fila usa los valores por defecto y avisa en el log', () async {
+        // Arrange
+        fake.respondJson([]);
+
+        // Act
+        final result = await dataSource.getSettings(testUserId);
+
+        // Assert
+        expect(result.notificationsEnabled, isTrue);
+        expect(result.emailNotifications, isTrue);
+        expect(result.pushNotifications, isTrue);
         expect(result.privacyLevel, 'public');
-        expect(result.showEmail, false);
-        expect(result.showActivity, true);
-
-        verify(mockLogger.d('Fetching settings for userId: $testUserId'))
-            .called(1);
+        expect(result.showEmail, isFalse);
+        expect(result.showActivity, isTrue);
+        verify(mockLogger.w(
+          'user_settings row missing, using defaults',
+          context: {'userId': testUserId},
+        )).called(1);
       });
 
-      test('debe retornar siempre las mismas configuraciones por defecto',
-          () async {
-        // Act
-        final result1 = await dataSource.getSettings(testUserId);
-        final result2 = await dataSource.getSettings(testUserId);
+      test('loguea y propaga PostgrestException', () async {
+        // Arrange
+        fake.respondError(400, message: 'permission denied');
 
-        // Assert
-        expect(result1.language, result2.language);
-        expect(result1.darkMode, result2.darkMode);
-        expect(result1.privacyLevel, result2.privacyLevel);
-        expect(result1.notificationsEnabled, result2.notificationsEnabled);
-      });
-
-      test('debe loguear debug al obtener settings', () async {
-        // Act
-        await dataSource.getSettings(testUserId);
-
-        // Assert
-        verify(mockLogger.d('Fetching settings for userId: $testUserId'))
-            .called(1);
+        // Act & Assert
+        await expectLater(dataSource.getSettings(testUserId),
+            throwsA(isA<PostgrestException>()));
+        verify(mockLogger.e(
+          'Error fetching settings',
+          error: anyNamed('error'),
+          stackTrace: anyNamed('stackTrace'),
+          context: {'userId': testUserId},
+        )).called(1);
       });
     });
 
-    group('updateSettings', () {
+    group('updateSettings (user_settings)', () {
+      late FakeSupabaseHttp fake;
       const testSettings = ProfileSettingsModel(
         notificationsEnabled: false,
         emailNotifications: false,
@@ -135,78 +219,69 @@ void main() {
         commentsNotifications: true,
         likesNotifications: false,
         followNotifications: true,
-        language: 'en',
-        darkMode: true,
         privacyLevel: 'private',
         showEmail: true,
         showActivity: false,
       );
 
-      test('debe completar actualización simulada sin errores', () async {
-        // Act & Assert - no debe lanzar excepción
-        await expectLater(
-          dataSource.updateSettings(testUserId, testSettings),
-          completes,
-        );
+      setUp(() {
+        fake = FakeSupabaseHttp();
+        dataSource = ProfileRemoteDataSource(fake.client, mockLogger);
       });
 
-      test('debe loguear debug al actualizar settings', () async {
+      test('hace PATCH de la fila del usuario con todos los campos', () async {
+        // Arrange
+        fake.respondJson([
+          {'user_id': testUserId}
+        ]);
+
         // Act
         await dataSource.updateSettings(testUserId, testSettings);
 
         // Assert
-        verify(mockLogger.d('Updating settings for userId: $testUserId'))
+        final req = fake.lastRequest;
+        expect(req.method, 'PATCH');
+        expect(req.url.path, '/rest/v1/user_settings');
+        expect(req.url.queryParameters['user_id'], 'eq.$testUserId');
+        expect(req.url.queryParameters['select'], 'user_id');
+        expect(fake.lastBody, testSettings.toJson());
+        verify(mockLogger.i('Settings updated', context: {'userId': testUserId}))
             .called(1);
       });
 
-      test('debe loguear info con contexto de actualización', () async {
-        // Act
-        await dataSource.updateSettings(testUserId, testSettings);
-
-        // Assert
-        verify(mockLogger.i(
-          'Settings would be updated',
-          context: {
-            'userId': testUserId,
-            'settings': testSettings.toJson(),
-          },
-        )).called(1);
-      });
-
-      test('debe esperar latencia simulada de aproximadamente 500ms', () async {
+      test('falla con DataFailure notFound si no se actualizó ninguna fila',
+          () async {
         // Arrange
-        final stopwatch = Stopwatch()..start();
+        fake.respondJson([]);
 
-        // Act
-        await dataSource.updateSettings(testUserId, testSettings);
-
-        // Assert
-        stopwatch.stop();
-        expect(
-          stopwatch.elapsedMilliseconds,
-          greaterThanOrEqualTo(400), // Al menos 400ms (500ms - margen)
+        // Act & Assert
+        await expectLater(
+          dataSource.updateSettings(testUserId, testSettings),
+          throwsA(isA<DataFailure>()
+              .having((f) => f.code, 'code', ErrorCode.notFound)),
         );
-        expect(
-          stopwatch.elapsedMilliseconds,
-          lessThan(1000), // Menos de 1 segundo
-        );
+        verify(mockLogger.e(
+          'Error updating settings',
+          error: anyNamed('error'),
+          stackTrace: anyNamed('stackTrace'),
+          context: {'userId': testUserId},
+        )).called(1);
+        verifyNever(mockLogger.i('Settings updated', context: anyNamed('context')));
       });
 
-      test('debe incluir todos los campos de settings en el log', () async {
-        // Act
-        await dataSource.updateSettings(testUserId, testSettings);
+      test('loguea y propaga PostgrestException', () async {
+        // Arrange
+        fake.respondError(403, message: 'permission denied');
 
-        // Assert
-        final captured = verify(mockLogger.i(
-          'Settings would be updated',
-          context: captureAnyNamed('context'),
-        )).captured.single as Map<String, dynamic>;
-
-        final settings = captured['settings'] as Map<String, dynamic>;
-        expect(settings, containsPair('language', 'en'));
-        expect(settings, containsPair('dark_mode', true));
-        expect(settings, containsPair('privacy_level', 'private'));
-        expect(settings, containsPair('notifications_enabled', false));
+        // Act & Assert
+        await expectLater(dataSource.updateSettings(testUserId, testSettings),
+            throwsA(isA<PostgrestException>()));
+        verify(mockLogger.e(
+          'Error updating settings',
+          error: anyNamed('error'),
+          stackTrace: anyNamed('stackTrace'),
+          context: {'userId': testUserId},
+        )).called(1);
       });
     });
 
@@ -301,30 +376,6 @@ void main() {
     });
 
     group('Logging behavior', () {
-      test('debe usar AppLogger inyectado', () async {
-        // Arrange
-        const testSettings = ProfileSettingsModel(
-          notificationsEnabled: true,
-          emailNotifications: true,
-          pushNotifications: true,
-          commentsNotifications: true,
-          likesNotifications: true,
-          followNotifications: true,
-          language: 'es',
-          darkMode: false,
-          privacyLevel: 'public',
-          showEmail: false,
-          showActivity: true,
-        );
-
-        // Act
-        await dataSource.getSettings(testUserId);
-        await dataSource.updateSettings(testUserId, testSettings);
-
-        // Assert
-        verify(mockLogger.d(any)).called(greaterThan(0));
-        verify(mockLogger.i(any, context: anyNamed('context'))).called(1);
-      });
 
       test('debe incluir contexto relevante en logs de error', () async {
         // Arrange
@@ -347,67 +398,5 @@ void main() {
       });
     });
 
-    group('Edge cases', () {
-      test('debe manejar userId vacío en getSettings', () async {
-        // Act
-        final result = await dataSource.getSettings('');
-
-        // Assert
-        expect(result, isA<ProfileSettingsModel>());
-        verify(mockLogger.d('Fetching settings for userId: ')).called(1);
-      });
-
-      test('debe manejar userId muy largo en getSettings', () async {
-        // Arrange
-        final longUserId = 'a' * 1000;
-
-        // Act
-        final result = await dataSource.getSettings(longUserId);
-
-        // Assert
-        expect(result, isA<ProfileSettingsModel>());
-        verify(mockLogger.d('Fetching settings for userId: $longUserId'))
-            .called(1);
-      });
-
-      test('debe manejar múltiples actualizaciones seguidas', () async {
-        // Arrange
-        const settings1 = ProfileSettingsModel(
-          notificationsEnabled: true,
-          emailNotifications: true,
-          pushNotifications: true,
-          commentsNotifications: true,
-          likesNotifications: true,
-          followNotifications: true,
-          language: 'es',
-          darkMode: false,
-          privacyLevel: 'public',
-          showEmail: false,
-          showActivity: true,
-        );
-
-        const settings2 = ProfileSettingsModel(
-          notificationsEnabled: false,
-          emailNotifications: false,
-          pushNotifications: false,
-          commentsNotifications: false,
-          likesNotifications: false,
-          followNotifications: false,
-          language: 'en',
-          darkMode: true,
-          privacyLevel: 'private',
-          showEmail: true,
-          showActivity: false,
-        );
-
-        // Act
-        await dataSource.updateSettings(testUserId, settings1);
-        await dataSource.updateSettings(testUserId, settings2);
-
-        // Assert
-        verify(mockLogger.i('Settings would be updated', context: anyNamed('context')))
-            .called(2);
-      });
-    });
   });
 }

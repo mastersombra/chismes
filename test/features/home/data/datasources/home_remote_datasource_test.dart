@@ -144,18 +144,17 @@ void main() {
         'next_cursor': null,
       });
 
-      final result = await dataSource.getFollowingFeed(userId: 'user-1');
+      final result = await dataSource.getFollowingFeed();
 
       expect(fake.lastRequest.url.path, '/rest/v1/rpc/get_following_feed');
       expect(result.data.single.id, 'g1');
       expect(result.hasMore, isFalse);
     });
 
-    test('envía userId, pageSize y cursor por created_at en ISO8601', () async {
+    test('envía pageSize y cursor por created_at en ISO8601 (sin user id: el servidor usa auth.uid())', () async {
       fake.respondJson({'data': [], 'has_more': false});
 
       await dataSource.getFollowingFeed(
-        userId: 'user-1',
         pageSize: 30,
         cursor: FeedCursor.following(
           createdAt: DateTime.utc(2024, 1, 15, 10, 30),
@@ -164,7 +163,6 @@ void main() {
       );
 
       expect(fake.lastBody, {
-        'current_user_id': 'user-1',
         'page_size': 30,
         'cursor_created_at': '2024-01-15T10:30:00.000Z',
         'cursor_id': 'g7',
@@ -174,7 +172,7 @@ void main() {
     test('retorna página vacía cuando el RPC responde null', () async {
       fake.respondRaw('null');
 
-      final result = await dataSource.getFollowingFeed(userId: 'user-1');
+      final result = await dataSource.getFollowingFeed();
 
       expect(result.data, isEmpty);
       expect(result.hasMore, isFalse);
@@ -184,7 +182,7 @@ void main() {
       fake.respondError(401, message: 'JWT expired');
 
       expect(
-        () => dataSource.getFollowingFeed(userId: 'user-1'),
+        () => dataSource.getFollowingFeed(),
         throwsA(_serverException(ErrorCode.serverError).having(
           (e) => e.technicalMessage,
           'technicalMessage',
@@ -197,7 +195,7 @@ void main() {
       fake.respondJson({'data': 'not-a-list', 'has_more': false});
 
       expect(
-        () => dataSource.getFollowingFeed(userId: 'user-1'),
+        () => dataSource.getFollowingFeed(),
         throwsA(_serverException(ErrorCode.unknownError)),
       );
     });

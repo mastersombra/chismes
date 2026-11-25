@@ -1,5 +1,6 @@
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'dart:io';
+import 'dart:typed_data';
 
 /// Servicio para comprimir imágenes antes de subir a Supabase Storage
 ///
@@ -42,6 +43,18 @@ class ImageCompressor {
     );
 
     return result != null ? File(result.path) : null;
+  }
+
+  /// Comprime la foto de perfil (400x400 px máx., JPEG 80%, ~40-60 KB).
+  /// Devuelve los bytes listos para update-profile, o null si falla.
+  static Future<Uint8List?> compressAvatar(File file) {
+    return FlutterImageCompress.compressWithFile(
+      file.absolute.path,
+      quality: 80,
+      minWidth: 400,
+      minHeight: 400,
+      format: CompressFormat.jpeg,
+    );
   }
 
   /// Genera thumbnail para lista (200x200 px, ~30 KB)

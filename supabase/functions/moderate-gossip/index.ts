@@ -6,7 +6,7 @@ import {
   RequestValidationError,
   type CreateGossipRequest,
 } from './validation.ts'
-import { isMissingAutomaticVerdict, loadModerationRules, moderateContent } from './moderation.ts'
+import { isMissingAutomaticVerdict, loadModerationRules, moderateContent } from '../_shared/moderation.ts'
 import {
   deleteAudioFromPublicBucket,
   deleteAudioFromQuarantine,
@@ -18,6 +18,7 @@ import {
   type PublicImageResult,
 } from '../_shared/media.ts'
 import { isBlocked, loadSanctionStatus, restrictedResponseBody } from '../_shared/sanctions.ts'
+import { detectImageMimeType } from '../_shared/image.ts'
 
 /**
  * Edge Function: Moderación Híbrida + Upload Seguro de Media (Imagen y Audio)
@@ -622,7 +623,7 @@ async function uploadToQuarantine(
     }
 
     // 3. Validar MIME real (primeros bytes del archivo)
-    const mimeType = detectMimeType(imageData)
+    const mimeType = detectImageMimeType(imageData)
     if (!IMAGE_VALIDATION.ALLOWED_MIME_TYPES.includes(mimeType)) {
       throw new Error(`Invalid MIME type: ${mimeType}. Allowed: ${IMAGE_VALIDATION.ALLOWED_MIME_TYPES.join(', ')}`)
     }
@@ -661,31 +662,6 @@ async function uploadToQuarantine(
   }
 }
 
-
-/**
- * Detectar MIME type real de imagen (validación de primeros bytes)
- *
- * Security: NO confiar en extensión del cliente
- */
-function detectMimeType(data: Uint8Array): string {
-  // JPEG: FF D8 FF
-  if (data[0] === 0xFF && data[1] === 0xD8 && data[2] === 0xFF) {
-    return 'image/jpeg'
-  }
-
-  // PNG: 89 50 4E 47
-  if (data[0] === 0x89 && data[1] === 0x50 && data[2] === 0x4E && data[3] === 0x47) {
-    return 'image/png'
-  }
-
-  // WebP: 52 49 46 46 ... 57 45 42 50
-  if (data[0] === 0x52 && data[1] === 0x49 && data[2] === 0x46 && data[3] === 0x46 &&
-      data[8] === 0x57 && data[9] === 0x45 && data[10] === 0x42 && data[11] === 0x50) {
-    return 'image/webp'
-  }
-
-  throw new Error('Unsupported or invalid image format (not JPEG, PNG, or WebP)')
-}
 
 /**
  * Detectar MIME type real de audio (validación de primeros bytes)

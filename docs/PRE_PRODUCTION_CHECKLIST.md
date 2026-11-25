@@ -61,11 +61,51 @@ También 2026-11-21: la app no mostraba los errores específicos de
 como error genérico porque `functions.invoke` lanza `FunctionException` en
 respuestas no 2xx. Arreglado en `SupabaseGossipRemoteDataSource.edgeFunctionFailure`.
 
+Deuda 🟢: `social` importa `Gossip`/`GossipCard` de `features/gossip` (igual que
+Home y Search); lo limpio es moverlos a `core/`. `tools/audit_dependencies.sh`
+no detecta imports relativos entre features.
+
 Deuda 🟢: Perfil importa pantallas de `features/moderation` (panel y estado de
 la cuenta); lo limpio es navegar por rutas registradas en `core/`.
 
-**Siguiente recomendado:** los pendientes 🔴 del ítem 4 (App ID / release) o
-los links a las políticas legales en la app.
+**Hecho 2026-11-24:** políticas legales dentro de la app (es/en) con aviso en
+Registro y Login, Perfil → Legal y Perfil → Ubicación; registro de aceptación
+en el servidor (`016_policy_acceptances.sql`); código muerto de privacidad
+eliminado. Los textos se alinearon con lo que hace la app (sanciones reales,
+apelación desde la app, eliminación inmediata, rutas de menú). **Aplicar a
+`chismes-dev`:** reset con la 016 (`scripts/reset-database.sh`).
+
+**Hecho 2026-11-24 (2):** Editar perfil (foto, nombre, @usuario, bio) vía la
+Edge Function `update-profile`: modera texto y foto (rechazo con aviso, IA
+caída → reintentar; nunca queda en revisión), con sanción vigente no se edita
+texto ni foto, @usuario una vez cada 30 días. **Vulnerabilidad corregida:** la
+app escribía `profiles` directo (bio/nombre sin moderar, cualquier
+`avatar_url`); ahora no tiene permiso (`017_profile_editing.sql`). Opciones del
+Perfil reales: `user_settings` (notificaciones, privacidad, mostrar email y
+actividad) y tema Sistema/Claro/Oscuro local. Arreglado: el Perfil no mostraba
+@usuario, nombre ni bio (el usuario de la sesión no traía el perfil).
+**Aplicar a `chismes-dev`:** reset con la 016 y 017 + desplegar
+`update-profile`, `moderate-gossip` y `delete-account` (`reset-database.sh`
+despliega todas). Pendiente 🟡: las opciones de notificaciones y privacidad se
+guardan pero aún no tienen efecto (no hay notificaciones, seguidores ni
+perfiles públicos); al implementarlos, leer `user_settings`.
+
+**Hecho 2026-11-24 (3): seguidores y bloqueos** (`018_social_follows_blocks.sql`,
+feature `lib/features/social`). Seguir libre en cuentas públicas y con
+solicitud en privadas (`privacy_level` ahora tiene efecto y queda
+`public`/`private`); listas de seguidores/seguidos, quitar seguidor,
+solicitudes, bloquear/desbloquear (ambos sentidos, oculta perfil y chismes con
+perfil; los anónimos nunca). Autor visible (nombre/@usuario/foto) solo en
+chismes con perfil; feed Siguiendo real (antes vacío y recibía el `user_id`
+del cliente); búsqueda de usuarios; contadores reales en Perfil; límite
+anti-spam de 60 follows/hora y 300/día (`moderation_settings`). Home, Search,
+Gossip y Perfil abren `social` vía `core/navigation/social_navigator.dart`.
+**Aplicar a `chismes-dev`:** reset con 016+017+018 (`scripts/reset-database.sh`).
+Pendiente 🟢: contador de solicitudes pendientes en Perfil; botón Seguir en
+listas y búsqueda. `follow_notifications` sigue sin efecto hasta implementar
+notificaciones.
+
+**Siguiente recomendado:** los pendientes 🔴 del ítem 4 (App ID / release).
 
 1. ~~**AuthGate debe validar la sesión con el servidor**~~ ✅ (2026-11-19) `AuthRepository.validateSession()` (`GET /auth/v1/user`) en segundo plano al iniciar y al volver a primer plano (máx. cada 5 min). Cierra sesión solo si GoTrue responde `user_not_found`, `session_not_found`, `user_banned` o `bad_jwt` (o 401/403 sin código); sin red/timeout/5xx conserva la sesión. Con el access token vencido no valida: lo resuelve el refresh. Mejora posterior 🟢: cerrar sesión ante cualquier 401 de Edge Functions/PostgREST, y avisar en Login "tu sesión expiró".
 2. ~~**Privacidad de la tabla `gossips`**~~ ✅ (2026-11-19, en 001/008/009) Los clientes ya no leen la tabla: leen la vista `public_gossips` (columnas explícitas, autor de anónimos oculto salvo para su autor). Feed y `search_gossips` leen la vista; `search_gossips` solo `authenticated`. `report-gossip` adaptada. Test: `supabase/tests/004_anonymous_author_privacy_test.sql`. Aplicado a `chismes-dev` (2026-11-20).
@@ -81,7 +121,7 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 2. ~~**Cola de revisión humana**~~ ✅ (2026-11-19, backend) `013_moderation.sql` + Edge Function `moderation-review` (solo `app_metadata.role = 'moderator'`): `list` con URL firmada de la media en cuarentena; `decide` aprobar (publica la media) / rechazar (oculta y conserva el texto; borra la media pública, ver nota de storage; gravedad obligatoria). El veredicto `review` de `moderate-gossip` se encola con la ruta de su media, y `cleanup-media` no la borra mientras esté pendiente. Cada decisión guarda autor, gravedad y motivo (base de sanciones). Genérica por tipo de contenido (lista para comentarios). Tests: `005_moderation_test.sql`, `moderation-review/logic.test.ts`, E2E local.
 3. ~~**Reportes → cola**~~ ✅ (2026-11-19) `content_reports` (genérica, reemplaza a `gossip_reports`) + trigger: entra a la cola con ≥ `report_min_count` reportes de cuentas con ≥ `report_min_account_age_hours`; se auto-oculta si además supera `report_ratio` de las interacciones; desde `report_popular_interactions` nunca se oculta solo (prioridad alta). Todo en `moderation_settings`, editable sin desplegar. Arreglado: el umbral nunca funcionaba (`protect_critical_fields` revertía el UPDATE del trigger; `report-gossip` contaba solo los reportes propios). Además: la app mostraba error al reportar (esperaba 200; la función responde 201) y el autor podía reportar lo propio.
 4. ~~**Panel de moderación**~~ ✅ (2026-11-20) En la app (`lib/features/moderation`), entrada en Perfil visible solo si `app_metadata.role = 'moderator'` (el servidor igual exige el rol: sin él, 403 → "sin permisos"). Pestañas Pendientes / Aprobados / Rechazados con scroll infinito; detalle con contenido, imagen en cuarentena (URL firmada), razones traducidas, reportes, autor real (también de anónimos); aprobar (con confirmación) o rechazar (gravedad obligatoria, motivo predefinido, nota interna). Si otro moderador ya decidió (409/404) avisa y lo saca de la lista. Backend: `list` acepta `offset`, el historial se ordena por `decided_at` desc y la vista trae `author_username`/`author_display_name`. Tests: 71 Flutter (100% en casi todo el módulo), `logic.test.ts`, `005` D3. Apelaciones: ✅ pestaña propia (ítem 7). Pendiente 🟡: reproducir el **audio** en el panel (hoy solo indica que hay audio).
-5. ~~**Moderación de imagen**~~ ✅ (2026-11-19) `moderate-gossip/moderation.ts`: texto + imagen en una sola llamada a `omni-moderation-latest` (imagen como data URL, nunca una URL de cuarentena); imagen marcada → reject y se borra de cuarentena. **Fail-closed:** sin API key, error, timeout (10 s) o respuesta inválida → `review`, nunca se publica. **Audio → `review` siempre** (no se modera automáticamente; la UI sigue oculta). Tests: `moderation.test.ts` (Deno, OpenAI simulado). Pendiente 🟡: texto dentro de la imagen (OCR → mismas reglas de datos personales), detección de CSAM por hash, audio con transcripción + moderación del texto y duración máxima.
+5. ~~**Moderación de imagen**~~ ✅ (2026-11-19) `_shared/moderation.ts`: texto + imagen en una sola llamada a `omni-moderation-latest` (imagen como data URL, nunca una URL de cuarentena); imagen marcada → reject y se borra de cuarentena. **Fail-closed:** sin API key, error, timeout (10 s) o respuesta inválida → `review`, nunca se publica. **Audio → `review` siempre** (no se modera automáticamente; la UI sigue oculta). Tests: `moderation.test.ts` (Deno, OpenAI simulado). Pendiente 🟡: texto dentro de la imagen (OCR → mismas reglas de datos personales), detección de CSAM por hash, audio con transcripción + moderación del texto y duración máxima.
 6. 🟢 **Aviso previo en la app** vía un endpoint de pre-validación del servidor (no copiando reglas).
 7. ~~**Sanciones al usuario + apelaciones**~~ ✅ (2026-11-21) `015_sanctions.sql`. Falta = rechazo humano no anulado (la IA no sanciona). Puntos leve 1 · media 2 · alta 4 · crítica suspende; vencen a los 90 días; 3 pts → 24 h sin publicar ni reportar, 6 → 7 días, 10 → suspensión indefinida. Calculadas del historial (no se guardan). Bloqueo en `moderate-gossip` y `report-gossip` (403 `account_restricted`, antes del rate limit, fail-closed). Apelación: una por rechazo en 14 días; aceptada → falta anulada y texto republicado (la media no vuelve). Reincidentes: heredan faltas por la huella del email (`ACCOUNT_HASH_SECRET`). App: Perfil → **Estado de la cuenta** (estado, puntos, rechazos, apelar) y pestaña **Apelaciones** en el panel. Todo configurable en `moderation_settings`. Tests: `007` SQL, `sanctions_e2e` (4), Deno, Flutter. Pendiente 🟢: notificar al usuario (push/email) cuando lo sancionan o se decide su apelación; `appeal_different_moderator = 1` cuando haya más de un moderador; una suspensión heredada no se puede apelar (el contenido se borró con la cuenta).
 8. 🟢 **Comentarios:** al implementarlos, reutilizar reportes y cola agregando `comment_id` (ver cabecera de `013_moderation.sql`) y moderarlos con la misma lógica (`moderation.ts`) antes de publicar.
@@ -126,13 +166,15 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 - [x] ✅ Modo anónimo implementado
 - [x] ✅ Usuario puede olvidar ubicación
 - [x] ✅ Solo ciudad guardada (no coordenadas exactas)
-- [ ] 🟡 Configurar GDPR consent para usuarios EU
-- [ ] 🟡 Implementar data export (GDPR portabilidad)
+- [x] ✅ Prueba de aceptación de las políticas (2026-11-24, `016_policy_acceptances.sql`): el servidor registra versión y fecha al crear la cuenta
+- [ ] 🟡 Pedir re-aceptación cuando cambie una política (comparar `policy_acceptances` con `legal_documents`; pantalla "La política cambió")
+- [ ] 🟡 Implementar data export (GDPR portabilidad): la Política 5.1/5.4 hoy lo ofrece por email
+- [x] ✅ Rectificación desde la app (2026-11-24): Perfil → Editar perfil (Política 5.2)
 - [x] ✅ **Eliminación de cuenta desde la app** (2026-11-20; App Store 5.1.1(v) y Google Play): Perfil → Eliminar cuenta, doble confirmación (explicación + escribir ELIMINAR). Inmediata: borra cuenta, perfil, todos los chismes y su media (pública y cuarentena); guarda solo un registro anónimo de faltas si las hubo (`014_account_deletion.sql`, huella HMAC con `ACCOUNT_HASH_SECRET`). Política de privacidad actualizada (v1.1, revisar con abogado). Tests: Flutter, `006`, E2E
 - [x] ✅ 014 aplicada + `ACCOUNT_HASH_SECRET` configurado en `chismes-dev` (2026-11-21). Confirmar que `delete-account` está desplegada
 - [ ] 🔴 **Página web para pedir la eliminación sin la app** (Google Play la exige en Play Console → Data safety): depende de hospedar las políticas (chismes.app)
 - [ ] 🟡 Revocar el token de Apple al eliminar la cuenta (obligatorio solo si se activa Sign in with Apple)
-- [ ] 🟢 Código muerto: `PrivacySettingsScreen` (muestra "cuenta eliminada" sin borrar) y `PrivacyConsentScreen` (no guarda el consentimiento) no están en ninguna ruta: eliminar o conectar
+- [x] ✅ Código muerto eliminado (2026-11-24): `PrivacySettingsScreen` y `PrivacyConsentScreen` (y 96 textos sin uso). "Olvidar ubicación" y "No guardar ubicación" pasaron a Perfil → Ubicación (lo promete la Política 5.7)
 
 ---
 
@@ -308,8 +350,8 @@ Principio: **toda decisión de moderación en el servidor**. La app nunca modera
 - [x] ✅ `PRIVACY_POLICY.md` creado
 - [x] ✅ `TERMS_OF_SERVICE.md` creado
 - [ ] 🔴 Hospedar políticas en web (chismes.app/privacy)
-- [ ] 🔴 Agregar links a políticas en app
-- [ ] 🟡 Revisión legal de políticas (abogado)
+- [x] ✅ Políticas dentro de la app (2026-11-24): `assets/legal/` en español e inglés, renderer propio (`SimpleMarkdown`), aviso con links en Registro y Login (Google/Apple también crean cuentas) y Perfil → Legal. Al hospedarlas, la app puede seguir mostrando la copia local
+- [ ] 🟡 Revisión legal de políticas (abogado), incluida la traducción al inglés. Falta definir ley aplicable y tribunales en los Términos (`[PAÍS/ESTADO A DEFINIR]`)
 - [ ] 🟡 GDPR compliance verificado (EU users)
 - [ ] 🟡 CCPA compliance verificado (CA users)
 - [ ] 🟡 LGPD compliance verificado (BR users)

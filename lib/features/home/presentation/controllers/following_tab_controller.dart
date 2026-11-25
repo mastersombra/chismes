@@ -97,7 +97,7 @@ class FollowingTabController extends ChangeNotifier {
   /// Carga el feed.
   ///
   /// **Flujo:**
-  /// 1. Verificar si sigue a alguien (TODO: obtener followingCount de ProfileService)
+  /// 1. Verificar si sigue a alguien (followingCount de ProfileService)
   /// 2. Si no sigue a nadie → notFollowing state
   /// 3. Si sigue a gente → cargar feed
   /// 4. Si feed vacío → cargar recomendados (fallback)
@@ -139,7 +139,6 @@ class FollowingTabController extends ChangeNotifier {
 
       // Caso 2: Cargar feed de quienes sigue
       final result = await _getFollowingFeed(
-        userId: userId,
         pageSize: 20,
         cursor: null,
       );
@@ -303,11 +302,7 @@ class FollowingTabController extends ChangeNotifier {
 
   /// Carga más chismes de quienes sigo.
   Future<void> _loadMoreFollowing() async {
-    final userId = _authService.userId;
-    if (userId == null) return;
-
     final result = await _getFollowingFeed(
-      userId: userId,
       pageSize: 20,
       cursor: _state.nextCursor,
     );

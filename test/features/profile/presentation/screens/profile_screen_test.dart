@@ -5,11 +5,20 @@ import 'package:mockito/mockito.dart';
 import 'package:chismes/features/profile/presentation/screens/profile_screen.dart';
 import 'package:chismes/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:chismes/features/profile/presentation/widgets/profile_header.dart';
+import 'package:chismes/features/profile/presentation/widgets/legal_card.dart';
+import 'package:chismes/features/profile/presentation/widgets/location_privacy_card.dart';
 import 'package:chismes/features/auth/domain/entities/user.dart';
 import 'package:chismes/features/profile/domain/entities/user_stats.dart';
 import 'package:chismes/features/profile/domain/entities/profile_settings.dart';
 import 'package:chismes/core/l10n/locale_notifier.dart';
 import 'package:chismes/core/di/injection_container.dart';
+import 'package:chismes/core/services/location_service.dart';
+import 'package:chismes/core/services/auth_service.dart';
+import 'package:chismes/core/result/result.dart';
+import 'package:chismes/core/error/failure.dart';
+import 'package:chismes/features/profile/presentation/screens/edit_profile_screen.dart';
+import 'package:chismes/core/theme/theme_mode_notifier.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:chismes/l10n/app_localizations.dart';
 
@@ -19,14 +28,28 @@ import 'profile_screen_test.mocks.dart';
 @GenerateNiceMocks([
   MockSpec<ProfileController>(),
   MockSpec<LocaleNotifier>(),
+  MockSpec<LocationService>(),
+  MockSpec<AuthService>(),
 ])
 void main() {
   late MockProfileController mockController;
   late MockLocaleNotifier mockLocaleNotifier;
+  late MockLocationService mockLocationService;
 
-  setUp(() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    if (getIt.isRegistered<ThemeModeNotifier>()) {
+      getIt.unregister<ThemeModeNotifier>();
+    }
+    getIt.registerSingleton<ThemeModeNotifier>(
+        ThemeModeNotifier(await SharedPreferences.getInstance()));
     mockController = MockProfileController();
     mockLocaleNotifier = MockLocaleNotifier();
+    mockLocationService = MockLocationService();
+    when(mockLocationService.getDefaultLocation())
+        .thenAnswer((_) async => null);
+    when(mockLocationService.isAnonymousModeEnabled())
+        .thenAnswer((_) async => false);
 
     // Setup mocks básicos
     when(mockController.state).thenReturn(ProfileState.initial);
@@ -52,9 +75,19 @@ void main() {
 
     getIt.registerSingleton<ProfileController>(mockController);
     getIt.registerSingleton<LocaleNotifier>(mockLocaleNotifier);
+    if (getIt.isRegistered<LocationService>()) {
+      getIt.unregister<LocationService>();
+    }
+    getIt.registerSingleton<LocationService>(mockLocationService);
   });
 
   tearDown(() {
+    if (getIt.isRegistered<ThemeModeNotifier>()) {
+      getIt.unregister<ThemeModeNotifier>();
+    }
+    if (getIt.isRegistered<LocationService>()) {
+      getIt.unregister<LocationService>();
+    }
     if (getIt.isRegistered<ProfileController>()) {
       getIt.unregister<ProfileController>();
     }
@@ -292,7 +325,7 @@ void main() {
       expect(listeners, hasLength(2));
 
       when(mockController.settings)
-          .thenReturn(mockSettings.copyWith(language: 'en'));
+          .thenReturn(mockSettings.copyWith(showEmail: !mockSettings.showEmail));
       await notifyAll(tester, listeners);
 
       verifyNever(mockLocaleNotifier.setLocale(any));
@@ -433,6 +466,8 @@ void main() {
 
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
+      await tester.scrollUntilVisible(find.byKey(const Key('moderationEntry')), 200,
+          scrollable: find.byType(Scrollable).first);
 
       expect(find.byKey(const Key('moderationEntry')), findsOneWidget);
       expect(find.text('Panel de moderación'), findsOneWidget);
@@ -455,10 +490,32 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
       final l10n = AppLocalizations.of(tester.element(find.byType(ProfileScreen)))!;
+      await tester.scrollUntilVisible(find.byKey(const Key('accountStatusEntry')), 200,
+          scrollable: find.byType(Scrollable).first);
 
       expect(find.byKey(const Key('accountStatusEntry')), findsOneWidget);
       expect(find.text(l10n.accountStatusEntryTitle), findsOneWidget);
       expect(find.text(l10n.accountStatusEntrySubtitle), findsOneWidget);
+    });
+  });
+
+  group('ProfileScreen - Privacidad y legal', () {
+    testWidgets('muestra la ubicación guardada y los documentos legales',
+        (tester) async {
+      when(mockController.state).thenReturn(ProfileState.loaded);
+      when(mockController.currentUser).thenReturn(mockUser);
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+
+      await tester.scrollUntilVisible(find.byType(LegalCard), 300,
+          scrollable: find.byType(Scrollable).first);
+
+      expect(find.byType(LocationPrivacyCard), findsOneWidget);
+      expect(find.byType(LegalCard), findsOneWidget);
+      // La tarjeta usa el LocationService del DI
+      verify(mockLocationService.getDefaultLocation()).called(1);
+      verify(mockLocationService.isAnonymousModeEnabled()).called(1);
     });
   });
 
@@ -553,6 +610,77 @@ void main() {
         matching: find.byWidgetPredicate((w) => w is ButtonStyleButton),
       ));
       expect(signOutButton.onPressed, isNull);
+    });
+  });
+
+  group('ProfileScreen - Editar perfil', () {
+    late MockAuthService mockAuthService;
+
+    setUp(() {
+      provideDummy<Result<Failure, User>>(Result.success(mockUser));
+      mockAuthService = MockAuthService();
+      if (getIt.isRegistered<AuthService>()) getIt.unregister<AuthService>();
+      getIt.registerSingleton<AuthService>(mockAuthService);
+      when(mockController.state).thenReturn(ProfileState.loaded);
+      when(mockController.currentUser).thenReturn(mockUser);
+    });
+
+    tearDown(() {
+      if (getIt.isRegistered<AuthService>()) getIt.unregister<AuthService>();
+    });
+
+    Future<void> openEdit(WidgetTester tester) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+      final button = find.byKey(const Key('editProfileButton'));
+      await tester.ensureVisible(button);
+      await tester.tap(button);
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('el botón abre Editar perfil con el usuario actual', (tester) async {
+      // Act
+      await openEdit(tester);
+
+      // Assert
+      final screen = tester.widget<EditProfileScreen>(find.byType(EditProfileScreen));
+      expect(screen.user, mockUser);
+      verify(mockController.loadProfile()).called(1);
+    });
+
+    testWidgets('al guardar avisa al controller (onProfileEdited)', (tester) async {
+      // Arrange
+      when(mockAuthService.updateProfile(
+        username: anyNamed('username'),
+        displayName: anyNamed('displayName'),
+        bio: anyNamed('bio'),
+        avatar: anyNamed('avatar'),
+        removeAvatar: anyNamed('removeAvatar'),
+      )).thenAnswer((_) async => Result.success(mockUser));
+      await openEdit(tester);
+
+      // Act
+      await tester.enterText(find.byKey(const Key('editProfileBio')), 'Bio nueva');
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('editProfileSave')));
+      await tester.pumpAndSettle();
+
+      // Assert
+      expect(find.byType(EditProfileScreen), findsNothing);
+      verify(mockController.onProfileEdited()).called(1);
+    });
+
+    testWidgets('al volver sin guardar no avisa al controller', (tester) async {
+      // Arrange
+      await openEdit(tester);
+
+      // Act
+      await tester.tap(find.byType(BackButton));
+      await tester.pumpAndSettle();
+
+      // Assert
+      expect(find.byType(EditProfileScreen), findsNothing);
+      verifyNever(mockController.onProfileEdited());
     });
   });
 }

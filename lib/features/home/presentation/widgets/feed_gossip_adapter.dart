@@ -19,7 +19,7 @@ class FeedGossipAdapter {
   ///
   /// **Campos mapeados:**
   /// - id, subject, content, cityId → directo
-  /// - createdAt, createdBy, imageUrl → directo
+  /// - createdAt, createdBy, imageUrl, author → directo
   /// - publishedAs → mapea 'anonymous'/'profile' a enum
   ///
   /// **Campos con valores por defecto:**
@@ -45,6 +45,7 @@ class FeedGossipAdapter {
       visibility: GossipVisibility.public,
       createdAt: feedGossip.createdAt,
       createdBy: feedGossip.createdBy,
+      author: feedGossip.author,
     );
   }
 

@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/gossip.dart';
 import 'package:chismes/core/l10n/l10n.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../widgets/gossip_author_row.dart';
 
 class GossipDetailScreen extends StatelessWidget {
   final Gossip gossip;
 
+  /// Muestra el autor (solo chismes con perfil; los anónimos nunca)
+  final bool showAuthor;
+
   const GossipDetailScreen({
     super.key,
     required this.gossip,
+    this.showAuthor = true,
   });
 
   @override
@@ -51,6 +56,10 @@ class GossipDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
 
                 children: [
+                  if (showAuthor && gossip.author != null) ...[
+                    GossipAuthorRow(author: gossip.author!),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
                   Text(
                     gossip.subject,
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(

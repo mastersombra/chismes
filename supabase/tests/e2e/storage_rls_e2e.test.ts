@@ -3,7 +3,7 @@
  * (lo que podría intentar una app modificada con la anon key o un JWT de
  * usuario), sin pasar por las Edge Functions. Correr con ./scripts/e2e.sh
  *
- * Esperado (006_media_security.sql):
+ * Esperado (006_media_security.sql y bucket avatars de 017):
  * - Ningún cliente sube, sobrescribe, mueve, copia ni borra en ningún bucket
  * - Cuarentena: ni descarga, ni metadata, ni URL firmada, ni URL pública
  * - Públicos: el archivo se ve por su URL pública, pero el bucket NO se lista
@@ -30,6 +30,8 @@ const BUCKETS = [
   { id: 'images-quarantine', public: false, file: 'img.png', mime: 'image/png' },
   { id: 'audio', public: true, file: 'clip.m4a', mime: 'audio/mp4' },
   { id: 'audio-quarantine', public: false, file: 'clip.m4a', mime: 'audio/mp4' },
+  // Fotos de perfil (017): solo las sube update-profile
+  { id: 'avatars', public: true, file: 'avatar.png', mime: 'image/png', ownFolder: true },
 ]
 
 async function call(
@@ -70,7 +72,10 @@ for (const bucket of BUCKETS) {
     Deno.test(`storage ${bucket.id} (${role}): no puede escribir, mover, copiar ni borrar`, async () => {
       const { path } = await seed(bucket)
       const original = await contentOf(bucket.id, path)
-      const own = `quarantine/${user.id}/${role}-${bucket.file}`
+      // Carpeta propia del usuario: avatars usa {user_id}/, el resto quarantine/{user_id}/
+      const own = 'ownFolder' in bucket
+        ? `${user.id}/${role}-${bucket.file}`
+        : `quarantine/${user.id}/${role}-${bucket.file}`
 
       const attempts = [
         call('POST', `/object/${bucket.id}/${own}`, headers, PNG, bucket.mime),
@@ -141,6 +146,8 @@ for (const [role, headers] of Object.entries(CLIENTS)) {
       call('PUT', '/bucket/audio-quarantine', headers, json({ public: true })),
       call('POST', '/bucket/images/empty', headers),
       call('DELETE', '/bucket/audio', headers),
+      call('POST', '/bucket/avatars/empty', headers),
+      call('PUT', '/bucket/avatars', headers, json({ public: false, file_size_limit: 1_000_000_000 })),
       call('POST', '/bucket', headers, json({ name: `evil-${role}`, public: true })),
     ])
     for (const r of attempts) {
@@ -153,6 +160,7 @@ for (const [role, headers] of Object.entries(CLIENTS)) {
     assertEquals(state['audio-quarantine'], false)
     assertEquals(state['images'], true)
     assertEquals(state['audio'], true)
+    assertEquals(state['avatars'], true)
     assert(!(`evil-${role}` in state), 'el cliente creó un bucket')
   })
 }

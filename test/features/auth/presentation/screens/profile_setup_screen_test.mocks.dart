@@ -4,8 +4,11 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i5;
+import 'dart:typed_data' as _i11;
 import 'dart:ui' as _i6;
 
+import 'package:chismes/core/error/failure.dart' as _i10;
+import 'package:chismes/core/result/result.dart' as _i9;
 import 'package:chismes/core/services/auth_service.dart' as _i7;
 import 'package:chismes/features/auth/domain/entities/user.dart' as _i8;
 import 'package:chismes/features/auth/presentation/controllers/profile_setup_controller.dart'
@@ -67,14 +70,12 @@ class MockProfileSetupController extends _i1.Mock
   _i5.Future<void> updateProfile({
     String? username,
     String? displayName,
-    String? avatarUrl,
     String? bio,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#updateProfile, [], {
               #username: username,
               #displayName: displayName,
-              #avatarUrl: avatarUrl,
               #bio: bio,
             }),
             returnValue: _i5.Future<void>.value(),
@@ -164,6 +165,50 @@ class MockAuthService extends _i1.Mock implements _i7.AuthService {
   bool get hasUsername =>
       (super.noSuchMethod(Invocation.getter(#hasUsername), returnValue: false)
           as bool);
+
+  @override
+  _i5.Future<_i9.Result<_i10.Failure, _i8.User?>> loadCurrentUser() =>
+      (super.noSuchMethod(
+            Invocation.method(#loadCurrentUser, []),
+            returnValue: _i5.Future<_i9.Result<_i10.Failure, _i8.User?>>.value(
+              _i4.dummyValue<_i9.Result<_i10.Failure, _i8.User?>>(
+                this,
+                Invocation.method(#loadCurrentUser, []),
+              ),
+            ),
+          )
+          as _i5.Future<_i9.Result<_i10.Failure, _i8.User?>>);
+
+  @override
+  _i5.Future<_i9.Result<_i10.Failure, _i8.User>> updateProfile({
+    String? username,
+    String? displayName,
+    String? bio,
+    _i11.Uint8List? avatar,
+    bool? removeAvatar = false,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateProfile, [], {
+              #username: username,
+              #displayName: displayName,
+              #bio: bio,
+              #avatar: avatar,
+              #removeAvatar: removeAvatar,
+            }),
+            returnValue: _i5.Future<_i9.Result<_i10.Failure, _i8.User>>.value(
+              _i4.dummyValue<_i9.Result<_i10.Failure, _i8.User>>(
+                this,
+                Invocation.method(#updateProfile, [], {
+                  #username: username,
+                  #displayName: displayName,
+                  #bio: bio,
+                  #avatar: avatar,
+                  #removeAvatar: removeAvatar,
+                }),
+              ),
+            ),
+          )
+          as _i5.Future<_i9.Result<_i10.Failure, _i8.User>>);
 
   @override
   Map<String, dynamic> debugSessionStatus() =>

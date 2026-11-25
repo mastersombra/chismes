@@ -104,18 +104,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   }
 
   String? _validateUsername(String? value) {
-    if (value == null || value.isEmpty) {
-      return context.l10n.usernameRequired;
-    }
-    if (value.length < 3) {
-      return context.l10n.usernameTooShort;
-    }
-    if (value.length > 30) {
-      return context.l10n.usernameTooLong;
-    }
-    if (!RegExp(r'^[a-z0-9_]+$').hasMatch(value)) {
-      return context.l10n.usernameInvalidChars;
-    }
+    final formatError = FormValidators.username(context, value);
+    if (formatError != null) return formatError;
 
     // Verificar disponibilidad
     if (_controller.usernameAvailable == false) {

@@ -18,7 +18,7 @@ Se implementaron **TODAS** las funcionalidades obligatorias y opcionales de cump
 
 #### 1. ✅ Política de Privacidad Completa
 
-**Archivo:** `PRIVACY_POLICY.md`
+**Archivo:** `assets/legal/privacy_policy.{es,en}.md`
 
 **Contenido:**
 - 14 secciones completas
@@ -55,7 +55,7 @@ Se implementaron **TODAS** las funcionalidades obligatorias y opcionales de cump
 
 #### 2. ✅ Términos de Uso
 
-**Archivo:** `TERMS_OF_SERVICE.md`
+**Archivo:** `assets/legal/terms_of_service.{es,en}.md`
 
 **Contenido:**
 - 17 secciones completas
@@ -281,8 +281,8 @@ Settings → Privacidad → Modo anónimo [OFF]
 
 ### **Nuevos archivos:**
 
-1. ✅ `PRIVACY_POLICY.md` (11 KB)
-2. ✅ `TERMS_OF_SERVICE.md` (9 KB)
+1. ✅ `assets/legal/privacy_policy.{es,en}.md` (11 KB)
+2. ✅ `assets/legal/terms_of_service.{es,en}.md` (9 KB)
 3. ✅ `lib/features/auth/presentation/screens/privacy_consent_screen.dart` (11 KB)
 4. ✅ `lib/features/auth/presentation/screens/privacy_settings_screen.dart` (15 KB)
 
@@ -388,7 +388,7 @@ if (savedLocation == null || anonymousModeActivated) {
 
 ### **Antes de Lanzamiento:**
 
-- [ ] **Revisión legal** de PRIVACY_POLICY.md y TERMS_OF_SERVICE.md
+- [ ] **Revisión legal** de `assets/legal/` (políticas y términos, es/en)
   - Revisar con abogado
   - Ajustar según jurisdicción
   - Agregar información de empresa (nombre legal, dirección)

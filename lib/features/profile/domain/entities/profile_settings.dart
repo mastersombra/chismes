@@ -1,4 +1,6 @@
-/// Configuraciones de perfil del usuario
+/// Preferencias del usuario guardadas en el servidor (`user_settings`,
+/// 017_profile_editing.sql). Idioma y tema son del teléfono: ver
+/// LocaleNotifier y ThemeModeNotifier.
 class ProfileSettings {
   final bool notificationsEnabled;
   final bool emailNotifications;
@@ -6,9 +8,7 @@ class ProfileSettings {
   final bool commentsNotifications;
   final bool likesNotifications;
   final bool followNotifications;
-  final String language; // 'es' o 'en'
-  final bool darkMode;
-  final String privacyLevel; // 'public', 'friends', 'private'
+  final String privacyLevel; // 'public' | 'private' (privada: seguir requiere aprobación)
   final bool showEmail;
   final bool showActivity;
 
@@ -19,8 +19,6 @@ class ProfileSettings {
     required this.commentsNotifications,
     required this.likesNotifications,
     required this.followNotifications,
-    required this.language,
-    required this.darkMode,
     required this.privacyLevel,
     required this.showEmail,
     required this.showActivity,
@@ -35,8 +33,6 @@ class ProfileSettings {
       commentsNotifications: true,
       likesNotifications: true,
       followNotifications: true,
-      language: 'es',
-      darkMode: false,
       privacyLevel: 'public',
       showEmail: false,
       showActivity: true,
@@ -50,8 +46,6 @@ class ProfileSettings {
     bool? commentsNotifications,
     bool? likesNotifications,
     bool? followNotifications,
-    String? language,
-    bool? darkMode,
     String? privacyLevel,
     bool? showEmail,
     bool? showActivity,
@@ -63,8 +57,6 @@ class ProfileSettings {
       commentsNotifications: commentsNotifications ?? this.commentsNotifications,
       likesNotifications: likesNotifications ?? this.likesNotifications,
       followNotifications: followNotifications ?? this.followNotifications,
-      language: language ?? this.language,
-      darkMode: darkMode ?? this.darkMode,
       privacyLevel: privacyLevel ?? this.privacyLevel,
       showEmail: showEmail ?? this.showEmail,
       showActivity: showActivity ?? this.showActivity,
@@ -73,7 +65,7 @@ class ProfileSettings {
 
   @override
   String toString() {
-    return 'ProfileSettings(notifications: $notificationsEnabled, language: $language, '
+    return 'ProfileSettings(notifications: $notificationsEnabled, '
         'privacyLevel: $privacyLevel)';
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:chismes/core/error/error_codes.dart';
 import 'package:chismes/core/error/failure.dart';
 import 'package:chismes/core/logging/logging.dart';
@@ -553,28 +555,50 @@ void main() {
         );
       });
 
-      test('debe retornar DataFailure cuando username existe', () async {
+      test('devuelve tal cual la Failure que lanza el datasource', () async {
         // Arrange
-        when(mockDataSource.updateProfile(username: tUsername)).thenThrow(
-          supabase.PostgrestException(
-            message:
-                'duplicate key value violates unique constraint "profiles_username_key"',
-            code: '23505',
-          ),
+        final cooldown = UsernameCooldownFailure(
+          technicalMessage: 'update-profile 409: username_cooldown',
+          availableAt: DateTime.utc(2026, 12, 20),
         );
+        when(mockDataSource.updateProfile(username: tUsername)).thenThrow(cooldown);
 
         // Act
         final result = await repository.updateProfile(username: tUsername);
 
         // Assert
-        expect(result.isFailure, isTrue);
         result.when(
-          onFailure: (failure) {
-            expect(failure, isA<DataFailure>());
-            expect(failure.code, ErrorCode.usernameAlreadyTaken);
-          },
+          onFailure: (failure) => expect(identical(failure, cooldown), isTrue),
           onSuccess: (_) => fail('Should not succeed'),
         );
+      });
+
+      test('pasa foto y removeAvatar al datasource', () async {
+        // Arrange
+        final avatar = Uint8List.fromList([1, 2, 3]);
+        when(mockDataSource.updateProfile(
+          displayName: '',
+          bio: '',
+          avatar: avatar,
+          removeAvatar: true,
+        )).thenAnswer((_) async => tUpdatedUserModel);
+
+        // Act
+        final result = await repository.updateProfile(
+          displayName: '',
+          bio: '',
+          avatar: avatar,
+          removeAvatar: true,
+        );
+
+        // Assert
+        expect(result.isSuccess, isTrue);
+        verify(mockDataSource.updateProfile(
+          displayName: '',
+          bio: '',
+          avatar: avatar,
+          removeAvatar: true,
+        )).called(1);
       });
 
       test('debe manejar otras PostgrestException', () async {

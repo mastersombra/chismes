@@ -2,6 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:chismes/core/error/error_codes.dart';
+import 'package:chismes/core/error/failure.dart';
+import 'package:chismes/core/result/result.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase hide User;
 import 'package:supabase_flutter/supabase_flutter.dart' as sb show Session, User;
@@ -24,6 +29,11 @@ void main() {
   late MockSupabaseClient mockSupabaseClient;
   late MockGoTrueClient mockGoTrueClient;
   late MockAppLogger mockLogger;
+
+  provideDummy<Result<Failure, User?>>(Result.success(null));
+  provideDummy<Result<Failure, User>>(
+    Result.failure(const AuthFailure(code: ErrorCode.unauthorized)),
+  );
 
   setUp(() {
     mockAuthRepository = MockAuthRepository();
@@ -103,6 +113,137 @@ void main() {
         // Assert - Ahora debe tener usuario
         expect(authService.currentUser, user);
         expect(authService.currentUser?.id, '456');
+      });
+    });
+
+    group('perfil cacheado (loadCurrentUser / updateProfile)', () {
+      final sessionUser = User(
+        id: 'u1',
+        email: 'a@test.com',
+        emailVerified: true,
+        profileCompleted: false,
+        createdAt: DateTime(2024, 1, 1),
+      );
+      final profileUser = sessionUser.copyWith(
+        username: 'chismoso',
+        displayName: 'Chismoso',
+        bio: 'bio',
+        profileCompleted: true,
+      );
+
+      test('loadCurrentUser deja el perfil completo en currentUser', () async {
+        // Arrange
+        when(mockAuthRepository.currentUser).thenReturn(sessionUser);
+        when(mockAuthRepository.getCurrentUser())
+            .thenAnswer((_) async => Result.success(profileUser));
+
+        // Act
+        final result = await authService.loadCurrentUser();
+
+        // Assert
+        expect(result.isSuccess, isTrue);
+        expect(authService.currentUser, profileUser);
+        expect(authService.currentUser?.username, 'chismoso');
+      });
+
+      test('loadCurrentUser con error mantiene el usuario de la sesión y avisa',
+          () async {
+        // Arrange
+        when(mockAuthRepository.currentUser).thenReturn(sessionUser);
+        when(mockAuthRepository.getCurrentUser()).thenAnswer((_) async =>
+            Result.failure(const NetworkFailure(code: ErrorCode.networkError)));
+
+        // Act
+        final result = await authService.loadCurrentUser();
+
+        // Assert
+        expect(result.isFailure, isTrue);
+        expect(authService.currentUser, sessionUser);
+        verify(mockLogger.w('Failed to load current user',
+            context: {'code': 'networkError'})).called(1);
+      });
+
+      test('si la sesión es de otro usuario retorna el de la sesión', () async {
+        // Arrange
+        final otherSession = User(
+          id: 'u2',
+          email: 'b@test.com',
+          emailVerified: true,
+          profileCompleted: false,
+          createdAt: DateTime(2024, 1, 1),
+        );
+        when(mockAuthRepository.getCurrentUser())
+            .thenAnswer((_) async => Result.success(profileUser));
+        await authService.loadCurrentUser();
+
+        // Act
+        when(mockAuthRepository.currentUser).thenReturn(otherSession);
+
+        // Assert
+        expect(authService.currentUser, otherSession);
+      });
+
+      test('sin sesión retorna null y descarta el perfil cacheado', () async {
+        // Arrange
+        when(mockAuthRepository.getCurrentUser())
+            .thenAnswer((_) async => Result.success(profileUser));
+        await authService.loadCurrentUser();
+
+        // Act - cierra sesión y vuelve a entrar el mismo usuario
+        when(mockAuthRepository.currentUser).thenReturn(null);
+        final whileSignedOut = authService.currentUser;
+        when(mockAuthRepository.currentUser).thenReturn(sessionUser);
+
+        // Assert - el perfil viejo no reaparece
+        expect(whileSignedOut, isNull);
+        expect(authService.currentUser, sessionUser);
+      });
+
+      test('updateProfile delega en el repositorio y cachea el resultado',
+          () async {
+        // Arrange
+        final avatar = Uint8List.fromList([1, 2]);
+        when(mockAuthRepository.currentUser).thenReturn(sessionUser);
+        when(mockAuthRepository.updateProfile(
+          username: 'nuevo',
+          displayName: '',
+          bio: 'b',
+          avatar: avatar,
+          removeAvatar: false,
+        )).thenAnswer((_) async => Result.success(profileUser));
+
+        // Act
+        final result = await authService.updateProfile(
+          username: 'nuevo',
+          displayName: '',
+          bio: 'b',
+          avatar: avatar,
+        );
+
+        // Assert
+        expect(result.isSuccess, isTrue);
+        expect(authService.currentUser, profileUser);
+        verify(mockAuthRepository.updateProfile(
+          username: 'nuevo',
+          displayName: '',
+          bio: 'b',
+          avatar: avatar,
+          removeAvatar: false,
+        )).called(1);
+      });
+
+      test('updateProfile con error no toca el usuario actual', () async {
+        // Arrange
+        when(mockAuthRepository.currentUser).thenReturn(sessionUser);
+        when(mockAuthRepository.updateProfile(removeAvatar: true)).thenAnswer(
+            (_) async => Result.failure(const UsernameCooldownFailure()));
+
+        // Act
+        final result = await authService.updateProfile(removeAvatar: true);
+
+        // Assert
+        expect(result.isFailure, isTrue);
+        expect(authService.currentUser, sessionUser);
       });
     });
 

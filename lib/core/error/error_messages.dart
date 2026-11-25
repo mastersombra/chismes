@@ -122,6 +122,18 @@ class ErrorMessages {
         return context.l10n.errorsAccountRestricted;
       case ErrorCode.accountSuspended:
         return context.l10n.errorsAccountSuspended;
+      case ErrorCode.usernameChangeCooldown:
+        return context.l10n.errorsUsernameChangeCooldown;
+      case ErrorCode.usernameReserved:
+        return context.l10n.errorsUsernameReserved;
+      case ErrorCode.moderationUnavailable:
+        return context.l10n.errorsModerationUnavailable;
+      case ErrorCode.invalidImage:
+        return context.l10n.errorsInvalidImage;
+      case ErrorCode.userNotAvailable:
+        return context.l10n.errorsUserNotAvailable;
+      case ErrorCode.followRateLimited:
+        return context.l10n.errorsFollowRateLimited;
 
       // Errores desconocidos
       case ErrorCode.unknownError:
@@ -140,6 +152,11 @@ class ErrorMessages {
       final date = '${material.formatShortDate(local)} · '
           '${material.formatTimeOfDay(TimeOfDay.fromDateTime(local))}';
       return context.l10n.errorsAccountRestrictedUntil(date);
+    }
+    if (failure is UsernameCooldownFailure && failure.availableAt != null) {
+      final date = MaterialLocalizations.of(context)
+          .formatMediumDate(failure.availableAt!.toLocal());
+      return context.l10n.errorsUsernameChangeCooldownUntil(date);
     }
     if (failure is ServerFailure && failure.message != null) return failure.message!;
     if (failure is RateLimitFailure && failure.message != null) return failure.message!;
@@ -194,6 +211,12 @@ class ErrorMessages {
       case ErrorCode.rateLimitExceeded:
       case ErrorCode.accountRestricted:
       case ErrorCode.accountSuspended:
+      case ErrorCode.usernameChangeCooldown:
+      case ErrorCode.usernameReserved:
+      case ErrorCode.moderationUnavailable:
+      case ErrorCode.invalidImage:
+      case ErrorCode.userNotAvailable:
+      case ErrorCode.followRateLimited:
         return context.l10n.errorsTitlesGeneral;
       case ErrorCode.unknownError:
         return context.l10n.errorsTitlesUnexpected;

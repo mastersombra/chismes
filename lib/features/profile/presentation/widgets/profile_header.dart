@@ -8,9 +8,13 @@ import '../../../auth/domain/entities/user.dart';
 class ProfileHeader extends StatelessWidget {
   final User user;
 
+  /// Abre Editar perfil (sin callback no se muestra el botón)
+  final VoidCallback? onEdit;
+
   const ProfileHeader({
     super.key,
     required this.user,
+    this.onEdit,
   });
 
   @override
@@ -117,6 +121,16 @@ class ProfileHeader extends StatelessWidget {
         ],
 
         // Barra de completitud del perfil
+        if (onEdit != null) ...[
+          const SizedBox(height: AppSpacing.lg),
+          OutlinedButton.icon(
+            key: const Key('editProfileButton'),
+            onPressed: onEdit,
+            icon: const Icon(Icons.edit_outlined),
+            label: Text(context.l10n.editProfileTitle),
+          ),
+        ],
+
         const SizedBox(height: AppSpacing.lg),
         _buildProfileCompleteness(context, user),
       ],

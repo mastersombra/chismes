@@ -36,8 +36,6 @@ void main() {
       commentsNotifications: true,
       likesNotifications: true,
       followNotifications: true,
-      language: 'es',
-      darkMode: false,
       privacyLevel: 'public',
       showEmail: false,
       showActivity: true,
@@ -68,8 +66,6 @@ void main() {
           commentsNotifications: false,
           likesNotifications: true,
           followNotifications: false,
-          language: 'en',
-          darkMode: true,
           privacyLevel: 'private',
           showEmail: true,
           showActivity: false,
@@ -84,8 +80,6 @@ void main() {
         // Assert
         expect(result.isSuccess, isTrue);
         expect(result.successValue, customSettings);
-        expect(result.successValue?.language, 'en');
-        expect(result.successValue?.darkMode, isTrue);
         expect(result.successValue?.privacyLevel, 'private');
       });
 
@@ -103,7 +97,6 @@ void main() {
         expect(result.isSuccess, isTrue);
         expect(result.successValue, defaultSettings);
         expect(result.successValue?.notificationsEnabled, isTrue);
-        expect(result.successValue?.language, 'es');
         expect(result.successValue?.privacyLevel, 'public');
       });
 

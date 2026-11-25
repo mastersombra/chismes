@@ -11,6 +11,7 @@ import 'package:chismes/features/auth/presentation/widgets/password_field.dart';
 import 'package:chismes/features/auth/presentation/widgets/password_strength_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:chismes/core/legal/legal_consent_text.dart';
 import 'package:chismes/core/logging/app_logger.dart';
 import 'package:chismes/core/services/auth_service.dart';
 import 'package:chismes/features/auth/domain/repositories/auth_repository.dart';
@@ -130,11 +131,14 @@ void main() {
       );
       await tester.pumpAndSettle();
       // Assert
+      expect(find.byType(LegalConsentText), findsOneWidget);
       expect(
-        find.text('Al crear una cuenta, aceptas nuestros Términos y Condiciones y Política de Privacidad'),
+        find.text(
+          'Al continuar, aceptas los Términos de uso y la Política de privacidad.',
+          findRichText: true,
+        ),
         findsOneWidget,
       );
-      expect(find.byIcon(Icons.info_outline), findsOneWidget);
     });
 
     testWidgets('debe renderizar link de inicio de sesión', (WidgetTester tester) async {
@@ -283,18 +287,18 @@ void main() {
       expect(find.byType(SingleChildScrollView), findsOneWidget);
     });
 
-    testWidgets('debe tener Row para términos y condiciones', (WidgetTester tester) async {
+    testWidgets('el aviso de políticas va antes del botón de crear cuenta', (WidgetTester tester) async {
       // Act
       await tester.pumpWidget(
         makeTestableWidget(const SignupScreen()),
       );
       await tester.pumpAndSettle();
-      // Assert
-      final rowWithIcon = find.ancestor(
-        of: find.byIcon(Icons.info_outline),
-        matching: find.byType(Row),
-      );
-      expect(rowWithIcon, findsOneWidget);
+      // Assert: se lee antes de poder crear la cuenta
+      final consentY = tester.getTopLeft(find.byType(LegalConsentText)).dy;
+      final buttonY = tester
+          .getTopLeft(find.widgetWithText(AuthButton, 'Crear Cuenta'))
+          .dy;
+      expect(consentY, lessThan(buttonY));
     });
 
     testWidgets('no debe llamar signUpWithEmail si form no es válido', (WidgetTester tester) async {

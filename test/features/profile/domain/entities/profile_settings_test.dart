@@ -10,8 +10,6 @@ void main() {
       commentsNotifications: true,
       likesNotifications: false,
       followNotifications: true,
-      language: 'es',
-      darkMode: false,
       privacyLevel: 'public',
       showEmail: false,
       showActivity: true,
@@ -27,8 +25,6 @@ void main() {
           commentsNotifications: false,
           likesNotifications: true,
           followNotifications: false,
-          language: 'en',
-          darkMode: true,
           privacyLevel: 'private',
           showEmail: true,
           showActivity: false,
@@ -41,8 +37,6 @@ void main() {
         expect(settings.commentsNotifications, isFalse);
         expect(settings.likesNotifications, isTrue);
         expect(settings.followNotifications, isFalse);
-        expect(settings.language, 'en');
-        expect(settings.darkMode, isTrue);
         expect(settings.privacyLevel, 'private');
         expect(settings.showEmail, isTrue);
         expect(settings.showActivity, isFalse);
@@ -57,54 +51,12 @@ void main() {
           commentsNotifications: true,
           likesNotifications: true,
           followNotifications: true,
-          language: 'es',
-          darkMode: false,
           privacyLevel: 'public',
           showEmail: false,
           showActivity: true,
         );
 
         expect(settings, isA<ProfileSettings>());
-      });
-
-      test('debe aceptar language es', () {
-        // Act
-        const settings = ProfileSettings(
-          notificationsEnabled: true,
-          emailNotifications: true,
-          pushNotifications: true,
-          commentsNotifications: true,
-          likesNotifications: true,
-          followNotifications: true,
-          language: 'es',
-          darkMode: false,
-          privacyLevel: 'public',
-          showEmail: false,
-          showActivity: true,
-        );
-
-        // Assert
-        expect(settings.language, 'es');
-      });
-
-      test('debe aceptar language en', () {
-        // Act
-        const settings = ProfileSettings(
-          notificationsEnabled: true,
-          emailNotifications: true,
-          pushNotifications: true,
-          commentsNotifications: true,
-          likesNotifications: true,
-          followNotifications: true,
-          language: 'en',
-          darkMode: false,
-          privacyLevel: 'public',
-          showEmail: false,
-          showActivity: true,
-        );
-
-        // Assert
-        expect(settings.language, 'en');
       });
 
       test('debe aceptar privacyLevel public', () {
@@ -116,8 +68,6 @@ void main() {
           commentsNotifications: true,
           likesNotifications: true,
           followNotifications: true,
-          language: 'es',
-          darkMode: false,
           privacyLevel: 'public',
           showEmail: false,
           showActivity: true,
@@ -125,26 +75,6 @@ void main() {
 
         // Assert
         expect(settings.privacyLevel, 'public');
-      });
-
-      test('debe aceptar privacyLevel friends', () {
-        // Act
-        const settings = ProfileSettings(
-          notificationsEnabled: true,
-          emailNotifications: true,
-          pushNotifications: true,
-          commentsNotifications: true,
-          likesNotifications: true,
-          followNotifications: true,
-          language: 'es',
-          darkMode: false,
-          privacyLevel: 'friends',
-          showEmail: false,
-          showActivity: true,
-        );
-
-        // Assert
-        expect(settings.privacyLevel, 'friends');
       });
 
       test('debe aceptar privacyLevel private', () {
@@ -156,8 +86,6 @@ void main() {
           commentsNotifications: true,
           likesNotifications: true,
           followNotifications: true,
-          language: 'es',
-          darkMode: false,
           privacyLevel: 'private',
           showEmail: false,
           showActivity: true,
@@ -180,8 +108,6 @@ void main() {
         expect(settings.commentsNotifications, isTrue);
         expect(settings.likesNotifications, isTrue);
         expect(settings.followNotifications, isTrue);
-        expect(settings.language, 'es');
-        expect(settings.darkMode, isFalse);
         expect(settings.privacyLevel, 'public');
         expect(settings.showEmail, isFalse);
         expect(settings.showActivity, isTrue);
@@ -214,22 +140,6 @@ void main() {
         expect(settings.commentsNotifications, isTrue);
         expect(settings.likesNotifications, isTrue);
         expect(settings.followNotifications, isTrue);
-      });
-
-      test('debe usar español como idioma por defecto', () {
-        // Act
-        final settings = ProfileSettings.defaultSettings();
-
-        // Assert
-        expect(settings.language, 'es');
-      });
-
-      test('debe tener dark mode deshabilitado', () {
-        // Act
-        final settings = ProfileSettings.defaultSettings();
-
-        // Assert
-        expect(settings.darkMode, isFalse);
       });
 
       test('debe tener privacidad pública por defecto', () {
@@ -309,24 +219,6 @@ void main() {
         expect(copy.followNotifications, isFalse);
       });
 
-      test('debe copiar con language modificado', () {
-        // Act
-        final copy = testSettings.copyWith(language: 'en');
-
-        // Assert
-        expect(copy.language, 'en');
-        expect(copy.darkMode, testSettings.darkMode);
-      });
-
-      test('debe copiar con darkMode modificado', () {
-        // Act
-        final copy = testSettings.copyWith(darkMode: true);
-
-        // Assert
-        expect(copy.darkMode, isTrue);
-        expect(copy.language, testSettings.language);
-      });
-
       test('debe copiar con privacyLevel modificado', () {
         // Act
         final copy = testSettings.copyWith(privacyLevel: 'private');
@@ -354,14 +246,10 @@ void main() {
       test('debe copiar con múltiples campos modificados', () {
         // Act
         final copy = testSettings.copyWith(
-          darkMode: true,
-          language: 'en',
           privacyLevel: 'private',
         );
 
         // Assert
-        expect(copy.darkMode, isTrue);
-        expect(copy.language, 'en');
         expect(copy.privacyLevel, 'private');
         expect(copy.notificationsEnabled, testSettings.notificationsEnabled);
       });
@@ -377,8 +265,6 @@ void main() {
         expect(copy.commentsNotifications, testSettings.commentsNotifications);
         expect(copy.likesNotifications, testSettings.likesNotifications);
         expect(copy.followNotifications, testSettings.followNotifications);
-        expect(copy.language, testSettings.language);
-        expect(copy.darkMode, testSettings.darkMode);
         expect(copy.privacyLevel, testSettings.privacyLevel);
         expect(copy.showEmail, testSettings.showEmail);
         expect(copy.showActivity, testSettings.showActivity);
@@ -393,7 +279,6 @@ void main() {
         // Assert
         expect(result, contains('ProfileSettings'));
         expect(result, contains('notifications: true'));
-        expect(result, contains('language: es'));
         expect(result, contains('privacyLevel: public'));
       });
 
@@ -406,8 +291,6 @@ void main() {
           commentsNotifications: true,
           likesNotifications: true,
           followNotifications: true,
-          language: 'en',
-          darkMode: true,
           privacyLevel: 'private',
           showEmail: true,
           showActivity: false,
@@ -418,7 +301,6 @@ void main() {
 
         // Assert
         expect(result, contains('false')); // notifications
-        expect(result, contains('en'));
         expect(result, contains('private'));
       });
 
@@ -429,7 +311,7 @@ void main() {
         // Assert
         expect(
           result,
-          'ProfileSettings(notifications: true, language: es, privacyLevel: public)',
+          'ProfileSettings(notifications: true, privacyLevel: public)',
         );
       });
     });
@@ -465,16 +347,6 @@ void main() {
         expect(testSettings.followNotifications, isA<bool>());
       });
 
-      test('language debe ser final', () {
-        // Assert
-        expect(testSettings.language, isA<String>());
-      });
-
-      test('darkMode debe ser final', () {
-        // Assert
-        expect(testSettings.darkMode, isA<bool>());
-      });
-
       test('privacyLevel debe ser final', () {
         // Assert
         expect(testSettings.privacyLevel, isA<String>());
@@ -501,8 +373,6 @@ void main() {
           commentsNotifications: false,
           likesNotifications: false,
           followNotifications: false,
-          language: 'es',
-          darkMode: false,
           privacyLevel: 'public',
           showEmail: false,
           showActivity: false,
@@ -526,8 +396,6 @@ void main() {
           commentsNotifications: true,
           likesNotifications: true,
           followNotifications: true,
-          language: 'es',
-          darkMode: false,
           privacyLevel: 'public',
           showEmail: false,
           showActivity: true,
@@ -551,8 +419,6 @@ void main() {
           commentsNotifications: false,
           likesNotifications: false,
           followNotifications: false,
-          language: 'es',
-          darkMode: true,
           privacyLevel: 'private',
           showEmail: false,
           showActivity: false,
@@ -573,8 +439,6 @@ void main() {
           commentsNotifications: true,
           likesNotifications: true,
           followNotifications: true,
-          language: 'es',
-          darkMode: false,
           privacyLevel: 'public',
           showEmail: true,
           showActivity: true,
@@ -590,11 +454,10 @@ void main() {
     group('Immutability', () {
       test('copyWith debe crear nueva instancia', () {
         // Act
-        final copy = testSettings.copyWith(darkMode: true);
+        final copy = testSettings.copyWith(showEmail: true);
 
         // Assert
         expect(identical(copy, testSettings), isFalse);
-        expect(copy.darkMode, isNot(testSettings.darkMode));
       });
 
       test('campos deben ser final (no modificables)', () {

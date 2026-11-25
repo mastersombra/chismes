@@ -19,9 +19,7 @@ import '../repositories/home_repository.dart';
 ///   final GetFollowingFeed _getFollowingFeed;
 ///
 ///   Future<void> loadFeed() async {
-///     final result = await _getFollowingFeed(
-///       userId: currentUser.id,
-///     );
+///     final result = await _getFollowingFeed();
 ///
 ///     result.fold(
 ///       onFailure: (failure) => _handleError(failure),
@@ -47,12 +45,10 @@ class GetFollowingFeed {
   ///
   /// Ver documentación completa en [HomeRepository.getFollowingFeed].
   Future<Result<Failure, PaginatedGossips>> call({
-    required String userId,
     int pageSize = 20,
     FeedCursor? cursor,
   }) async {
     return await _repository.getFollowingFeed(
-      userId: userId,
       pageSize: pageSize,
       cursor: cursor,
     );

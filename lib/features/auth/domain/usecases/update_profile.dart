@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:injectable/injectable.dart';
 
 import '../../../../core/error/failure.dart';
@@ -17,21 +19,25 @@ class UpdateProfileUseCase {
 
   /// Ejecuta el caso de uso
   ///
-  /// Solo actualiza los campos que no son null.
+  /// Solo actualiza los campos que no son null. `''` en [displayName] o
+  /// [bio] los borra. El servidor vuelve a validar y además modera.
   ///
-  /// [username] Nuevo username (debe ser único)
+  /// [username] Nuevo username (debe ser único; se cambia cada N días)
   /// [displayName] Nuevo nombre a mostrar
-  /// [avatarUrl] Nueva URL de avatar
   /// [bio] Nueva biografía
+  /// [avatar] Foto nueva, ya comprimida
+  /// [removeAvatar] Quitar la foto actual
   ///
   /// Returns:
   /// - Success: Usuario actualizado
-  /// - Failure: ValidationFailure, UsernameAlreadyTakenFailure, NetworkFailure
+  /// - Failure: ValidationFailure, UsernameCooldownFailure,
+  ///   AccountRestrictedFailure, NetworkFailure, ...
   Future<Result<Failure, User>> call({
     String? username,
     String? displayName,
-    String? avatarUrl,
     String? bio,
+    Uint8List? avatar,
+    bool removeAvatar = false,
   }) async {
     // Validaciones de dominio
     if (username != null) {
@@ -41,7 +47,7 @@ class UpdateProfileUseCase {
       }
     }
 
-    if (displayName != null) {
+    if (displayName != null && displayName.isNotEmpty) {
       final displayNameValidation =
           AuthValidator.validateDisplayName(displayName);
       if (displayNameValidation != null) {
@@ -49,7 +55,7 @@ class UpdateProfileUseCase {
       }
     }
 
-    if (bio != null) {
+    if (bio != null && bio.isNotEmpty) {
       final bioValidation = AuthValidator.validateBio(bio);
       if (bioValidation != null) {
         return Result.failure(bioValidation);
@@ -60,8 +66,9 @@ class UpdateProfileUseCase {
     return _repository.updateProfile(
       username: username,
       displayName: displayName,
-      avatarUrl: avatarUrl,
       bio: bio,
+      avatar: avatar,
+      removeAvatar: removeAvatar,
     );
   }
 }

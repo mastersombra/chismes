@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:chismes/core/l10n/l10n.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/user_stats.dart';
 
@@ -8,9 +9,15 @@ import '../../domain/entities/user_stats.dart';
 class ProfileStatsCard extends StatelessWidget {
   final UserStats stats;
 
+  /// Abre mis seguidores / seguidos (sin callback el contador no es tocable)
+  final VoidCallback? onFollowersTap;
+  final VoidCallback? onFollowingTap;
+
   const ProfileStatsCard({
     super.key,
     required this.stats,
+    this.onFollowersTap,
+    this.onFollowingTap,
   });
 
   @override
@@ -64,6 +71,8 @@ class ProfileStatsCard extends StatelessWidget {
                   label: context.l10n.profileStatsFollowers,
                   value: stats.followersCount,
                   color: Colors.green,
+                  onTap: onFollowersTap,
+                  tapKey: const Key('profileFollowersStat'),
                 ),
                 _buildStatItem(
                   context,
@@ -71,6 +80,8 @@ class ProfileStatsCard extends StatelessWidget {
                   label: context.l10n.profileStatsFollowing,
                   value: stats.followingCount,
                   color: Colors.orange,
+                  onTap: onFollowingTap,
+                  tapKey: const Key('profileFollowingStat'),
                 ),
               ],
             ),
@@ -86,8 +97,10 @@ class ProfileStatsCard extends StatelessWidget {
     required String label,
     required int value,
     required Color color,
+    VoidCallback? onTap,
+    Key? tapKey,
   }) {
-    return Column(
+    final item = Column(
       children: [
         Container(
           padding: const EdgeInsets.all(AppSpacing.md),
@@ -117,6 +130,16 @@ class ProfileStatsCard extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
       ],
+    );
+    if (onTap == null) return item;
+    return InkWell(
+      key: tapKey,
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xs),
+        child: item,
+      ),
     );
   }
 

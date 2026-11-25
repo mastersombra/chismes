@@ -232,13 +232,12 @@ void main() {
           () async {
         // Arrange
         when(mockRemoteDataSource.getFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenAnswer((_) async => tPaginatedModel);
 
         // Act
-        final result = await repository.getFollowingFeed(userId: testUserId);
+        final result = await repository.getFollowingFeed();
 
         // Assert
         expect(result.isSuccess, isTrue);
@@ -255,7 +254,6 @@ void main() {
           context: anyNamed('context'),
         )).called(1);
         verify(mockRemoteDataSource.getFollowingFeed(
-          userId: testUserId,
           pageSize: 20,
           cursor: null,
         )).called(1);
@@ -269,13 +267,12 @@ void main() {
         // Arrange
         final testError = Exception('Database error');
         when(mockRemoteDataSource.getFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: anyNamed('cursor'),
         )).thenThrow(testError);
 
         // Act
-        final result = await repository.getFollowingFeed(userId: testUserId);
+        final result = await repository.getFollowingFeed();
 
         // Assert
         expect(result.isFailure, isTrue);
@@ -283,7 +280,6 @@ void main() {
           'Error getting following feed',
           error: testError,
           stackTrace: anyNamed('stackTrace'),
-          context: {'userId': testUserId},
         )).called(1);
       });
 
@@ -295,20 +291,17 @@ void main() {
         );
 
         when(mockRemoteDataSource.getFollowingFeed(
-          userId: anyNamed('userId'),
           pageSize: anyNamed('pageSize'),
           cursor: cursor,
         )).thenAnswer((_) async => tPaginatedModel);
 
         // Act
         await repository.getFollowingFeed(
-          userId: testUserId,
           cursor: cursor,
         );
 
         // Assert
         verify(mockRemoteDataSource.getFollowingFeed(
-          userId: testUserId,
           pageSize: 20,
           cursor: cursor,
         )).called(1);

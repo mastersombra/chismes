@@ -41,7 +41,6 @@ class ProfileSetupController extends ChangeNotifier {
   Future<void> updateProfile({
     String? username,
     String? displayName,
-    String? avatarUrl,
     String? bio,
   }) async {
     _setState(const AuthLoading());
@@ -49,14 +48,12 @@ class ProfileSetupController extends ChangeNotifier {
     _logger.i('Update profile attempt', context: {
       'hasUsername': username != null,
       'hasDisplayName': displayName != null,
-      'hasAvatar': avatarUrl != null,
       'hasBio': bio != null,
     });
 
     final result = await _updateProfile(
       username: username,
       displayName: displayName,
-      avatarUrl: avatarUrl,
       bio: bio,
     );
 

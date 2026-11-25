@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide ErrorCode;
+import 'package:chismes/core/error/error_codes.dart';
+import 'package:chismes/core/error/failure.dart';
 import 'package:chismes/core/logging/logging.dart';
 import 'package:chismes/features/auth/data/datasources/supabase_auth_datasource_impl.dart';
 import 'package:chismes/features/auth/data/models/user_model.dart';
@@ -718,68 +721,121 @@ void main() {
       });
     });
 
-    group('updateProfile', () {
-      test('lanza Exception sin usuario autenticado y no llama a la API',
+    group('updateProfile (Edge Function update-profile)', () {
+      const fnPath = '/functions/v1/update-profile';
+
+      test('lanza AuthFailure sin usuario autenticado y no llama a la API',
           () async {
         await expectLater(
           ds.updateProfile(username: 'x'),
-          throwsA(isA<Exception>().having((e) => e.toString(), 'message',
-              contains('No authenticated user'))),
+          throwsA(isA<AuthFailure>().having(
+              (f) => f.code, 'code', ErrorCode.userNotAuthenticated)),
         );
         expect(fake.requests, isEmpty);
-        verify(logger.e('Update profile failed',
-                error: anyNamed('error'), stackTrace: anyNamed('stackTrace')))
-            .called(1);
       });
 
-      test('envía todos los campos y retorna el profile actualizado',
+      test('envía los campos no nulos y retorna el profile de la respuesta',
           () async {
+        // Arrange
         await signIn();
-        routes['GET /rest/v1/profiles'] = (req) => json(req, [
-              {...profileRow, 'username': 'nuevo', 'bio': 'nueva bio'}
-            ]);
+        routes['POST $fnPath'] = (req) => json(req, {
+              'profile': {
+                ...profileRow,
+                'username': 'nuevo',
+                'display_name': 'Nuevo Nombre',
+                'bio': 'nueva bio',
+              },
+            });
 
+        // Act
         final user = await ds.updateProfile(
           username: 'nuevo',
           displayName: 'Nuevo Nombre',
-          avatarUrl: 'https://cdn.test/b.jpg',
           bio: 'nueva bio',
         );
 
-        final patch = requestsTo('PATCH', '/rest/v1/profiles').single;
-        expect(patch.url.queryParameters['id'], 'eq.$tUserId');
-        expect(jsonDecode(patch.body), {
+        // Assert
+        final call = requestsTo('POST', fnPath).single;
+        expect(jsonDecode(call.body), {
           'username': 'nuevo',
           'display_name': 'Nuevo Nombre',
-          'avatar_url': 'https://cdn.test/b.jpg',
           'bio': 'nueva bio',
         });
+        expect(requestsTo('PATCH', '/rest/v1/profiles'), isEmpty);
+        expect(user.id, tUserId);
         expect(user.username, 'nuevo');
+        expect(user.displayName, 'Nuevo Nombre');
         expect(user.bio, 'nueva bio');
         verify(logger.i('Profile updated successfully',
                 context: {'userId': tUserId}))
             .called(1);
       });
 
-      test('solo envía los campos no nulos', () async {
+      test('envía la foto en base64 y no la incluye en el log', () async {
+        // Arrange
         await signIn();
+        final avatar = Uint8List.fromList([255, 216, 255, 0, 1]);
+        routes['POST $fnPath'] =
+            (req) => json(req, {'profile': profileRow});
 
-        await ds.updateProfile(bio: 'solo bio');
+        // Act
+        await ds.updateProfile(avatar: avatar);
 
-        final patch = requestsTo('PATCH', '/rest/v1/profiles').single;
-        expect(jsonDecode(patch.body), {'bio': 'solo bio'});
+        // Assert
+        final body = jsonDecode(requestsTo('POST', fnPath).single.body);
+        expect(body, {'avatar_base64': base64Encode(avatar)});
+        verify(logger.i('Updating profile', context: {
+          'userId': tUserId,
+          'fields': <String>[],
+          'hasAvatar': true,
+        })).called(1);
       });
 
-      test('relanza PostgrestException (ej. username duplicado)', () async {
+      test('removeAvatar envía remove_avatar y "" borra nombre y bio',
+          () async {
+        // Arrange
         await signIn();
-        routes['PATCH /rest/v1/profiles'] = pgError;
+        routes['POST $fnPath'] =
+            (req) => json(req, {'profile': profileRow});
 
-        await expectLater(ds.updateProfile(username: 'tomado'),
-            throwsA(isA<PostgrestException>()));
-        verify(logger.w('Update profile failed (PostgrestException)',
-                error: anyNamed('error'),
-                context: {'code': '23505', 'message': 'boom'}))
-            .called(1);
+        // Act
+        await ds.updateProfile(displayName: '', bio: '', removeAvatar: true);
+
+        // Assert
+        final body = jsonDecode(requestsTo('POST', fnPath).single.body);
+        expect(body, {'display_name': '', 'bio': '', 'remove_avatar': true});
+      });
+
+      test('respuesta no 2xx (FunctionException) se traduce a Failure',
+          () async {
+        // Arrange
+        await signIn();
+        routes['POST $fnPath'] = (req) =>
+            json(req, {'error': 'username_taken'}, status: 409);
+
+        // Act & Assert
+        await expectLater(
+          ds.updateProfile(username: 'tomado'),
+          throwsA(isA<DataFailure>().having(
+              (f) => f.code, 'code', ErrorCode.usernameAlreadyTaken)),
+        );
+        verify(logger.w('Update profile rejected', context: {
+          'status': 409,
+          'code': 'usernameAlreadyTaken',
+        })).called(1);
+      });
+
+      test('200 sin "profile" en la respuesta lanza ServerFailure', () async {
+        // Arrange
+        await signIn();
+        routes['POST $fnPath'] = (req) => json(req, {'ok': true});
+
+        // Act & Assert
+        await expectLater(
+          ds.updateProfile(bio: 'x'),
+          throwsA(isA<ServerFailure>()
+              .having((f) => f.code, 'code', ErrorCode.serverError)),
+        );
       });
     });
 
@@ -967,6 +1023,160 @@ void main() {
 
         await expectLater(ds.validateSession(), throwsA(isA<AuthException>()));
       });
+    });
+  });
+
+  group('SupabaseAuthDataSourceImpl.profileFunctionFailure', () {
+    Failure map(int status, dynamic data) =>
+        SupabaseAuthDataSourceImpl.profileFunctionFailure(status, data);
+
+    test('401 → AuthFailure unauthorized', () {
+      final failure = map(401, {'error': 'unauthorized'});
+
+      expect(failure, isA<AuthFailure>());
+      expect(failure.code, ErrorCode.unauthorized);
+      expect(failure.technicalMessage, 'update-profile 401: unauthorized');
+    });
+
+    test('403 account_restricted → AccountRestrictedFailure con fecha', () {
+      final failure = map(403, {
+        'code': 'account_restricted',
+        'state': 'restricted',
+        'restricted_until': '2026-12-01T10:00:00Z',
+      });
+
+      expect(failure, isA<AccountRestrictedFailure>());
+      expect(failure.code, ErrorCode.accountRestricted);
+      expect((failure as AccountRestrictedFailure).restrictedUntil,
+          DateTime.utc(2026, 12, 1, 10));
+    });
+
+    test('403 account_restricted suspended → accountSuspended', () {
+      final failure = map(403, {'code': 'account_restricted', 'state': 'suspended'});
+
+      expect(failure.code, ErrorCode.accountSuspended);
+    });
+
+    test('403 sin account_restricted → ServerFailure serverError', () {
+      final failure = map(403, {'error': 'forbidden'});
+
+      expect(failure, isA<ServerFailure>());
+      expect(failure.code, ErrorCode.serverError);
+    });
+
+    test('409 username_cooldown → UsernameCooldownFailure con available_at', () {
+      final failure = map(409, {
+        'error': 'username_cooldown',
+        'available_at': '2026-12-20T00:00:00Z',
+      });
+
+      expect(failure, isA<UsernameCooldownFailure>());
+      expect(failure.code, ErrorCode.usernameChangeCooldown);
+      expect((failure as UsernameCooldownFailure).availableAt,
+          DateTime.utc(2026, 12, 20));
+    });
+
+    test('409 username_cooldown sin fecha válida → availableAt null', () {
+      final noDate = map(409, {'error': 'username_cooldown'});
+      final badDate = map(409, {'error': 'username_cooldown', 'available_at': 'mañana'});
+      final notString = map(409, {'error': 'username_cooldown', 'available_at': 123});
+
+      expect((noDate as UsernameCooldownFailure).availableAt, isNull);
+      expect((badDate as UsernameCooldownFailure).availableAt, isNull);
+      expect((notString as UsernameCooldownFailure).availableAt, isNull);
+    });
+
+    test('409 username_taken → DataFailure usernameAlreadyTaken', () {
+      final failure = map(409, {'error': 'username_taken'});
+
+      expect(failure, isA<DataFailure>());
+      expect(failure.code, ErrorCode.usernameAlreadyTaken);
+    });
+
+    test('409 con otro error → ServerFailure serverError', () {
+      final failure = map(409, {'error': 'conflict'});
+
+      expect(failure, isA<ServerFailure>());
+      expect(failure.code, ErrorCode.serverError);
+    });
+
+    test('429 → RateLimitFailure con retry_after', () {
+      final failure = map(429, {'error': 'rate_limited', 'retry_after': 120});
+
+      expect(failure, isA<RateLimitFailure>());
+      expect(failure.code, ErrorCode.rateLimitExceeded);
+      expect((failure as RateLimitFailure).retryAfter, 120);
+    });
+
+    test('429 sin retry_after → retryAfter null', () {
+      final failure = map(429, {'error': 'rate_limited'});
+
+      expect((failure as RateLimitFailure).retryAfter, isNull);
+    });
+
+    test('400 content_rejected → ValidationFailure moderationRejected', () {
+      final failure = map(400, {'error': 'content_rejected'});
+
+      expect(failure, isA<ValidationFailure>());
+      expect(failure.code, ErrorCode.moderationRejected);
+    });
+
+    test('400 invalid_image → ValidationFailure invalidImage', () {
+      final failure = map(400, {'error': 'invalid_image'});
+
+      expect(failure, isA<ValidationFailure>());
+      expect(failure.code, ErrorCode.invalidImage);
+    });
+
+    test('400 "username is reserved" → ValidationFailure usernameReserved', () {
+      final failure = map(400, {
+        'error': 'validation_error',
+        'details': 'username is reserved',
+      });
+
+      expect(failure, isA<ValidationFailure>());
+      expect(failure.code, ErrorCode.usernameReserved);
+    });
+
+    test('otro 400 → ValidationFailure validationError con details', () {
+      final failure = map(400, {
+        'error': 'validation_error',
+        'details': 'bio too long',
+      });
+
+      expect(failure, isA<ValidationFailure>());
+      expect(failure.code, ErrorCode.validationError);
+      expect(failure.technicalMessage,
+          'update-profile 400: validation_error (bio too long)');
+    });
+
+    test('503 moderation_unavailable → ServerFailure moderationUnavailable', () {
+      final failure = map(503, {'error': 'moderation_unavailable'});
+
+      expect(failure, isA<ServerFailure>());
+      expect(failure.code, ErrorCode.moderationUnavailable);
+    });
+
+    test('otro 503 → ServerFailure serviceUnavailable', () {
+      final failure = map(503, {'error': 'storage_down'});
+
+      expect(failure, isA<ServerFailure>());
+      expect(failure.code, ErrorCode.serviceUnavailable);
+    });
+
+    test('500 → ServerFailure serverError', () {
+      final failure = map(500, {'error': 'internal'});
+
+      expect(failure, isA<ServerFailure>());
+      expect(failure.code, ErrorCode.serverError);
+    });
+
+    test('respuesta que no es Map usa el cuerpo en el mensaje técnico', () {
+      final failure = map(502, 'Bad Gateway');
+
+      expect(failure, isA<ServerFailure>());
+      expect(failure.code, ErrorCode.serverError);
+      expect(failure.technicalMessage, 'update-profile 502: Bad Gateway');
     });
   });
 }

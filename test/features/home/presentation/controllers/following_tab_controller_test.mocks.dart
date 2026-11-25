@@ -4,10 +4,11 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i4;
+import 'dart:typed_data' as _i19;
 import 'dart:ui' as _i15;
 
 import 'package:chismes/core/error/failure.dart' as _i6;
-import 'package:chismes/core/logging/app_logger.dart' as _i19;
+import 'package:chismes/core/logging/app_logger.dart' as _i20;
 import 'package:chismes/core/result/result.dart' as _i5;
 import 'package:chismes/core/services/auth_service.dart' as _i17;
 import 'package:chismes/core/services/profile_service.dart' as _i16;
@@ -59,13 +60,11 @@ class MockGetFollowingFeed extends _i1.Mock implements _i3.GetFollowingFeed {
 
   @override
   _i4.Future<_i5.Result<_i6.Failure, _i7.PaginatedGossips>> call({
-    required String? userId,
     int? pageSize = 20,
     _i8.FeedCursor? cursor,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#call, [], {
-              #userId: userId,
               #pageSize: pageSize,
               #cursor: cursor,
             }),
@@ -74,7 +73,6 @@ class MockGetFollowingFeed extends _i1.Mock implements _i3.GetFollowingFeed {
                   _i9.dummyValue<_i5.Result<_i6.Failure, _i7.PaginatedGossips>>(
                     this,
                     Invocation.method(#call, [], {
-                      #userId: userId,
                       #pageSize: pageSize,
                       #cursor: cursor,
                     }),
@@ -258,14 +256,6 @@ class MockProfileService extends _i1.Mock implements _i16.ProfileService {
             returnValue: _i4.Future<int>.value(0),
           )
           as _i4.Future<int>);
-
-  @override
-  _i4.Future<int> getFollowersCount(String? userId) =>
-      (super.noSuchMethod(
-            Invocation.method(#getFollowersCount, [userId]),
-            returnValue: _i4.Future<int>.value(0),
-          )
-          as _i4.Future<int>);
 }
 
 /// A class which mocks [AuthService].
@@ -306,6 +296,50 @@ class MockAuthService extends _i1.Mock implements _i17.AuthService {
           as bool);
 
   @override
+  _i4.Future<_i5.Result<_i6.Failure, _i18.User?>> loadCurrentUser() =>
+      (super.noSuchMethod(
+            Invocation.method(#loadCurrentUser, []),
+            returnValue: _i4.Future<_i5.Result<_i6.Failure, _i18.User?>>.value(
+              _i9.dummyValue<_i5.Result<_i6.Failure, _i18.User?>>(
+                this,
+                Invocation.method(#loadCurrentUser, []),
+              ),
+            ),
+          )
+          as _i4.Future<_i5.Result<_i6.Failure, _i18.User?>>);
+
+  @override
+  _i4.Future<_i5.Result<_i6.Failure, _i18.User>> updateProfile({
+    String? username,
+    String? displayName,
+    String? bio,
+    _i19.Uint8List? avatar,
+    bool? removeAvatar = false,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateProfile, [], {
+              #username: username,
+              #displayName: displayName,
+              #bio: bio,
+              #avatar: avatar,
+              #removeAvatar: removeAvatar,
+            }),
+            returnValue: _i4.Future<_i5.Result<_i6.Failure, _i18.User>>.value(
+              _i9.dummyValue<_i5.Result<_i6.Failure, _i18.User>>(
+                this,
+                Invocation.method(#updateProfile, [], {
+                  #username: username,
+                  #displayName: displayName,
+                  #bio: bio,
+                  #avatar: avatar,
+                  #removeAvatar: removeAvatar,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i5.Result<_i6.Failure, _i18.User>>);
+
+  @override
   Map<String, dynamic> debugSessionStatus() =>
       (super.noSuchMethod(
             Invocation.method(#debugSessionStatus, []),
@@ -325,7 +359,7 @@ class MockAuthService extends _i1.Mock implements _i17.AuthService {
 /// A class which mocks [AppLogger].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAppLogger extends _i1.Mock implements _i19.AppLogger {
+class MockAppLogger extends _i1.Mock implements _i20.AppLogger {
   MockAppLogger() {
     _i1.throwOnMissingStub(this);
   }

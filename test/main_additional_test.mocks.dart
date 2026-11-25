@@ -4,6 +4,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i4;
+import 'dart:typed_data' as _i13;
 import 'dart:ui' as _i8;
 
 import 'package:chismes/core/error/failure.dart' as _i12;
@@ -15,7 +16,7 @@ import 'package:chismes/features/auth/domain/repositories/auth_repository.dart'
 import 'package:chismes/features/auth/presentation/controllers/login_controller.dart'
     as _i5;
 import 'package:chismes/features/auth/presentation/controllers/otp_verification_controller.dart'
-    as _i13;
+    as _i14;
 import 'package:chismes/features/auth/presentation/state/auth_state.dart'
     as _i6;
 import 'package:chismes/features/auth/presentation/states/otp_verification_state.dart'
@@ -335,15 +336,17 @@ class MockAuthRepository extends _i1.Mock implements _i9.AuthRepository {
   _i4.Future<_i11.Result<_i12.Failure, _i10.User>> updateProfile({
     String? username,
     String? displayName,
-    String? avatarUrl,
     String? bio,
+    _i13.Uint8List? avatar,
+    bool? removeAvatar = false,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#updateProfile, [], {
               #username: username,
               #displayName: displayName,
-              #avatarUrl: avatarUrl,
               #bio: bio,
+              #avatar: avatar,
+              #removeAvatar: removeAvatar,
             }),
             returnValue: _i4.Future<_i11.Result<_i12.Failure, _i10.User>>.value(
               _i7.dummyValue<_i11.Result<_i12.Failure, _i10.User>>(
@@ -351,8 +354,9 @@ class MockAuthRepository extends _i1.Mock implements _i9.AuthRepository {
                 Invocation.method(#updateProfile, [], {
                   #username: username,
                   #displayName: displayName,
-                  #avatarUrl: avatarUrl,
                   #bio: bio,
+                  #avatar: avatar,
+                  #removeAvatar: removeAvatar,
                 }),
               ),
             ),
@@ -439,7 +443,7 @@ class MockAuthRepository extends _i1.Mock implements _i9.AuthRepository {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockOtpVerificationController extends _i1.Mock
-    implements _i13.OtpVerificationController {
+    implements _i14.OtpVerificationController {
   MockOtpVerificationController() {
     _i1.throwOnMissingStub(this);
   }

@@ -138,3 +138,21 @@ class AccountRestrictedFailure extends Failure {
   @override
   List<Object?> get props => [code, technicalMessage, restrictedUntil];
 }
+
+/// El @usuario se cambió hace menos de `username_change_cooldown_days`
+/// (`409 username_cooldown` de update-profile).
+///
+/// code: [ErrorCode.usernameChangeCooldown]
+class UsernameCooldownFailure extends Failure {
+  /// Desde cuándo puede volver a cambiarlo
+  final DateTime? availableAt;
+
+  const UsernameCooldownFailure({
+    super.code = ErrorCode.usernameChangeCooldown,
+    super.technicalMessage,
+    this.availableAt,
+  });
+
+  @override
+  List<Object?> get props => [code, technicalMessage, availableAt];
+}

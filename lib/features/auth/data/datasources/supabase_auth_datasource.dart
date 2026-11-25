@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import '../models/user_model.dart';
 
 /// Data source abstracto para operaciones de autenticación
@@ -97,16 +99,20 @@ abstract class SupabaseAuthDataSource {
   /// - AuthException no concluyente (red, timeout, 5xx): la sesión se conserva
   Future<bool> validateSession();
 
-  /// Actualiza perfil del usuario
+  /// Actualiza el perfil vía la Edge Function `update-profile` (el servidor
+  /// valida, modera y aplica sanciones; la app no escribe en `profiles`).
   ///
-  /// Throws:
-  /// - UsernameAlreadyTakenException
-  /// - NetworkException
+  /// Solo se envían los campos no-null. `''` en [displayName] o [bio] los
+  /// borra. [avatar]: foto ya comprimida (JPEG). [removeAvatar] la quita.
+  ///
+  /// Throws: [Failure] con el motivo (ver
+  /// [SupabaseAuthDataSourceImpl.profileFunctionFailure])
   Future<UserModel> updateProfile({
     String? username,
     String? displayName,
-    String? avatarUrl,
     String? bio,
+    Uint8List? avatar,
+    bool removeAvatar = false,
   });
 
   /// Verifica disponibilidad de username

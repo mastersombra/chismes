@@ -7,7 +7,8 @@
 -- sobre una base local que imite al remoto (ver supabase/tests/README.md).
 --
 -- Recorre cada camino real de acceso con el rol que usa:
---   - app (authenticated): feed, búsquedas, location, perfil (reportes: vía report-gossip)
+--   - app (authenticated): feed, búsquedas, location, leer perfil, configuración
+--     (reportes: vía report-gossip; editar perfil: vía update-profile)
 --   - Edge Functions con service_role: log-error, report-gossip, moderate-gossip,
 --     moderation-review, cleanup-media, delete-account
 --   - anon: check_email_exists_and_confirmed (login), nada más
@@ -32,7 +33,13 @@ SELECT set_config('request.jwt.claims','{"sub":"11111111-1111-1111-1111-11111111
 DO $$
 BEGIN
   PERFORM get_popular_feed('t-medellin','co-antioquia','CO');
-  PERFORM get_following_feed('11111111-1111-1111-1111-111111111111'::uuid);
+  PERFORM get_following_feed();
+  PERFORM get_user_gossips('11111111-1111-1111-1111-111111111111'::uuid);
+  PERFORM get_user_profile('11111111-1111-1111-1111-111111111111'::uuid);
+  PERFORM get_follow_list('11111111-1111-1111-1111-111111111111'::uuid, 'followers');
+  PERFORM get_follow_requests();
+  PERFORM get_blocked_users();
+  PERFORM search_users('ab');
   PERFORM check_new_gossips('t-medellin', NULL, 'CO', now() - interval '1 day');
   PERFORM * FROM search_gossips('s');
   PERFORM * FROM search_cities('Med');
@@ -41,7 +48,9 @@ BEGIN
   PERFORM 1 FROM public_gossips LIMIT 1;
   PERFORM 1 FROM countries, regions, cities LIMIT 1;
   PERFORM 1 FROM feed_settings LIMIT 1;
-  UPDATE profiles SET display_name = 'Test' WHERE id = auth.uid();
+  -- El perfil se edita solo vía update-profile (017); la configuración, directo
+  PERFORM 1 FROM profiles WHERE id = auth.uid();
+  UPDATE user_settings SET show_email = FALSE WHERE user_id = auth.uid();
   -- report-gossip usa el JWT del usuario solo para verificar que ve el chisme
   PERFORM 1 FROM public_gossips WHERE id = 'a0000000-0000-0000-0000-000000000001';
   RAISE NOTICE '✅ authenticated: feed, búsquedas, location, perfil y verificación de reporte';
@@ -72,8 +81,11 @@ BEGIN
   EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
   BEGIN PERFORM apply_moderation_decision(gen_random_uuid(), 'approve', auth.uid());
   EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
-  IF denied <> 13 THEN RAISE EXCEPTION 'authenticated tiene permisos de más (% de 13 bloqueados)', denied; END IF;
-  RAISE NOTICE '✅ authenticated: bloqueado en gossips (INSERT y SELECT), error_logs, rate_limits, feed_settings (UPDATE) y toda la moderación';
+  -- Perfil: solo vía update-profile (017)
+  BEGIN UPDATE profiles SET bio = 'x' WHERE id = auth.uid();
+  EXCEPTION WHEN insufficient_privilege THEN denied := denied + 1; END;
+  IF denied <> 14 THEN RAISE EXCEPTION 'authenticated tiene permisos de más (% de 14 bloqueados)', denied; END IF;
+  RAISE NOTICE '✅ authenticated: bloqueado en gossips (INSERT y SELECT), error_logs, rate_limits, feed_settings (UPDATE), profiles (UPDATE) y toda la moderación';
 END $$;
 
 -- ---------- service_role (Edge Functions) ----------

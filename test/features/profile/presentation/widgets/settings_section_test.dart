@@ -1,6 +1,7 @@
 import 'package:chismes/core/di/injection_container.dart';
 import 'package:chismes/core/l10n/l10n.dart';
 import 'package:chismes/core/l10n/locale_notifier.dart';
+import 'package:chismes/core/theme/theme_mode_notifier.dart';
 import 'package:chismes/features/profile/domain/entities/profile_settings.dart';
 import 'package:chismes/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:chismes/features/profile/presentation/widgets/settings_section.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'settings_section_test.mocks.dart';
 
@@ -15,8 +17,15 @@ import 'settings_section_test.mocks.dart';
 void main() {
   late MockProfileController mockController;
   late MockLocaleNotifier mockLocaleNotifier;
+  late ThemeModeNotifier themeModeNotifier;
 
-  setUp(() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    themeModeNotifier = ThemeModeNotifier(await SharedPreferences.getInstance());
+    if (getIt.isRegistered<ThemeModeNotifier>()) {
+      getIt.unregister<ThemeModeNotifier>();
+    }
+    getIt.registerSingleton<ThemeModeNotifier>(themeModeNotifier);
     mockController = MockProfileController();
     mockLocaleNotifier = MockLocaleNotifier();
 
@@ -31,6 +40,9 @@ void main() {
   });
 
   tearDown(() {
+    if (getIt.isRegistered<ThemeModeNotifier>()) {
+      getIt.unregister<ThemeModeNotifier>();
+    }
     if (getIt.isRegistered<LocaleNotifier>()) {
       getIt.unregister<LocaleNotifier>();
     }
@@ -332,8 +344,9 @@ void main() {
       await tester.pumpAndSettle();
 
       // Assert
+      // Solo público y privado ('friends' ya no existe, migración 018)
       expect(find.text('Público'), findsWidgets);
-      expect(find.text('Amigos'), findsOneWidget);
+      expect(find.text('Amigos'), findsNothing);
       expect(find.text('Privado'), findsOneWidget);
     });
 
@@ -449,7 +462,6 @@ void main() {
     testWidgets('debe mostrar idioma actual', (tester) async {
       // Arrange
       final settings = ProfileSettings.defaultSettings().copyWith(
-        language: 'es',
       );
 
       // Act
@@ -491,7 +503,6 @@ void main() {
     testWidgets('debe actualizar idioma a inglés', (tester) async {
       // Arrange
       final settings = ProfileSettings.defaultSettings().copyWith(
-        language: 'es',
       );
       when(mockController.updateSetting(any)).thenAnswer((_) async => true);
 
@@ -515,12 +526,9 @@ void main() {
       verifyNever(mockController.updateSetting(any));
     });
 
-    testWidgets('muestra el idioma activo de la app, no settings.language',
-        (tester) async {
-      // settings dice 'en' pero la app está en 'es' (locale del MaterialApp)
-      final settings = ProfileSettings.defaultSettings().copyWith(
-        language: 'en',
-      );
+    testWidgets('muestra el idioma activo de la app', (tester) async {
+      // El idioma sale del locale del MaterialApp ('es'), no de settings
+      final settings = ProfileSettings.defaultSettings();
 
       await tester.pumpWidget(createWidget(settings));
       await tester.pumpAndSettle();
@@ -558,30 +566,95 @@ void main() {
     });
   });
 
-  group('SettingsSection - Dark Mode', () {
-    testWidgets('debe actualizar dark mode', (tester) async {
-      // Arrange
-      final settings = ProfileSettings.defaultSettings().copyWith(
-        darkMode: false,
-      );
-      when(mockController.updateSetting(any)).thenAnswer((_) async => true);
-
-      // Act
-      await tester.pumpWidget(createWidget(settings));
+  group('SettingsSection - Tema', () {
+    Future<void> openThemeDialog(WidgetTester tester) async {
+      await tester.pumpWidget(createWidget(ProfileSettings.defaultSettings()));
       await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Tema'));
+      await tester.tap(find.text('Tema'));
+      await tester.pumpAndSettle();
+    }
 
-      // Scroll para ver dark mode
-      await tester.ensureVisible(
-        find.text('Modo oscuro'),
-      );
-
-      await tester.tap(find.text('Modo oscuro'));
+    testWidgets('muestra el tema actual (por defecto, el del teléfono)',
+        (tester) async {
+      // Act
+      await tester.pumpWidget(createWidget(ProfileSettings.defaultSettings()));
       await tester.pumpAndSettle();
 
       // Assert
-      verify(mockController.updateSetting(argThat(predicate<ProfileSettings>(
-        (s) => s.darkMode == true,
-      )))).called(1);
+      expect(find.text('Tema'), findsOneWidget);
+      expect(find.text('Igual que el teléfono'), findsOneWidget);
+    });
+
+    testWidgets('el dialog muestra las tres opciones y marca la actual',
+        (tester) async {
+      // Act
+      await openThemeDialog(tester);
+
+      // Assert
+      expect(find.byType(AlertDialog), findsOneWidget);
+      for (final key in ['themeOption_system', 'themeOption_light', 'themeOption_dark']) {
+        expect(find.byKey(Key(key)), findsOneWidget);
+      }
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('themeOption_system')),
+          matching: find.byIcon(Icons.radio_button_checked),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('themeOption_dark')),
+          matching: find.byIcon(Icons.radio_button_unchecked),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('elegir Oscuro guarda el tema y actualiza el subtítulo',
+        (tester) async {
+      // Arrange
+      await openThemeDialog(tester);
+
+      // Act
+      await tester.tap(find.byKey(const Key('themeOption_dark')));
+      await tester.pumpAndSettle();
+
+      // Assert
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(themeModeNotifier.mode, ThemeMode.dark);
+      expect(find.text('Oscuro'), findsOneWidget);
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getString('app_theme_mode'), 'dark');
+      // El tema es del teléfono: no se guarda en settings del servidor
+      verifyNever(mockController.updateSetting(any));
+    });
+
+    testWidgets('elegir Claro muestra "Claro"', (tester) async {
+      // Arrange
+      await openThemeDialog(tester);
+
+      // Act
+      await tester.tap(find.byKey(const Key('themeOption_light')));
+      await tester.pumpAndSettle();
+
+      // Assert
+      expect(themeModeNotifier.mode, ThemeMode.light);
+      expect(find.text('Claro'), findsOneWidget);
+    });
+
+    testWidgets('cancelar no cambia el tema', (tester) async {
+      // Arrange
+      await openThemeDialog(tester);
+
+      // Act
+      await tester.tap(find.text('Cancelar').last);
+      await tester.pumpAndSettle();
+
+      // Assert
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(themeModeNotifier.mode, ThemeMode.system);
     });
   });
 
@@ -599,7 +672,8 @@ void main() {
       expect(find.textContaining('Público'), findsOneWidget);
     });
 
-    testWidgets('debe mostrar texto correcto para friends', (tester) async {
+    testWidgets('el valor legado friends ya no se muestra (cae en público)',
+        (tester) async {
       // Arrange
       final settings = ProfileSettings.defaultSettings().copyWith(
         privacyLevel: 'friends',
@@ -609,7 +683,8 @@ void main() {
       await tester.pumpWidget(createWidget(settings));
 
       // Assert
-      expect(find.textContaining('Amigos'), findsOneWidget);
+      expect(find.textContaining('Amigos'), findsNothing);
+      expect(find.textContaining('Público'), findsOneWidget);
     });
 
     testWidgets('debe mostrar texto correcto para private', (tester) async {
@@ -645,7 +720,7 @@ void main() {
         (tester) async {
       // Arrange
       final settings = ProfileSettings.defaultSettings().copyWith(
-        privacyLevel: 'friends',
+        privacyLevel: 'private',
       );
 
       // Act
@@ -660,16 +735,15 @@ void main() {
       await tester.tap(find.text('Nivel de privacidad'));
       await tester.pumpAndSettle();
 
-      // Assert - verificar que 'friends' tiene icono seleccionado
+      // Assert - 'private' seleccionado; solo hay dos opciones
       expect(find.byIcon(Icons.radio_button_checked), findsNWidgets(1));
-      expect(find.byIcon(Icons.radio_button_unchecked), findsNWidgets(2));
+      expect(find.byIcon(Icons.radio_button_unchecked), findsNWidgets(1));
     });
 
     testWidgets('debe marcar idioma actual en dialog de idioma',
         (tester) async {
       // Arrange
       final settings = ProfileSettings.defaultSettings().copyWith(
-        language: 'en',
       );
 
       // Act
